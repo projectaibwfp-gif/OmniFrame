@@ -10,7 +10,7 @@ backend Next.js 16.3.0, baza Neon Postgres przez `@neondatabase/serverless`
 przygotowany jako baza do dalszej rozbudowy, nie jako gotowe wdrożenie
 produkcyjne.
 
-## Struktura 
+## Struktura
 
 ```text
 OmniFrame/
