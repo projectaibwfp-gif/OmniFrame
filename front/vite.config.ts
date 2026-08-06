@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
     port: 4200,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://apiomniframe.vercel.app',
         changeOrigin: true,
       },
     },

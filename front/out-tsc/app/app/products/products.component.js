@@ -1,9 +1,8 @@
 import { __decorate, __metadata } from "tslib";
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { ProductsService } from '../products/products.service';
-let DashboardComponent = class DashboardComponent {
+import { ProductsService } from './products.service';
+let ProductsComponent = class ProductsComponent {
     constructor() {
         this.productsService = inject(ProductsService);
         this.products = signal([]);
@@ -23,15 +22,14 @@ let DashboardComponent = class DashboardComponent {
         });
     }
 };
-DashboardComponent = __decorate([
+ProductsComponent = __decorate([
     Component({
-        selector: 'app-dashboard',
+        selector: 'app-products',
         standalone: true,
-        imports: [RouterLink],
-        templateUrl: './dashboard.component.html',
-        styleUrl: './dashboard.component.scss',
+        templateUrl: './products.component.html',
+        styleUrl: './products.component.scss',
         changeDetection: ChangeDetectionStrategy.OnPush,
     }),
     __metadata("design:paramtypes", [])
-], DashboardComponent);
-export { DashboardComponent };
+], ProductsComponent);
+export { ProductsComponent };

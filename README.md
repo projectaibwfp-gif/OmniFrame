@@ -1,4 +1,4 @@
-# OmniFrame
+# OmniFrame 
 
 Starter aplikacji złożony z frontendu Angular (Vite), backendu REST w Next.js
 oraz bazy Postgres (Neon). Katalogi są niezależnymi aplikacjami, dlatego każdą
@@ -111,21 +111,29 @@ ograniczyć ryzyko SQL injection.
 
 ```bash
 cd front
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-Frontend będzie dostępny pod `http://localhost:4200`. Proxy Vite przekazuje
-lokalne wywołania `/api/*` do backendu na porcie 3000, więc nie trzeba wpisywać
-adresu backendu w kodzie UI.
+Frontend będzie dostępny pod `http://localhost:4200`. Bazowy adres API jest
+trzymany globalnie w `front/.env` jako `VITE_API_BASE_URL` (domyślnie
+`/api`) i wykorzystywany przez komponenty
+dashboardu oraz listy produktów.
+
+W trybie dev Vite proxy przekazuje `/api/*` do
+`https://apiomniframe.vercel.app`, a na Vercel działa rewrite `/api/*` -> backend.
+Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 
 ## Routing frontendu
 
 - `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
+- `/products` - podstrona z listą produktów pobieraną z API,
 - `/about` - opis warstw aplikacji.
 
 Routing używa lazy-loaded standalone components. Dashboard pobiera dane z
-`GET /api/products` i pokazuje komunikat, gdy backend lub baza nie są dostępne.
+`GET /api/products` (na bazowym URL z `VITE_API_BASE_URL`) i pokazuje komunikat,
+gdy API jest niedostępne.
 
 ## Wdrożenie (Vercel)
 

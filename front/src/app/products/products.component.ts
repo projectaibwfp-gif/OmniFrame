@@ -1,17 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { Product, ProductsService } from '../products/products.service';
+import { Product, ProductsService } from './products.service';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-products',
   standalone: true,
-  imports: [RouterLink],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss',
+  templateUrl: './products.component.html',
+  styleUrl: './products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class ProductsComponent {
   private readonly productsService = inject(ProductsService);
 
   readonly products = signal<Product[]>([]);
