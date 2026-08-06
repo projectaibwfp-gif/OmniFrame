@@ -1,4 +1,4 @@
-# Project AI
+# Project AI 
 
 Starter aplikacji złożony z frontendu Angular, backendu REST w Next.js oraz bazy
 MySQL. Katalogi są niezależnymi aplikacjami, dlatego każdą z nich uruchamiamy
