@@ -148,6 +148,92 @@ Repo jest wdrażane jako dwa projekty Vercel:
 Migracje nie uruchamiają się podczas builda Vercel. Przed wdrożeniem zmian
 schematu uruchom `npm run db:migrate` lokalnie przeciwko bazie produkcyjnej.
 
+## Automatyczne release
+
+Repo używa GitHub Actions do automatycznego budowania i wersjonowania zmian.
+Workflow znajduje się w `.github/workflows/release.yml` i uruchamia się po
+każdym pushu bezpośrednio do `main`.
+
+### Użycie
+
+Pisz commity w formacie:
+
+```text
+feat: add product filtering
+fix: handle empty products response
+docs: update API documentation
+```
+
+Następnie wypchnij zmianę:
+
+```bash
+git add .
+git commit -m "feat: add product filtering"
+git push origin main
+```
+
+Nie trzeba ręcznie zmieniać wersji ani tworzyć `releases.yaml`.
+
+### Co dzieje się po pushu
+
+GitHub Actions wykonuje kolejno:
+
+1. Buduje frontend przez `npm ci` i `npm run build`.
+2. Buduje backend przez `npm ci` i `npm run build`.
+3. Jeśli oba buildy przejdą, pobiera ostatni tag `vX.Y.Z`.
+4. Zbiera commity od tego taga do aktualnego pushu.
+5. Wylicza nową wersję:
+
+   | Commit | Zmiana wersji |
+   | --- | --- |
+   | `feat:` | minor, `0.1.0` → `0.2.0` |
+   | pozostałe, np. `fix:`, `docs:` | patch, `0.1.0` → `0.1.1` |
+   | `feat!:` lub `BREAKING CHANGE` | major, `0.1.0` → `1.0.0` |
+
+6. Aktualizuje `front/package.json` i `front/package-lock.json`.
+7. Generuje `releases.yaml` z wersją oraz nazwami commitów.
+8. Tworzy commit release i tag, np. `v0.1.1`.
+9. Wypycha commit i tag do `main`.
+
+Commit wygenerowany automatycznie ma format:
+
+```text
+chore: release 0.1.1 [skip ci]
+```
+
+`[skip ci]` oraz użycie `GITHUB_TOKEN` zapobiegają uruchomieniu kolejnego
+release dla automatycznego commita.
+
+### Przykład `releases.yaml`
+
+```yaml
+releases:
+  - version: "0.1.1"
+    date: "2026-08-06T12:00:00.000Z"
+    commit: "a1b2c3d4..."
+    commits:
+      - hash: "a1b2c3d4"
+        author: "Filip"
+        date: "2026-08-06T11:55:00.000Z"
+        message: "fix: handle empty products response"
+```
+
+Każdy kolejny release jest dopisywany na początku pliku. `releases.yaml`
+powstaje automatycznie po pierwszym udanym workflow.
+
+### Wymagane ustawienie GitHub
+
+Workflow używa wbudowanego `GITHUB_TOKEN`, nie tokena zapisanego w repo.
+W ustawieniach repozytorium sprawdź:
+
+```text
+Settings → Actions → General → Workflow permissions
+→ Read and write permissions
+```
+
+Token służy wyłącznie do aktualizacji `package.json`, `releases.yaml` i taga
+release. Nie wpisuj tokenów w pliki projektu ani w commity.
+
 ## Komendy deweloperskie
 
 Frontend:
@@ -177,7 +263,7 @@ npm run db:migrate                # migracje bazy (migration/*.sql)
 2. Dodaj osobny serwis Angulara do komunikacji z API i modele współdzielone
    między ekranami.
 3. Dodaj testy jednostkowe i integracyjne dla endpointów oraz komponentów.
-4. Dodaj CI, które uruchamia build, lint, testy i audyt zależności.
+4. Rozszerz istniejący workflow GitHub Actions o lint, testy i audyt zależności.
 
 ## Zasady utrzymania
 
