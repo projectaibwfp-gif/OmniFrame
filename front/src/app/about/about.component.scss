@@ -1,0 +1,82 @@
+:host {
+  display: block;
+}
+
+.about-page {
+  max-width: 800px;
+}
+
+.eyebrow {
+  margin: 0 0 9px;
+  color: #9ba5bb;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+h1 {
+  margin: 0;
+  color: #202c49;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(27px, 4vw, 40px);
+  letter-spacing: -.05em;
+}
+
+h1 span {
+  color: #6caec8;
+}
+
+.lead {
+  max-width: 570px;
+  margin: 14px 0 35px;
+  color: #7e899f;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.about-grid article {
+  padding: 21px;
+  background: #fff;
+  border: 1px solid #e9ecf3;
+  border-radius: 10px;
+}
+
+.number {
+  color: #c1c9d6;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+}
+
+h2 {
+  margin: 23px 0 8px;
+  color: #27334f;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+}
+
+.about-grid p {
+  margin: 0;
+  color: #8994a9;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+code {
+  padding: 2px 4px;
+  color: #60708b;
+  background: #f1f4f8;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}

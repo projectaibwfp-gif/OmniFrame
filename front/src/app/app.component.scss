@@ -1,0 +1,313 @@
+:host {
+  display: block;
+}
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f6f7fb;
+}
+
+.sidebar {
+  display: flex;
+  flex: 0 0 248px;
+  flex-direction: column;
+  padding: 26px 16px 18px;
+  color: #b5bdd5;
+  background: #111a32;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 12px 30px;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.04em;
+}
+
+.brand-mark {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  color: #111a32;
+  background: #c7f268;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.brand-accent {
+  color: #c7f268;
+}
+
+.workspace-switcher {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 30px;
+  padding: 9px;
+  color: #e9ecf6;
+  background: #1b2745;
+  border: 1px solid #2d3a5b;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.workspace-icon {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  color: #17203a;
+  background: #f0c48b;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.workspace-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: #8390b2;
+  font-size: 16px;
+}
+
+.nav-label {
+  margin: 0 12px 8px;
+  color: #697695;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 3px 0;
+  padding: 10px 12px;
+  color: #aab5d1;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background .2s, color .2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: #fff;
+  background: #263454;
+}
+
+.nav-item.active {
+  box-shadow: inset 3px 0 #c7f268;
+}
+
+.nav-icon {
+  width: 17px;
+  color: #8f9dbc;
+  font-size: 16px;
+  text-align: center;
+}
+
+.nav-item.active .nav-icon {
+  color: #c7f268;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.help-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 4px 20px;
+  padding: 13px 10px;
+  border-top: 1px solid #2b395b;
+  border-bottom: 1px solid #2b395b;
+  font-size: 11px;
+}
+
+.help-card strong,
+.profile strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #e8ebf5;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.help-card span:last-child,
+.profile span:not(.avatar):not(.more) {
+  color: #7e8ba9;
+  font-size: 10px;
+}
+
+.help-icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: #121d35;
+  background: #c7f268;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 8px;
+}
+
+.avatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #17203a;
+  background: #a9d4ef;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.avatar.small {
+  width: 29px;
+  height: 29px;
+  border: 0;
+  cursor: pointer;
+}
+
+.profile > div {
+  flex: 1;
+}
+
+.more {
+  color: #8d99b4;
+  font-size: 11px;
+}
+
+.content {
+  min-width: 0;
+  flex: 1;
+}
+
+.topbar {
+  display: flex;
+  height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 42px;
+  background: #fff;
+  border-bottom: 1px solid #e9ecf3;
+}
+
+.breadcrumbs {
+  color: #9ba5bb;
+  font-size: 12px;
+}
+
+.breadcrumbs strong {
+  color: #3d4963;
+  font-weight: 600;
+}
+
+.slash {
+  margin: 0 10px;
+  color: #cad0dc;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-button {
+  position: relative;
+  padding: 4px;
+  color: #68748e;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 5px;
+  height: 5px;
+  background: #ef9d6d;
+  border: 1px solid #fff;
+  border-radius: 50%;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 3px;
+  background: #e9ecf3;
+}
+
+.page {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 38px 42px 60px;
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    flex-basis: 70px;
+    align-items: center;
+    padding-inline: 10px;
+  }
+
+  .brand {
+    margin: 0 0 30px;
+  }
+
+  .brand > span:last-child,
+  .workspace-switcher > :not(.workspace-icon),
+  .nav-label,
+  .nav-item:not(.active)::after,
+  .nav-item {
+    font-size: 0;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .help-card,
+  .profile > div,
+  .more {
+    display: none;
+  }
+
+  .profile {
+    padding: 0;
+  }
+
+  .topbar,
+  .page {
+    padding-inline: 20px;
+  }
+}

@@ -1,0 +1,8 @@
+**/node_modules/
+**/.next/
+**/dist/
+**/.angular/
+**/.env
+**/.env.local
+**/npm-debug.log*
+mysql/mysql_data/

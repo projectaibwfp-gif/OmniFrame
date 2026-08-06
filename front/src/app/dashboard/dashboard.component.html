@@ -1,0 +1,114 @@
+<div class="dashboard-header">
+  <div>
+    <p class="eyebrow">Tuesday, 04 August 2026</p>
+    <h1>Good morning, team <span>✦</span></h1>
+    <p class="intro">Here's what's happening with your workspace today.</p>
+  </div>
+  <button class="primary-button" type="button" (click)="loadProducts()">
+    <span>＋</span> New project
+  </button>
+</div>
+
+<div class="stats-grid">
+  <article class="stat-card">
+    <div class="stat-icon purple">▦</div>
+    <div class="stat-copy">
+      <span class="stat-label">Total projects</span>
+      <strong>24</strong>
+      <span class="stat-change positive">↗ 12.5% <em>vs last month</em></span>
+    </div>
+    <div class="mini-bars purple-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-icon green">◉</div>
+    <div class="stat-copy">
+      <span class="stat-label">Active automations</span>
+      <strong>18</strong>
+      <span class="stat-change positive">↗ 8.2% <em>vs last month</em></span>
+    </div>
+    <div class="mini-bars green-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-icon orange">↯</div>
+    <div class="stat-copy">
+      <span class="stat-label">Tasks completed</span>
+      <strong>1,284</strong>
+      <span class="stat-change positive">↗ 18.7% <em>vs last month</em></span>
+    </div>
+    <div class="mini-bars orange-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </article>
+</div>
+
+<div class="content-grid">
+  <section class="panel activity-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Activity overview</h2>
+        <p>Task volume over the last 30 days</p>
+      </div>
+      <button class="select-button" type="button">Last 30 days <span>⌄</span></button>
+    </div>
+    <div class="chart">
+      <div class="chart-y-axis"><span>120</span><span>80</span><span>40</span><span>0</span></div>
+      <div class="chart-area">
+        <div class="grid-line"></div><div class="grid-line"></div><div class="grid-line"></div><div class="grid-line"></div>
+        <svg viewBox="0 0 700 185" preserveAspectRatio="none" aria-label="Wykres aktywności">
+          <defs>
+            <linearGradient id="area-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#b5dff0" stop-opacity=".52"/>
+              <stop offset="100%" stop-color="#b5dff0" stop-opacity=".04"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,147 C28,142 40,119 70,125 S108,137 135,105 S174,113 200,90 S239,103 267,75 S308,91 335,66 S368,76 400,89 S434,83 468,63 S505,66 535,37 S572,70 601,50 S638,48 670,32 S690,35 700,26 L700,185 L0,185 Z" fill="url(#area-fill)"/>
+          <path d="M0,147 C28,142 40,119 70,125 S108,137 135,105 S174,113 200,90 S239,103 267,75 S308,91 335,66 S368,76 400,89 S434,83 468,63 S505,66 535,37 S572,70 601,50 S638,48 670,32 S690,35 700,26" fill="none" stroke="#68b8d7" stroke-width="3"/>
+          <circle cx="535" cy="37" r="5" fill="#fff" stroke="#68b8d7" stroke-width="3"/>
+        </svg>
+        <div class="chart-x-axis"><span>Jun 01</span><span>Jun 08</span><span>Jun 15</span><span>Jun 22</span><span>Jun 30</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel quick-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Quick actions</h2>
+        <p>Jump back into your work</p>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <button class="quick-action" type="button"><span class="action-icon lavender">✦</span><span><strong>Explore templates</strong><small>Start from a blueprint</small></span><b>›</b></button>
+      <button class="quick-action" type="button"><span class="action-icon peach">⚡</span><span><strong>Create automation</strong><small>Build something powerful</small></span><b>›</b></button>
+      <button class="quick-action" type="button"><span class="action-icon mint">♧</span><span><strong>Invite your team</strong><small>Collaborate with others</small></span><b>›</b></button>
+    </div>
+  </section>
+</div>
+
+<section class="panel projects-panel">
+  <div class="panel-heading">
+    <div>
+      <h2>Recent projects</h2>
+      <p>Your latest workspace activity</p>
+    </div>
+    <a routerLink="/about" class="view-all">View all <span>→</span></a>
+  </div>
+  @if (isLoading()) {
+    <div class="table-message">Ładowanie danych z API...</div>
+  } @else if (apiError()) {
+    <div class="table-message error">API jest niedostępne. Uruchom backend i odśwież dane.</div>
+  } @else {
+    <div class="projects-table">
+      <div class="table-row table-head"><span>Project name</span><span>Status</span><span>Category</span><span>Last updated</span><span></span></div>
+      @for (project of products(); track project.id) {
+        <div class="table-row">
+          <span class="project-name"><span class="project-dot"></span>{{ project.name }}</span>
+          <span><span class="status" [class.draft]="project.status === 'draft'"><i></i>{{ project.status === 'active' ? 'Active' : 'Draft' }}</span></span>
+          <span class="muted">{{ project.category }}</span>
+          <span class="muted">{{ project.updatedAt }}</span>
+          <span class="row-more">•••</span>
+        </div>
+      } @empty {
+        <div class="table-message">Brak projektów do wyświetlenia.</div>
+      }
+    </div>
+  }
+</section>
