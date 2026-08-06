@@ -1,40 +1,41 @@
-# Project AI 
+# OmniFrame
 
-Starter aplikacji złożony z frontendu Angular, backendu REST w Next.js oraz bazy
-MySQL. Katalogi są niezależnymi aplikacjami, dlatego każdą z nich uruchamiamy
-w osobnym terminalu.
+Starter aplikacji złożony z frontendu Angular (Vite), backendu REST w Next.js
+oraz bazy Postgres (Neon). Katalogi są niezależnymi aplikacjami, dlatego każdą
+z nich uruchamiamy w osobnym terminalu.
 
-Aktualny stan: frontend działa na Angularze 20, backend na Next.js 16.3.0,
-a połączenie z bazą obsługuje `mysql2`. Projekt jest przygotowany jako baza do
-dalszej rozbudowy, nie jako gotowe wdrożenie produkcyjne.
+Aktualny stan: frontend Angular 20 budowany Vite (`@analogjs/vite-plugin-angular`),
+backend Next.js 16.3.0, baza Neon Postgres przez `@neondatabase/serverless`
+(HTTPS/443, działa też w sieciach blokujących port 5432). Projekt jest
+przygotowany jako baza do dalszej rozbudowy, nie jako gotowe wdrożenie
+produkcyjne.
 
 ## Struktura
 
 ```text
-project_ai/
-├── front/       # Angular 20, dashboard i routing
-├── backend/     # Next.js 16 App Router, REST API
-└── mysql/       # Docker Compose oraz skrypty inicjalizujące bazę
+OmniFrame/
+├── front/       # Angular 20 + Vite, dashboard i routing
+└── backend/     # Next.js 16 App Router, REST API + migracje SQL (Postgres)
 ```
 
 Najważniejsze pliki:
 
 ```text
 front/src/app/                 # layout, routing, dashboard i strona About
-front/proxy.conf.json          # lokalne przekierowanie /api do backendu
-backend/src/app/api/health/    # kontrola API i połączenia z MySQL
+front/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
+backend/src/app/api/health/    # kontrola API i połączenia z bazą
 backend/src/app/api/products/  # odczyt i tworzenie projektów
-backend/src/lib/db.ts          # pula połączeń MySQL
-mysql/01-create-database.sql   # baza i użytkownik
-mysql/02-schema.sql            # tabela projects
-mysql/03-seed.sql              # dane przykładowe
+backend/src/lib/db.ts          # klient Neon (DATABASE_URL)
+backend/scripts/migrate.mjs    # runner migracji (tabela _migrations)
+backend/migration/001_init.sql # tabela projects
+backend/migration/002_seed.sql # dane przykładowe (idempotentne)
 ```
 
 ## Wymagania
 
 - Node.js 20.19 lub nowszy
 - npm 10+
-- Docker Desktop z obsługą Compose (najprostszy sposób uruchomienia MySQL)
+- Konto Neon (lub inny hosted Postgres z dostępem po HTTPS)
 
 ## Rejestr npm
 
@@ -43,70 +44,52 @@ Projekt korzysta wyłącznie z publicznego rejestru npm:
 - `front/.npmrc` - `https://registry.npmjs.org/`,
 - `backend/.npmrc` - `https://registry.npmjs.org/`.
 
-Pliki `.npmrc` są lokalne dla projektu i nie zmieniają globalnej konfiguracji
-npm ani nie korzystają z prywatnego rejestru Comarch. Po zmianie zależności
-uruchamiaj `npm install` w odpowiednim katalogu, a następnie zatwierdzaj
-zaktualizowany `package-lock.json`.
+Po zmianie zależności uruchamiaj `npm install` w odpowiednim katalogu,
+a następnie zatwierdzaj zaktualizowany `package-lock.json`.
 
 ## Uruchomienie krok po kroku
 
-### 1. Uruchom MySQL
-
-W katalogu głównym projektu:
-
-```bash
-cd mysql
-docker compose up -d
-```
-
-Kontener przy pierwszym uruchomieniu wykona automatycznie:
-
-1. `01-create-database.sql` - bazę `project_ai` i użytkownika aplikacji,
-2. `02-schema.sql` - tabelę `projects`,
-3. `03-seed.sql` - przykładowe rekordy.
-
-Skrypty inicjalizacyjne MySQL są wykonywane tylko przy pustym wolumenie. Aby
-uruchomić je ponownie od zera, użyj `docker compose down -v` (usuwa lokalne dane
-bazy).
-
-### 2. Uruchom backend
-
-W drugim terminalu:
+### 1. Skonfiguruj bazę i uruchom migracje
 
 ```bash
 cd backend
-copy .env.example .env.local       # Windows, tylko jeśli pliku jeszcze nie ma
-# cp .env.example .env.local       # macOS/Linux, tylko jeśli pliku jeszcze nie ma
+cp .env.example .env   # uzupełnij DATABASE_URL (connection string z Neona)
 npm install
+npm run db:migrate
+```
+
+Runner `scripts/migrate.mjs` tworzy tabelę `_migrations` i aplikuje po kolei
+wszystkie nowe pliki `backend/migration/*.sql` (posortowane po nazwie).
+Powtórne uruchomienie pomija już zaaplikowane migracje.
+
+Zasady pisania migracji:
+
+- nazwy numerowane rosnąco: `003_opis.sql`, `004_opis.sql`, ...
+- statementy kończą się średnikiem na końcu linii (plik jest dzielony
+  na pojedyncze statementy, bo driver HTTP Neona wykonuje je pojedynczo)
+- bez ciał funkcji PL/pgSQL `$$ ... $$` (zawierają średniki w środku)
+- pisz idempotentnie (`IF NOT EXISTS`, guardy) - brak transakcji na cały plik
+
+### 2. Uruchom backend
+
+```bash
+cd backend
 npm run dev
 ```
 
-Backend będzie dostępny pod `http://localhost:3000`.
+Backend będzie dostępny pod `http://localhost:3000`. Plik `backend/.env` jest
+ignorowany przez Git i nie należy wpisywać jego zawartości do README, commitów
+ani logów.
 
-W repozytorium lokalnie skonfigurowano `backend/.env.local` pod przekazane dane
-bazy. Ten plik jest ignorowany przez Git i nie należy wpisywać jego zawartości
-do README, commitów ani logów. Podany host został ustawiony jako
-`127.0.0.1`; jeżeli baza działa na hostingu, zmień tylko `MYSQL_HOST` na adres
-serwera.
+Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 
-Konfiguracja jest w `backend/.env.local`, utworzonym na podstawie
-`backend/.env.example`:
-
-| Zmienna | Domyślna wartość | Znaczenie |
-| --- | --- | --- |
-| `MYSQL_HOST` | `127.0.0.1` | host MySQL |
-| `MYSQL_PORT` | `3306` | port MySQL |
-| `MYSQL_USER` | `project_user` | użytkownik aplikacji |
-| `MYSQL_PASSWORD` | `project_password` | hasło lokalne |
-| `MYSQL_DATABASE` | `project_ai` | nazwa bazy |
-| `MYSQL_CONNECTION_LIMIT` | `10` | limit połączeń w puli |
-
-Przykładowe hasła są wyłącznie do środowiska lokalnego. Nie commituj
-`.env.local` ani prawdziwych sekretów.
+| Zmienna | Znaczenie |
+| --- | --- |
+| `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
 
 Endpointy:
 
-- `GET /api/health` - sprawdza API i połączenie z MySQL,
+- `GET /api/health` - sprawdza API i połączenie z bazą,
 - `GET /api/products` - zwraca ostatnie projekty z bazy,
 - `POST /api/products` - tworzy projekt.
 
@@ -124,25 +107,15 @@ Pole `name` jest wymagane, `status` może mieć wartość `active` albo `draft`,
 a domyślna kategoria to `General`. Zapytania SQL używają parametrów, aby
 ograniczyć ryzyko SQL injection.
 
-Przykładowe żądanie:
-
-```bash
-curl -X POST http://localhost:3000/api/products ^
-  -H "Content-Type: application/json" ^
-  -d "{\"name\":\"Nowy projekt\",\"category\":\"Operations\",\"status\":\"draft\"}"
-```
-
 ### 3. Uruchom frontend
-
-W trzecim terminalu:
 
 ```bash
 cd front
 npm install
-npm start
+npm run dev
 ```
 
-Frontend będzie dostępny pod `http://localhost:4200`. Angularowy proxy przekazuje
+Frontend będzie dostępny pod `http://localhost:4200`. Proxy Vite przekazuje
 lokalne wywołania `/api/*` do backendu na porcie 3000, więc nie trzeba wpisywać
 adresu backendu w kodzie UI.
 
@@ -154,16 +127,28 @@ adresu backendu w kodzie UI.
 Routing używa lazy-loaded standalone components. Dashboard pobiera dane z
 `GET /api/products` i pokazuje komunikat, gdy backend lub baza nie są dostępne.
 
+## Wdrożenie (Vercel)
+
+Repo jest wdrażane jako dwa projekty Vercel:
+
+- **frontend**: Root Directory `front`, framework Vite; `front/vercel.json`
+  ustawia build, output `dist`, rewrite `/api/*` na backend oraz nagłówki
+  bezpieczeństwa (CSP, `X-Frame-Options` itd.),
+- **backend**: Root Directory `backend`, framework Next.js; zmienna
+  środowiskowa `DATABASE_URL` (Production + Preview).
+
+Migracje nie uruchamiają się podczas builda Vercel. Przed wdrożeniem zmian
+schematu uruchom `npm run db:migrate` lokalnie przeciwko bazie produkcyjnej.
+
 ## Komendy deweloperskie
 
 Frontend:
 
 ```bash
 cd front
-npm start                         # serwer Angulara na porcie 4200
-npm run build                     # build produkcyjny
-npm run watch                     # build w trybie obserwowania
-npm test                          # testy Angulara, gdy zostaną dodane
+npm run dev                       # Vite dev server na porcie 4200
+npm run build                     # typecheck (tsc) + build produkcyjny
+npm run preview                   # podgląd builda produkcyjnego
 ```
 
 Backend:
@@ -174,38 +159,32 @@ npm run dev                       # Next.js w trybie developerskim
 npm run build                     # build produkcyjny
 npm start                         # uruchomienie builda produkcyjnego
 npm run lint                      # ESLint
+npm run db:migrate                # migracje bazy (migration/*.sql)
 ```
 
 ## Dalszy rozwój
 
-1. Dodaj modele i kolejne migracje SQL w `mysql/`; przy zmianach produkcyjnych
-   użyj narzędzia migracyjnego zamiast ręcznego uruchamiania skryptów.
-2. Rozszerz REST API w `backend/src/app/api/`, dodając autoryzację, paginację
+1. Rozszerz REST API w `backend/src/app/api/`, dodając autoryzację, paginację
    oraz endpointy aktualizacji i usuwania projektów.
-3. Dodaj osobny serwis Angulara do komunikacji z API i modele współdzielone
+2. Dodaj osobny serwis Angulara do komunikacji z API i modele współdzielone
    między ekranami.
-4. Przenieś adresy API oraz feature flags do środowisk Angulara.
-5. Dodaj testy jednostkowe i integracyjne dla endpointów oraz komponentów.
-6. Zastąp przykładowe hasła z `.env.example` sekretami dostarczanymi przez
-   menedżer sekretów w środowisku wdrożeniowym.
-7. Dodaj CI, które uruchamia build, lint, testy i audyt zależności.
+3. Dodaj testy jednostkowe i integracyjne dla endpointów oraz komponentów.
+4. Dodaj CI, które uruchamia build, lint, testy i audyt zależności.
 
 ## Zasady utrzymania
 
 README jest dokumentem roboczym projektu i należy go aktualizować razem z
 każdą zmianą wpływającą na uruchamianie lub architekturę. W szczególności:
 
-1. Po zmianie wersji Angulara, Next.js, Node.js lub MySQL zaktualizuj sekcje
-   „Aktualny stan” i „Wymagania”.
-2. Po dodaniu endpointu dopisz go do tabeli API oraz zaktualizuj przykładowe
+1. Po zmianie wersji Angulara, Next.js, Node.js lub bazy zaktualizuj sekcje
+   „Aktualny stan" i „Wymagania".
+2. Po dodaniu endpointu dopisz go do listy API oraz zaktualizuj przykładowe
    żądania i odpowiedzi.
 3. Po zmianie zmiennych środowiskowych uzupełnij `.env.example` i tabelę
    konfiguracji.
-4. Po zmianie skryptów SQL opisz kolejność uruchamiania i wpływ na istniejące
-   dane.
-5. Po zmianie komend npm zaktualizuj sekcję „Komendy deweloperskie”.
-6. Przed zakończeniem zadania uruchom walidację z poniższej sekcji i wpisz
-   istotne ograniczenia lub znane problemy.
+4. Po zmianie zasad migracji opisz kolejność uruchamiania i wpływ na
+   istniejące dane.
+5. Po zmianie komend npm zaktualizuj sekcję „Komendy deweloperskie".
 
 ## Walidacja
 
@@ -227,10 +206,5 @@ Ostatnia walidacja tego startera:
 
 - `front`: `npm run build` - OK,
 - `backend`: `npm run build` - OK,
-- `backend`: `npm run lint` - OK,
-- `backend`: `npm audit --omit=dev` - 0 podatności,
-- `front`: `npm audit` zgłasza 8 podatności w zależnościach narzędziowych,
-  w tym problemy bez dostępnej poprawki w części zależności Angulara.
-
-Pełna weryfikacja endpointów wymaga uruchomionego Dockera, MySQL i backendu.
-# OmniFrame
+- `backend`: `npm run db:migrate` - OK (migracje idempotentne),
+- `GET /api/health` i `GET /api/products` z bazą Neon - OK.

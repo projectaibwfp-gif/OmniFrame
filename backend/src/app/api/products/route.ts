@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { errorResponse } from '@/lib/api-response';
-import { query } from '@/lib/db';
+import { getSql } from '@/lib/db';
 
-interface ProductRow extends RowDataPacket {
+interface ProductRow {
   id: number;
   name: string;
   status: 'active' | 'draft';
@@ -21,13 +20,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(): Promise<NextResponse> {
   try {
-    const products = await query<ProductRow[]>(
-      `SELECT id, name, status, category,
-              DATE_FORMAT(updated_at, '%Y-%m-%d') AS updatedAt
-       FROM projects
-       ORDER BY updated_at DESC
-       LIMIT 20`,
-    );
+    const products = (await getSql()`
+      SELECT id, name, status, category,
+             to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
+      FROM projects
+      ORDER BY updated_at DESC
+      LIMIT 20
+    `) as ProductRow[];
 
     return NextResponse.json({ data: products });
   } catch (error) {
@@ -58,13 +57,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const result = await query<ResultSetHeader>(
-      'INSERT INTO projects (name, status, category) VALUES (?, ?, ?)',
-      [name, status, category],
-    );
+    const result = (await getSql()`
+      INSERT INTO projects (name, status, category)
+      VALUES (${name}, ${status}, ${category})
+      RETURNING id
+    `) as { id: number }[];
 
     return NextResponse.json(
-      { data: { id: result.insertId, name, status, category } },
+      { data: { id: result[0]?.id, name, status, category } },
       { status: 201 },
     );
   } catch (error) {

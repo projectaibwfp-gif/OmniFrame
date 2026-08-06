@@ -8,7 +8,7 @@ const isProd =
   process.env.NODE_ENV === 'production' ||
   process.env.VERCEL_ENV === 'production';
 const allowedOrigin = isProd
-  ? 'https://shell-dashboard.vercel.app'
+  ? 'https://omniframe.vercel.app'
   : 'http://localhost:4200';
 
 const nextConfig: NextConfig = {

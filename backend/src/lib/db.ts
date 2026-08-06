@@ -1,38 +1,21 @@
-import mysql, { type Pool, type QueryResult } from 'mysql2/promise';
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
-let pool: Pool | undefined;
+let client: NeonQueryFunction<false, false> | undefined;
 
-function getPool(): Pool {
-  if (!pool) {
-    const ssl = process.env.MYSQL_SSL === 'true'
-      ? { rejectUnauthorized: true }
-      : undefined;
+export function getSql(): NeonQueryFunction<false, false> {
+  if (!client) {
+    const connectionString = process.env.DATABASE_URL;
 
-    pool = mysql.createPool({
-      host: process.env.MYSQL_HOST ?? '127.0.0.1',
-      port: Number(process.env.MYSQL_PORT ?? 3306),
-      user: process.env.MYSQL_USER ?? 'project_user',
-      password: process.env.MYSQL_PASSWORD ?? 'project_password',
-      database: process.env.MYSQL_DATABASE ?? 'project_ai',
-      waitForConnections: true,
-      connectionLimit: Number(process.env.MYSQL_CONNECTION_LIMIT ?? 10),
-      queueLimit: 0,
-      enableKeepAlive: true,
-      ssl,
-    });
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
+    client = neon(connectionString);
   }
 
-  return pool;
-}
-
-export async function query<T extends QueryResult>(
-  sql: string,
-  values: unknown[] = [],
-): Promise<T> {
-  const [rows] = await getPool().query<T>(sql, values);
-  return rows;
+  return client;
 }
 
 export async function checkDatabaseConnection(): Promise<void> {
-  await getPool().query('SELECT 1');
+  await getSql()`SELECT 1`;
 }
