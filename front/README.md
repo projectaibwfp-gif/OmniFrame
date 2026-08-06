@@ -57,4 +57,4 @@ npm run build
 npm run preview
 ```
 
-Ostatnia aktualizacja: 2026-08-06
+Ostatnia aktualizacja: 2026-08-06 15:20

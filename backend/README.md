@@ -62,4 +62,4 @@ npm run lint
 npm run db:migrate
 ```
 
-Ostatnia aktualizacja: 2026-08-06
+Ostatnia aktualizacja: 2026-08-06 15:20
