@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-07T09:40:27.464Z"
+    commit: "9b653dd93054b8a7e2eebb3e76aa845edd347122"
+    frontend:
+      version: "0.4.0"
+      tag: "front-v0.4.0"
+      changed: true
+      commits:
+      - hash: "9b653dd9"
+        author: "Filip Podsiadły"
+        date: "2026-08-07T11:39:20+02:00"
+        message: "feat: migrate backend to TypeScript and update dependencies"
+    backend:
+      version: "0.3.0"
+      tag: "backend-v0.3.0"
+      changed: true
+      commits:
+      - hash: "9b653dd9"
+        author: "Filip Podsiadły"
+        date: "2026-08-07T11:39:20+02:00"
+        message: "feat: migrate backend to TypeScript and update dependencies"
   - date: "2026-08-07T08:41:23.937Z"
     commit: "25d067ad22363db8e10d9766db2f22a47c61f73a"
     frontend:
