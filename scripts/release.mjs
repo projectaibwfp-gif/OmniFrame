@@ -38,9 +38,23 @@ const getLastTag = (pattern) => {
   }
 };
 
+const getPushBase = () => {
+  const before = process.env.GITHUB_EVENT_BEFORE;
+  if (before && !/^0+$/u.test(before)) {
+    return before;
+  }
+
+  try {
+    return run('git', ['rev-parse', 'HEAD^']);
+  } catch {
+    return '';
+  }
+};
+
 const getCommits = (component) => {
   const lastTag = getLastTag(component.tagPattern);
-  const range = lastTag ? `${lastTag}..HEAD` : 'HEAD';
+  const base = lastTag || getPushBase();
+  const range = base ? `${base}..HEAD` : 'HEAD';
   const log = run('git', [
     'log',
     range,

@@ -213,6 +213,9 @@ Zmiana tylko w `front/**` nie podbija wersji backendu. Zmiana tylko w
 release obu aplikacji. Zmiany wyłącznie w katalogu głównym, np. README, nie
 tworzą nowego release.
 
+Jeśli aplikacja nie ma jeszcze własnego taga, generator używa poprzedniego SHA
+pushu jako punktu odniesienia. Nie analizuje całej historii drugiej aplikacji.
+
 Commit wygenerowany automatycznie ma format:
 
 ```text
