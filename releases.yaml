@@ -1,4 +1,14 @@
 releases:
+  - date: "2026-08-07T08:29:00.754Z"
+    commit: "c8231b334edb6d72cfd0b01eeffc91c7fe3c180f"
+    frontend:
+      version: "0.3.1"
+      tag: "front-v0.3.1"
+      commits:
+      - hash: "c8231b33"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-07T10:27:41+02:00"
+        message: "chore: update linting configuration and enhance npm scripts"
   - date: "2026-08-07T08:15:08.818Z"
     commit: "70fc8b9cfd3c181f774e7ece13d6b41b0642e07d"
     frontend:
