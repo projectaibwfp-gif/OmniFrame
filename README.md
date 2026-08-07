@@ -180,9 +180,10 @@ GitHub Actions wykonuje kolejno:
 
 1. Buduje frontend przez `npm ci` i `npm run build`.
 2. Buduje backend przez `npm ci` i `npm run build`.
-3. Jeśli oba buildy przejdą, pobiera ostatni tag `vX.Y.Z`.
-4. Zbiera commity od tego taga do aktualnego pushu.
-5. Wylicza nową wersję:
+3. Jeśli oba buildy przejdą, analizuje osobno frontend i backend.
+4. Dla każdej aplikacji pobiera jej ostatni tag i zbiera commity dotyczące
+   odpowiedniego katalogu.
+5. Wylicza osobne wersje:
 
    | Commit | Zmiana wersji |
    | --- | --- |
@@ -190,15 +191,32 @@ GitHub Actions wykonuje kolejno:
    | pozostałe, np. `fix:`, `docs:` | patch, `0.1.0` → `0.1.1` |
    | `feat!:` lub `BREAKING CHANGE` | major, `0.1.0` → `1.0.0` |
 
-6. Aktualizuje `front/package.json` i `front/package-lock.json`.
-7. Generuje `releases.yaml` z wersją oraz nazwami commitów.
-8. Tworzy commit release i tag, np. `v0.1.1`.
-9. Wypycha commit i tag do `main`.
+6. Aktualizuje tylko zmienione aplikacje:
+
+   ```text
+   zmiany w front/**   → front/package.json
+   zmiany w backend/** → backend/package.json
+   ```
+
+7. Generuje `releases.yaml` z osobnymi wersjami i commitami.
+8. Tworzy osobne tagi:
+
+   ```text
+   front-v0.2.0
+   backend-v0.1.1
+   ```
+
+9. Tworzy commit release i wypycha go razem z tagami do `main`.
+
+Zmiana tylko w `front/**` nie podbija wersji backendu. Zmiana tylko w
+`backend/**` nie podbija wersji frontendu. Zmiany w obu katalogach tworzą
+release obu aplikacji. Zmiany wyłącznie w katalogu głównym, np. README, nie
+tworzą nowego release.
 
 Commit wygenerowany automatycznie ma format:
 
 ```text
-chore: release 0.1.1 [skip ci]
+chore: release frontend, backend [skip ci]
 ```
 
 `[skip ci]` oraz użycie `GITHUB_TOKEN` zapobiegają uruchomieniu kolejnego
@@ -208,14 +226,24 @@ release dla automatycznego commita.
 
 ```yaml
 releases:
-  - version: "0.1.1"
-    date: "2026-08-06T12:00:00.000Z"
+  - date: "2026-08-07T12:00:00.000Z"
     commit: "a1b2c3d4..."
-    commits:
-      - hash: "a1b2c3d4"
-        author: "Filip"
-        date: "2026-08-06T11:55:00.000Z"
-        message: "fix: handle empty products response"
+    frontend:
+      version: "0.2.0"
+      tag: "front-v0.2.0"
+      commits:
+        - hash: "a1b2c3d4"
+          author: "Filip"
+          date: "2026-08-07T11:55:00.000Z"
+          message: "feat: add product filtering"
+    backend:
+      version: "0.1.1"
+      tag: "backend-v0.1.1"
+      commits:
+        - hash: "d4e5f6a7"
+          author: "Filip"
+          date: "2026-08-07T11:56:00.000Z"
+          message: "fix: handle empty products response"
 ```
 
 Każdy kolejny release jest dopisywany na początku pliku. `releases.yaml`

@@ -53,10 +53,37 @@ jobs:
       - run: git config user.name "github-actions[bot]"
       - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: node scripts/release.mjs
-      - id: version
-        run: echo "version=$(node -p "require('./front/package.json').version")" >> "$GITHUB_OUTPUT"
       - run: |
-          git add front/package.json front/package-lock.json releases.yaml
-          git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
-          git tag "v${{ steps.version.outputs.version }}"
+          if git diff --quiet HEAD -- \
+            front/package.json front/package-lock.json \
+            backend/package.json backend/package-lock.json releases.yaml; then
+            echo "No application changes require a release."
+            exit 0
+          fi
+
+          FRONT_TAG=""
+          BACKEND_TAG=""
+          RELEASE_COMPONENTS=""
+
+          if ! git diff --quiet HEAD -- front/package.json front/package-lock.json; then
+            FRONT_TAG="front-v$(node -p "require('./front/package.json').version")"
+            RELEASE_COMPONENTS="frontend"
+          fi
+
+          if ! git diff --quiet HEAD -- backend/package.json backend/package-lock.json; then
+            BACKEND_TAG="backend-v$(node -p "require('./backend/package.json').version")"
+            RELEASE_COMPONENTS="${RELEASE_COMPONENTS:+${RELEASE_COMPONENTS}, }backend"
+          fi
+
+          git add front/package.json front/package-lock.json \
+            backend/package.json backend/package-lock.json releases.yaml
+          git commit -m "chore: release ${RELEASE_COMPONENTS} [skip ci]"
+
+          if [ -n "$FRONT_TAG" ]; then
+            git tag "$FRONT_TAG"
+          fi
+          if [ -n "$BACKEND_TAG" ]; then
+            git tag "$BACKEND_TAG"
+          fi
+
           git push origin HEAD:main --tags
