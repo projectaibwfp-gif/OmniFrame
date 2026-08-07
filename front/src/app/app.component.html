@@ -13,7 +13,12 @@
 
     <nav class="navigation" aria-label="Główna nawigacja">
       <p class="nav-label">Workspace</p>
-      <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a
+        class="nav-item"
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
         <span class="nav-icon">▦</span>
         Dashboard
       </a>
@@ -54,7 +59,9 @@
         <strong>Overview</strong>
       </div>
       <div class="topbar-actions">
-        <button class="icon-button" aria-label="Powiadomienia">♧<span class="notification-dot"></span></button>
+        <button class="icon-button" aria-label="Powiadomienia">
+          ♧<span class="notification-dot"></span>
+        </button>
         <button class="icon-button" aria-label="Ustawienia">⚙</button>
         <span class="topbar-divider"></span>
         <button class="avatar small" aria-label="Menu profilu">NW</button>

@@ -51,7 +51,7 @@ p {
 
 .table-row {
   display: grid;
-  grid-template-columns: minmax(160px, 1.3fr) .7fr .9fr .8fr;
+  grid-template-columns: minmax(160px, 1.3fr) 0.7fr 0.9fr 0.8fr;
   align-items: center;
   min-height: 46px;
   border-top: 1px solid #f0f2f6;
@@ -64,7 +64,7 @@ p {
   border: 0;
   color: #a5adbd;
   font-size: 9px;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -104,7 +104,7 @@ p {
   }
 
   .table-row {
-    grid-template-columns: 1.2fr .8fr;
+    grid-template-columns: 1.2fr 0.8fr;
     gap: 8px;
   }
 
