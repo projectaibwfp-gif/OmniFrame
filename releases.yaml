@@ -1,4 +1,14 @@
 releases:
+  - date: "2026-08-07T08:41:23.937Z"
+    commit: "25d067ad22363db8e10d9766db2f22a47c61f73a"
+    frontend:
+      version: "0.3.2"
+      tag: "front-v0.3.2"
+      commits:
+      - hash: "25d067ad"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-07T10:40:09+02:00"
+        message: "chore: add Prettier and ESLint configuration files, update HTML and SCSS formatting"
   - date: "2026-08-07T08:29:00.754Z"
     commit: "c8231b334edb6d72cfd0b01eeffc91c7fe3c180f"
     frontend:
