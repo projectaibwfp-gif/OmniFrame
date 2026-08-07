@@ -1,10 +1,11 @@
 # Backend (Next.js API)
 
 Backend REST dla OmniFrame oparty o Next.js (App Router) i Neon Postgres.
+Kod aplikacji oraz runner migracji `scripts/migrate.ts` używają TypeScript.
 
 ## Wymagania
 
-- Node.js 20.19+
+- Node.js 22.22.3+
 - npm 10+
 - baza Postgres (Neon lub kompatybilna) z connection stringiem
 
@@ -59,7 +60,10 @@ npm run dev
 npm run build
 npm start
 npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
 npm run db:migrate
 ```
 
-Ostatnia aktualizacja: 2026-08-06 15:20
+`npm run db:migrate` wymaga `DATABASE_URL` i może aplikować nowe migracje.

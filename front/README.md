@@ -1,10 +1,11 @@
-# Frontend (Angular + Vite)
+# Frontend (Angular 22 + Vite)
 
-Frontend aplikacji OmniFrame. UI działa na Angular 20 (standalone components) i Vite.
+Frontend aplikacji OmniFrame. UI działa na Angular 22 (standalone components)
+i Vite.
 
 ## Wymagania
 
-- Node.js 20.19+
+- Node.js 22.22.3+
 - npm 10+
 
 ## Konfiguracja
@@ -53,7 +54,13 @@ Dzięki temu przeglądarka nie wykonuje bezpośrednich wywołań cross-origin i 
 
 ```bash
 npm run dev
+npm run start
 npm run build
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
+npm run test
 npm run preview
 ```
 

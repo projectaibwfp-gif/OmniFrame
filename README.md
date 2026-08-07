@@ -1,21 +1,20 @@
-# OmniFrame 
+# OmniFrame
 
-Starter aplikacji złożony z frontendu Angular (Vite), backendu REST w Next.js
-oraz bazy Postgres (Neon). Katalogi są niezależnymi aplikacjami, dlatego każdą
-z nich uruchamiamy w osobnym terminalu.
+Starter aplikacji z frontendem Angular 22 + Vite, backendem REST Next.js 16
+oraz Neon Postgres. `front` i `backend` są niezależnymi aplikacjami,
+uruchamianymi w osobnych terminalach.
 
-Aktualny stan: frontend Angular 20 budowany Vite (`@analogjs/vite-plugin-angular`),
-backend Next.js 16.3.0, baza Neon Postgres przez `@neondatabase/serverless`
-(HTTPS/443, działa też w sieciach blokujących port 5432). Projekt jest
-przygotowany jako baza do dalszej rozbudowy, nie jako gotowe wdrożenie
-produkcyjne.
+Aktualny stan: Angular 22 budowany przez Vite
+(`@analogjs/vite-plugin-angular`), Next.js 16.3.0 oraz backend TypeScript,
+w tym runner migracji. Neon korzysta z HTTPS/443, więc działa też w sieciach
+blokujących port 5432.
 
 ## Struktura
 
 ```text
 OmniFrame/
-├── front/       # Angular 20 + Vite, dashboard i routing
-└── backend/     # Next.js 16 App Router, REST API + migracje SQL (Postgres)
+├── front/       # Angular 22 + Vite, dashboard i routing
+└── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
 ```
 
 Najważniejsze pliki:
@@ -26,14 +25,14 @@ front/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
 backend/src/app/api/health/    # kontrola API i połączenia z bazą
 backend/src/app/api/products/  # odczyt i tworzenie projektów
 backend/src/lib/db.ts          # klient Neon (DATABASE_URL)
-backend/scripts/migrate.mjs    # runner migracji (tabela _migrations)
+backend/scripts/migrate.ts     # TypeScript runner migracji (tabela _migrations)
 backend/migration/001_init.sql # tabela projects
 backend/migration/002_seed.sql # dane przykładowe (idempotentne)
 ```
 
 ## Wymagania
 
-- Node.js 20.19 lub nowszy
+- Node.js 22.22.3 lub nowszy
 - npm 10+
 - Konto Neon (lub inny hosted Postgres z dostępem po HTTPS)
 
@@ -58,7 +57,7 @@ npm install
 npm run db:migrate
 ```
 
-Runner `scripts/migrate.mjs` tworzy tabelę `_migrations` i aplikuje po kolei
+Runner `scripts/migrate.ts` tworzy tabelę `_migrations` i aplikuje po kolei
 wszystkie nowe pliki `backend/migration/*.sql` (posortowane po nazwie).
 Powtórne uruchomienie pomija już zaaplikowane migracje.
 
@@ -83,8 +82,8 @@ ani logów.
 
 Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 
-| Zmienna | Znaczenie |
-| --- | --- |
+| Zmienna        | Znaczenie                                                        |
+| -------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
 
 Endpointy:
@@ -180,38 +179,43 @@ GitHub Actions wykonuje kolejno:
 
 1. Buduje frontend przez `npm ci` i `npm run build`.
 2. Buduje backend przez `npm ci` i `npm run build`.
-3. Jeśli oba buildy przejdą, analizuje osobno frontend i backend.
-4. Dla każdej aplikacji pobiera jej ostatni tag i zbiera commity dotyczące
+3. Dla obu aplikacji uruchamia też `npm run lint` i `npm run format:check`.
+4. Jeśli wszystkie sprawdzenia przejdą, analizuje osobno frontend i backend.
+5. Dla każdej aplikacji pobiera jej ostatni tag i zbiera commity dotyczące
    odpowiedniego katalogu.
-5. Wylicza osobne wersje:
+6. Wylicza osobne wersje:
 
-   | Commit | Zmiana wersji |
-   | --- | --- |
-   | `feat:` | minor, `0.1.0` → `0.2.0` |
+   | Commit                         | Zmiana wersji            |
+   | ------------------------------ | ------------------------ |
+   | `feat:`                        | minor, `0.1.0` → `0.2.0` |
    | pozostałe, np. `fix:`, `docs:` | patch, `0.1.0` → `0.1.1` |
    | `feat!:` lub `BREAKING CHANGE` | major, `0.1.0` → `1.0.0` |
 
-6. Aktualizuje tylko zmienione aplikacje:
+7. Aktualizuje tylko zmienione aplikacje:
 
    ```text
    zmiany w front/**   → front/package.json
    zmiany w backend/** → backend/package.json
    ```
 
-7. Generuje `releases.yaml` z osobnymi wersjami i commitami.
-8. Tworzy osobne tagi:
+8. Generuje `releases.yaml` z aktualną wersją obu aplikacji, nawet gdy tylko
+   jedna z nich została podbita.
+9. Tworzy osobne tagi:
 
    ```text
    front-v0.2.0
    backend-v0.1.1
    ```
 
-9. Tworzy commit release i wypycha go razem z tagami do `main`.
+10. Tworzy commit release i wypycha go razem z tagami do `main`.
 
 Zmiana tylko w `front/**` nie podbija wersji backendu. Zmiana tylko w
 `backend/**` nie podbija wersji frontendu. Zmiany w obu katalogach tworzą
 release obu aplikacji. Zmiany wyłącznie w katalogu głównym, np. README, nie
 tworzą nowego release.
+
+Każdy wpis `releases.yaml` zawiera oba komponenty. Niezmieniony komponent ma
+`changed: false`, aktualną wersję i pustą listę commitów.
 
 Jeśli aplikacja nie ma jeszcze własnego taga, generator używa poprzedniego SHA
 pushu jako punktu odniesienia. Nie analizuje całej historii drugiej aplikacji.
@@ -234,6 +238,7 @@ releases:
     frontend:
       version: "0.2.0"
       tag: "front-v0.2.0"
+      changed: true
       commits:
         - hash: "a1b2c3d4"
           author: "Filip"
@@ -242,11 +247,8 @@ releases:
     backend:
       version: "0.1.1"
       tag: "backend-v0.1.1"
-      commits:
-        - hash: "d4e5f6a7"
-          author: "Filip"
-          date: "2026-08-07T11:56:00.000Z"
-          message: "fix: handle empty products response"
+      changed: false
+      commits: []
 ```
 
 Każdy kolejny release jest dopisywany na początku pliku. `releases.yaml`
@@ -272,7 +274,13 @@ Frontend:
 ```bash
 cd front
 npm run dev                       # Vite dev server na porcie 4200
+npm run start                     # alias dla npm run dev
 npm run build                     # typecheck (tsc) + build produkcyjny
+npm run lint                      # ESLint
+npm run lint:fix                  # ESLint z automatycznymi poprawkami
+npm run format                    # Prettier z zapisem zmian
+npm run format:check              # sprawdzenie formatowania Prettier
+npm run test                      # testy Vitest
 npm run preview                   # podgląd builda produkcyjnego
 ```
 
@@ -284,6 +292,9 @@ npm run dev                       # Next.js w trybie developerskim
 npm run build                     # build produkcyjny
 npm start                         # uruchomienie builda produkcyjnego
 npm run lint                      # ESLint
+npm run lint:fix                  # ESLint z automatycznymi poprawkami
+npm run format                    # Prettier z zapisem zmian
+npm run format:check              # sprawdzenie formatowania Prettier
 npm run db:migrate                # migracje bazy (migration/*.sql)
 ```
 
@@ -294,7 +305,7 @@ npm run db:migrate                # migracje bazy (migration/*.sql)
 2. Dodaj osobny serwis Angulara do komunikacji z API i modele współdzielone
    między ekranami.
 3. Dodaj testy jednostkowe i integracyjne dla endpointów oraz komponentów.
-4. Rozszerz istniejący workflow GitHub Actions o lint, testy i audyt zależności.
+4. Rozszerz istniejący workflow GitHub Actions o testy i audyt zależności.
 
 ## Zasady utrzymania
 
@@ -316,8 +327,8 @@ każdą zmianą wpływającą na uruchamianie lub architekturę. W szczególnoś
 Po instalacji zależności uruchom:
 
 ```bash
-cd front && npm run build
-cd ../backend && npm run build
+cd front && npm run lint && npm run format:check && npm run build
+cd ../backend && npm run lint && npm run format:check && npm run build
 ```
 
 Weryfikacja działania API:
@@ -327,9 +338,9 @@ curl http://localhost:3000/api/health
 curl http://localhost:3000/api/products
 ```
 
-Ostatnia walidacja tego startera:
+Ostatnia walidacja:
 
-- `front`: `npm run build` - OK,
-- `backend`: `npm run build` - OK,
-- `backend`: `npm run db:migrate` - OK (migracje idempotentne),
-- `GET /api/health` i `GET /api/products` z bazą Neon - OK.
+- `front`: lint, Prettier check i build - OK,
+- `backend`: lint, Prettier check, TypeScript check i build - OK,
+- `backend`: `npm run db:migrate` - wymaga bazy i może aplikować migracje,
+- API: `GET /api/health` i `GET /api/products`.

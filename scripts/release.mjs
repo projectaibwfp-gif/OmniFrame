@@ -85,38 +85,44 @@ const getNextVersion = (currentVersion, commits) => {
       : `${major}.${minor}.${patch + 1}`;
 };
 
-const releaseComponents = components
-  .map((component) => {
-    const commits = getCommits(component);
-    if (commits.length === 0) {
-      return null;
-    }
-
+const releaseComponents = components.map((component) => {
     const packageJson = JSON.parse(readFileSync(component.packagePath, 'utf8'));
-    const packageLock = JSON.parse(readFileSync(component.lockPath, 'utf8'));
-    const version = getNextVersion(packageJson.version, commits);
-    const tag = `${component.tagPrefix}${version}`;
+    const commits = getCommits(component);
+    const changed = commits.length > 0;
+    const version = changed
+      ? getNextVersion(packageJson.version, commits)
+      : packageJson.version;
+    const tag = changed
+      ? `${component.tagPrefix}${version}`
+      : getLastTag(component.tagPattern) || null;
 
-    packageJson.version = version;
-    packageLock.version = version;
-    if (packageLock.packages?.['']) {
-      packageLock.packages[''].version = version;
+    if (changed) {
+      const packageLock = JSON.parse(readFileSync(component.lockPath, 'utf8'));
+
+      packageJson.version = version;
+      packageLock.version = version;
+      if (packageLock.packages?.['']) {
+        packageLock.packages[''].version = version;
+      }
+
+      writeFileSync(
+        component.packagePath,
+        `${JSON.stringify(packageJson, null, 2)}\n`
+      );
+      writeFileSync(
+        component.lockPath,
+        `${JSON.stringify(packageLock, null, 2)}\n`
+      );
     }
 
-    writeFileSync(
-      component.packagePath,
-      `${JSON.stringify(packageJson, null, 2)}\n`
-    );
-    writeFileSync(
-      component.lockPath,
-      `${JSON.stringify(packageLock, null, 2)}\n`
-    );
+    return { ...component, version, tag, commits, changed };
+  });
 
-    return { ...component, version, tag, commits };
-  })
-  .filter(Boolean);
+const changedComponents = releaseComponents.filter(
+  (component) => component.changed,
+);
 
-if (releaseComponents.length === 0) {
+if (changedComponents.length === 0) {
   console.log('No frontend or backend commits since the last release.');
   process.exit(0);
 }
@@ -127,7 +133,7 @@ const releaseCommit =
   run('git', ['rev-parse', 'HEAD']);
 const releaseDate = new Date().toISOString();
 const componentYaml = releaseComponents
-  .map(({ name, version, tag, commits }) => {
+  .map(({ name, version, tag, commits, changed }) => {
     const commitYaml = commits
       .map(
         ({ hash, author, date, message }) =>
@@ -137,12 +143,14 @@ const componentYaml = releaseComponents
           `        message: ${yamlString(message)}`
       )
       .join('\n');
+    const commitsYaml = commitYaml ? `\n${commitYaml}` : ' []';
 
     return (
       `    ${name}:\n` +
       `      version: ${yamlString(version)}\n` +
       `      tag: ${yamlString(tag)}\n` +
-      `      commits:\n${commitYaml}`
+      `      changed: ${changed}\n` +
+      `      commits:${commitsYaml}`
     );
   })
   .join('\n');
@@ -157,5 +165,5 @@ const previousYaml = existsSync(releasePath)
 writeFileSync(releasePath, `releases:\n${releaseYaml}${previousYaml}`);
 
 console.log(
-  `Prepared ${releaseComponents.map(({ name, version }) => `${name} v${version}`).join(', ')}.`
+  `Prepared ${changedComponents.map(({ name, version }) => `${name} v${version}`).join(', ')}.`
 );

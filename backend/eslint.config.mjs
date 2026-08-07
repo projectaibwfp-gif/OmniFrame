@@ -1,3 +1,4 @@
 import nextConfig from 'eslint-config-next';
+import prettier from 'eslint-config-prettier';
 
-export default nextConfig;
+export default [...nextConfig, prettier];

@@ -4,12 +4,8 @@ import type { NextConfig } from 'next';
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
-const isProd =
-  process.env.NODE_ENV === 'production' ||
-  process.env.VERCEL_ENV === 'production';
-const allowedOrigin = isProd
-  ? 'https://omniframe.vercel.app'
-  : 'http://localhost:4200';
+const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+const allowedOrigin = isProd ? 'https://omniframe.vercel.app' : 'http://localhost:4200';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,

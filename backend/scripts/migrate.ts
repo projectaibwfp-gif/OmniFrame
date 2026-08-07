@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
-// Load .env the same way Next.js does (no extra dependency)
+// Load .env the same way Next.js does (no extra dependency).
 const envPath = path.join(root, '.env');
 if (fs.existsSync(envPath)) {
   for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
@@ -28,14 +28,12 @@ const migrationDir = path.join(root, 'migration');
 // The Neon HTTP driver runs single statements only (extended protocol),
 // so migration files are split on ";" at end of line.
 // Limitation: no PL/pgSQL function bodies with ";" inside ($$ ... $$).
-function splitStatements(content) {
+function splitStatements(content: string): string[] {
   return content
     .split(/;\s*(?:\r?\n|$)/)
     .map((chunk) => chunk.trim())
     .filter((chunk) =>
-      chunk
-        .split('\n')
-        .some((line) => line.trim() !== '' && !line.trim().startsWith('--')),
+      chunk.split('\n').some((line) => line.trim() !== '' && !line.trim().startsWith('--')),
     );
 }
 
@@ -44,9 +42,7 @@ await sql`CREATE TABLE IF NOT EXISTS _migrations (
   applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
 )`;
 
-const applied = new Set(
-  (await sql`SELECT name FROM _migrations`).map((row) => row.name),
-);
+const applied = new Set((await sql`SELECT name FROM _migrations`).map((row) => row.name));
 
 const files = fs
   .readdirSync(migrationDir)
