@@ -19,6 +19,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
     "outDir": "./out-tsc/app"
   },
   "angularCompilerOptions": {

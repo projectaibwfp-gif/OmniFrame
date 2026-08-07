@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { Product, ProductsService } from '../products/products.service';
+import { ProductsService, type Product } from '../products/products.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,11 +12,11 @@ import { Product, ProductsService } from '../products/products.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  private readonly productsService = inject(ProductsService);
-
   readonly products = signal<Product[]>([]);
   readonly isLoading = signal(true);
   readonly apiError = signal(false);
+
+  private readonly productsService = inject(ProductsService);
 
   constructor() {
     this.loadProducts();

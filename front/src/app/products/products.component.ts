@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
-import { Product, ProductsService } from './products.service';
+import { ProductsService, type Product } from './products.service';
 
 @Component({
   selector: 'app-products',
@@ -10,11 +10,11 @@ import { Product, ProductsService } from './products.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsComponent {
-  private readonly productsService = inject(ProductsService);
-
   readonly products = signal<Product[]>([]);
   readonly isLoading = signal(true);
   readonly apiError = signal(false);
+
+  private readonly productsService = inject(ProductsService);
 
   constructor() {
     this.loadProducts();
