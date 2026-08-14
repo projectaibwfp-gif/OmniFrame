@@ -1,0 +1,46 @@
+<section class="panel users-panel">
+  <div class="panel-heading">
+    <div>
+      <h1>Użytkownicy</h1>
+      <p>Lista użytkowników zalogowanych przez Google.</p>
+    </div>
+    <button class="refresh-button" type="button" (click)="loadUsers()">Odśwież</button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="table-message">Ładowanie danych z API...</div>
+  } @else if (apiError()) {
+    <div class="table-message error">Nie udało się pobrać danych z API.</div>
+  } @else {
+    <div class="users-table">
+      <div class="table-row table-head">
+        <span>Imię i nazwisko</span>
+        <span>Adres e-mail</span>
+        <span>Data rejestracji</span>
+        <span>Ostatnie logowanie</span>
+      </div>
+      @for (user of users(); track user.id) {
+        <div class="table-row">
+          <span class="name">
+            @if (user.picture) {
+              <img class="avatar" [src]="user.picture" [alt]="fullName(user)" referrerpolicy="no-referrer" />
+            } @else {
+              <span class="avatar-placeholder">{{ fullName(user).charAt(0) || 'U' }}</span>
+            }
+            {{ fullName(user) }}
+          </span>
+          <span class="email">
+            {{ user.email }}
+            @if (user.email_verified) {
+              <span class="verified" title="Zweryfikowany">✓</span>
+            }
+          </span>
+          <span>{{ user.registeredAt }}</span>
+          <span>{{ user.lastLoginAt }}</span>
+        </div>
+      } @empty {
+        <div class="table-message">Brak użytkowników do wyświetlenia.</div>
+      }
+    </div>
+  }
+</section>

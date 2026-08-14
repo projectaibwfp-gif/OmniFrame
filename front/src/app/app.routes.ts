@@ -28,5 +28,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./products/products.component').then(({ ProductsComponent }) => ProductsComponent),
   },
+  {
+    path: 'users',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./users/users.component').then(({ UsersComponent }) => UsersComponent),
+  },
   { path: '**', redirectTo: '' },
 ];
