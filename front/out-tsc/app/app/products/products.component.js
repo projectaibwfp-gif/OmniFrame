@@ -4,10 +4,10 @@ import { finalize } from 'rxjs';
 import { ProductsService } from './products.service';
 let ProductsComponent = class ProductsComponent {
     constructor() {
-        this.productsService = inject(ProductsService);
         this.products = signal([]);
         this.isLoading = signal(true);
         this.apiError = signal(false);
+        this.productsService = inject(ProductsService);
         this.loadProducts();
     }
     loadProducts() {

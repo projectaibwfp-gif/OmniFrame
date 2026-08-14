@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { ProductsService, type Product } from '../products/products.service';
 
 @Component({
@@ -15,6 +16,7 @@ export class DashboardComponent {
   readonly products = signal<Product[]>([]);
   readonly isLoading = signal(true);
   readonly apiError = signal(false);
+  readonly currentUser = inject(AuthService).user;
 
   private readonly productsService = inject(ProductsService);
 

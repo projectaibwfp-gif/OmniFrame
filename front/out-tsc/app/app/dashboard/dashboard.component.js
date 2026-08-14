@@ -2,13 +2,15 @@ import { __decorate, __metadata } from "tslib";
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { ProductsService } from '../products/products.service';
 let DashboardComponent = class DashboardComponent {
     constructor() {
-        this.productsService = inject(ProductsService);
         this.products = signal([]);
         this.isLoading = signal(true);
         this.apiError = signal(false);
+        this.currentUser = inject(AuthService).user;
+        this.productsService = inject(ProductsService);
         this.loadProducts();
     }
     loadProducts() {

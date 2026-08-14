@@ -1,74 +1,79 @@
-<div class="shell">
-  <aside class="sidebar">
-    <a class="brand" routerLink="/">
-      <span class="brand-mark">✦</span>
-      <span>project<span class="brand-accent">.ai</span></span>
-    </a>
-
-    <div class="workspace-switcher">
-      <span class="workspace-icon">P</span>
-      <span class="workspace-name">Personal workspace</span>
-      <span class="chevron">⌄</span>
-    </div>
-
-    <nav class="navigation" aria-label="Główna nawigacja">
-      <p class="nav-label">Workspace</p>
-      <a
-        class="nav-item"
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        <span class="nav-icon">▦</span>
-        Dashboard
+@if (authService.isAuthenticated()) {
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" routerLink="/">
+        <span class="brand-mark">✦</span>
+        <span>project<span class="brand-accent">.ai</span></span>
       </a>
-      <a class="nav-item" routerLink="/products" routerLinkActive="active">
-        <span class="nav-icon">☰</span>
-        Produkty
-      </a>
-      <a class="nav-item" routerLink="/about" routerLinkActive="active">
-        <span class="nav-icon">ⓘ</span>
-        O projekcie
-      </a>
-    </nav>
 
-    <div class="sidebar-footer">
-      <div class="help-card">
-        <span class="help-icon">?</span>
-        <div>
-          <strong>Potrzebujesz pomocy?</strong>
-          <span>Przeczytaj dokumentację</span>
+      <div class="workspace-switcher">
+        <span class="workspace-icon">{{ initials() || 'U' }}</span>
+        <span class="workspace-name">{{ currentUser()?.fullName }}</span>
+        <span class="chevron">⌄</span>
+      </div>
+
+      <nav class="navigation" aria-label="Główna nawigacja">
+        <p class="nav-label">Workspace</p>
+        <a
+          class="nav-item"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▦</span>
+          Dashboard
+        </a>
+        <a class="nav-item" routerLink="/products" routerLinkActive="active">
+          <span class="nav-icon">☰</span>
+          Produkty
+        </a>
+        <a class="nav-item" routerLink="/about" routerLinkActive="active">
+          <span class="nav-icon">ⓘ</span>
+          O projekcie
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="help-card">
+          <span class="help-icon">?</span>
+          <div>
+            <strong>Potrzebujesz pomocy?</strong>
+            <span>Przeczytaj dokumentację</span>
+          </div>
+        </div>
+        <div class="profile">
+          <span class="avatar">{{ initials() || 'U' }}</span>
+          <div>
+            <strong>{{ currentUser()?.fullName }}</strong>
+            <span>Zalogowany przez Google</span>
+          </div>
+          <span class="more">•••</span>
         </div>
       </div>
-      <div class="profile">
-        <span class="avatar">NW</span>
-        <div>
-          <strong>New workspace</strong>
-          <span>Administrator</span>
-        </div>
-        <span class="more">•••</span>
-      </div>
-    </div>
-  </aside>
+    </aside>
 
-  <main class="content">
-    <header class="topbar">
-      <div class="breadcrumbs">
-        <span>Workspace</span>
-        <span class="slash">/</span>
-        <strong>Overview</strong>
-      </div>
-      <div class="topbar-actions">
-        <button class="icon-button" aria-label="Powiadomienia">
-          ♧<span class="notification-dot"></span>
-        </button>
-        <button class="icon-button" aria-label="Ustawienia">⚙</button>
-        <span class="topbar-divider"></span>
-        <button class="avatar small" aria-label="Menu profilu">NW</button>
-      </div>
-    </header>
-    <section class="page">
-      <router-outlet></router-outlet>
-    </section>
-  </main>
-</div>
+    <main class="content">
+      <header class="topbar">
+        <div class="breadcrumbs">
+          <span>Workspace</span>
+          <span class="slash">/</span>
+          <strong>Overview</strong>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button" aria-label="Powiadomienia">
+            ♧<span class="notification-dot"></span>
+          </button>
+          <button class="icon-button" aria-label="Ustawienia">⚙</button>
+          <span class="topbar-divider"></span>
+          <button class="avatar small" aria-label="Menu profilu">{{ initials() || 'U' }}</button>
+          <button class="logout-button" type="button" (click)="logout()">Logout</button>
+        </div>
+      </header>
+      <section class="page">
+        <router-outlet></router-outlet>
+      </section>
+    </main>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

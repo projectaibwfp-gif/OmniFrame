@@ -1,7 +1,7 @@
 <div class="dashboard-header">
   <div>
     <p class="eyebrow">Tuesday, 04 August 2026</p>
-    <h1>Good morning, team <span>✦</span></h1>
+    <h1>Good morning, {{ currentUser()?.fullName }} <span>✦</span></h1>
     <p class="intro">Here's what's happening with your workspace today.</p>
   </div>
   <button class="primary-button" type="button" (click)="loadProducts()">
