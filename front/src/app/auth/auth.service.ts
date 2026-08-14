@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { buildApiUrl } from '../config/api.config';
 
 export type AuthUser = {
   givenName: string;
@@ -11,9 +13,14 @@ type GoogleCredentialResponse = {
 };
 
 type GoogleUserPayload = {
+  sub?: string;
+  email?: string;
+  email_verified?: boolean;
   given_name?: string;
   family_name?: string;
   name?: string;
+  picture?: string;
+  locale?: string;
 };
 
 declare global {
@@ -51,6 +58,7 @@ const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GO
 export class AuthService {
   readonly user = signal<AuthUser | null>(this.readStoredUser());
 
+  private readonly http = inject(HttpClient);
   private initializePromise: Promise<void> | null = null;
   private initialized = false;
 
@@ -154,14 +162,25 @@ export class AuthService {
     const fullName =
       fullNameFromClaim || `${givenName} ${familyName}`.trim() || 'Użytkownik Google';
 
-    const user: AuthUser = {
-      givenName,
-      familyName,
-      fullName,
-    };
+    const user: AuthUser = { givenName, familyName, fullName };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     this.user.set(user);
+
+    if (payload.sub && payload.email) {
+      this.http
+        .post(buildApiUrl('/users'), {
+          google_id: payload.sub,
+          email: payload.email,
+          email_verified: payload.email_verified ?? false,
+          name: payload.name ?? null,
+          given_name: payload.given_name ?? null,
+          family_name: payload.family_name ?? null,
+          picture: payload.picture ?? null,
+          locale: payload.locale ?? null,
+        })
+        .subscribe({ error: (err) => console.warn('Could not sync user to backend', err) });
+    }
   }
 
   private decodeJwtPayload(token: string): GoogleUserPayload {

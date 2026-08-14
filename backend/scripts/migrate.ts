@@ -37,35 +37,42 @@ function splitStatements(content: string): string[] {
     );
 }
 
-await sql`CREATE TABLE IF NOT EXISTS _migrations (
-  name TEXT PRIMARY KEY,
-  applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
-)`;
+async function main(): Promise<void> {
+  await sql`CREATE TABLE IF NOT EXISTS _migrations (
+    name TEXT PRIMARY KEY,
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`;
 
-const applied = new Set((await sql`SELECT name FROM _migrations`).map((row) => row.name));
+  const applied = new Set((await sql`SELECT name FROM _migrations`).map((row) => row.name));
 
-const files = fs
-  .readdirSync(migrationDir)
-  .filter((file) => file.endsWith('.sql'))
-  .sort();
+  const files = fs
+    .readdirSync(migrationDir)
+    .filter((file) => file.endsWith('.sql'))
+    .sort();
 
-let appliedCount = 0;
-for (const file of files) {
-  if (applied.has(file)) {
-    continue;
+  let appliedCount = 0;
+  for (const file of files) {
+    if (applied.has(file)) {
+      continue;
+    }
+
+    const content = fs.readFileSync(path.join(migrationDir, file), 'utf8');
+    for (const statement of splitStatements(content)) {
+      await sql.query(statement);
+    }
+    await sql`INSERT INTO _migrations (name) VALUES (${file})`;
+    console.log(`applied: ${file}`);
+    appliedCount++;
   }
 
-  const content = fs.readFileSync(path.join(migrationDir, file), 'utf8');
-  for (const statement of splitStatements(content)) {
-    await sql.query(statement);
-  }
-  await sql`INSERT INTO _migrations (name) VALUES (${file})`;
-  console.log(`applied: ${file}`);
-  appliedCount++;
+  console.log(
+    appliedCount > 0
+      ? `done, ${appliedCount} migration(s) applied`
+      : 'nothing to apply, database up to date',
+  );
 }
 
-console.log(
-  appliedCount > 0
-    ? `done, ${appliedCount} migration(s) applied`
-    : 'nothing to apply, database up to date',
-);
+main().catch((err: unknown) => {
+  console.error(err);
+  process.exit(1);
+});
