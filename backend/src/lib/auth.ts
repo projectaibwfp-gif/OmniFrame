@@ -50,6 +50,10 @@ interface UserRow {
 interface SessionClaims {
   sub: string;
   email: string;
+  role: UserRole;
+  name: string | null;
+  given_name: string | null;
+  family_name: string | null;
 }
 
 export type AuthCheckResult = { session: SessionClaims } | { response: NextResponse };
@@ -134,7 +138,13 @@ function clearAuthCookie(response: NextResponse): void {
 async function createSessionToken(payload: SessionClaims): Promise<string> {
   const secret = new TextEncoder().encode(getSessionSecret());
 
-  return new SignJWT({ email: payload.email })
+  return new SignJWT({
+    email: payload.email,
+    role: payload.role,
+    name: payload.name,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(payload.sub)
     .setIssuedAt()
@@ -151,11 +161,27 @@ async function verifySessionToken(token: string): Promise<SessionClaims> {
     audience: 'omniframe-web',
   });
 
-  if (typeof payload.sub !== 'string' || typeof payload.email !== 'string') {
+  if (
+    typeof payload.sub !== 'string' ||
+    typeof payload.email !== 'string' ||
+    typeof payload.role !== 'string'
+  ) {
     throw new Error('Invalid session payload');
   }
 
-  return { sub: payload.sub, email: payload.email };
+  const role = payload.role as UserRole;
+  if (!['admin', 'user', 'moderator'].includes(role)) {
+    throw new Error('Invalid session payload');
+  }
+
+  return {
+    sub: payload.sub,
+    email: payload.email,
+    role,
+    name: typeof payload.name === 'string' ? payload.name : null,
+    given_name: typeof payload.given_name === 'string' ? payload.given_name : null,
+    family_name: typeof payload.family_name === 'string' ? payload.family_name : null,
+  };
 }
 
 export async function verifyGoogleToken(credential: string): Promise<GoogleTokenPayload> {
@@ -231,15 +257,15 @@ export async function upsertGoogleUser(
   role?: UserRole,
 ): Promise<AuthenticatedUser> {
   return upsertUser({
-  google_id: payload.sub,
-  email: payload.email,
-  email_verified: payload.email_verified,
-  name: payload.name,
-  given_name: payload.given_name,
-  family_name: payload.family_name,
-  picture: payload.picture,
-  locale: payload.locale,
-  role,
+    google_id: payload.sub,
+    email: payload.email,
+    email_verified: payload.email_verified,
+    name: payload.name,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+    picture: payload.picture,
+    locale: payload.locale,
+    role,
   });
 }
 
@@ -274,22 +300,18 @@ export async function loadCurrentUser(request: NextRequest): Promise<Authenticat
     return auth.response;
   }
 
-  const rows = (await getSql()`
-    SELECT id, google_id, email, email_verified, role, name,
-           given_name, family_name, picture, locale,
-           last_login_at,
-           to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-           to_char(last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
-    FROM users
-    WHERE google_id = ${auth.session.sub}
-    LIMIT 1
-  `) as AuthenticatedUser[];
-
-  if (rows.length === 0) {
-    const response = errorResponse('User not found', 401);
-    clearAuthCookie(response);
-    return response;
-  }
-
-  return rows[0];
+  return {
+    id: 0,
+    google_id: auth.session.sub,
+    email: auth.session.email,
+    email_verified: true,
+    role: auth.session.role,
+    name: auth.session.name,
+    given_name: auth.session.given_name,
+    family_name: auth.session.family_name,
+    picture: null,
+    locale: null,
+    registeredAt: '',
+    lastLoginAt: '',
+  };
 }

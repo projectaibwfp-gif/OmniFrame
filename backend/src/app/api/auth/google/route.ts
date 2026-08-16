@@ -24,14 +24,47 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const googleToken = await verifyGoogleToken(credential);
-    const user = await upsertGoogleUser(googleToken);
-    const response = NextResponse.json({ data: { user } }, { status: 200 });
+    let sessionUser = {
+      given_name: googleToken.given_name ?? null,
+      family_name: googleToken.family_name ?? null,
+      name: googleToken.name ?? null,
+      role: 'user' as const,
+    };
 
-    await issueSessionCookie(response, { sub: googleToken.sub, email: googleToken.email });
+    try {
+      const databaseUser = await upsertGoogleUser(googleToken);
+      sessionUser = {
+        given_name: databaseUser.given_name,
+        family_name: databaseUser.family_name,
+        name: databaseUser.name,
+        role: databaseUser.role,
+      };
+    } catch (error) {
+      console.warn('Could not sync Google user to database', error);
+    }
+
+    const response = NextResponse.json(
+      {
+        data: {
+          user: sessionUser,
+        },
+      },
+      { status: 200 },
+    );
+
+    await issueSessionCookie(response, {
+      sub: googleToken.sub,
+      email: googleToken.email,
+      role: sessionUser.role,
+      name: sessionUser.name,
+      given_name: sessionUser.given_name,
+      family_name: sessionUser.family_name,
+    });
 
     return response;
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Could not authenticate Google user';
     console.error('Could not authenticate Google user', error);
-    return errorResponse('Could not authenticate Google user', 401);
+    return errorResponse(message, 401);
   }
 }
