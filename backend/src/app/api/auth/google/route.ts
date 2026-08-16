@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
-import { issueSessionCookie, upsertGoogleUser, verifyGoogleToken } from '@/lib/auth';
+import { issueSessionCookie, type UserRole, upsertGoogleUser, verifyGoogleToken } from '@/lib/auth';
 
 interface LoginPayload {
   credential?: string;
@@ -24,11 +24,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const googleToken = await verifyGoogleToken(credential);
-    let sessionUser = {
+    let sessionUser: {
+      given_name: string | null;
+      family_name: string | null;
+      name: string | null;
+      role: UserRole;
+    } = {
       given_name: googleToken.given_name ?? null,
       family_name: googleToken.family_name ?? null,
       name: googleToken.name ?? null,
-      role: 'user' as const,
+      role: 'user',
     };
 
     try {
