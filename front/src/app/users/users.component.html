@@ -16,6 +16,7 @@
       <div class="table-row table-head">
         <span>Imię i nazwisko</span>
         <span>Adres e-mail</span>
+        <span>Rola</span>
         <span>Data rejestracji</span>
         <span>Ostatnie logowanie</span>
       </div>
@@ -35,6 +36,7 @@
               <span class="verified" title="Zweryfikowany">✓</span>
             }
           </span>
+          <span class="role" [attr.data-role]="user.role">{{ user.role }}</span>
           <span>{{ user.registeredAt }}</span>
           <span>{{ user.lastLoginAt }}</span>
         </div>

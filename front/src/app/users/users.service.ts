@@ -8,6 +8,7 @@ export interface User {
   google_id: string;
   email: string;
   email_verified: boolean;
+  role: 'admin' | 'user' | 'moderator';
   name: string | null;
   given_name: string | null;
   family_name: string | null;

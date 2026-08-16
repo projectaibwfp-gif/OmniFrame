@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
+import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { getSql } from '@/lib/db';
 
 interface ProductRow {
@@ -18,7 +19,12 @@ interface ProductPayload {
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const auth = await requireAuth(request);
+  if (isAuthDenied(auth)) {
+    return auth.response;
+  }
+
   try {
     const products = (await getSql()`
       SELECT id, name, status, category,
@@ -36,6 +42,11 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const auth = await requireAuth(request);
+  if (isAuthDenied(auth)) {
+    return auth.response;
+  }
+
   let payload: ProductPayload;
 
   try {

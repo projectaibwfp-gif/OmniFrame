@@ -85,6 +85,8 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 | Zmienna        | Znaczenie                                                        |
 | -------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
+| `GOOGLE_CLIENT_ID` | client ID Google używany do weryfikacji ID tokena             |
+| `AUTH_JWT_SECRET`  | sekret do podpisywania cookie sesji                            |
 
 Endpointy:
 
@@ -119,6 +121,10 @@ Frontend będzie dostępny pod `http://localhost:4200`. Bazowy adres API jest
 trzymany globalnie w `front/.env` jako `VITE_API_BASE_URL` (domyślnie
 `/api`) i wykorzystywany przez komponenty
 dashboardu oraz listy produktów.
+
+Logowanie przez Google jest obsługiwane po stronie backendu: frontend wysyła
+Google ID token do `/api/auth/google`, backend go weryfikuje, ustawia cookie
+sesji `HttpOnly` i trzyma stan użytkownika przez `/api/auth/me`.
 
 W trybie dev Vite proxy przekazuje `/api/*` do
 `https://apiomniframe.vercel.app`, a na Vercel działa rewrite `/api/*` -> backend.

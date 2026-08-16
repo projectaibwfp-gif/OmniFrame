@@ -51,7 +51,7 @@ p {
 
 .table-row {
   display: grid;
-  grid-template-columns: minmax(160px, 1.4fr) 1.3fr 0.9fr 0.9fr;
+  grid-template-columns: minmax(160px, 1.4fr) 1.3fr 0.8fr 0.9fr 0.9fr;
   align-items: center;
   min-height: 50px;
   border-top: 1px solid #f0f2f6;
@@ -112,6 +112,29 @@ p {
   font-weight: 700;
 }
 
+.role {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef3ff;
+  color: #4d5f91;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.role[data-role='admin'] {
+  background: #ffe7e2;
+  color: #b34c3b;
+}
+
+.role[data-role='moderator'] {
+  background: #fff2d9;
+  color: #9a6b00;
+}
+
 .table-message {
   padding: 32px 0 14px;
   color: #8994a9;
@@ -139,7 +162,8 @@ p {
   }
 
   .table-row > :nth-child(3),
-  .table-row > :nth-child(4) {
+  .table-row > :nth-child(4),
+  .table-row > :nth-child(5) {
     display: none;
   }
 }

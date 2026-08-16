@@ -64,7 +64,7 @@ npm run test
 npm run preview
 ```
 
-Ostatnia aktualizacja: 2026-08-06 15:20
+Ostatnia aktualizacja: 2026-08-16 21:38
 
 ## Google OAuth (frontend only)
 
@@ -73,7 +73,12 @@ Aplikacja ma logowanie przez Google bez backendu:
 - `/login` - strona logowania z Google Identity Services,
 - po poprawnym logowaniu użytkownik trafia na dashboard,
 - dashboard wyświetla imię i nazwisko z konta Google,
-- przycisk `Logout` wylogowuje i przenosi z powrotem na `/login`.
+- przycisk `Logout` wylogowuje i przenosi z powrotem na `/login`,
+- sesja logowania wygasa automatycznie po 30 minutach,
+- backend weryfikuje Google ID token i ustawia własne cookie sesji
+  `HttpOnly`/`Secure`,
+- lista użytkowników pokazuje też rolę `admin`, `user` albo `moderator`
+  pobieraną z backendu.
 
 Konfiguracja klienta OAuth:
 

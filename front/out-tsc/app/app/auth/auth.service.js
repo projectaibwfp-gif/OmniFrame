@@ -1,13 +1,28 @@
 import { __decorate } from "tslib";
-import { Injectable, signal } from '@angular/core';
-const STORAGE_KEY = 'omniframe.auth.user';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { buildApiUrl } from '../config/api.config';
 const DEFAULT_GOOGLE_CLIENT_ID = '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
 const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GOOGLE_CLIENT_ID).trim();
 let AuthService = class AuthService {
     constructor() {
-        this.user = signal(this.readStoredUser());
+        this.user = signal(null);
+        this.http = inject(HttpClient);
         this.initializePromise = null;
         this.initialized = false;
+    }
+    async restoreSession() {
+        try {
+            const response = await firstValueFrom(this.http.get(buildApiUrl('/auth/me')));
+            this.user.set(this.mapUser(response.data.user));
+        }
+        catch (error) {
+            if (error instanceof HttpErrorResponse && error.status !== 401) {
+                console.warn('Could not restore auth session', error);
+            }
+            this.user.set(null);
+        }
     }
     isAuthenticated() {
         return this.user() !== null;
@@ -27,8 +42,8 @@ let AuthService = class AuthService {
         });
     }
     logout() {
-        localStorage.removeItem(STORAGE_KEY);
         this.user.set(null);
+        void firstValueFrom(this.http.post(buildApiUrl('/auth/logout'), {})).catch(() => undefined);
         window.google?.accounts.id.disableAutoSelect();
     }
     async initializeGoogleAuth() {
@@ -51,7 +66,9 @@ let AuthService = class AuthService {
         }
         window.google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
-            callback: (response) => this.handleGoogleCredential(response),
+            callback: (response) => {
+                void this.loginWithGoogleCredential(response);
+            },
         });
         this.initialized = true;
     }
@@ -78,45 +95,31 @@ let AuthService = class AuthService {
             document.head.appendChild(script);
         });
     }
-    handleGoogleCredential(response) {
+    async loginWithGoogleCredential(response) {
         if (!response.credential) {
             return;
         }
-        const payload = this.decodeJwtPayload(response.credential);
-        const givenName = payload.given_name?.trim() || '';
-        const familyName = payload.family_name?.trim() || '';
-        const fullNameFromClaim = payload.name?.trim() || '';
+        try {
+            const result = await firstValueFrom(this.http.post(buildApiUrl('/auth/google'), {
+                credential: response.credential,
+            }));
+            this.user.set(this.mapUser(result.data.user));
+        }
+        catch (error) {
+            console.error('Could not authenticate with Google', error);
+        }
+    }
+    mapUser(user) {
+        const givenName = user.given_name?.trim() || '';
+        const familyName = user.family_name?.trim() || '';
+        const fullNameFromClaim = user.name?.trim() || '';
         const fullName = fullNameFromClaim || `${givenName} ${familyName}`.trim() || 'Użytkownik Google';
-        const user = {
+        return {
             givenName,
             familyName,
             fullName,
+            role: user.role,
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        this.user.set(user);
-    }
-    decodeJwtPayload(token) {
-        const jwtParts = token.split('.');
-        if (jwtParts.length < 2) {
-            throw new Error('Invalid Google credential format.');
-        }
-        const payloadSegment = jwtParts[1].replace(/-/g, '+').replace(/_/g, '/');
-        const padding = '='.repeat((4 - (payloadSegment.length % 4)) % 4);
-        const payload = atob(`${payloadSegment}${padding}`);
-        return JSON.parse(payload);
-    }
-    readStoredUser() {
-        const rawUser = localStorage.getItem(STORAGE_KEY);
-        if (!rawUser) {
-            return null;
-        }
-        try {
-            return JSON.parse(rawUser);
-        }
-        catch {
-            localStorage.removeItem(STORAGE_KEY);
-            return null;
-        }
     }
 };
 AuthService = __decorate([

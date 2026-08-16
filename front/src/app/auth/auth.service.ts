@@ -1,26 +1,24 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { buildApiUrl } from '../config/api.config';
-
-export type AuthUser = {
-  givenName: string;
-  familyName: string;
-  fullName: string;
-};
+import { type AuthUser, type AuthRole } from './auth-session';
 
 type GoogleCredentialResponse = {
   credential?: string;
 };
 
-type GoogleUserPayload = {
-  sub?: string;
-  email?: string;
-  email_verified?: boolean;
-  given_name?: string;
-  family_name?: string;
-  name?: string;
-  picture?: string;
-  locale?: string;
+type AuthResponseUser = {
+  given_name: string | null;
+  family_name: string | null;
+  name: string | null;
+  role: AuthRole;
+};
+
+type AuthResponse = {
+  data: {
+    user: AuthResponseUser;
+  };
 };
 
 declare global {
@@ -49,18 +47,30 @@ declare global {
   }
 }
 
-const STORAGE_KEY = 'omniframe.auth.user';
 const DEFAULT_GOOGLE_CLIENT_ID =
   '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
 const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GOOGLE_CLIENT_ID).trim();
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  readonly user = signal<AuthUser | null>(this.readStoredUser());
+  readonly user = signal<AuthUser | null>(null);
 
   private readonly http = inject(HttpClient);
   private initializePromise: Promise<void> | null = null;
   private initialized = false;
+
+  async restoreSession(): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.http.get<AuthResponse>(buildApiUrl('/auth/me')));
+      this.user.set(this.mapUser(response.data.user));
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status !== 401) {
+        console.warn('Could not restore auth session', error);
+      }
+
+      this.user.set(null);
+    }
+  }
 
   isAuthenticated(): boolean {
     return this.user() !== null;
@@ -83,8 +93,8 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(STORAGE_KEY);
     this.user.set(null);
+    void firstValueFrom(this.http.post(buildApiUrl('/auth/logout'), {})).catch(() => undefined);
     window.google?.accounts.id.disableAutoSelect();
   }
 
@@ -113,7 +123,9 @@ export class AuthService {
 
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
-      callback: (response: GoogleCredentialResponse): void => this.handleGoogleCredential(response),
+      callback: (response: GoogleCredentialResponse): void => {
+        void this.loginWithGoogleCredential(response);
+      },
     });
     this.initialized = true;
   }
@@ -150,62 +162,35 @@ export class AuthService {
     });
   }
 
-  private handleGoogleCredential(response: GoogleCredentialResponse): void {
+  private async loginWithGoogleCredential(response: GoogleCredentialResponse): Promise<void> {
     if (!response.credential) {
       return;
     }
 
-    const payload = this.decodeJwtPayload(response.credential);
-    const givenName = payload.given_name?.trim() || '';
-    const familyName = payload.family_name?.trim() || '';
-    const fullNameFromClaim = payload.name?.trim() || '';
+    try {
+      const result = await firstValueFrom(
+        this.http.post<AuthResponse>(buildApiUrl('/auth/google'), {
+          credential: response.credential,
+        }),
+      );
+      this.user.set(this.mapUser(result.data.user));
+    } catch (error) {
+      console.error('Could not authenticate with Google', error);
+    }
+  }
+
+  private mapUser(user: AuthResponseUser): AuthUser {
+    const givenName = user.given_name?.trim() || '';
+    const familyName = user.family_name?.trim() || '';
+    const fullNameFromClaim = user.name?.trim() || '';
     const fullName =
       fullNameFromClaim || `${givenName} ${familyName}`.trim() || 'Użytkownik Google';
 
-    const user: AuthUser = { givenName, familyName, fullName };
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    this.user.set(user);
-
-    if (payload.sub && payload.email) {
-      this.http
-        .post(buildApiUrl('/users'), {
-          google_id: payload.sub,
-          email: payload.email,
-          email_verified: payload.email_verified ?? false,
-          name: payload.name ?? null,
-          given_name: payload.given_name ?? null,
-          family_name: payload.family_name ?? null,
-          picture: payload.picture ?? null,
-          locale: payload.locale ?? null,
-        })
-        .subscribe({ error: (err) => console.warn('Could not sync user to backend', err) });
-    }
-  }
-
-  private decodeJwtPayload(token: string): GoogleUserPayload {
-    const jwtParts = token.split('.');
-    if (jwtParts.length < 2) {
-      throw new Error('Invalid Google credential format.');
-    }
-
-    const payloadSegment = jwtParts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const padding = '='.repeat((4 - (payloadSegment.length % 4)) % 4);
-    const payload = atob(`${payloadSegment}${padding}`);
-    return JSON.parse(payload) as GoogleUserPayload;
-  }
-
-  private readStoredUser(): AuthUser | null {
-    const rawUser = localStorage.getItem(STORAGE_KEY);
-    if (!rawUser) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(rawUser) as AuthUser;
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-      return null;
-    }
+    return {
+      givenName,
+      familyName,
+      fullName,
+      role: user.role,
+    };
   }
 }
