@@ -86,7 +86,6 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 | -------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
 | `GOOGLE_CLIENT_ID` | client ID Google używany do weryfikacji ID tokena             |
-| `AUTH_JWT_SECRET`  | sekret do podpisywania cookie sesji                            |
 
 Endpointy:
 

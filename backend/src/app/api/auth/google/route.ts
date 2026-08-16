@@ -57,14 +57,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { status: 200 },
     );
 
-    await issueSessionCookie(response, {
-      sub: googleToken.sub,
-      email: googleToken.email,
-      role: sessionUser.role,
-      name: sessionUser.name,
-      given_name: sessionUser.given_name,
-      family_name: sessionUser.family_name,
-    });
+    await issueSessionCookie(response, credential);
 
     return response;
   } catch (error) {
