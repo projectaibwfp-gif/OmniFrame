@@ -4,6 +4,10 @@ const REFERRAL_COOKIE_NAME = 'omniframe.referral';
 const REFERRAL_COOKIE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const REFERRAL_CODE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$/;
 
+const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+const cookieSameSite: 'none' | 'lax' = isProd ? 'none' : 'lax';
+const cookieSecure = isProd;
+
 export interface PendingReferral {
   code: string;
 }
@@ -25,8 +29,8 @@ export function getPendingReferral(request: NextRequest): PendingReferral | null
 export function setPendingReferral(response: NextResponse, referralCode: string): void {
   response.cookies.set(REFERRAL_COOKIE_NAME, referralCode, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     maxAge: REFERRAL_COOKIE_TTL_SECONDS,
   });
@@ -35,8 +39,8 @@ export function setPendingReferral(response: NextResponse, referralCode: string)
 export function clearPendingReferral(response: NextResponse): void {
   response.cookies.set(REFERRAL_COOKIE_NAME, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     expires: new Date(0),
   });

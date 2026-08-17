@@ -7,18 +7,21 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { authInterceptor } from './app/auth/auth.interceptor';
+import { credentialsInterceptor } from './app/auth/credentials.interceptor';
 import { AuthService } from './app/auth/auth.service';
 import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([credentialsInterceptor, authInterceptor])),
     {
       provide: APP_INITIALIZER,
       multi: true,
-      useFactory: (authService: AuthService): (() => Promise<void>) => () =>
-        authService.restoreSession(),
+      useFactory:
+        (authService: AuthService): (() => Promise<void>) =>
+        () =>
+          authService.restoreSession(),
       deps: [AuthService],
     },
   ],

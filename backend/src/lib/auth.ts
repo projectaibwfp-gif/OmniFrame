@@ -90,8 +90,10 @@ const OAUTH_STATE_COOKIE_NAME = 'omniframe.oauth_state';
 const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
 const SESSION_ISSUER = 'omniframe';
 const SESSION_AUDIENCE = 'omniframe-web';
-const ACCESS_TOKEN_TTL_SECONDS = 30 * 60;
-const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
+const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
+// Sliding idle session: the refresh token is renewed on every silent refresh,
+// so the user is logged out after ~30 minutes of inactivity (REFRESH_TOKEN_TTL_SECONDS).
+const REFRESH_TOKEN_TTL_SECONDS = 30 * 60;
 const OAUTH_STATE_TTL_SECONDS = 10 * 60;
 const DEFAULT_GOOGLE_CLIENT_ID =
   '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
@@ -140,11 +142,18 @@ function getRefreshSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
+const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+// Frontend and backend run on different Vercel origins (omniframe.vercel.app ->
+// apiomniframe.vercel.app), so credentialed cross-origin requests require
+// SameSite=None; Secure. In dev (localhost) requests are same-site, so Lax works.
+const cookieSameSite: 'none' | 'lax' = isProd ? 'none' : 'lax';
+const cookieSecure = isProd;
+
 function setAccessCookie(response: NextResponse, token: string): void {
   response.cookies.set(ACCESS_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     maxAge: ACCESS_TOKEN_TTL_SECONDS,
   });
@@ -153,8 +162,8 @@ function setAccessCookie(response: NextResponse, token: string): void {
 function setRefreshCookie(response: NextResponse, token: string): void {
   response.cookies.set(REFRESH_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     maxAge: REFRESH_TOKEN_TTL_SECONDS,
   });
@@ -163,8 +172,8 @@ function setRefreshCookie(response: NextResponse, token: string): void {
 function clearAccessCookie(response: NextResponse): void {
   response.cookies.set(ACCESS_COOKIE_NAME, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     expires: new Date(0),
   });
@@ -173,8 +182,8 @@ function clearAccessCookie(response: NextResponse): void {
 function clearRefreshCookie(response: NextResponse): void {
   response.cookies.set(REFRESH_COOKIE_NAME, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     expires: new Date(0),
   });
@@ -183,8 +192,8 @@ function clearRefreshCookie(response: NextResponse): void {
 function setOAuthStateCookie(response: NextResponse, state: string): void {
   response.cookies.set(OAUTH_STATE_COOKIE_NAME, state, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     maxAge: OAUTH_STATE_TTL_SECONDS,
   });
@@ -193,14 +202,17 @@ function setOAuthStateCookie(response: NextResponse, state: string): void {
 function clearOAuthStateCookie(response: NextResponse): void {
   response.cookies.set(OAUTH_STATE_COOKIE_NAME, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: cookieSecure,
+    sameSite: cookieSameSite,
     path: '/',
     expires: new Date(0),
   });
 }
 
-function toSessionPayload(payload: GoogleTokenPayload, tokenUse: 'access' | 'refresh'): SessionTokenPayload {
+function toSessionPayload(
+  payload: GoogleTokenPayload,
+  tokenUse: 'access' | 'refresh',
+): SessionTokenPayload {
   return {
     sub: payload.sub,
     email: payload.email,
@@ -452,7 +464,9 @@ export async function requireAuth(request: NextRequest): Promise<AuthCheckResult
   }
 }
 
-export async function loadCurrentUser(request: NextRequest): Promise<AuthenticatedUser | NextResponse> {
+export async function loadCurrentUser(
+  request: NextRequest,
+): Promise<AuthenticatedUser | NextResponse> {
   const auth = await requireAuth(request);
   if (isAuthDenied(auth)) {
     return auth.response;
