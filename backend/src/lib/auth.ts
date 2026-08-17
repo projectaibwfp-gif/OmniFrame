@@ -338,7 +338,7 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      INSERT INTO user_referral_attributions (user_id, referral_code)
      SELECT id, ${input.referred_by_code ?? null}
      FROM inserted
-     WHERE ${input.referred_by_code ?? null} IS NOT NULL
+     WHERE ${input.referred_by_code ?? null}::text IS NOT NULL
      RETURNING user_id
     ),
     updated AS (
