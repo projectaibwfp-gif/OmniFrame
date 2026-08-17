@@ -37,15 +37,15 @@ Domyślnie frontend działa na `http://localhost:4200`.
 
 ## Integracja z API i CORS
 
-Frontend wywołuje backend cross-origin pod adresem ustawionym w `VITE_API_BASE_URL`
-(domyślnie `/api`).
+Frontend wywołuje backend cross-origin pod adresem z `VITE_API_BASE_URL`.
 
-- w **dev**: Vite proxy przekazuje `/api/*` do `https://apiomniframe.vercel.app`
-  (same-origin dla przeglądarki),
-- na **Vercel**: ustaw zmienną `VITE_API_BASE_URL=https://apiomniframe.vercel.app/api`
-  w projekcie frontendu. Aplikacja wywołuje backend bezpośrednio z `withCredentials`,
-  a backend zwraca nagłówki CORS (`Access-Control-Allow-Origin`,
-  `Access-Control-Allow-Credentials`) z `middleware.ts`.
+- w **dev**: domyślnie `/api` — Vite proxy przekazuje `/api/*` do
+  `https://apiomniframe.vercel.app` (same-origin dla przeglądarki),
+- w **produkcji** (build): domyślnie `https://apiomniframe.vercel.app/api` —
+  aplikacja wywołuje backend bezpośrednio z `withCredentials`, a backend zwraca
+  nagłówki CORS (`Access-Control-Allow-Origin`, `Access-Control-Allow-Credentials`)
+  z `middleware.ts`. Zmienną `VITE_API_BASE_URL` ustawiaj tylko, gdy backend jest
+ gdzie indziej.
 
 Cookie sesji są `HttpOnly`, `SameSite=None; Secure` w produkcji, więc przeglądarka
 przesyła je przy wywołaniach cross-origin z credentialed request.
