@@ -36,6 +36,7 @@ describe('GET /api/health', () => {
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'DB_CONNECTION_FAILED',
         message: 'Database connection failed',
       },
     });

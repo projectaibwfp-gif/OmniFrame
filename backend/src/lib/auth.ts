@@ -3,6 +3,8 @@ import { SignJWT, createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from './api-response';
 import { getSql } from './db';
+import { ErrorCode } from './errors';
+import { logInfo, logWarn } from './logger';
 
 export type UserRole = 'admin' | 'user' | 'moderator';
 
@@ -403,6 +405,7 @@ export async function issueSessionCookie(response: NextResponse, token: string):
   const refreshToken = await signSessionToken(toSessionPayload(googleToken, 'refresh'));
   setAccessCookie(response, accessToken);
   setRefreshCookie(response, refreshToken);
+  logInfo('auth.login', 'session issued', { sub: googleToken.sub, email: googleToken.email });
 }
 
 export function createLoginState(): string {
@@ -416,9 +419,17 @@ export function storeLoginState(response: NextResponse, state: string): void {
 export function isLoginStateValid(request: NextRequest, providedState: string): boolean {
   const expectedState = request.cookies.get(OAUTH_STATE_COOKIE_NAME)?.value;
   if (!expectedState || !providedState) {
+    logWarn('auth.loginState', ErrorCode.AUTH_INVALID_LOGIN_STATE, {
+      hasCookieState: Boolean(expectedState),
+      hasProvidedState: Boolean(providedState),
+    });
     return false;
   }
-  return expectedState === providedState;
+  if (expectedState !== providedState) {
+    logWarn('auth.loginState', ErrorCode.AUTH_INVALID_LOGIN_STATE, { reason: 'mismatch' });
+    return false;
+  }
+  return true;
 }
 
 export function clearLoginState(response: NextResponse): void {
@@ -439,6 +450,7 @@ export async function refreshSessionCookie(
   const nextRefreshToken = await signSessionToken(toSessionPayload(session, 'refresh'));
   setAccessCookie(response, nextAccessToken);
   setRefreshCookie(response, nextRefreshToken);
+  logInfo('auth.refresh', 'session refreshed', { sub: session.sub });
   return session;
 }
 
@@ -451,14 +463,17 @@ export function clearSessionCookie(response: NextResponse): void {
 export async function requireAuth(request: NextRequest): Promise<AuthCheckResult> {
   const token = request.cookies.get(ACCESS_COOKIE_NAME)?.value;
   if (!token) {
-    return { response: errorResponse('Authentication required', 401) };
+    logWarn('auth.requireAuth', ErrorCode.AUTH_REQUIRED, { reason: 'missing access token' });
+    return { response: errorResponse('Authentication required', 401, ErrorCode.AUTH_REQUIRED) };
   }
 
   try {
     const session = await verifySessionToken(token, 'access');
     return { session };
-  } catch {
-    const response = errorResponse('Authentication required', 401);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'access token verification failed';
+    logWarn('auth.requireAuth', ErrorCode.AUTH_REQUIRED, { reason: message }, error);
+    const response = errorResponse('Authentication required', 401, ErrorCode.AUTH_REQUIRED);
     clearAccessCookie(response);
     return { response };
   }

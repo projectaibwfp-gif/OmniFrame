@@ -1,4 +1,6 @@
 import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { ErrorCode } from './errors';
+import { logError, logWarn } from './logger';
 
 let client: NeonQueryFunction<false, false> | undefined;
 
@@ -7,6 +9,7 @@ export function getSql(): NeonQueryFunction<false, false> {
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
+      logError('db', ErrorCode.DB_CONNECTION_FAILED, { reason: 'DATABASE_URL not set' });
       throw new Error('DATABASE_URL environment variable is not set');
     }
 
@@ -17,5 +20,10 @@ export function getSql(): NeonQueryFunction<false, false> {
 }
 
 export async function checkDatabaseConnection(): Promise<void> {
-  await getSql()`SELECT 1`;
+  try {
+    await getSql()`SELECT 1`;
+  } catch (error) {
+    logWarn('db', ErrorCode.DB_CONNECTION_FAILED, { reason: 'health check query failed' }, error);
+    throw error;
+  }
 }

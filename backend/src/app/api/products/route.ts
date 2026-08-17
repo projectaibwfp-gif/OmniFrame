@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { getSql } from '@/lib/db';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 interface ProductRow {
   id: number;
@@ -36,8 +38,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ data: products });
   } catch (error) {
-    console.error('Could not load projects', error);
-    return errorResponse('Could not load projects', 500);
+    logError('products.list', ErrorCode.DB_QUERY_FAILED, {}, error);
+    return errorResponse('Could not load projects', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }
 
@@ -51,8 +53,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     payload = (await request.json()) as ProductPayload;
-  } catch {
-    return errorResponse('Request body must be valid JSON', 400);
+  } catch (error) {
+    logError('products.create', ErrorCode.REQUEST_INVALID_JSON, {}, error);
+    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
   }
 
   const name = payload.name?.trim();
@@ -60,11 +63,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const status = payload.status ?? 'draft';
 
   if (!name || name.length > 120) {
-    return errorResponse('Name is required and must be no longer than 120 characters', 400);
+    return errorResponse(
+      'Name is required and must be no longer than 120 characters',
+      400,
+      ErrorCode.VALIDATION_FAILED,
+    );
   }
 
   if (!['active', 'draft'].includes(status)) {
-    return errorResponse('Status must be active or draft', 400);
+    return errorResponse('Status must be active or draft', 400, ErrorCode.VALIDATION_FAILED);
   }
 
   try {
@@ -79,7 +86,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { status: 201 },
     );
   } catch (error) {
-    console.error('Could not create project', error);
-    return errorResponse('Could not create project', 500);
+    logError('products.create', ErrorCode.DB_QUERY_FAILED, { name }, error);
+    return errorResponse('Could not create project', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }

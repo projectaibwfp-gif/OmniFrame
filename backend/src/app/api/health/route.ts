@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { checkDatabaseConnection } from '@/lib/db';
 import { errorResponse } from '@/lib/api-response';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +16,7 @@ export async function GET(): Promise<NextResponse> {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Database health check failed', error);
-    return errorResponse('Database connection failed', 503);
+    logError('health', ErrorCode.DB_CONNECTION_FAILED, {}, error);
+    return errorResponse('Database connection failed', 503, ErrorCode.DB_CONNECTION_FAILED);
   }
 }

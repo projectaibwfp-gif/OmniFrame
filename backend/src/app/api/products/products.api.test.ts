@@ -61,6 +61,7 @@ describe('Products API', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'VALIDATION_FAILED',
         message: 'Name is required and must be no longer than 120 characters',
       },
     });
