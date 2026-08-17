@@ -36,4 +36,12 @@ export class UsersComponent {
     const parts = [user.given_name, user.family_name].filter(Boolean);
     return parts.length ? parts.join(' ') : (user.name ?? '—');
   }
+
+  referralLabel(user: User): string {
+    if (!user.referredByCode) {
+      return '—';
+    }
+
+    return user.referredByName ? `Z polecenia: ${user.referredByName}` : `Z polecenia: ${user.referredByCode}`;
+  }
 }

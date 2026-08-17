@@ -74,3 +74,56 @@ dd {
   font-size: 15px;
   font-weight: 600;
 }
+
+.referral-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.referral-card code {
+  display: block;
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  background: #10192b;
+  color: #eff5ff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.referral-note {
+  margin: 0;
+  color: #7a86a2;
+  font-size: 12px;
+}
+
+.referral-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #c7f268;
+  color: #16203a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.copy-feedback {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.copy-feedback.success {
+  color: #2f8f59;
+}
+
+.copy-feedback.error {
+  color: #c46b58;
+}

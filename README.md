@@ -20,14 +20,22 @@ OmniFrame/
 Najważniejsze pliki:
 
 ```text
-front/src/app/                 # layout, routing, dashboard i strona About
+front/src/app/                 # layout, routing, dashboard, profil, użytkownicy
 front/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
 backend/src/app/api/health/    # kontrola API i połączenia z bazą
+backend/src/app/api/dashboard/ # statystyki dashboardu oparte o użytkowników
 backend/src/app/api/products/  # odczyt i tworzenie projektów
+backend/src/app/api/users/     # lista użytkowników, rejestracje i role
+backend/src/app/api/auth/      # Google login, sesja, refresh, logout, me
+backend/src/app/api/referrals/ # przechwytywanie linków polecających
 backend/src/lib/db.ts          # klient Neon (DATABASE_URL)
+backend/src/lib/auth.ts        # weryfikacja Google, JWT cookie, upsert users
+backend/src/lib/referral.ts    # cookie referral + walidacja kodów
 backend/scripts/migrate.ts     # TypeScript runner migracji (tabela _migrations)
 backend/migration/001_init.sql # tabela projects
 backend/migration/002_seed.sql # dane przykładowe (idempotentne)
+backend/migration/005_user_referrals.sql # przypisanie poleceń + tabela atrybucji
+backend/migration/006_referral_codes.sql # stałe hashe referral_code dla users
 ```
 
 ## Wymagania
@@ -90,8 +98,17 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 Endpointy:
 
 - `GET /api/health` - sprawdza API i połączenie z bazą,
+- `GET /api/dashboard` - metryki dashboardu: konta Google, logowania dziś, rejestracje, polecenia, top referrerzy,
+- `GET /api/auth/state` - tworzy i zapisuje stan logowania Google,
+- `POST /api/auth/google` - loguje przez Google, ustawia cookie sesji i refresh,
+- `GET /api/auth/me` - zwraca aktualną sesję użytkownika,
+- `POST /api/auth/refresh` - odnawia sesję z refresh cookie,
+- `POST /api/auth/logout` - czyści cookie sesji,
 - `GET /api/products` - zwraca ostatnie projekty z bazy,
-- `POST /api/products` - tworzy projekt.
+- `POST /api/products` - tworzy projekt,
+- `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
+- `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
+- `POST /api/users` - ręczny upsert użytkownika Google.
 
 Format danych dla `POST /api/products`:
 
@@ -106,6 +123,21 @@ Format danych dla `POST /api/products`:
 Pole `name` jest wymagane, `status` może mieć wartość `active` albo `draft`,
 a domyślna kategoria to `General`. Zapytania SQL używają parametrów, aby
 ograniczyć ryzyko SQL injection.
+
+### Auth + referral flow
+
+1. Frontend pobiera `GET /api/auth/state`, renderuje przycisk Google i wysyła
+   ID token do `POST /api/auth/google`.
+2. Backend weryfikuje token Google, zapisuje/aktualizuje rekord `users`,
+   zakłada ciasteczka `omniframe.session` i `omniframe.refresh`, a następnie
+   wystawia sesję przez `GET /api/auth/me`.
+3. Wejście przez link `.../login?ref=<hash>` trafia do
+   `POST /api/referrals/capture`, który zapisuje referral do cookie
+   `omniframe.referral`.
+4. Referral zapisuje się **tylko raz** przy pierwszej rejestracji użytkownika:
+   do `users.referred_by_code` oraz do tabeli `user_referral_attributions`.
+5. Każdy użytkownik ma własny, stały `users.referral_code` (hash md5 oparty o
+   `google_id`) i własny link polecający pokazywany w profilu.
 
 ### 3. Uruchom frontend
 
@@ -133,11 +165,44 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 
 - `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
 - `/products` - podstrona z listą produktów pobieraną z API,
+- `/users` - lista użytkowników z oznaczeniem kont z polecenia,
+- `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.
 
 Routing używa lazy-loaded standalone components. Dashboard pobiera dane z
-`GET /api/products` (na bazowym URL z `VITE_API_BASE_URL`) i pokazuje komunikat,
-gdy API jest niedostępne.
+`GET /api/dashboard`, lista użytkowników z `GET /api/users`, a komponent profilu
+pracuje na danych sesji zwracanych przez `GET /api/auth/me`.
+
+Dashboard nie korzysta już z przykładowych liczb - pokazuje:
+
+- liczbę wszystkich kont Google,
+- liczbę logowań dzisiaj,
+- liczbę nowych kont z dzisiaj,
+- liczbę i udział kont z polecenia,
+- aktywność z 7 dni,
+- ostatnie logowania,
+- ranking najskuteczniejszych polecających.
+
+## Testy
+
+### Frontend
+
+```bash
+cd front
+npm run test
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run test
+```
+
+Backend używa Vitest. Testy obejmują każdy route w `backend/src/app/api/**`
+i pokrywają co najmniej dwa scenariusze na endpoint (ścieżki sukcesu i błędu /
+autoryzacji / walidacji, zależnie od route'a).
 
 ## Wdrożenie (Vercel)
 

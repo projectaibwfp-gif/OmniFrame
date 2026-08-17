@@ -7,4 +7,6 @@ export interface AuthUser {
   email: string;
   picture: string | null;
   role: AuthRole;
+  referralCode: string;
+  referredByCode: string | null;
 }

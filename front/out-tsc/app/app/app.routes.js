@@ -11,6 +11,11 @@ export const routes = [
         loadComponent: () => import('./dashboard/dashboard.component').then(({ DashboardComponent }) => DashboardComponent),
     },
     {
+        path: 'profile',
+        canActivate: [authGuard],
+        loadComponent: () => import('./profile/profile.component').then(({ ProfileComponent }) => ProfileComponent),
+    },
+    {
         path: 'about',
         canActivate: [authGuard],
         loadComponent: () => import('./about/about.component').then(({ AboutComponent }) => AboutComponent),

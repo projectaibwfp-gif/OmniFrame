@@ -7,7 +7,7 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -22,6 +22,7 @@ export class LoginComponent implements AfterViewInit {
 
   readonly authService = inject(AuthService);
 
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
   constructor() {
@@ -35,6 +36,15 @@ export class LoginComponent implements AfterViewInit {
   async ngAfterViewInit(): Promise<void> {
     if (!this.googleButton) {
       return;
+    }
+
+    const referralCode = this.route.snapshot.queryParamMap.get('ref');
+    if (referralCode) {
+      try {
+        await this.authService.captureReferral(referralCode);
+      } catch (error) {
+        console.warn('Could not capture referral code', error);
+      }
     }
 
     try {

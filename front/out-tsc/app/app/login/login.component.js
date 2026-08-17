@@ -1,10 +1,11 @@
 import { __decorate, __metadata } from "tslib";
 import { ChangeDetectionStrategy, Component, ViewChild, effect, inject, } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 let LoginComponent = class LoginComponent {
     constructor() {
         this.authService = inject(AuthService);
+        this.route = inject(ActivatedRoute);
         this.router = inject(Router);
         effect(() => {
             if (this.authService.isAuthenticated()) {
@@ -16,7 +17,22 @@ let LoginComponent = class LoginComponent {
         if (!this.googleButton) {
             return;
         }
-        await this.authService.renderGoogleButton(this.googleButton.nativeElement);
+        const referralCode = this.route.snapshot.queryParamMap.get('ref');
+        if (referralCode) {
+            try {
+                await this.authService.captureReferral(referralCode);
+            }
+            catch (error) {
+                console.warn('Could not capture referral code', error);
+            }
+        }
+        try {
+            await this.authService.renderGoogleButton(this.googleButton.nativeElement);
+        }
+        catch (error) {
+            console.error('Could not render Google login button', error);
+            this.authService.markLoginUnavailable();
+        }
     }
 };
 __decorate([

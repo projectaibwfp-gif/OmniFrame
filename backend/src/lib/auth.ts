@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { SignJWT, createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from './api-response';
@@ -32,6 +32,8 @@ export interface AuthenticatedUser {
   family_name: string | null;
   picture: string | null;
   locale: string | null;
+  referralCode: string;
+  referredByCode: string | null;
   registeredAt: string;
   lastLoginAt: string;
 }
@@ -47,6 +49,8 @@ interface UserRow {
   family_name: string | null;
   picture: string | null;
   locale: string | null;
+  referral_code: string;
+  referred_by_code: string | null;
   last_login_at: string;
   created_at: string;
   updated_at: string;
@@ -67,7 +71,17 @@ export interface UpsertUserInput {
   family_name?: string;
   picture?: string;
   locale?: string;
+  referred_by_code?: string | null;
   role?: UserRole;
+}
+
+interface UpsertUserRow extends UserRow {
+  was_created: boolean;
+}
+
+export interface UpsertUserResult {
+  user: AuthenticatedUser;
+  wasCreated: boolean;
 }
 
 const ACCESS_COOKIE_NAME = 'omniframe.session';
@@ -105,9 +119,15 @@ function mapUserRow(row: UserRow): AuthenticatedUser {
     family_name: row.family_name,
     picture: row.picture,
     locale: row.locale,
+    referralCode: row.referral_code,
+    referredByCode: row.referred_by_code,
     registeredAt: row.created_at,
     lastLoginAt: row.last_login_at,
   };
+}
+
+function generateReferralCode(googleId: string): string {
+  return createHash('md5').update(googleId).digest('hex');
 }
 
 function getSessionSecret(): Uint8Array {
@@ -264,55 +284,93 @@ export async function verifyGoogleToken(credential: string): Promise<GoogleToken
   };
 }
 
-export async function upsertUser(input: UpsertUserInput): Promise<AuthenticatedUser> {
+export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResult> {
+  const referralCode = generateReferralCode(input.google_id);
   const rows = (await getSql()`
-    INSERT INTO users (
-      google_id,
-      email,
-      email_verified,
-      role,
-      name,
-      given_name,
-      family_name,
-      picture,
-      locale,
-      last_login_at
+    WITH inserted AS (
+     INSERT INTO users (
+       google_id,
+       email,
+       email_verified,
+       role,
+       name,
+       given_name,
+       family_name,
+       picture,
+       locale,
+       referral_code,
+       referred_by_code,
+       last_login_at
+     )
+     VALUES (
+       ${input.google_id},
+       ${input.email},
+       ${input.email_verified ?? false},
+       ${input.role ?? 'user'},
+       ${input.name ?? null},
+       ${input.given_name ?? null},
+       ${input.family_name ?? null},
+       ${input.picture ?? null},
+       ${input.locale ?? null},
+       ${referralCode},
+       ${input.referred_by_code ?? null},
+       now()
+     )
+     ON CONFLICT (google_id) DO NOTHING
+     RETURNING id, google_id, email, email_verified, role, name,
+               given_name, family_name, picture, locale, referral_code, referred_by_code,
+               last_login_at, created_at, updated_at,
+               true AS was_created
+    ),
+    recorded_referral AS (
+     INSERT INTO user_referral_attributions (user_id, referral_code)
+     SELECT id, ${input.referred_by_code ?? null}
+     FROM inserted
+     WHERE ${input.referred_by_code ?? null} IS NOT NULL
+     RETURNING user_id
+    ),
+    updated AS (
+     UPDATE users
+     SET email          = ${input.email},
+         email_verified = ${input.email_verified ?? false},
+         role           = ${input.role ?? 'user'},
+         name           = ${input.name ?? null},
+         given_name     = ${input.given_name ?? null},
+         family_name    = ${input.family_name ?? null},
+         picture        = ${input.picture ?? null},
+         locale         = ${input.locale ?? null},
+        referral_code  = COALESCE(referral_code, ${referralCode}),
+        last_login_at  = now(),
+        updated_at     = now()
+     WHERE google_id = ${input.google_id}
+       AND NOT EXISTS (SELECT 1 FROM inserted)
+     RETURNING id, google_id, email, email_verified, role, name,
+               given_name, family_name, picture, locale, referral_code, referred_by_code,
+               last_login_at, created_at, updated_at,
+               false AS was_created
     )
-    VALUES (
-      ${input.google_id},
-      ${input.email},
-      ${input.email_verified ?? false},
-      ${input.role ?? 'user'},
-      ${input.name ?? null},
-      ${input.given_name ?? null},
-      ${input.family_name ?? null},
-      ${input.picture ?? null},
-      ${input.locale ?? null},
-      now()
-    )
-    ON CONFLICT (google_id) DO UPDATE SET
-      email          = EXCLUDED.email,
-      email_verified = EXCLUDED.email_verified,
-      role           = EXCLUDED.role,
-      name           = EXCLUDED.name,
-      given_name     = EXCLUDED.given_name,
-      family_name    = EXCLUDED.family_name,
-      picture        = EXCLUDED.picture,
-      locale         = EXCLUDED.locale,
-      last_login_at  = now(),
-      updated_at     = now()
-    RETURNING id, google_id, email, email_verified, role, name,
-              given_name, family_name, picture, locale,
-              last_login_at, created_at, updated_at
-  `) as UserRow[];
+    SELECT id, google_id, email, email_verified, role, name,
+          given_name, family_name, picture, locale, referral_code, referred_by_code,
+          last_login_at, created_at, updated_at, was_created
+    FROM inserted
+    UNION ALL
+    SELECT id, google_id, email, email_verified, role, name,
+          given_name, family_name, picture, locale, referral_code, referred_by_code,
+          last_login_at, created_at, updated_at, was_created
+    FROM updated
+  `) as UpsertUserRow[];
 
-  return mapUserRow(rows[0]);
+  return {
+    user: mapUserRow(rows[0]),
+    wasCreated: rows[0].was_created,
+  };
 }
 
 export async function upsertGoogleUser(
   payload: GoogleTokenPayload,
+  referredByCode?: string | null,
   role?: UserRole,
-): Promise<AuthenticatedUser> {
+): Promise<UpsertUserResult> {
   return upsertUser({
     google_id: payload.sub,
     email: payload.email,
@@ -322,6 +380,7 @@ export async function upsertGoogleUser(
     family_name: payload.family_name,
     picture: payload.picture,
     locale: payload.locale,
+    referred_by_code: referredByCode,
     role,
   });
 }
@@ -401,7 +460,7 @@ export async function loadCurrentUser(request: NextRequest): Promise<Authenticat
 
   const rows = (await getSql()`
     SELECT id, google_id, email, email_verified, role, name,
-           given_name, family_name, picture, locale,
+           given_name, family_name, picture, locale, referral_code, referred_by_code,
            last_login_at, created_at, updated_at
     FROM users
     WHERE google_id = ${auth.session.sub}
@@ -423,6 +482,8 @@ export async function loadCurrentUser(request: NextRequest): Promise<Authenticat
     family_name: auth.session.family_name ?? null,
     picture: auth.session.picture ?? null,
     locale: auth.session.locale ?? null,
+    referralCode: generateReferralCode(auth.session.sub),
+    referredByCode: null,
     registeredAt: '',
     lastLoginAt: '',
   };

@@ -33,5 +33,20 @@
       <dt>Rola</dt>
       <dd>{{ currentUser()?.role || '-' }}</dd>
     </div>
+    <div class="referral-card">
+      <dt>Link polecający</dt>
+      <dd>
+        <code>{{ referralLink() || '-' }}</code>
+      </dd>
+      <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
+      <div class="referral-actions">
+        <button class="copy-button" type="button" (click)="copyReferralLink()">Kopiuj link</button>
+        @if (copyState() === 'success') {
+          <span class="copy-feedback success">Skopiowano</span>
+        } @else if (copyState() === 'error') {
+          <span class="copy-feedback error">Nie udało się skopiować</span>
+        }
+      </div>
+    </div>
   </dl>
 </section>

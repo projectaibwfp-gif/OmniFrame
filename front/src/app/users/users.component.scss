@@ -51,7 +51,7 @@ p {
 
 .table-row {
   display: grid;
-  grid-template-columns: minmax(160px, 1.4fr) 1.3fr 0.8fr 0.9fr 0.9fr;
+  grid-template-columns: minmax(160px, 1.3fr) 1.2fr 0.8fr 1.1fr 0.9fr 0.9fr;
   align-items: center;
   min-height: 50px;
   border-top: 1px solid #f0f2f6;
@@ -135,6 +135,15 @@ p {
   color: #9a6b00;
 }
 
+.referral {
+  color: #8994a9;
+}
+
+.referral.referred {
+  color: #2f8f59;
+  font-weight: 700;
+}
+
 .table-message {
   padding: 32px 0 14px;
   color: #8994a9;
@@ -163,7 +172,8 @@ p {
 
   .table-row > :nth-child(3),
   .table-row > :nth-child(4),
-  .table-row > :nth-child(5) {
+  .table-row > :nth-child(5),
+  .table-row > :nth-child(6) {
     display: none;
   }
 }

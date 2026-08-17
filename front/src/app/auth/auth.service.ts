@@ -16,6 +16,8 @@ type AuthResponseUser = {
   email: string;
   picture: string | null;
   role: AuthRole;
+  referralCode: string;
+  referredByCode: string | null;
 };
 
 type AuthResponse = {
@@ -27,6 +29,13 @@ type AuthResponse = {
 type AuthStateResponse = {
   data: {
     state: string;
+  };
+};
+
+type CaptureReferralResponse = {
+  data: {
+    referralCode: string;
+    stored: boolean;
   };
 };
 
@@ -122,6 +131,20 @@ export class AuthService {
         this.setLoginIssue(notification.getSkippedReason());
       }
     });
+  }
+
+  async captureReferral(referralCode: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post<CaptureReferralResponse>(
+        buildApiUrl('/referrals/capture'),
+        {
+          referralCode,
+        },
+        {
+          context: withSkippedAuthInterceptor(),
+        },
+      ),
+    );
   }
 
   logout(): void {
@@ -274,6 +297,8 @@ export class AuthService {
       email: user.email,
       picture: user.picture,
       role: user.role,
+      referralCode: user.referralCode,
+      referredByCode: user.referredByCode,
     };
   }
 

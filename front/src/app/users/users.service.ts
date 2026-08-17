@@ -13,6 +13,9 @@ export interface User {
   given_name: string | null;
   family_name: string | null;
   picture: string | null;
+  referralCode: string;
+  referredByCode: string | null;
+  referredByName: string | null;
   registeredAt: string;
   lastLoginAt: string;
 }

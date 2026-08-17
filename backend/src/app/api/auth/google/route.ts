@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import {
+  clearPendingReferral,
+  getPendingReferral,
+} from '@/lib/referral';
+import {
   clearLoginState,
   isLoginStateValid,
   issueSessionCookie,
@@ -39,6 +43,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const googleToken = await verifyGoogleToken(credential);
+    const pendingReferral = getPendingReferral(request);
+    const { user: databaseUser } = await upsertGoogleUser(googleToken, pendingReferral?.code ?? null);
     let sessionUser: {
       given_name: string | null;
       family_name: string | null;
@@ -46,28 +52,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       email: string;
       picture: string | null;
       role: UserRole;
+      referralCode: string;
+      referredByCode: string | null;
     } = {
-      given_name: googleToken.given_name ?? null,
-      family_name: googleToken.family_name ?? null,
-      name: googleToken.name ?? null,
-      email: googleToken.email,
-      picture: googleToken.picture ?? null,
-      role: 'user',
+      given_name: databaseUser.given_name,
+      family_name: databaseUser.family_name,
+      name: databaseUser.name,
+      email: databaseUser.email,
+      picture: databaseUser.picture,
+      role: databaseUser.role,
+      referralCode: databaseUser.referralCode,
+      referredByCode: databaseUser.referredByCode,
     };
-
-    try {
-      const databaseUser = await upsertGoogleUser(googleToken);
-      sessionUser = {
-        given_name: databaseUser.given_name,
-        family_name: databaseUser.family_name,
-        name: databaseUser.name,
-        email: databaseUser.email,
-        picture: databaseUser.picture,
-        role: databaseUser.role,
-      };
-    } catch (error) {
-      console.warn('Could not sync Google user to database', error);
-    }
 
     const response = NextResponse.json(
       {
@@ -80,6 +76,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     await issueSessionCookie(response, credential);
     clearLoginState(response);
+    clearPendingReferral(response);
 
     return response;
   } catch (error) {

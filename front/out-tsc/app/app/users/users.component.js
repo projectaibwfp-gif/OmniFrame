@@ -25,6 +25,12 @@ let UsersComponent = class UsersComponent {
         const parts = [user.given_name, user.family_name].filter(Boolean);
         return parts.length ? parts.join(' ') : (user.name ?? '—');
     }
+    referralLabel(user) {
+        if (!user.referredByCode) {
+            return '—';
+        }
+        return user.referredByName ? `Z polecenia: ${user.referredByName}` : `Z polecenia: ${user.referredByCode}`;
+    }
 };
 UsersComponent = __decorate([
     Component({

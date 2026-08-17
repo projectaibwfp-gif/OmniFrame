@@ -25,6 +25,9 @@ interface UserRow {
   given_name: string | null;
   family_name: string | null;
   picture: string | null;
+  referralCode: string;
+  referredByCode: string | null;
+  referredByName: string | null;
   locale: string | null;
   registeredAt: string;
   lastLoginAt: string;
@@ -50,12 +53,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (googleId) {
     try {
       const rows = (await getSql()`
-        SELECT id, google_id, email, email_verified, role, name,
-               given_name, family_name, picture, locale,
-               to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-               to_char(last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
+        SELECT users.id, users.google_id, users.email, users.email_verified, users.role, users.name,
+               users.given_name, users.family_name, users.picture, users.locale,
+               users.referral_code AS "referralCode",
+               users.referred_by_code AS "referredByCode",
+               COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
+               to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
+               to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
         FROM users
-        WHERE google_id = ${googleId}
+        LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
+        WHERE users.google_id = ${googleId}
         LIMIT 1
       `) as UserRow[];
 
@@ -75,12 +82,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   try {
     const rows = (await getSql()`
-      SELECT id, google_id, email, email_verified, role, name,
-             given_name, family_name, picture, locale,
-             to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-             to_char(last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
+      SELECT users.id, users.google_id, users.email, users.email_verified, users.role, users.name,
+             users.given_name, users.family_name, users.picture, users.locale,
+             users.referral_code AS "referralCode",
+             users.referred_by_code AS "referredByCode",
+             COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
+             to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
+             to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
       FROM users
-      ORDER BY created_at DESC
+      LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
+      ORDER BY users.created_at DESC
       LIMIT ${limit}
     `) as UserRow[];
 
@@ -127,7 +138,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const user = await upsertUser({
+    const { user } = await upsertUser({
       google_id,
       email,
       email_verified,

@@ -1,11 +1,17 @@
 import { inject } from '@angular/core';
-import { Router, type CanActivateFn } from '@angular/router';
+import { Router, type ActivatedRouteSnapshot, type CanActivateFn, type UrlTree } from '@angular/router';
 import { AuthService } from './auth.service';
 
-export const authGuard: CanActivateFn = () => {
+function buildLoginRedirect(route: ActivatedRouteSnapshot, router: Router): UrlTree {
+  return router.createUrlTree(['/login'], {
+    queryParams: route.queryParams,
+  });
+}
+
+export const authGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  return authService.isAuthenticated() ? true : router.createUrlTree(['/login']);
+  return authService.isAuthenticated() ? true : buildLoginRedirect(route, router);
 };
 
 export const guestGuard: CanActivateFn = () => {

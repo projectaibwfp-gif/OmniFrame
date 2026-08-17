@@ -17,6 +17,7 @@
         <span>Imię i nazwisko</span>
         <span>Adres e-mail</span>
         <span>Rola</span>
+        <span>Polecenie</span>
         <span>Data rejestracji</span>
         <span>Ostatnie logowanie</span>
       </div>
@@ -37,6 +38,7 @@
             }
           </span>
           <span class="role" [attr.data-role]="user.role">{{ user.role }}</span>
+          <span class="referral" [class.referred]="!!user.referredByCode">{{ referralLabel(user) }}</span>
           <span>{{ user.registeredAt }}</span>
           <span>{{ user.lastLoginAt }}</span>
         </div>

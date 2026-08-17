@@ -1,147 +1,190 @@
 <div class="dashboard-header">
   <div>
-    <p class="eyebrow">Tuesday, 04 August 2026</p>
+    <p class="eyebrow">{{ todayLabel }}</p>
     <h1>Good morning, {{ currentUser()?.fullName }} <span>✦</span></h1>
-    <p class="intro">Here's what's happening with your workspace today.</p>
+    <p class="intro">Dashboard pokazuje dzisiejsza aktywnosc Google, rejestracje i skutecznosc polecen.</p>
   </div>
-  <button class="primary-button" type="button" (click)="loadProducts()">
-    <span>＋</span> New project
-  </button>
+  <a class="primary-button" routerLink="/users"><span>↗</span> Panel uzytkownikow</a>
 </div>
 
-<div class="stats-grid">
-  <article class="stat-card">
-    <div class="stat-icon purple">▦</div>
-    <div class="stat-copy">
-      <span class="stat-label">Total projects</span>
-      <strong>24</strong>
-      <span class="stat-change positive">↗ 12.5% <em>vs last month</em></span>
-    </div>
-    <div class="mini-bars purple-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  </article>
-  <article class="stat-card">
-    <div class="stat-icon green">◉</div>
-    <div class="stat-copy">
-      <span class="stat-label">Active automations</span>
-      <strong>18</strong>
-      <span class="stat-change positive">↗ 8.2% <em>vs last month</em></span>
-    </div>
-    <div class="mini-bars green-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  </article>
-  <article class="stat-card">
-    <div class="stat-icon orange">↯</div>
-    <div class="stat-copy">
-      <span class="stat-label">Tasks completed</span>
-      <strong>1,284</strong>
-      <span class="stat-change positive">↗ 18.7% <em>vs last month</em></span>
-    </div>
-    <div class="mini-bars orange-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  </article>
-</div>
+@if (isLoading()) {
+  <div class="table-message">Ladowanie statystyk dashboardu...</div>
+} @else if (apiError()) {
+  <div class="table-message error">Nie udalo sie pobrac statystyk dashboardu.</div>
+} @else if (dashboard(); as data) {
+  <div class="stats-grid">
+    @for (card of statCards(); track card.label) {
+      <article class="stat-card">
+        <div class="stat-icon {{ card.iconClass }}">{{ card.icon }}</div>
+        <div class="stat-copy">
+          <span class="stat-label">{{ card.label }}</span>
+          <strong>{{ card.value }}</strong>
+          <span class="stat-change positive">{{ card.note }}</span>
+        </div>
+        <div class="mini-bars {{ card.barClass }}">
+          @for (bar of card.bars; track $index) {
+            <i [style.height.%]="bar"></i>
+          }
+        </div>
+      </article>
+    }
+  </div>
 
-<div class="content-grid">
-  <section class="panel activity-panel">
-    <div class="panel-heading">
-      <div>
-        <h2>Activity overview</h2>
-        <p>Task volume over the last 30 days</p>
-      </div>
-      <button class="select-button" type="button">Last 30 days <span>⌄</span></button>
-    </div>
-    <div class="chart">
-      <div class="chart-y-axis"><span>120</span><span>80</span><span>40</span><span>0</span></div>
-      <div class="chart-area">
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <div class="grid-line"></div>
-        <svg viewBox="0 0 700 185" preserveAspectRatio="none" aria-label="Wykres aktywności">
-          <defs>
-            <linearGradient id="area-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="#b5dff0" stop-opacity=".52" />
-              <stop offset="100%" stop-color="#b5dff0" stop-opacity=".04" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M0,147 C28,142 40,119 70,125 S108,137 135,105 S174,113 200,90 S239,103 267,75 S308,91 335,66 S368,76 400,89 S434,83 468,63 S505,66 535,37 S572,70 601,50 S638,48 670,32 S690,35 700,26 L700,185 L0,185 Z"
-            fill="url(#area-fill)"
-          />
-          <path
-            d="M0,147 C28,142 40,119 70,125 S108,137 135,105 S174,113 200,90 S239,103 267,75 S308,91 335,66 S368,76 400,89 S434,83 468,63 S505,66 535,37 S572,70 601,50 S638,48 670,32 S690,35 700,26"
-            fill="none"
-            stroke="#68b8d7"
-            stroke-width="3"
-          />
-          <circle cx="535" cy="37" r="5" fill="#fff" stroke="#68b8d7" stroke-width="3" />
-        </svg>
-        <div class="chart-x-axis">
-          <span>Jun 01</span><span>Jun 08</span><span>Jun 15</span><span>Jun 22</span
-          ><span>Jun 30</span>
+  <div class="content-grid">
+    <section class="panel activity-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Aktywnosc z ostatnich 7 dni</h2>
+          <p>Logowania Google i nowe rejestracje na jednej osi czasu.</p>
+        </div>
+        <div class="chart-legend">
+          <span><i class="legend-dot blue"></i>Logowania</span>
+          <span><i class="legend-dot green"></i>Rejestracje</span>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="panel quick-panel">
-    <div class="panel-heading">
-      <div>
-        <h2>Quick actions</h2>
-        <p>Jump back into your work</p>
-      </div>
-    </div>
-    <div class="quick-actions">
-      <button class="quick-action" type="button">
-        <span class="action-icon lavender">✦</span
-        ><span><strong>Explore templates</strong><small>Start from a blueprint</small></span
-        ><b>›</b>
-      </button>
-      <button class="quick-action" type="button">
-        <span class="action-icon peach">⚡</span
-        ><span><strong>Create automation</strong><small>Build something powerful</small></span
-        ><b>›</b>
-      </button>
-      <button class="quick-action" type="button">
-        <span class="action-icon mint">♧</span
-        ><span><strong>Invite your team</strong><small>Collaborate with others</small></span
-        ><b>›</b>
-      </button>
-    </div>
-  </section>
-</div>
-
-<section class="panel projects-panel">
-  <div class="panel-heading">
-    <div>
-      <h2>Recent projects</h2>
-      <p>Your latest workspace activity</p>
-    </div>
-    <a routerLink="/products" class="view-all">View all <span>→</span></a>
-  </div>
-  @if (isLoading()) {
-    <div class="table-message">Ładowanie danych z API...</div>
-  } @else if (apiError()) {
-    <div class="table-message error">API jest niedostępne. Uruchom backend i odśwież dane.</div>
-  } @else {
-    <div class="projects-table">
-      <div class="table-row table-head">
-        <span>Project name</span><span>Status</span><span>Category</span><span>Last updated</span
-        ><span></span>
-      </div>
-      @for (project of products(); track project.id) {
-        <div class="table-row">
-          <span class="project-name"><span class="project-dot"></span>{{ project.name }}</span>
-          <span
-            ><span class="status" [class.draft]="project.status === 'draft'"
-              ><i></i>{{ project.status === 'active' ? 'Active' : 'Draft' }}</span
-            ></span
-          >
-          <span class="muted">{{ project.category }}</span>
-          <span class="muted">{{ project.updatedAt }}</span>
-          <span class="row-more">•••</span>
+      <div class="chart">
+        <div class="chart-y-axis">
+          @for (mark of chartYAxis(); track $index) {
+            <span>{{ mark }}</span>
+          }
         </div>
-      } @empty {
-        <div class="table-message">Brak projektów do wyświetlenia.</div>
-      }
-    </div>
-  }
-</section>
+        <div class="chart-area">
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <svg viewBox="0 0 700 185" preserveAspectRatio="none" aria-label="Wykres aktywnosci">
+            <defs>
+              <linearGradient id="activity-fill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#b5dff0" stop-opacity=".52" />
+                <stop offset="100%" stop-color="#b5dff0" stop-opacity=".04" />
+              </linearGradient>
+            </defs>
+            <path [attr.d]="loginsAreaPath()" fill="url(#activity-fill)" />
+            <path [attr.d]="loginsLinePath()" fill="none" stroke="#68b8d7" stroke-width="3" />
+            <path [attr.d]="signupsLinePath()" fill="none" stroke="#8bc48d" stroke-width="3" stroke-dasharray="6 6" />
+          </svg>
+          <div class="chart-x-axis">
+            @for (point of activity(); track point.label) {
+              <span [attr.aria-label]="activitySummary(point)">{{ point.label }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel quick-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Szybki obraz</h2>
+          <p>Najwazniejsze liczby do pilnowania dzisiaj.</p>
+        </div>
+      </div>
+      <div class="insight-list">
+        <article class="insight-item">
+          <span class="action-icon lavender">✓</span>
+          <div>
+            <strong>{{ data.overview.verifiedUsers }} zweryfikowanych kont</strong>
+            <small>{{ data.overview.verifiedShare }}% calej bazy uzytkownikow</small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon peach">↘</span>
+          <div>
+            <strong>{{ usersWithoutReferral() }} bez polecenia</strong>
+            <small>To konta, ktore weszly bez linku referral.</small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon mint">★</span>
+          <div>
+            <strong>
+              @if (topReferrer(); as topReferrer) {
+                {{ topReferrer.name }}
+              } @else {
+                Brak lidera polecen
+              }
+            </strong>
+            <small>
+              @if (topReferrer(); as topReferrer) {
+                {{ topReferrer.referrals }} skutecznych polecen
+              } @else {
+                Jeszcze nikt nie zaprosil nowego uzytkownika.
+              }
+            </small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon blue-badge">⏱</span>
+          <div>
+            <strong>
+              @if (latestActiveUser(); as latestActiveUser) {
+                {{ latestActiveUser.name }}
+              } @else {
+                Brak aktywnosci
+              }
+            </strong>
+            <small>
+              @if (latestActiveUser(); as latestActiveUser) {
+                Ostatnie logowanie: {{ latestActiveUser.lastLoginAt }}
+              } @else {
+                Zaczekaj na pierwsze logowanie.
+              }
+            </small>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom-grid">
+    <section class="panel projects-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Ostatnie logowania</h2>
+          <p>Kto byl aktywny ostatnio i czy przyszedl z polecenia.</p>
+        </div>
+        <a routerLink="/users" class="view-all">Wszyscy uzytkownicy <span>→</span></a>
+      </div>
+      <div class="projects-table">
+        <div class="table-row table-head">
+          <span>Uzytkownik</span><span>Rola</span><span>Wejscie</span><span>Rejestracja</span><span>Logowanie</span>
+        </div>
+        @for (user of data.recentUsers; track user.id) {
+          <div class="table-row">
+            <span class="project-name"><span class="project-dot"></span>{{ user.name }}</span>
+            <span class="role-chip" [attr.data-role]="user.role">{{ user.role }}</span>
+            <span class="muted">{{ user.referredByCode ? 'Z polecenia' : 'Organicznie' }}</span>
+            <span class="muted">{{ user.registeredAt }}</span>
+            <span class="muted">{{ user.lastLoginAt }}</span>
+          </div>
+        } @empty {
+          <div class="table-message">Brak logowan do wyswietlenia.</div>
+        }
+      </div>
+    </section>
+
+    <section class="panel quick-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Top polecajacy</h2>
+          <p>Najskuteczniejsze linki referral.</p>
+        </div>
+      </div>
+      <div class="leaderboard">
+        @for (referrer of data.topReferrers; track referrer.id) {
+          <article class="leaderboard-item">
+            <div>
+              <strong>{{ referrer.name }}</strong>
+              <small>{{ referrer.email }}</small>
+              <code>{{ referrer.referralCode }}</code>
+            </div>
+            <span class="leaderboard-score">{{ referrer.referrals }}</span>
+          </article>
+        } @empty {
+          <div class="table-message">Brak wykorzystanych polecen.</div>
+        }
+      </div>
+    </section>
+  </div>
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class ProfileComponent {
   readonly currentUser = inject(AuthService).user;
+  readonly copyState = signal<'idle' | 'success' | 'error'>('idle');
   readonly initials = computed(() => {
     const user = this.currentUser();
     if (!user) {
@@ -23,4 +24,28 @@ export class ProfileComponent {
         .join('') || 'U'
     );
   });
+  readonly referralLink = computed(() => {
+    const user = this.currentUser();
+    if (!user) {
+      return '';
+    }
+
+    const origin = globalThis.location?.origin ?? '';
+    return `${origin}/login?ref=${user.referralCode}`;
+  });
+
+  async copyReferralLink(): Promise<void> {
+    const link = this.referralLink();
+    if (!link || !navigator.clipboard) {
+      this.copyState.set('error');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(link);
+      this.copyState.set('success');
+    } catch {
+      this.copyState.set('error');
+    }
+  }
 }
