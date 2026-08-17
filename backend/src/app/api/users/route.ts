@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, type UserRole, upsertUser } from '@/lib/auth';
 import { getSql } from '@/lib/db';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 interface GoogleUserPayload {
   google_id: string;
@@ -67,13 +69,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       `) as UserRow[];
 
       if (rows.length === 0) {
-        return errorResponse('User not found', 404);
+        return errorResponse('User not found', 404, ErrorCode.NOT_FOUND);
       }
 
       return NextResponse.json({ data: rows[0] });
     } catch (error) {
-      console.error('Could not fetch user', error);
-      return errorResponse('Could not fetch user', 500);
+      logError('users.getOne', ErrorCode.DB_QUERY_FAILED, { googleId }, error);
+      return errorResponse('Could not fetch user', 500, ErrorCode.DB_QUERY_FAILED);
     }
   }
 
@@ -97,8 +99,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ data: rows, total: rows.length });
   } catch (error) {
-    console.error('Could not list users', error);
-    return errorResponse('Could not list users', 500);
+    logError('users.list', ErrorCode.DB_QUERY_FAILED, { limit }, error);
+    return errorResponse('Could not list users', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }
 
@@ -117,8 +119,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     payload = (await request.json()) as GoogleUserPayload;
-  } catch {
-    return errorResponse('Request body must be valid JSON', 400);
+  } catch (error) {
+    logError('users.create', ErrorCode.REQUEST_INVALID_JSON, {}, error);
+    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
   }
 
   const { google_id, email, email_verified, name, given_name, family_name, picture, locale } =
@@ -126,15 +129,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const role = payload.role ?? 'user';
 
   if (!google_id?.trim()) {
-    return errorResponse('google_id is required', 400);
+    return errorResponse('google_id is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
   if (!email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return errorResponse('A valid email is required', 400);
+    return errorResponse('A valid email is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
   if (!['admin', 'user', 'moderator'].includes(role)) {
-    return errorResponse('role must be admin, user, or moderator', 400);
+    return errorResponse(
+      'role must be admin, user, or moderator',
+      400,
+      ErrorCode.VALIDATION_FAILED,
+    );
   }
 
   try {
@@ -152,7 +159,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ data: user }, { status: 200 });
   } catch (error) {
-    console.error('Could not upsert user', error);
-    return errorResponse('Could not upsert user', 500);
+    logError('users.create', ErrorCode.AUTH_USER_UPSERT_FAILED, { google_id }, error);
+    return errorResponse('Could not upsert user', 500, ErrorCode.AUTH_USER_UPSERT_FAILED);
   }
 }

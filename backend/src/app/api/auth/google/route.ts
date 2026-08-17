@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
-import {
-  clearPendingReferral,
-  getPendingReferral,
-} from '@/lib/referral';
+import { clearPendingReferral, getPendingReferral } from '@/lib/referral';
 import {
   clearLoginState,
   isLoginStateValid,
@@ -12,6 +9,8 @@ import {
   upsertGoogleUser,
   verifyGoogleToken,
 } from '@/lib/auth';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 interface LoginPayload {
   credential?: string;
@@ -25,27 +24,43 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     payload = (await request.json()) as LoginPayload;
-  } catch {
-    return errorResponse('Request body must be valid JSON', 400);
+  } catch (error) {
+    logError('auth.google', ErrorCode.REQUEST_INVALID_JSON, {}, error);
+    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
   }
 
   const credential = payload.credential?.trim();
   if (!credential) {
-    return errorResponse('credential is required', 400);
+    logError('auth.google', ErrorCode.VALIDATION_FAILED, { reason: 'missing credential' });
+    return errorResponse('credential is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
   const state = payload.state?.trim();
   if (!state || !isLoginStateValid(request, state)) {
-    const denied = errorResponse('Invalid login state', 403);
+    logError('auth.google', ErrorCode.AUTH_INVALID_LOGIN_STATE, {
+      hasState: Boolean(state),
+    });
+    const denied = errorResponse('Invalid login state', 403, ErrorCode.AUTH_INVALID_LOGIN_STATE);
     clearLoginState(denied);
     return denied;
   }
 
+  let googleToken;
   try {
-    const googleToken = await verifyGoogleToken(credential);
+    googleToken = await verifyGoogleToken(credential);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Could not verify Google token';
+    logError('auth.google', ErrorCode.AUTH_GOOGLE_TOKEN_INVALID, {}, error);
+    return errorResponse(message, 401, ErrorCode.AUTH_GOOGLE_TOKEN_INVALID);
+  }
+
+  try {
     const pendingReferral = getPendingReferral(request);
-    const { user: databaseUser } = await upsertGoogleUser(googleToken, pendingReferral?.code ?? null);
-    let sessionUser: {
+    const { user: databaseUser } = await upsertGoogleUser(
+      googleToken,
+      pendingReferral?.code ?? null,
+    );
+    const sessionUser: {
       given_name: string | null;
       family_name: string | null;
       name: string | null;
@@ -80,8 +95,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Could not authenticate Google user';
-    console.error('Could not authenticate Google user', error);
-    return errorResponse(message, 401);
+    const message = error instanceof Error ? error.message : 'Could not complete Google login';
+    logError(
+      'auth.google',
+      ErrorCode.AUTH_USER_UPSERT_FAILED,
+      { sub: googleToken.sub, email: googleToken.email },
+      error,
+    );
+    return errorResponse(message, 500, ErrorCode.AUTH_USER_UPSERT_FAILED);
   }
 }

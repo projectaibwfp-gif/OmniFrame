@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import { getPendingReferral, normalizeReferralCode, setPendingReferral } from '@/lib/referral';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 interface CaptureReferralPayload {
   referralCode?: string;
@@ -13,13 +15,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     payload = (await request.json()) as CaptureReferralPayload;
-  } catch {
-    return errorResponse('Request body must be valid JSON', 400);
+  } catch (error) {
+    logError('referrals.capture', ErrorCode.REQUEST_INVALID_JSON, {}, error);
+    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
   }
 
   const referralCode = normalizeReferralCode(payload.referralCode);
   if (!referralCode) {
-    return errorResponse('referralCode must contain only letters, numbers, dots, underscores, or dashes', 400);
+    return errorResponse(
+      'referralCode must contain only letters, numbers, dots, underscores, or dashes',
+      400,
+      ErrorCode.VALIDATION_FAILED,
+    );
   }
 
   const existingReferral = getPendingReferral(request);

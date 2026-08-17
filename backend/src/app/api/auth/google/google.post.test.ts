@@ -42,6 +42,7 @@ describe('POST /api/auth/google', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'REQUEST_INVALID_JSON',
         message: 'Request body must be valid JSON',
       },
     });
@@ -61,6 +62,7 @@ describe('POST /api/auth/google', () => {
     expect(authMocks.clearLoginState).toHaveBeenCalledTimes(1);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'AUTH_INVALID_LOGIN_STATE',
         message: 'Invalid login state',
       },
     });
@@ -125,6 +127,7 @@ describe('POST /api/auth/google', () => {
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'AUTH_GOOGLE_TOKEN_INVALID',
         message: 'bad token',
       },
     });

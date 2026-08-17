@@ -33,6 +33,7 @@ describe('POST /api/referrals/capture', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'VALIDATION_FAILED',
         message: 'referralCode must contain only letters, numbers, dots, underscores, or dashes',
       },
     });

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, type UserRole } from '@/lib/auth';
 import { getSql } from '@/lib/db';
+import { ErrorCode } from '@/lib/errors';
+import { logError } from '@/lib/logger';
 
 interface OverviewRow {
   totalUsers: number | string;
@@ -170,7 +172,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       },
     });
   } catch (error) {
-    console.error('Could not load dashboard metrics', error);
-    return errorResponse('Could not load dashboard metrics', 500);
+    logError('dashboard', ErrorCode.DB_QUERY_FAILED, {}, error);
+    return errorResponse('Could not load dashboard metrics', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }

@@ -37,7 +37,10 @@ describe('GET /api/auth/me', () => {
   });
 
   it('passes through denied responses from auth layer', async () => {
-    const denied = NextResponse.json({ error: { message: 'Authentication required' } }, { status: 401 });
+    const denied = NextResponse.json(
+      { error: { message: 'Authentication required' } },
+      { status: 401 },
+    );
     authMocks.loadCurrentUser.mockResolvedValue(denied);
 
     const response = await GET(createRequest('http://localhost/api/auth/me'));
@@ -58,6 +61,7 @@ describe('GET /api/auth/me', () => {
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'INTERNAL_ERROR',
         message: 'Could not load current session',
       },
     });

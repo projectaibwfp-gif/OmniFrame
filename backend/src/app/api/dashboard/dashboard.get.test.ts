@@ -126,6 +126,7 @@ describe('GET /api/dashboard', () => {
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'DB_QUERY_FAILED',
         message: 'Could not load dashboard metrics',
       },
     });

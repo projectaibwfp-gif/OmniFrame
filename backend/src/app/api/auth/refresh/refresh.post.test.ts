@@ -21,7 +21,9 @@ describe('POST /api/auth/refresh', () => {
   it('refreshes the session when refresh token is valid', async () => {
     authMocks.refreshSessionCookie.mockResolvedValue(undefined);
 
-    const response = await POST(createRequest('http://localhost/api/auth/refresh', { method: 'POST' }));
+    const response = await POST(
+      createRequest('http://localhost/api/auth/refresh', { method: 'POST' }),
+    );
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
@@ -34,12 +36,15 @@ describe('POST /api/auth/refresh', () => {
   it('returns 401 and clears cookies when refresh fails', async () => {
     authMocks.refreshSessionCookie.mockRejectedValue(new Error('expired'));
 
-    const response = await POST(createRequest('http://localhost/api/auth/refresh', { method: 'POST' }));
+    const response = await POST(
+      createRequest('http://localhost/api/auth/refresh', { method: 'POST' }),
+    );
 
     expect(response.status).toBe(401);
     expect(authMocks.clearSessionCookie).toHaveBeenCalledTimes(1);
     await expect(response.json()).resolves.toEqual({
       error: {
+        code: 'AUTH_REFRESH_FAILED',
         message: 'Authentication required',
       },
     });
