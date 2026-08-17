@@ -47,3 +47,13 @@ h1 {
   display: flex;
   justify-content: center;
 }
+
+.login-error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  color: #8c1c2f;
+  background: #ffe8ee;
+  border: 1px solid #f4bac8;
+  border-radius: 8px;
+  font-size: 13px;
+}

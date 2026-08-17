@@ -4,5 +4,7 @@ export interface AuthUser {
   givenName: string;
   familyName: string;
   fullName: string;
+  email: string;
+  picture: string | null;
   role: AuthRole;
 }

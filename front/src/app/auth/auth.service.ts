@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { buildApiUrl } from '../config/api.config';
+import { withSkippedAuthInterceptor } from './auth-http-context';
 import { type AuthUser, type AuthRole } from './auth-session';
 
 type GoogleCredentialResponse = {
@@ -12,12 +13,20 @@ type AuthResponseUser = {
   given_name: string | null;
   family_name: string | null;
   name: string | null;
+  email: string;
+  picture: string | null;
   role: AuthRole;
 };
 
 type AuthResponse = {
   data: {
     user: AuthResponseUser;
+  };
+};
+
+type AuthStateResponse = {
+  data: {
+    state: string;
   };
 };
 
@@ -30,6 +39,7 @@ declare global {
             client_id: string;
             callback: (response: GoogleCredentialResponse) => void;
           }) => void;
+          prompt: (callback?: (notification: GooglePromptMomentNotification) => void) => void;
           renderButton: (
             parent: HTMLElement,
             options: {
@@ -47,6 +57,13 @@ declare global {
   }
 }
 
+interface GooglePromptMomentNotification {
+  isNotDisplayed: () => boolean;
+  isSkippedMoment: () => boolean;
+  getNotDisplayedReason: () => string;
+  getSkippedReason: () => string;
+}
+
 const DEFAULT_GOOGLE_CLIENT_ID =
   '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
 const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GOOGLE_CLIENT_ID).trim();
@@ -54,15 +71,19 @@ const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GO
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   readonly user = signal<AuthUser | null>(null);
+  readonly loginError = signal<string | null>(null);
 
   private readonly http = inject(HttpClient);
   private initializePromise: Promise<void> | null = null;
+  private refreshPromise: Promise<boolean> | null = null;
   private initialized = false;
+  private loginState = '';
 
   async restoreSession(): Promise<void> {
     try {
       const response = await firstValueFrom(this.http.get<AuthResponse>(buildApiUrl('/auth/me')));
       this.user.set(this.mapUser(response.data.user));
+      this.loginError.set(null);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status !== 401) {
         console.warn('Could not restore auth session', error);
@@ -77,6 +98,8 @@ export class AuthService {
   }
 
   async renderGoogleButton(container: HTMLElement): Promise<void> {
+    this.loginError.set(null);
+    this.loginState = await this.fetchLoginState();
     await this.initializeGoogleAuth();
     if (!window.google) {
       throw new Error('Google Identity Services are unavailable.');
@@ -90,12 +113,39 @@ export class AuthService {
       shape: 'pill',
       width: 300,
     });
+    window.google.accounts.id.prompt((notification: GooglePromptMomentNotification) => {
+      if (notification.isNotDisplayed()) {
+        this.setLoginIssue(notification.getNotDisplayedReason());
+        return;
+      }
+      if (notification.isSkippedMoment()) {
+        this.setLoginIssue(notification.getSkippedReason());
+      }
+    });
   }
 
   logout(): void {
     this.user.set(null);
     void firstValueFrom(this.http.post(buildApiUrl('/auth/logout'), {})).catch(() => undefined);
     window.google?.accounts.id.disableAutoSelect();
+  }
+
+  handleSessionExpired(): void {
+    this.user.set(null);
+    window.google?.accounts.id.disableAutoSelect();
+  }
+
+  markLoginUnavailable(): void {
+    this.loginError.set('Logowanie Google jest obecnie niedostępne. Spróbuj ponownie.');
+  }
+
+  async refreshSession(): Promise<boolean> {
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = this.refreshSessionInternal();
+    return this.refreshPromise;
   }
 
   private async initializeGoogleAuth(): Promise<void> {
@@ -128,6 +178,15 @@ export class AuthService {
       },
     });
     this.initialized = true;
+  }
+
+  private async fetchLoginState(): Promise<string> {
+    const response = await firstValueFrom(
+      this.http.get<AuthStateResponse>(buildApiUrl('/auth/state'), {
+        context: withSkippedAuthInterceptor(),
+      }),
+    );
+    return response.data.state;
   }
 
   private loadGoogleScript(): Promise<void> {
@@ -164,6 +223,7 @@ export class AuthService {
 
   private async loginWithGoogleCredential(response: GoogleCredentialResponse): Promise<void> {
     if (!response.credential) {
+      this.loginError.set('Logowanie Google zostało anulowane.');
       return;
     }
 
@@ -171,11 +231,32 @@ export class AuthService {
       const result = await firstValueFrom(
         this.http.post<AuthResponse>(buildApiUrl('/auth/google'), {
           credential: response.credential,
+          state: this.loginState,
         }),
       );
       this.user.set(this.mapUser(result.data.user));
+      this.loginError.set(null);
     } catch (error) {
+      this.loginError.set('Nie udało się zalogować przez Google. Spróbuj ponownie.');
       console.error('Could not authenticate with Google', error);
+    }
+  }
+
+  private async refreshSessionInternal(): Promise<boolean> {
+    try {
+      await firstValueFrom(
+        this.http.post(buildApiUrl('/auth/refresh'), {}, { context: withSkippedAuthInterceptor() }),
+      );
+      const response = await firstValueFrom(
+        this.http.get<AuthResponse>(buildApiUrl('/auth/me'), { context: withSkippedAuthInterceptor() }),
+      );
+      this.user.set(this.mapUser(response.data.user));
+      return true;
+    } catch {
+      this.user.set(null);
+      return false;
+    } finally {
+      this.refreshPromise = null;
     }
   }
 
@@ -190,7 +271,19 @@ export class AuthService {
       givenName,
       familyName,
       fullName,
+      email: user.email,
+      picture: user.picture,
       role: user.role,
     };
+  }
+
+  private setLoginIssue(reason: string): void {
+    if (reason.includes('cancel') || reason.includes('dismiss') || reason.includes('user')) {
+      this.loginError.set('Logowanie Google zostało anulowane.');
+      return;
+    }
+    if (!this.user()) {
+      this.loginError.set('Logowanie Google jest obecnie niedostępne. Spróbuj ponownie.');
+    }
   }
 }

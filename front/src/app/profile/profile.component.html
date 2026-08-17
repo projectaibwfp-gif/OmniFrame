@@ -1,0 +1,37 @@
+<section class="profile-card">
+  <header class="profile-header">
+    @if (currentUser()?.picture) {
+      <img
+        class="profile-photo"
+        [src]="currentUser()?.picture"
+        [alt]="currentUser()?.fullName || 'Zdjęcie profilowe'"
+        referrerpolicy="no-referrer"
+      />
+    } @else {
+      <span class="profile-photo placeholder">{{ initials() }}</span>
+    }
+    <div>
+      <p class="eyebrow">Profil użytkownika</p>
+      <h1>{{ currentUser()?.fullName }}</h1>
+    </div>
+  </header>
+
+  <dl class="profile-details">
+    <div>
+      <dt>Imię</dt>
+      <dd>{{ currentUser()?.givenName || '-' }}</dd>
+    </div>
+    <div>
+      <dt>Nazwisko</dt>
+      <dd>{{ currentUser()?.familyName || '-' }}</dd>
+    </div>
+    <div>
+      <dt>E-mail</dt>
+      <dd>{{ currentUser()?.email || '-' }}</dd>
+    </div>
+    <div>
+      <dt>Rola</dt>
+      <dd>{{ currentUser()?.role || '-' }}</dd>
+    </div>
+  </dl>
+</section>

@@ -3,6 +3,9 @@
     <p class="eyebrow">OmniFrame</p>
     <h1>Zaloguj się</h1>
     <p class="subtitle">Użyj konta Google, aby przejść do dashboardu.</p>
+    @if (authService.loginError(); as loginError) {
+      <p class="login-error" role="alert">{{ loginError }}</p>
+    }
     <div #googleButton class="google-button-container"></div>
   </section>
 </main>

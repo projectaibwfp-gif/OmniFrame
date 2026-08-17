@@ -37,6 +37,11 @@ export class LoginComponent implements AfterViewInit {
       return;
     }
 
-    await this.authService.renderGoogleButton(this.googleButton.nativeElement);
+    try {
+      await this.authService.renderGoogleButton(this.googleButton.nativeElement);
+    } catch (error) {
+      console.error('Could not render Google login button', error);
+      this.authService.markLoginUnavailable();
+    }
   }
 }

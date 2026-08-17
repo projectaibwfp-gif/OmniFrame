@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
-import { issueSessionCookie, type UserRole, upsertGoogleUser, verifyGoogleToken } from '@/lib/auth';
+import {
+  clearLoginState,
+  isLoginStateValid,
+  issueSessionCookie,
+  type UserRole,
+  upsertGoogleUser,
+  verifyGoogleToken,
+} from '@/lib/auth';
 
 interface LoginPayload {
   credential?: string;
+  state?: string;
 }
 
 export const dynamic = 'force-dynamic';
@@ -22,17 +30,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return errorResponse('credential is required', 400);
   }
 
+  const state = payload.state?.trim();
+  if (!state || !isLoginStateValid(request, state)) {
+    const denied = errorResponse('Invalid login state', 403);
+    clearLoginState(denied);
+    return denied;
+  }
+
   try {
     const googleToken = await verifyGoogleToken(credential);
     let sessionUser: {
       given_name: string | null;
       family_name: string | null;
       name: string | null;
+      email: string;
+      picture: string | null;
       role: UserRole;
     } = {
       given_name: googleToken.given_name ?? null,
       family_name: googleToken.family_name ?? null,
       name: googleToken.name ?? null,
+      email: googleToken.email,
+      picture: googleToken.picture ?? null,
       role: 'user',
     };
 
@@ -42,6 +61,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         given_name: databaseUser.given_name,
         family_name: databaseUser.family_name,
         name: databaseUser.name,
+        email: databaseUser.email,
+        picture: databaseUser.picture,
         role: databaseUser.role,
       };
     } catch (error) {
@@ -58,6 +79,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
 
     await issueSessionCookie(response, credential);
+    clearLoginState(response);
 
     return response;
   } catch (error) {
