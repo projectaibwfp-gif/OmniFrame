@@ -1,6 +1,4 @@
-:host {
-  display: block;
-}
+@use 'colors' as c;
 
 :host {
   display: block;
@@ -13,10 +11,17 @@
 
 .profile-card {
   border-radius: 14px;
-}
 
-.profile-card .card-body {
-  padding: 28px;
+  .card-body {
+    padding: 28px;
+  }
+
+  h1 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 28px;
+    letter-spacing: -0.04em;
+  }
 }
 
 .profile-header {
@@ -31,30 +36,23 @@
   height: 72px;
   border-radius: 50%;
   object-fit: cover;
-}
 
-.profile-photo.placeholder {
-  display: grid;
-  place-items: center;
-  color: #1a2c47;
-  background: #cce0f3;
-  font-weight: 700;
+  &.placeholder {
+    display: grid;
+    place-items: center;
+    color: c.$text-700;
+    background: c.$info-tint;
+    font-weight: 700;
+  }
 }
 
 .eyebrow {
   margin: 0 0 4px;
-  color: #8d98af;
+  color: c.$text-300;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-h1 {
-  margin: 0;
-  color: #202c49;
-  font-size: 28px;
-  letter-spacing: -0.04em;
 }
 
 .profile-stack {
@@ -65,47 +63,47 @@ h1 {
 
 .profile-item-card {
   padding: 16px;
-  background: #f8f9fc;
-  border: 1px solid #edf0f6;
+  background: c.$surface-alt;
+  border: 1px solid c.$border-subtle;
   border-radius: 14px;
+
+  strong {
+    display: block;
+    color: c.$text-700;
+    font-size: 15px;
+    font-weight: 600;
+    word-break: break-word;
+  }
 }
 
 .label {
   display: block;
   margin-bottom: 8px;
-  color: #7a86a2;
+  color: c.$text-400;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
 }
 
-.profile-item-card strong {
-  display: block;
-  color: #253450;
-  font-size: 15px;
-  font-weight: 600;
-  word-break: break-word;
-}
-
 .referral-card {
-  background: #fff;
-}
+  background: c.$surface-card;
 
-.referral-card code {
-  display: block;
-  padding: 10px 12px;
-  overflow-wrap: anywhere;
-  border-radius: 8px;
-  background: #10192b;
-  color: #eff5ff;
-  font-size: 13px;
-  font-weight: 500;
+  code {
+    display: block;
+    padding: 10px 12px;
+    overflow-wrap: anywhere;
+    border-radius: 8px;
+    background: c.$surface-dark;
+    color: c.$text-on-dark;
+    font-size: 13px;
+    font-weight: 500;
+  }
 }
 
 .referral-note {
   margin: 0;
-  color: #7a86a2;
+  color: c.$text-400;
   font-size: 12px;
 }
 
@@ -119,17 +117,17 @@ h1 {
 .copy-feedback {
   font-size: 12px;
   font-weight: 700;
+
+  &.success {
+    color: c.$success-fg;
+  }
+
+  &.error {
+    color: c.$danger-fg-soft;
+  }
 }
 
-.copy-feedback.success {
-  color: #2f8f59;
-}
-
-.copy-feedback.error {
-  color: #c46b58;
-}
-
-@media (max-width: 640px) {
+@media (max-width: c.$bp-mobile) {
   .profile-header {
     align-items: flex-start;
     flex-direction: column;

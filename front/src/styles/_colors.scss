@@ -1,0 +1,97 @@
+// =============================================================================
+// Ujednolicona pula kolorów (design tokens).
+// Zasady:
+//   - Żaden komponent nie hardkoduje kolorów. Wszystkie SCSS mają importować
+//     wartości stąd: `@use 'colors' as colors;` (skonfigurowane w vite.config.ts).
+//   - Nowe kolory dokładamy TYLKO tutaj, po sprawdzeniu, czy istniejący token
+//     nie pasuje wizualnie.
+// =============================================================================
+
+// -------- Tekst -------------------------------------------------------------
+$text-body: #212529; // domyślny kolor body (Bootstrap gray-900)
+$text-900: #10192b; // najciemniejszy (dark surfaces text foreground)
+$text-800: #13213c; // hero heading
+$text-700: #202c49; // główne nagłówki (h1/h2)
+$text-600: #36425d; // pod-nagłówki
+$text-500: #5b6985; // body strong
+$text-400: #6f7c98; // body / subtitle
+$text-300: #8d98af; // faint / meta / labels
+$text-200: #adb5c4; // bardzo słaby placeholder
+
+$text-on-primary: #ffffff;
+$text-on-dark: #eff5ff;
+
+// -------- Powierzchnie ------------------------------------------------------
+$surface-page: #f6f7fb;
+$surface-page-tint-1: #eef5ff;
+$surface-page-tint-2: #f7f9fc;
+$surface-page-tint-3: #eef2f7;
+$surface-card: #ffffff;
+$surface-card-overlay: rgba(255, 255, 255, 0.9);
+$surface-card-overlay-strong: rgba(255, 255, 255, 0.92);
+$surface-alt: #f8f9fc;
+$surface-dark: #10192b;
+
+// -------- Krawędzie ---------------------------------------------------------
+$border-subtle: #edf0f5;
+$border-muted: #e9ecf3;
+$border-dashed: #e7ebf1;
+$border-translucent: rgba(226, 232, 240, 0.85);
+
+// -------- Marka (primary) ---------------------------------------------------
+$brand-primary: #0d6efd;
+$brand-primary-strong: #1d4ed8;
+$brand-primary-tint: #dbeafe;
+$brand-primary-tint-strong: #bfdbfe;
+$brand-primary-soft: rgba(13, 110, 253, 0.12);
+$brand-primary-soft-lite: rgba(13, 110, 253, 0.1);
+$brand-secondary: #0ea5e9;
+
+// -------- Statusy: success --------------------------------------------------
+$success-fg: #2f8f59;
+$success-fg-soft: #64a174;
+$success-strong: #8bc48d;
+$success-bg: #e7f6dc;
+
+// -------- Statusy: info -----------------------------------------------------
+$info-fg: #4b81c8;
+$info-fg-soft: #4d5f91;
+$info-bg: #e8f0ff;
+$info-bg-alt: #eef3ff;
+$info-badge-bg: #e8edf7;
+$info-accent: #68b8d7;
+$info-accent-soft: #6caec8;
+$info-accent-strong: #8ccce2;
+$info-tint: #cce0f3;
+
+// -------- Statusy: warning --------------------------------------------------
+$warning-fg: #cf8b56;
+$warning-fg-strong: #9a6b00;
+$warning-fg-accent: #f3bb83;
+$warning-bg: #fff0e3;
+$warning-bg-alt: #fff2d9;
+
+// -------- Statusy: danger ---------------------------------------------------
+$danger-fg: #b34c3b;
+$danger-fg-soft: #c67e6d;
+$danger-bg: #ffe7e2;
+$danger-strong-fg: #8c1c2f;
+$danger-strong-bg: #ffe8ee;
+$danger-strong-border: #f4bac8;
+
+// -------- Akcenty -----------------------------------------------------------
+$accent-purple-fg: #8c78c4;
+$accent-purple-bg: #f0eaff;
+$accent-purple-strong: #cbbce9;
+$accent-lime: #c7f268;
+
+// -------- Cienie ------------------------------------------------------------
+$shadow-soft: rgba(15, 23, 42, 0.04);
+$shadow-medium: rgba(15, 23, 42, 0.06);
+$shadow-strong: rgba(15, 23, 42, 0.08);
+$shadow-brand: rgba(13, 110, 253, 0.24);
+$shadow-brand-strong: rgba(13, 110, 253, 0.28);
+$shadow-card-hex: #35416112; // 8-cyfrowy hex ze slajdem alpha (login card)
+
+// -------- Breakpointy -------------------------------------------------------
+$bp-mobile: 575.98px;

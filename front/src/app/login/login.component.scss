@@ -1,3 +1,9 @@
+@use 'colors' as c;
+
+$card-max-width: 420px;
+$card-padding: 32px;
+$card-padding-mobile: 20px;
+
 :host {
   display: block;
   min-height: 100vh;
@@ -8,54 +14,38 @@
   min-height: 100vh;
   place-items: center;
   padding: 24px;
-  background: #f6f7fb;
+  background: c.$surface-page;
 }
 
 .login-card {
-  width: min(420px, 100%);
+  width: min($card-max-width, 100%);
   border-radius: 12px;
-  box-shadow: 0 8px 24px #35416112;
-}
+  box-shadow: 0 8px 24px c.$shadow-card-hex;
 
-.login-card .card-body {
-  padding: 32px;
-}
-
-@media (max-width: 575.98px) {
-  .login-page {
-    padding: 12px;
-    align-items: start;
-    padding-top: 24px;
+  .card-body {
+    padding: $card-padding;
   }
 
-  .login-card {
-    border-radius: 10px;
-  }
-
-  .login-card .card-body {
-    padding: 20px;
+  h1 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 30px;
+    letter-spacing: -0.04em;
   }
 }
 
 .eyebrow {
   margin: 0 0 8px;
-  color: #8d98af;
+  color: c.$text-300;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-h1 {
-  margin: 0;
-  color: #202c49;
-  font-size: 30px;
-  letter-spacing: -0.04em;
-}
-
 .subtitle {
   margin: 10px 0 28px;
-  color: #6f7c98;
+  color: c.$text-400;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -70,22 +60,35 @@ h1 {
 .google-button-container {
   display: flex;
   justify-content: center;
-  padding: 0 32px 24px;
+  padding: 0 $card-padding $card-padding-mobile;
 }
 
 .login-error {
-  margin: 0 32px 16px;
+  margin: 0 $card-padding 16px;
   padding: 10px 12px;
-  color: #8c1c2f;
-  background: #ffe8ee;
-  border: 1px solid #f4bac8;
+  color: c.$danger-strong-fg;
+  background: c.$danger-strong-bg;
+  border: 1px solid c.$danger-strong-border;
   border-radius: 8px;
   font-size: 13px;
 }
 
-@media (max-width: 575.98px) {
-  h1 {
-    font-size: 24px;
+@media (max-width: c.$bp-mobile) {
+  .login-page {
+    align-items: start;
+    padding: 24px 12px;
+  }
+
+  .login-card {
+    border-radius: 10px;
+
+    .card-body {
+      padding: $card-padding-mobile;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
   }
 
   .subtitle {
@@ -98,11 +101,11 @@ h1 {
   }
 
   .google-button-container {
-    padding: 0 20px 20px;
+    padding: 0 $card-padding-mobile $card-padding-mobile;
   }
 
   .login-error {
-    margin: 0 20px 12px;
+    margin: 0 $card-padding-mobile 12px;
     font-size: 12px;
   }
 }

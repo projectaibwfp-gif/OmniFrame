@@ -1,5 +1,5 @@
 import { __decorate, __metadata } from "tslib";
-import { ChangeDetectionStrategy, Component, ViewChild, effect, inject, } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterNextRender, effect, inject, viewChild, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 let LoginComponent = class LoginComponent {
@@ -7,27 +7,35 @@ let LoginComponent = class LoginComponent {
         this.authService = inject(AuthService);
         this.route = inject(ActivatedRoute);
         this.router = inject(Router);
+        this.googleButton = viewChild.required('googleButton');
         effect(() => {
             if (this.authService.isAuthenticated()) {
                 void this.router.navigateByUrl('/');
             }
         });
+        afterNextRender(() => {
+            void this.initializeGoogleLogin();
+        });
     }
-    async ngAfterViewInit() {
-        if (!this.googleButton) {
+    async initializeGoogleLogin() {
+        await this.captureReferralIfPresent();
+        await this.renderGoogleButton();
+    }
+    async captureReferralIfPresent() {
+        const referralCode = this.route.snapshot.queryParamMap.get('ref');
+        if (!referralCode) {
             return;
         }
-        const referralCode = this.route.snapshot.queryParamMap.get('ref');
-        if (referralCode) {
-            try {
-                await this.authService.captureReferral(referralCode);
-            }
-            catch (error) {
-                console.warn('Could not capture referral code', error);
-            }
-        }
         try {
-            await this.authService.renderGoogleButton(this.googleButton.nativeElement);
+            await this.authService.captureReferral(referralCode);
+        }
+        catch (error) {
+            console.warn('Could not capture referral code', error);
+        }
+    }
+    async renderGoogleButton() {
+        try {
+            await this.authService.renderGoogleButton(this.googleButton().nativeElement);
         }
         catch (error) {
             console.error('Could not render Google login button', error);
@@ -35,14 +43,9 @@ let LoginComponent = class LoginComponent {
         }
     }
 };
-__decorate([
-    ViewChild('googleButton', { static: true }),
-    __metadata("design:type", Function)
-], LoginComponent.prototype, "googleButton", void 0);
 LoginComponent = __decorate([
     Component({
         selector: 'app-login',
-        standalone: true,
         templateUrl: './login.component.html',
         styleUrl: './login.component.scss',
         changeDetection: ChangeDetectionStrategy.OnPush,

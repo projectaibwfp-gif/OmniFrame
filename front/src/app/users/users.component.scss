@@ -1,18 +1,33 @@
+@use 'colors' as c;
+
 :host {
   display: block;
 }
 
 .panel {
   border-radius: 1rem;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 14px 34px c.$shadow-medium;
 }
 
 .users-panel {
   padding: 0;
-}
 
-.users-panel .card-body {
-  padding: 24px;
+  .card-body {
+    padding: 24px;
+  }
+
+  h1 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: clamp(24px, 3vw, 30px);
+    letter-spacing: -0.04em;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: c.$text-300;
+    font-size: 13px;
+  }
 }
 
 .panel-heading {
@@ -22,24 +37,11 @@
   gap: 12px;
 }
 
-h1 {
-  margin: 0;
-  color: #202c49;
-  font-size: clamp(24px, 3vw, 30px);
-  letter-spacing: -0.04em;
-}
-
-p {
-  margin: 8px 0 0;
-  color: #8d98af;
-  font-size: 13px;
-}
-
 .name {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #36425d;
+  color: c.$text-600;
   font-weight: 600;
 }
 
@@ -58,8 +60,8 @@ p {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #e8edf7;
-  color: #68748d;
+  background: c.$info-badge-bg;
+  color: c.$text-400;
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
@@ -69,34 +71,34 @@ p {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #68748d;
+  color: c.$text-400;
   word-break: break-all;
 }
 
 .verified {
-  color: #72b37c;
+  color: c.$success-fg-soft;
   font-size: 11px;
   font-weight: 700;
 }
 
 .referral {
-  color: #8994a9;
-}
+  color: c.$text-300;
 
-.referral.referred {
-  color: #2f8f59;
-  font-weight: 700;
+  &.referred {
+    color: c.$success-fg;
+    font-weight: 700;
+  }
 }
 
 .table-message {
   padding: 32px 0 14px;
-  color: #8994a9;
+  color: c.$text-300;
   font-size: 13px;
   text-align: center;
-}
 
-.table-message.error {
-  color: #c67e6d;
+  &.error {
+    color: c.$danger-fg-soft;
+  }
 }
 
 .user-cards {
@@ -108,10 +110,10 @@ p {
 
 .user-card {
   padding: 16px;
-  border: 1px solid #edf2f7;
+  border: 1px solid c.$border-subtle;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
+  background: c.$surface-card-overlay-strong;
+  box-shadow: 0 10px 22px c.$shadow-soft;
 }
 
 .user-card-top {
@@ -126,25 +128,25 @@ p {
   grid-template-columns: 1fr;
   gap: 10px;
   margin-top: 14px;
+
+  .label {
+    display: block;
+    margin-bottom: 4px;
+    color: c.$text-300;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .value {
+    color: c.$text-500;
+    font-weight: 600;
+    word-break: break-word;
+  }
 }
 
-.user-card-grid .label {
-  display: block;
-  margin-bottom: 4px;
-  color: #94a3b8;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.user-card-grid .value {
-  color: #334155;
-  font-weight: 600;
-  word-break: break-word;
-}
-
-@media (max-width: 640px) {
+@media (max-width: c.$bp-mobile) {
   .panel-heading {
     flex-direction: column;
     align-items: stretch;

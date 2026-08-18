@@ -1,18 +1,33 @@
+@use 'colors' as c;
+
 :host {
   display: block;
 }
 
 .panel {
   border-radius: 1rem;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 14px 34px c.$shadow-medium;
 }
 
 .products-panel {
   padding: 0;
-}
 
-.products-panel .card-body {
-  padding: 24px;
+  .card-body {
+    padding: 24px;
+  }
+
+  h1 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: clamp(24px, 3vw, 30px);
+    letter-spacing: -0.04em;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: c.$text-300;
+    font-size: 13px;
+  }
 }
 
 .panel-heading {
@@ -22,58 +37,45 @@
   gap: 12px;
 }
 
-h1 {
-  margin: 0;
-  color: #202c49;
-  font-size: clamp(24px, 3vw, 30px);
-  letter-spacing: -0.04em;
-}
-
-p {
-  margin: 8px 0 0;
-  color: #8d98af;
-  font-size: 13px;
-}
-
 .products-table {
   margin-top: 20px;
-}
 
-.name {
-  color: #36425d;
-  font-weight: 600;
-}
+  .name {
+    color: c.$text-600;
+    font-weight: 600;
+  }
 
-.products-table .table {
-  color: #334155;
-}
+  .table {
+    color: c.$text-500;
+  }
 
-.products-table thead th {
-  border-bottom-width: 1px;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+  thead th {
+    border-bottom-width: 1px;
+    color: c.$text-400;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
-.products-table tbody td {
-  border-top-color: #edf2f7;
-  padding-block: 0.95rem;
+  tbody td {
+    border-top-color: c.$border-subtle;
+    padding-block: 0.95rem;
+  }
 }
 
 .table-message {
   padding: 32px 0 14px;
-  color: #8994a9;
+  color: c.$text-300;
   font-size: 13px;
   text-align: center;
+
+  &.error {
+    color: c.$danger-fg-soft;
+  }
 }
 
-.table-message.error {
-  color: #c67e6d;
-}
-
-@media (max-width: 640px) {
+@media (max-width: c.$bp-mobile) {
   .panel-heading {
     flex-direction: column;
     align-items: stretch;
@@ -86,10 +88,10 @@ p {
   .table-row {
     grid-template-columns: 1.2fr 0.8fr;
     gap: 8px;
-  }
 
-  .table-row > :nth-child(3),
-  .table-row > :nth-child(4) {
-    display: none;
+    > :nth-child(3),
+    > :nth-child(4) {
+      display: none;
+    }
   }
 }

@@ -16,6 +16,10 @@ export default defineConfig(({ mode }) => ({
     preprocessorOptions: {
       scss: {
         quietDeps: true,
+        loadPaths: [
+          path.resolve(import.meta.dirname, 'src/styles'),
+          path.resolve(import.meta.dirname, 'node_modules'),
+        ],
       },
     },
   },

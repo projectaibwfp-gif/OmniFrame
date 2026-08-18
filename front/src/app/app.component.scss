@@ -1,3 +1,5 @@
+@use 'colors' as c;
+
 :host {
   display: block;
   min-height: 100vh;
@@ -18,7 +20,7 @@
 .content :where(.card, .panel) {
   border: 0;
   border-radius: 1.25rem;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 45px c.$shadow-strong;
 }
 
 .sidebar {
@@ -39,7 +41,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #13213c;
+  color: c.$text-800;
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -51,20 +53,20 @@
   width: 34px;
   height: 34px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0d6efd, #0ea5e9);
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(13, 110, 253, 0.28);
+  background: linear-gradient(135deg, c.$brand-primary, c.$brand-secondary);
+  color: c.$text-on-primary;
+  box-shadow: 0 8px 24px c.$shadow-brand-strong;
 }
 
 .brand-accent {
-  color: #0d6efd;
+  color: c.$brand-primary;
 }
 
 .brand-pill {
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  background: rgba(13, 110, 253, 0.12);
-  color: #0d6efd;
+  background: c.$brand-primary-soft;
+  color: c.$brand-primary;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -75,7 +77,7 @@
 .mobile-topbar,
 .mobile-nav,
 .page-hero {
-  background: rgba(255, 255, 255, 0.9);
+  background: c.$surface-card-overlay;
   backdrop-filter: blur(14px);
 }
 
@@ -92,21 +94,21 @@
   height: 46px;
   place-items: center;
   border-radius: 16px;
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: #1d4ed8;
+  background: linear-gradient(135deg, c.$brand-primary-tint, c.$brand-primary-tint-strong);
+  color: c.$brand-primary-strong;
   font-weight: 800;
 }
 
 .workspace-user strong,
 .mobile-user strong,
 .page-hero h1 {
-  color: #13213c;
+  color: c.$text-800;
 }
 
 .workspace-user small,
 .mobile-user small {
   display: block;
-  color: #64748b;
+  color: c.$text-400;
 }
 
 .workspace-meta {
@@ -117,7 +119,7 @@
 .footer-label,
 .eyebrow {
   margin: 0 0 12px;
-  color: #64748b;
+  color: c.$text-400;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -138,14 +140,14 @@
   gap: 12px;
   padding: 0.85rem 1rem;
   border-radius: 0.95rem;
-  color: #334155;
+  color: c.$text-500;
   font-weight: 600;
-}
 
-.nav-item:hover,
-.nav-item.active {
-  background: rgba(13, 110, 253, 0.1);
-  color: #0d6efd;
+  &:hover,
+  &.active {
+    background: c.$brand-primary-soft-lite;
+    color: c.$brand-primary;
+  }
 }
 
 .nav-icon {
@@ -154,8 +156,8 @@
   height: 28px;
   place-items: center;
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.06);
-  color: #475569;
+  background: c.$shadow-medium;
+  color: c.$text-500;
   font-size: 0.9rem;
 }
 
@@ -173,7 +175,7 @@
 .intro {
   max-width: 58rem;
   margin: 0;
-  color: #475569;
+  color: c.$text-500;
 }
 
 .hero-actions {
@@ -246,9 +248,9 @@
 
   .mobile-actions {
     width: 100%;
-  }
 
-  .mobile-actions .btn {
-    flex: 1;
+    .btn {
+      flex: 1;
+    }
   }
 }
