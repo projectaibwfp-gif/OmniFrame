@@ -87,6 +87,7 @@ export class AuthService {
   private refreshPromise: Promise<boolean> | null = null;
   private initialized = false;
   private loginState = '';
+  private loginSubmissionInFlight = false;
 
   async restoreSession(): Promise<void> {
     try {
@@ -108,6 +109,7 @@ export class AuthService {
 
   async renderGoogleButton(container: HTMLElement): Promise<void> {
     this.loginError.set(null);
+    this.loginSubmissionInFlight = false;
     this.loginState = await this.fetchLoginState();
     await this.initializeGoogleAuth();
     if (!window.google) {
@@ -249,6 +251,11 @@ export class AuthService {
       this.loginError.set('Logowanie Google zostało anulowane.');
       return;
     }
+    if (this.loginSubmissionInFlight || !this.loginState) {
+      return;
+    }
+
+    this.loginSubmissionInFlight = true;
 
     try {
       const result = await firstValueFrom(
@@ -259,9 +266,12 @@ export class AuthService {
       );
       this.user.set(this.mapUser(result.data.user));
       this.loginError.set(null);
+      this.loginState = '';
     } catch (error) {
       this.loginError.set('Nie udało się zalogować przez Google. Spróbuj ponownie.');
       console.error('Could not authenticate with Google', error);
+    } finally {
+      this.loginSubmissionInFlight = false;
     }
   }
 
