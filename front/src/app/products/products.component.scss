@@ -3,13 +3,15 @@
 }
 
 .panel {
-  background: #fff;
-  border: 1px solid #e9ecf3;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px #35416108;
+  border-radius: 1rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
 }
 
 .products-panel {
+  padding: 0;
+}
+
+.products-panel .card-body {
   padding: 24px;
 }
 
@@ -22,7 +24,6 @@
 
 h1 {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
   color: #202c49;
   font-size: clamp(24px, 3vw, 30px);
   letter-spacing: -0.04em;
@@ -34,38 +35,8 @@ p {
   font-size: 13px;
 }
 
-.refresh-button {
-  padding: 10px 14px;
-  color: #16203a;
-  background: #c7f268;
-  border: 0;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .products-table {
   margin-top: 20px;
-}
-
-.table-row {
-  display: grid;
-  grid-template-columns: minmax(160px, 1.3fr) 0.7fr 0.9fr 0.8fr;
-  align-items: center;
-  min-height: 46px;
-  border-top: 1px solid #f0f2f6;
-  color: #68748d;
-  font-size: 12px;
-}
-
-.table-head {
-  min-height: 30px;
-  border: 0;
-  color: #a5adbd;
-  font-size: 9px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .name {
@@ -73,13 +44,22 @@ p {
   font-weight: 600;
 }
 
-.status {
-  color: #72b37c;
-  font-weight: 600;
+.products-table .table {
+  color: #334155;
 }
 
-.status.draft {
-  color: #c9956b;
+.products-table thead th {
+  border-bottom-width: 1px;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.products-table tbody td {
+  border-top-color: #edf2f7;
+  padding-block: 0.95rem;
 }
 
 .table-message {

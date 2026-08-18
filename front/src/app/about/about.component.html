@@ -1,25 +1,91 @@
 <div class="about-page">
-  <p class="eyebrow">Documentation</p>
-  <h1>O projekcie <span>project.ai</span></h1>
-  <p class="lead">
-    Panel Angulara jest gotowy do rozbudowy. Ta strona pokazuje miejsce na dokumentację i ustawienia
-    workspace'u.
-  </p>
-  <div class="about-grid">
-    <article>
-      <span class="number">01</span>
-      <h2>Frontend</h2>
-      <p>Angular 20, standalone components, lazy routing oraz responsywny dashboard.</p>
+  <section class="hero card border-0">
+    <div class="card-body hero-body">
+      <div class="hero-copy">
+        <p class="eyebrow">Portfolio / Project overview</p>
+        <h1>project.ai</h1>
+        <p class="lead">
+          Operacyjny panel z portfolio-style prezentacją: realne dane, responsywny UI i spójny
+          zestaw ekranów dla dashboardu, użytkowników, profilu i logowania.
+        </p>
+
+        <div class="hero-badges">
+          <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">Angular 22</span>
+          <span class="badge rounded-pill bg-info-subtle text-info-emphasis">MDBootstrap</span>
+          <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Real API</span>
+          <span class="badge rounded-pill bg-dark-subtle text-dark-emphasis">JWT sessions</span>
+        </div>
+      </div>
+
+      <div class="hero-aside">
+        <article class="metric-card">
+          <span class="metric-label">Front</span>
+          <strong>Standalone UI</strong>
+          <p>Angular + Vite + responsywny shell.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Backend</span>
+          <strong>Next.js API</strong>
+          <p>Auth, users, dashboard i referrals.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric-label">Dane</span>
+          <strong>PostgreSQL</strong>
+          <p>Bez mocków i bez placeholderów.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-grid">
+    <article class="showcase-card card border-0">
+      <div class="card-body">
+        <p class="eyebrow">What it ships</p>
+        <h2>Co jest w środku</h2>
+        <p>
+          Dashboard z metrykami, lista użytkowników, profil z linkiem polecającym i logowanie Google
+          oparte o cookie session.
+        </p>
+      </div>
     </article>
-    <article>
-      <span class="number">02</span>
-      <h2>Backend</h2>
-      <p>Next.js App Router udostępnia REST API pod ścieżkami <code>/api/*</code>.</p>
+
+    <article class="showcase-card card border-0">
+      <div class="card-body">
+        <p class="eyebrow">UX focus</p>
+        <h2>Wygląd i czytelność</h2>
+        <p>
+          Minimalny, jasny layout, karty zamiast surowych tabel tam, gdzie lepiej wyglądają na
+          mobile.
+        </p>
+      </div>
     </article>
-    <article>
-      <span class="number">03</span>
-      <h2>Baza danych</h2>
-      <p>MySQL jest obsługiwany przez pulę połączeń <code>mysql2</code>.</p>
+
+    <article class="showcase-card card border-0">
+      <div class="card-body">
+        <p class="eyebrow">Architecture</p>
+        <h2>Jasny podział warstw</h2>
+        <p>
+          Front korzysta z API, backend waliduje sesję i dane, a ekran profilu i users pokazują
+          rzeczywiste rekordy.
+        </p>
+      </div>
     </article>
-  </div>
+  </section>
+
+  <section class="section-grid stack-grid">
+    <article class="stack-card card border-0">
+      <div class="card-body">
+        <p class="eyebrow">Frontend stack</p>
+        <h2>Komponenty i flow</h2>
+        <div class="stack-badges">
+          <span class="badge rounded-pill bg-light text-dark border">Angular standalone</span>
+          <span class="badge rounded-pill bg-light text-dark border">Signals</span>
+          <span class="badge rounded-pill bg-light text-dark border">Routing</span>
+          <span class="badge rounded-pill bg-light text-dark border">MDBootstrap</span>
+          <span class="badge rounded-pill bg-light text-dark border">Vite</span>
+          <span class="badge rounded-pill bg-light text-dark border">Responsive UI</span>
+        </div>
+      </div>
+    </article>
+  </section>
 </div>

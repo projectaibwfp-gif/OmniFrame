@@ -2,11 +2,21 @@
   display: block;
 }
 
+:host {
+  display: block;
+}
+
+.profile-page {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
 .profile-card {
-  padding: 28px;
-  background: #fff;
-  border: 1px solid #e9ecf3;
   border-radius: 14px;
+}
+
+.profile-card .card-body {
+  padding: 28px;
 }
 
 .profile-header {
@@ -47,38 +57,39 @@ h1 {
   letter-spacing: -0.04em;
 }
 
-.profile-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin: 0;
+.profile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.profile-details div {
-  padding: 14px;
+.profile-item-card {
+  padding: 16px;
   background: #f8f9fc;
   border: 1px solid #edf0f6;
-  border-radius: 10px;
+  border-radius: 14px;
 }
 
-dt {
-  margin: 0 0 6px;
+.label {
+  display: block;
+  margin-bottom: 8px;
   color: #7a86a2;
   font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
-dd {
-  margin: 0;
+.profile-item-card strong {
+  display: block;
   color: #253450;
   font-size: 15px;
   font-weight: 600;
+  word-break: break-word;
 }
 
 .referral-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  background: #fff;
 }
 
 .referral-card code {
@@ -102,17 +113,7 @@ dd {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.copy-button {
-  padding: 10px 14px;
-  border: 0;
-  border-radius: 8px;
-  background: #c7f268;
-  color: #16203a;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+  flex-wrap: wrap;
 }
 
 .copy-feedback {
@@ -126,4 +127,15 @@ dd {
 
 .copy-feedback.error {
   color: #c46b58;
+}
+
+@media (max-width: 640px) {
+  .profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-card .card-body {
+    padding: 20px;
+  }
 }

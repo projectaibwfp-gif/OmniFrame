@@ -1,82 +1,130 @@
 @if (authService.isAuthenticated()) {
   <div class="shell">
     <aside class="sidebar">
-      <a class="brand" routerLink="/">
-        <span class="brand-mark">✦</span>
-        <span>project<span class="brand-accent">.ai</span></span>
-      </a>
-
-      <div class="workspace-switcher">
-        <span class="workspace-icon">{{ initials() || 'U' }}</span>
-        <span class="workspace-name">{{ currentUser()?.fullName }}</span>
-        <span class="chevron">⌄</span>
+      <div class="sidebar-brand">
+        <a class="brand" routerLink="/" (click)="closeMobileNav()">
+          <span class="brand-mark">✦</span>
+          <span>project<span class="brand-accent">.ai</span></span>
+        </a>
+        <span class="brand-pill">v{{ appVersion }}</span>
       </div>
 
-      <nav class="navigation" aria-label="Główna nawigacja">
-        <p class="nav-label">Workspace</p>
-        <a
-          class="nav-item"
-          routerLink="/"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          <span class="nav-icon">▦</span>
-          Dashboard
-        </a>
-        <a class="nav-item" routerLink="/products" routerLinkActive="active">
-          <span class="nav-icon">☰</span>
-          Produkty
-        </a>
-        <a class="nav-item" routerLink="/users" routerLinkActive="active">
-          <span class="nav-icon">👤</span>
-          Użytkownicy
-        </a>
-        <a class="nav-item" routerLink="/profile" routerLinkActive="active">
-          <span class="nav-icon">☺</span>
-          Profil
-        </a>
-        <a class="nav-item" routerLink="/about" routerLinkActive="active">
-          <span class="nav-icon">ⓘ</span>
-          O projekcie
-        </a>
+      <div class="workspace-card card">
+        <div class="card-body">
+          <div class="workspace-user">
+            <span class="workspace-avatar">{{ initials() || 'U' }}</span>
+            <div>
+              <strong>{{ currentUser()?.fullName }}</strong>
+              <small>{{ currentUser()?.email }}</small>
+            </div>
+          </div>
+          <span class="workspace-meta badge rounded-pill bg-success-subtle text-success-emphasis">
+            Zalogowany przez Google
+          </span>
+        </div>
+      </div>
+
+      <nav class="navigation card" aria-label="Główna nawigacja">
+        <div class="card-body">
+          <p class="nav-label">Nawigacja</p>
+          @for (item of navItems; track item.path) {
+            <a
+              class="nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              (click)="closeMobileNav()"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </div>
       </nav>
 
-      <div class="sidebar-footer">
-        <div class="help-card">
-          <span class="help-icon">?</span>
-          <div>
-            <strong>Potrzebujesz pomocy?</strong>
-            <span>Przeczytaj dokumentację</span>
-          </div>
-        </div>
-        <div class="profile">
-          <span class="avatar">{{ initials() || 'U' }}</span>
-          <div>
-            <strong>{{ currentUser()?.fullName }}</strong>
-            <span>Zalogowany przez Google</span>
-          </div>
-          <span class="more">•••</span>
+      <div class="sidebar-footer card">
+        <div class="card-body">
+          <p class="footer-label">Akcje</p>
+          <button class="btn btn-primary w-100 mb-2" type="button" (click)="logout()">
+            Wyloguj się
+          </button>
+          <a class="btn btn-outline-secondary w-100" routerLink="/profile" (click)="closeMobileNav()">
+            Otwórz profil
+          </a>
         </div>
       </div>
     </aside>
 
-    <main class="content">
-      <header class="topbar">
-        <div class="breadcrumbs">
-          <span>Workspace</span>
-          <span class="slash">/</span>
-          <strong>Overview</strong>
-        </div>
-        <div class="topbar-actions">
-          <button class="icon-button" aria-label="Powiadomienia">
-            ♧<span class="notification-dot"></span>
-          </button>
-          <button class="icon-button" aria-label="Ustawienia">⚙</button>
-          <span class="topbar-divider"></span>
-          <button class="avatar small" aria-label="Menu profilu">{{ initials() || 'U' }}</button>
-          <button class="logout-button" type="button" (click)="logout()">Logout</button>
+    <section class="mobile-shell">
+      <header class="mobile-topbar card">
+        <div class="card-body">
+          <div class="mobile-topbar-row">
+            <a class="brand" routerLink="/" (click)="closeMobileNav()">
+              <span class="brand-mark">✦</span>
+              <span>project<span class="brand-accent">.ai</span></span>
+            </a>
+            <span class="brand-pill">v{{ appVersion }}</span>
+            <div class="mobile-actions">
+              <button
+                class="btn btn-light btn-sm"
+                type="button"
+                [mdbTooltip]="navOpen() ? 'Ukryj menu' : 'Pokaż menu'"
+                placement="bottom"
+                (click)="toggleMobileNav()"
+              >
+                Menu
+              </button>
+              <button class="btn btn-primary btn-sm" type="button" (click)="logout()">Wyloguj</button>
+            </div>
+          </div>
+
+          <div class="mobile-user">
+            <span class="workspace-avatar">{{ initials() || 'U' }}</span>
+            <div>
+              <strong>{{ currentUser()?.fullName }}</strong>
+              <small>{{ currentUser()?.email }}</small>
+            </div>
+          </div>
         </div>
       </header>
+
+      <div class="mobile-nav card" mdbCollapse [collapsed]="!navOpen()">
+        <div class="card-body">
+          @for (item of navItems; track item.path) {
+            <a
+              class="nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              (click)="closeMobileNav()"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+
+    <main class="content">
+      <header class="page-hero card">
+        <div class="card-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+          <div>
+            <p class="eyebrow">Workspace</p>
+            <h1>Nowoczesny panel operacyjny</h1>
+            <p class="intro">
+              Wszystkie widoki korzystają z realnych danych API i spójnych komponentów MDBootstrap.
+            </p>
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" routerLink="/" (click)="closeMobileNav()">Dashboard</a>
+            <a class="btn btn-outline-primary" routerLink="/profile" (click)="closeMobileNav()">
+              Profil
+            </a>
+          </div>
+        </div>
+      </header>
+
       <section class="page">
         <router-outlet></router-outlet>
       </section>

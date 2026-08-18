@@ -1,8 +1,18 @@
 <main class="login-page">
-  <section class="login-card">
-    <p class="eyebrow">OmniFrame</p>
-    <h1>Zaloguj się</h1>
-    <p class="subtitle">Użyj konta Google, aby przejść do dashboardu.</p>
+  <section class="login-card card border-0">
+    <div class="card-body">
+      <p class="eyebrow">OmniFrame</p>
+      <h1>Zaloguj się</h1>
+      <p class="subtitle">
+        Użyj konta Google, aby wejść do dashboardu, profilu, list użytkowników i danych w czasie
+        rzeczywistym.
+      </p>
+      <div class="login-points">
+        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">Real API</span>
+        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">JWT cookies</span>
+        <span class="badge rounded-pill bg-info-subtle text-info-emphasis">Referral flow</span>
+      </div>
+    </div>
     @if (authService.loginError(); as loginError) {
       <p class="login-error" role="alert">{{ loginError }}</p>
     }

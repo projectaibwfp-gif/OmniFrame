@@ -1,20 +1,22 @@
 <div class="dashboard-header">
   <div>
     <p class="eyebrow">{{ todayLabel }}</p>
-    <h1>Good morning, {{ currentUser()?.fullName }} <span>✦</span></h1>
-    <p class="intro">Dashboard pokazuje dzisiejsza aktywnosc Google, rejestracje i skutecznosc polecen.</p>
+    <h1>Dzień dobry, {{ currentUser()?.fullName }} <span>✦</span></h1>
+    <p class="intro">
+      Dashboard pokazuje dzisiejszą aktywność Google, rejestracje i skuteczność poleceń.
+    </p>
   </div>
-  <a class="primary-button" routerLink="/users"><span>↗</span> Panel uzytkownikow</a>
+  <a class="primary-button btn btn-primary" routerLink="/users"><span>↗</span> Panel użytkowników</a>
 </div>
 
 @if (isLoading()) {
-  <div class="table-message">Ladowanie statystyk dashboardu...</div>
+  <div class="table-message">Ładowanie statystyk dashboardu...</div>
 } @else if (apiError()) {
-  <div class="table-message error">Nie udalo sie pobrac statystyk dashboardu.</div>
+  <div class="table-message error">Nie udało się pobrać statystyk dashboardu.</div>
 } @else if (dashboard(); as data) {
   <div class="stats-grid">
     @for (card of statCards(); track card.label) {
-      <article class="stat-card">
+      <article class="stat-card card border-0">
         <div class="stat-icon {{ card.iconClass }}">{{ card.icon }}</div>
         <div class="stat-copy">
           <span class="stat-label">{{ card.label }}</span>
@@ -31,10 +33,10 @@
   </div>
 
   <div class="content-grid">
-    <section class="panel activity-panel">
+    <section class="panel activity-panel card border-0">
       <div class="panel-heading">
         <div>
-          <h2>Aktywnosc z ostatnich 7 dni</h2>
+          <h2>Aktywność z ostatnich 7 dni</h2>
           <p>Logowania Google i nowe rejestracje na jednej osi czasu.</p>
         </div>
         <div class="chart-legend">
@@ -73,11 +75,11 @@
       </div>
     </section>
 
-    <section class="panel quick-panel">
+    <section class="panel quick-panel card border-0">
       <div class="panel-heading">
         <div>
           <h2>Szybki obraz</h2>
-          <p>Najwazniejsze liczby do pilnowania dzisiaj.</p>
+          <p>Najważniejsze liczby do pilnowania dzisiaj.</p>
         </div>
       </div>
       <div class="insight-list">
@@ -85,7 +87,7 @@
           <span class="action-icon lavender">✓</span>
           <div>
             <strong>{{ data.overview.verifiedUsers }} zweryfikowanych kont</strong>
-            <small>{{ data.overview.verifiedShare }}% calej bazy uzytkownikow</small>
+            <small>{{ data.overview.verifiedShare }}% całej bazy użytkowników</small>
           </div>
         </article>
         <article class="insight-item">
@@ -102,14 +104,14 @@
               @if (topReferrer(); as topReferrer) {
                 {{ topReferrer.name }}
               } @else {
-                Brak lidera polecen
+                Brak lidera poleceń
               }
             </strong>
             <small>
               @if (topReferrer(); as topReferrer) {
                 {{ topReferrer.referrals }} skutecznych polecen
               } @else {
-                Jeszcze nikt nie zaprosil nowego uzytkownika.
+                Jeszcze nikt nie zaprosił nowego użytkownika.
               }
             </small>
           </div>
@@ -121,7 +123,7 @@
               @if (latestActiveUser(); as latestActiveUser) {
                 {{ latestActiveUser.name }}
               } @else {
-                Brak aktywnosci
+                Brak aktywności
               }
             </strong>
             <small>
@@ -138,17 +140,17 @@
   </div>
 
   <div class="bottom-grid">
-    <section class="panel projects-panel">
+    <section class="panel projects-panel card border-0">
       <div class="panel-heading">
         <div>
           <h2>Ostatnie logowania</h2>
-          <p>Kto byl aktywny ostatnio i czy przyszedl z polecenia.</p>
+          <p>Kto był aktywny ostatnio i czy przyszedł z polecenia.</p>
         </div>
-        <a routerLink="/users" class="view-all">Wszyscy uzytkownicy <span>→</span></a>
+        <a routerLink="/users" class="view-all">Wszyscy użytkownicy <span>→</span></a>
       </div>
       <div class="projects-table">
         <div class="table-row table-head">
-          <span>Uzytkownik</span><span>Rola</span><span>Wejscie</span><span>Rejestracja</span><span>Logowanie</span>
+          <span>Użytkownik</span><span>Rola</span><span>Wejście</span><span>Rejestracja</span><span>Logowanie</span>
         </div>
         @for (user of data.recentUsers; track user.id) {
           <div class="table-row">
@@ -164,7 +166,7 @@
       </div>
     </section>
 
-    <section class="panel quick-panel">
+    <section class="panel quick-panel card border-0">
       <div class="panel-heading">
         <div>
           <h2>Top polecajacy</h2>

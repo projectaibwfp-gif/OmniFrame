@@ -1,52 +1,61 @@
-<section class="profile-card">
-  <header class="profile-header">
-    @if (currentUser()?.picture) {
-      <img
-        class="profile-photo"
-        [src]="currentUser()?.picture"
-        [alt]="currentUser()?.fullName || 'Zdjęcie profilowe'"
-        referrerpolicy="no-referrer"
-      />
-    } @else {
-      <span class="profile-photo placeholder">{{ initials() }}</span>
-    }
-    <div>
-      <p class="eyebrow">Profil użytkownika</p>
-      <h1>{{ currentUser()?.fullName }}</h1>
-    </div>
-  </header>
-
-  <dl class="profile-details">
-    <div>
-      <dt>Imię</dt>
-      <dd>{{ currentUser()?.givenName || '-' }}</dd>
-    </div>
-    <div>
-      <dt>Nazwisko</dt>
-      <dd>{{ currentUser()?.familyName || '-' }}</dd>
-    </div>
-    <div>
-      <dt>E-mail</dt>
-      <dd>{{ currentUser()?.email || '-' }}</dd>
-    </div>
-    <div>
-      <dt>Rola</dt>
-      <dd>{{ currentUser()?.role || '-' }}</dd>
-    </div>
-    <div class="referral-card">
-      <dt>Link polecający</dt>
-      <dd>
-        <code>{{ referralLink() || '-' }}</code>
-      </dd>
-      <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
-      <div class="referral-actions">
-        <button class="copy-button" type="button" (click)="copyReferralLink()">Kopiuj link</button>
-        @if (copyState() === 'success') {
-          <span class="copy-feedback success">Skopiowano</span>
-        } @else if (copyState() === 'error') {
-          <span class="copy-feedback error">Nie udało się skopiować</span>
+<div class="profile-page">
+  <section class="profile-card card border-0">
+    <div class="card-body">
+      <header class="profile-header">
+        @if (currentUser()?.picture) {
+          <img
+            class="profile-photo"
+            [src]="currentUser()?.picture"
+            [alt]="currentUser()?.fullName || 'Zdjęcie profilowe'"
+            referrerpolicy="no-referrer"
+          />
+        } @else {
+          <span class="profile-photo placeholder">{{ initials() }}</span>
         }
+        <div>
+          <p class="eyebrow">Profil użytkownika</p>
+          <h1>{{ currentUser()?.fullName }}</h1>
+          <p class="subtitle mb-0">{{ currentUser()?.email }}</p>
+        </div>
+      </header>
+
+      <div class="profile-stack">
+        <article class="profile-item-card">
+          <span class="label">Imię</span>
+          <strong>{{ currentUser()?.givenName || '-' }}</strong>
+        </article>
+
+        <article class="profile-item-card">
+          <span class="label">Nazwisko</span>
+          <strong>{{ currentUser()?.familyName || '-' }}</strong>
+        </article>
+
+        <article class="profile-item-card">
+          <span class="label">E-mail</span>
+          <strong>{{ currentUser()?.email || '-' }}</strong>
+        </article>
+
+        <article class="profile-item-card">
+          <span class="label">Rola</span>
+          <strong>{{ currentUser()?.role || '-' }}</strong>
+        </article>
+
+        <article class="profile-item-card referral-card">
+          <span class="label">Link polecający</span>
+          <code>{{ referralLink() || '-' }}</code>
+          <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
+          <div class="referral-actions">
+            <button class="btn btn-primary btn-sm" type="button" (click)="copyReferralLink()">
+              Kopiuj link
+            </button>
+            @if (copyState() === 'success') {
+              <span class="copy-feedback success">Skopiowano</span>
+            } @else if (copyState() === 'error') {
+              <span class="copy-feedback error">Nie udało się skopiować</span>
+            }
+          </div>
+        </article>
       </div>
     </div>
-  </dl>
-</section>
+  </section>
+</div>

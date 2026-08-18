@@ -18,7 +18,7 @@
 h1,
 h2 {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: inherit;
   color: #202c49;
 }
 
@@ -45,11 +45,10 @@ button {
   display: inline-flex;
   align-items: center;
   padding: 11px 16px;
-  color: #16203a;
-  background: #c7f268;
+  color: #fff;
   border: 0;
-  border-radius: 7px;
-  box-shadow: 0 5px 12px #b2d65b55;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(13, 110, 253, 0.24);
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
@@ -71,10 +70,10 @@ button {
 
 .stat-card,
 .panel {
-  background: #fff;
-  border: 1px solid #e9ecf3;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px #35416108;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 1rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
 }
 
 .stat-card {
@@ -129,7 +128,6 @@ button {
 
 .stat-copy strong {
   color: #27334f;
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 25px;
   line-height: 1;
 }
@@ -317,7 +315,7 @@ h2 {
   color: #27334f;
   background: #fff;
   border: 1px solid #edf0f5;
-  border-radius: 7px;
+  border-radius: 12px;
 }
 
 .action-icon {

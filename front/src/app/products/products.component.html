@@ -1,33 +1,53 @@
-<section class="panel products-panel">
-  <div class="panel-heading">
-    <div>
-      <h1>Lista produktów</h1>
-      <p>Dane pobierane z globalnie skonfigurowanego API.</p>
-    </div>
-    <button class="refresh-button" type="button" (click)="loadProducts()">Odśwież</button>
-  </div>
-
-  @if (isLoading()) {
-    <div class="table-message">Ładowanie danych z API...</div>
-  } @else if (apiError()) {
-    <div class="table-message error">Nie udało się pobrać danych z API.</div>
-  } @else {
-    <div class="products-table">
-      <div class="table-row table-head">
-        <span>Nazwa</span><span>Status</span><span>Kategoria</span><span>Aktualizacja</span>
+<section class="panel products-panel card border-0">
+  <div class="card-body">
+    <div class="panel-heading">
+      <div>
+        <h1>Lista produktów</h1>
+        <p>Dane pobierane z globalnie skonfigurowanego API.</p>
       </div>
-      @for (product of products(); track product.id) {
-        <div class="table-row">
-          <span class="name">{{ product.name }}</span>
-          <span class="status" [class.draft]="product.status === 'draft'">
-            {{ product.status === 'active' ? 'Active' : 'Draft' }}
-          </span>
-          <span>{{ product.category }}</span>
-          <span>{{ product.updatedAt }}</span>
-        </div>
-      } @empty {
-        <div class="table-message">Brak produktów do wyświetlenia.</div>
-      }
+      <button class="btn btn-primary btn-sm" type="button" (click)="loadProducts()">Odśwież</button>
     </div>
-  }
+
+    @if (isLoading()) {
+      <div class="table-message">Ładowanie danych z API...</div>
+    } @else if (apiError()) {
+      <div class="table-message error">Nie udało się pobrać danych z API.</div>
+    } @else {
+      <div class="table-responsive products-table">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Nazwa</th>
+              <th scope="col">Status</th>
+              <th scope="col">Kategoria</th>
+              <th scope="col">Aktualizacja</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products(); track product.id) {
+              <tr>
+                <td class="name">{{ product.name }}</td>
+                <td>
+                  <span
+                    class="badge rounded-pill"
+                    [class.bg-success]="product.status === 'active'"
+                    [class.bg-warning]="product.status === 'draft'"
+                    [class.text-dark]="product.status === 'draft'"
+                  >
+                    {{ product.status === 'active' ? 'Aktywny' : 'Szkic' }}
+                  </span>
+                </td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.updatedAt }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="table-message">Brak produktów do wyświetlenia.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
 </section>

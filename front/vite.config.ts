@@ -1,9 +1,24 @@
 import { defineConfig } from 'vite';
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
+
+const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as {
+  version: string;
+};
 
 export default defineConfig(({ mode }) => ({
   root: './src',
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true,
+      },
+    },
+  },
   plugins: [
     angular({
       // Absolute path so Vercel resolves correctly when root is ./src
