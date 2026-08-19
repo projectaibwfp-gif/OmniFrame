@@ -3,5 +3,6 @@
   "outputDirectory": "front/dist",
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "installCommand": "npm ci --prefer-offline --no-audit"
 }

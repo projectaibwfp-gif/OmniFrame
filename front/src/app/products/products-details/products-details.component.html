@@ -1,3 +1,71 @@
-<div class="container">
-  <p>Coming soon...</p>
+<div class="product-details-page">
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()" title="Wróć do listy">← Produkty</button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loader-container">
+      <div class="skeleton-card">
+        <div class="skeleton-line" style="width: 60%; height: 28px; margin-bottom: 16px;"></div>
+        <div class="skeleton-line" style="width: 40%; height: 20px; margin-bottom: 12px;"></div>
+        <div class="skeleton-line" style="width: 100%; height: 100px;"></div>
+      </div>
+    </div>
+  } @else if (apiError()) {
+    <div class="alert alert-error">{{ apiError() }}</div>
+  } @else if (product(); as prod) {
+    <section class="product-card card border-0">
+      <div class="card-body">
+        <div class="product-header">
+          <div>
+            <h1>{{ prod.name }}</h1>
+            <p class="subtitle">{{ prod.category }}</p>
+          </div>
+          <div class="header-actions">
+            <span
+              class="badge rounded-pill"
+              [class.bg-success]="prod.status === 'active'"
+              [class.bg-warning]="prod.status === 'draft'"
+              [class.text-dark]="prod.status === 'draft'"
+            >
+              {{ prod.status === 'active' ? 'Aktywny' : 'Szkic' }}
+            </span>
+            <button class="btn btn-primary btn-sm" type="button" (click)="goEdit()">Edytuj</button>
+          </div>
+        </div>
+
+        <div class="product-meta">
+          <div class="meta-item">
+            <span class="label">ID</span>
+            <strong>{{ prod.id }}</strong>
+          </div>
+          @if (prod.createdAt) {
+            <div class="meta-item">
+              <span class="label">Utworzono</span>
+              <strong>{{ prod.createdAt }}</strong>
+            </div>
+          }
+          @if (prod.updatedAt) {
+            <div class="meta-item">
+              <span class="label">Zaktualizowano</span>
+              <strong>{{ prod.updatedAt }}</strong>
+            </div>
+          }
+          @if (prod.createdByName) {
+            <div class="meta-item">
+              <span class="label">Autor</span>
+              <strong>{{ prod.createdByName }}</strong>
+            </div>
+          }
+        </div>
+
+        @if (prod.description) {
+          <div class="description-section">
+            <h2>Opis</h2>
+            <p class="description-text">{{ prod.description }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
 </div>
