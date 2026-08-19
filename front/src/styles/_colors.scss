@@ -8,89 +8,89 @@
 // =============================================================================
 
 // -------- Tekst -------------------------------------------------------------
-$text-body: #212529; // domyślny kolor body (Bootstrap gray-900)
-$text-900: #10192b; // najciemniejszy (dark surfaces text foreground)
-$text-800: #13213c; // hero heading
-$text-700: #202c49; // główne nagłówki (h1/h2)
-$text-600: #36425d; // pod-nagłówki
-$text-500: #5b6985; // body strong
-$text-400: #6f7c98; // body / subtitle
-$text-300: #8d98af; // faint / meta / labels
-$text-200: #adb5c4; // bardzo słaby placeholder
+$text-body: #191919; // body foreground
+$text-900: #1f2937; // dark surface text
+$text-800: #243b53; // hero heading
+$text-700: #2f3b52; // główne nagłówki (h1/h2)
+$text-600: #44546f; // pod-nagłówki
+$text-500: #5f6f82; // body strong
+$text-400: #66758a; // body / subtitle
+$text-300: #8f98a8; // faint / meta / labels
+$text-200: #b0b7c3; // very faint placeholder
 
 $text-on-primary: #ffffff;
 $text-on-dark: #eff5ff;
 
 // -------- Powierzchnie ------------------------------------------------------
-$surface-page: #f6f7fb;
-$surface-page-tint-1: #eef5ff;
-$surface-page-tint-2: #f7f9fc;
+$surface-page: #f3f2ef;
+$surface-page-tint-1: #f3f2ef;
+$surface-page-tint-2: #f8f9fa;
 $surface-page-tint-3: #eef2f7;
 $surface-card: #ffffff;
-$surface-card-overlay: rgba(255, 255, 255, 0.9);
-$surface-card-overlay-strong: rgba(255, 255, 255, 0.92);
-$surface-alt: #f8f9fc;
-$surface-dark: #10192b;
+$surface-card-overlay: rgba(255, 255, 255, 0.94);
+$surface-card-overlay-strong: rgba(255, 255, 255, 0.96);
+$surface-alt: #f8f9fb;
+$surface-dark: #1f2937;
 
 // -------- Krawędzie ---------------------------------------------------------
-$border-subtle: #edf0f5;
-$border-muted: #e9ecf3;
-$border-dashed: #e7ebf1;
-$border-translucent: rgba(226, 232, 240, 0.85);
+$border-subtle: #dce6f1;
+$border-muted: #e6edf5;
+$border-dashed: #dde5ee;
+$border-translucent: rgba(220, 230, 241, 0.95);
 
 // -------- Marka (primary) ---------------------------------------------------
-$brand-primary: #0d6efd;
-$brand-primary-strong: #1d4ed8;
-$brand-primary-tint: #dbeafe;
-$brand-primary-tint-strong: #bfdbfe;
-$brand-primary-soft: rgba(13, 110, 253, 0.12);
-$brand-primary-soft-lite: rgba(13, 110, 253, 0.1);
-$brand-secondary: #0ea5e9;
+$brand-primary: #0a66c2;
+$brand-primary-strong: #004182;
+$brand-primary-tint: #dceaf8;
+$brand-primary-tint-strong: #c7def4;
+$brand-primary-soft: rgba(10, 102, 194, 0.12);
+$brand-primary-soft-lite: rgba(10, 102, 194, 0.08);
+$brand-secondary: #4b8bbe;
 
 // -------- Statusy: success --------------------------------------------------
-$success-fg: #2f8f59;
-$success-fg-soft: #64a174;
-$success-strong: #8bc48d;
-$success-bg: #e7f6dc;
+$success-fg: #057642;
+$success-fg-soft: #4f8f63;
+$success-strong: #7abf8c;
+$success-bg: #e8f5ee;
 
 // -------- Statusy: info -----------------------------------------------------
 $info-fg: #4b81c8;
-$info-fg-soft: #4d5f91;
-$info-bg: #e8f0ff;
-$info-bg-alt: #eef3ff;
-$info-badge-bg: #e8edf7;
-$info-accent: #68b8d7;
-$info-accent-soft: #6caec8;
-$info-accent-strong: #8ccce2;
-$info-tint: #cce0f3;
+$info-fg-soft: #5f7191;
+$info-bg: #eef4fb;
+$info-bg-alt: #f2f6fb;
+$info-badge-bg: #eef2f8;
+$info-accent: #7aaed1;
+$info-accent-soft: #8cb7d5;
+$info-accent-strong: #9fc7e0;
+$info-tint: #deebf7;
 
 // -------- Statusy: warning --------------------------------------------------
-$warning-fg: #cf8b56;
-$warning-fg-strong: #9a6b00;
-$warning-fg-accent: #f3bb83;
-$warning-bg: #fff0e3;
-$warning-bg-alt: #fff2d9;
+$warning-fg: #b7791f;
+$warning-fg-strong: #8a5b12;
+$warning-fg-accent: #e6a96a;
+$warning-bg: #fff5e8;
+$warning-bg-alt: #fff7ea;
 
 // -------- Statusy: danger ---------------------------------------------------
-$danger-fg: #b34c3b;
-$danger-fg-soft: #c67e6d;
-$danger-bg: #ffe7e2;
-$danger-strong-fg: #8c1c2f;
-$danger-strong-bg: #ffe8ee;
-$danger-strong-border: #f4bac8;
+$danger-fg: #b24c3b;
+$danger-fg-soft: #c26e5f;
+$danger-bg: #fdeceb;
+$danger-strong-fg: #9c1c1c;
+$danger-strong-bg: #fde9ea;
+$danger-strong-border: #f1c2c5;
 
 // -------- Akcenty -----------------------------------------------------------
-$accent-purple-fg: #8c78c4;
-$accent-purple-bg: #f0eaff;
-$accent-purple-strong: #cbbce9;
-$accent-lime: #c7f268;
+$accent-purple-fg: #5f6f9c;
+$accent-purple-bg: #edf2ff;
+$accent-purple-strong: #bac8ea;
+$accent-lime: #d8e9c8;
 
 // -------- Cienie ------------------------------------------------------------
-$shadow-soft: rgba(15, 23, 42, 0.04);
-$shadow-medium: rgba(15, 23, 42, 0.06);
-$shadow-strong: rgba(15, 23, 42, 0.08);
-$shadow-brand: rgba(13, 110, 253, 0.24);
-$shadow-brand-strong: rgba(13, 110, 253, 0.28);
+$shadow-soft: rgba(31, 41, 55, 0.04);
+$shadow-medium: rgba(31, 41, 55, 0.06);
+$shadow-strong: rgba(31, 41, 55, 0.08);
+$shadow-brand: rgba(10, 102, 194, 0.18);
+$shadow-brand-strong: rgba(10, 102, 194, 0.24);
 $shadow-card-hex: #35416112; // 8-cyfrowy hex ze slajdem alpha (login card)
 
 // -------- Breakpointy -------------------------------------------------------

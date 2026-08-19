@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MdbCollapseModule } from 'mdb-angular-ui-kit/collapse';
-import { MdbTooltipModule } from 'mdb-angular-ui-kit/tooltip';
 import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, MdbCollapseModule, MdbTooltipModule],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,7 +14,6 @@ export class AppComponent {
   readonly authService = inject(AuthService);
   readonly currentUser = this.authService.user;
   readonly navOpen = signal(false);
-  readonly appVersion = __APP_VERSION__;
   readonly navItems = [
     { path: '/', label: 'Dashboard', icon: '▦', exact: true },
     { path: '/products', label: 'Produkty', icon: '▤', exact: false },

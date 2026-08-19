@@ -9,7 +9,31 @@
     </div>
 
     @if (isLoading()) {
-      <div class="table-message">Ładowanie danych z API...</div>
+      <div class="users-loader" aria-busy="true" aria-live="polite">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <article class="user-card loader-card">
+            <div class="user-card-top">
+              <div class="name">
+                <span class="avatar-placeholder loader-avatar"></span>
+                <div class="loader-copy">
+                  <span class="loader-line loader-line-md w-45"></span>
+                  <span class="loader-line loader-line-xs w-60"></span>
+                </div>
+              </div>
+              <span class="loader-pill"></span>
+            </div>
+
+            <div class="user-card-grid loader-grid">
+              @for (row of [1, 2, 3]; track row) {
+                <div>
+                  <span class="loader-line loader-line-xs w-30"></span>
+                  <span class="loader-line loader-line-sm w-80"></span>
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
     } @else if (apiError()) {
       <div class="table-message error">Nie udało się pobrać danych z API.</div>
     } @else {

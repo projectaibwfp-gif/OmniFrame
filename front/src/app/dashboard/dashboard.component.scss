@@ -516,6 +516,112 @@ h2 {
   }
 }
 
+.dashboard-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.loader-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.loader-line,
+.loader-chip,
+.loader-avatar,
+.loader-bar {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, c.$border-muted 25%, c.$surface-card 37%, c.$border-muted 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+.loader-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.loader-line-xs {
+  height: 8px;
+}
+
+.loader-line-sm {
+  width: 32%;
+}
+
+.loader-line-md {
+  width: 52%;
+  margin-bottom: 18px;
+}
+
+.w-30 {
+  width: 30%;
+}
+
+.w-40 {
+  width: 40%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.loader-chip {
+  width: 84px;
+  height: 28px;
+  border-radius: 999px;
+  margin-top: auto;
+}
+
+.loader-chart {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  min-height: 240px;
+}
+
+.loader-bar {
+  flex: 1;
+  min-height: 42px;
+  border-radius: 12px 12px 4px 4px;
+}
+
+.loader-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loader-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.loader-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
 @media (max-width: 950px) {
   .stats-grid,
   .content-grid,

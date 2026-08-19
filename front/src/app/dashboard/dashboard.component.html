@@ -10,7 +10,43 @@
 </div>
 
 @if (isLoading()) {
-  <div class="table-message">Ładowanie statystyk dashboardu...</div>
+  <div class="dashboard-loader" aria-busy="true" aria-live="polite">
+    <div class="loader-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="stat-card card border-0">
+          <div class="loader-line loader-line-sm"></div>
+          <div class="loader-line loader-line-lg"></div>
+          <div class="loader-chip"></div>
+        </div>
+      }
+    </div>
+
+    <div class="content-grid">
+      <section class="panel card border-0">
+        <div class="loader-line loader-line-md w-40"></div>
+        <div class="loader-chart">
+          @for (item of [1, 2, 3, 4, 5]; track item) {
+            <span class="loader-bar"></span>
+          }
+        </div>
+      </section>
+
+      <section class="panel card border-0">
+        <div class="loader-line loader-line-md w-30"></div>
+        <div class="loader-stack">
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="loader-row">
+              <span class="loader-avatar"></span>
+              <div>
+                <span class="loader-line loader-line-sm w-70"></span>
+                <span class="loader-line loader-line-xs w-50"></span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
 } @else if (apiError()) {
   <div class="table-message error">Nie udało się pobrać statystyk dashboardu.</div>
 } @else if (dashboard(); as data) {

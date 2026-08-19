@@ -19,8 +19,11 @@ $card-padding-mobile: 20px;
 
 .login-card {
   width: min($card-max-width, 100%);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px c.$shadow-card-hex;
+  border: 1px solid c.$border-subtle;
+  border-top: 4px solid c.$brand-primary;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  background: c.$surface-card;
 
   .card-body {
     padding: $card-padding;
@@ -36,7 +39,7 @@ $card-padding-mobile: 20px;
 
 .eyebrow {
   margin: 0 0 8px;
-  color: c.$text-300;
+  color: c.$brand-primary;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -55,6 +58,14 @@ $card-padding-mobile: 20px;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+
+  .badge {
+    padding: 0.55rem 0.8rem;
+    background: c.$surface-alt !important;
+    color: c.$text-600 !important;
+    border: 1px solid c.$border-subtle;
+    font-weight: 700;
+  }
 }
 
 .google-button-container {

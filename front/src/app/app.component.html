@@ -1,32 +1,65 @@
 @if (authService.isAuthenticated()) {
   <div class="shell">
-    <aside class="sidebar">
-      <div class="sidebar-brand">
+    <header class="topbar card">
+      <div class="card-body topbar-body">
         <a class="brand" routerLink="/" (click)="closeMobileNav()">
-          <span class="brand-mark">✦</span>
-          <span>project<span class="brand-accent">.ai</span></span>
+          <span>Omni<span class="brand-accent">Frame</span></span>
         </a>
-        <span class="brand-pill">v{{ appVersion }}</span>
-      </div>
 
-      <div class="workspace-card card">
-        <div class="card-body">
-          <div class="workspace-user">
+        <nav class="topbar-nav" aria-label="Główna nawigacja">
+          @for (item of navItems; track item.path) {
+            <a
+              class="nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              (click)="closeMobileNav()"
+            >
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </nav>
+
+        <div class="topbar-actions">
+          <div class="workspace-user compact">
             <span class="workspace-avatar">{{ initials() || 'U' }}</span>
             <div>
               <strong>{{ currentUser()?.fullName }}</strong>
               <small>{{ currentUser()?.email }}</small>
             </div>
           </div>
-          <span class="workspace-meta badge rounded-pill bg-success-subtle text-success-emphasis">
-            Zalogowany przez Google
-          </span>
+          <button
+            class="btn btn-light btn-sm icon-button topbar-menu"
+            type="button"
+            aria-label="Otwórz menu"
+            (click)="toggleMobileNav()"
+          >
+            ☰
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm icon-button logout-button"
+            type="button"
+            aria-label="Wyloguj się"
+            (click)="logout()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 12 4-4-4-4m4 4H9"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+              />
+            </svg>
+          </button>
         </div>
       </div>
+    </header>
 
-      <nav class="navigation card" aria-label="Główna nawigacja">
+    @if (navOpen()) {
+      <section class="mobile-nav card">
         <div class="card-body">
-          <p class="nav-label">Nawigacja</p>
           @for (item of navItems; track item.path) {
             <a
               class="nav-item"
@@ -39,95 +72,24 @@
               <span>{{ item.label }}</span>
             </a>
           }
-        </div>
-      </nav>
-
-      <div class="sidebar-footer card">
-        <div class="card-body">
-          <p class="footer-label">Akcje</p>
-          <button class="btn btn-primary w-100 mb-2" type="button" (click)="logout()">
-            Wyloguj się
-          </button>
-          <a class="btn btn-outline-secondary w-100" routerLink="/profile" (click)="closeMobileNav()">
+          <a class="btn btn-outline-primary w-100" routerLink="/profile" (click)="closeMobileNav()">
             Otwórz profil
           </a>
         </div>
-      </div>
-    </aside>
-
-    <section class="mobile-shell">
-      <header class="mobile-topbar card">
-        <div class="card-body">
-          <div class="mobile-topbar-row">
-            <a class="brand" routerLink="/" (click)="closeMobileNav()">
-              <span class="brand-mark">✦</span>
-              <span>project<span class="brand-accent">.ai</span></span>
-            </a>
-            <span class="brand-pill">v{{ appVersion }}</span>
-            <div class="mobile-actions">
-              <button
-                class="btn btn-light btn-sm"
-                type="button"
-                [mdbTooltip]="navOpen() ? 'Ukryj menu' : 'Pokaż menu'"
-                placement="bottom"
-                (click)="toggleMobileNav()"
-              >
-                Menu
-              </button>
-              <button class="btn btn-primary btn-sm" type="button" (click)="logout()">Wyloguj</button>
-            </div>
-          </div>
-
-          <div class="mobile-user">
-            <span class="workspace-avatar">{{ initials() || 'U' }}</span>
-            <div>
-              <strong>{{ currentUser()?.fullName }}</strong>
-              <small>{{ currentUser()?.email }}</small>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div class="mobile-nav card" mdbCollapse [collapsed]="!navOpen()">
-        <div class="card-body">
-          @for (item of navItems; track item.path) {
-            <a
-              class="nav-item"
-              [routerLink]="item.path"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: item.exact }"
-              (click)="closeMobileNav()"
-            >
-              <span class="nav-icon">{{ item.icon }}</span>
-              <span>{{ item.label }}</span>
-            </a>
-          }
-        </div>
-      </div>
-    </section>
+      </section>
+    }
 
     <main class="content">
-      <header class="page-hero card">
-        <div class="card-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-          <div>
-            <p class="eyebrow">Workspace</p>
-            <h1>Nowoczesny panel operacyjny</h1>
-            <p class="intro">
-              Wszystkie widoki korzystają z realnych danych API i spójnych komponentów MDBootstrap.
-            </p>
-          </div>
-          <div class="hero-actions">
-            <a class="btn btn-primary" routerLink="/" (click)="closeMobileNav()">Dashboard</a>
-            <a class="btn btn-outline-primary" routerLink="/profile" (click)="closeMobileNav()">
-              Profil
-            </a>
-          </div>
-        </div>
-      </header>
-
       <section class="page">
         <router-outlet></router-outlet>
       </section>
+
+      <footer class="footer card">
+        <div class="card-body footer-body">
+          <span>OmniFrame</span>
+          <span>Google OAuth dashboard • Real API</span>
+        </div>
+      </footer>
     </main>
   </div>
 } @else {
