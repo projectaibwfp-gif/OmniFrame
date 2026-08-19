@@ -1,0 +1,10 @@
+@use 'colors' as c;
+
+:host {
+  display: block;
+}
+
+.container {
+  padding: 24px;
+  color: c.$text-400;
+}
