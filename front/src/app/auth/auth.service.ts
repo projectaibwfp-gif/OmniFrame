@@ -18,6 +18,12 @@ type AuthResponseUser = {
   role: AuthRole;
   referralCode: string;
   referredByCode: string | null;
+  phone?: string | null;
+  birthDate?: string | null;
+  description?: string | null;
+  registeredAt?: string;
+  lastLoginAt?: string;
+  updatedAt?: string;
 };
 
 type AuthResponse = {
@@ -307,8 +313,14 @@ export class AuthService {
       email: user.email,
       picture: user.picture,
       role: user.role,
+      phone: user.phone,
+      birthDate: user.birthDate,
+      description: user.description,
       referralCode: user.referralCode,
       referredByCode: user.referredByCode,
+      registeredAt: user.registeredAt || '',
+      lastLoginAt: user.lastLoginAt || '',
+      updatedAt: user.updatedAt || '',
     };
   }
 

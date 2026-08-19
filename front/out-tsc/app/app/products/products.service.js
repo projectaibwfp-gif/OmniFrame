@@ -12,6 +12,24 @@ let ProductsService = class ProductsService {
             .get(buildApiUrl('/products'))
             .pipe(map((response) => response.data));
     }
+    getProduct(id) {
+        return this.http
+            .get(buildApiUrl(`/products/${id}`))
+            .pipe(map((response) => response.data));
+    }
+    createProduct(product) {
+        return this.http
+            .post(buildApiUrl('/products'), product)
+            .pipe(map((response) => response.data));
+    }
+    updateProduct(id, product) {
+        return this.http
+            .patch(buildApiUrl(`/products/${id}`), product)
+            .pipe(map((response) => response.data));
+    }
+    deleteProduct(id) {
+        return this.http.delete(buildApiUrl(`/products/${id}`));
+    }
 };
 ProductsService = __decorate([
     Injectable({ providedIn: 'root' })

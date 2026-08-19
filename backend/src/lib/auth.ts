@@ -34,10 +34,14 @@ export interface AuthenticatedUser {
   family_name: string | null;
   picture: string | null;
   locale: string | null;
+  phone?: string | null;
+  birthDate?: string | null;
+  description?: string | null;
   referralCode: string;
   referredByCode: string | null;
   registeredAt: string;
   lastLoginAt: string;
+  updatedAt: string;
 }
 
 interface UserRow {
@@ -51,6 +55,9 @@ interface UserRow {
   family_name: string | null;
   picture: string | null;
   locale: string | null;
+  phone: string | null;
+  birth_date: string | null;
+  description: string | null;
   referral_code: string;
   referred_by_code: string | null;
   last_login_at: string;
@@ -123,10 +130,14 @@ function mapUserRow(row: UserRow): AuthenticatedUser {
     family_name: row.family_name,
     picture: row.picture,
     locale: row.locale,
+    phone: row.phone,
+    birthDate: row.birth_date,
+    description: row.description,
     referralCode: row.referral_code,
     referredByCode: row.referred_by_code,
     registeredAt: row.created_at,
     lastLoginAt: row.last_login_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -332,7 +343,8 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      )
      ON CONFLICT (google_id) DO NOTHING
      RETURNING id, google_id, email, email_verified, role, name,
-               given_name, family_name, picture, locale, referral_code, referred_by_code,
+               given_name, family_name, picture, locale, phone, birth_date, description,
+               referral_code, referred_by_code,
                last_login_at, created_at, updated_at,
                true AS was_created
     ),
@@ -359,17 +371,20 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      WHERE google_id = ${input.google_id}
        AND NOT EXISTS (SELECT 1 FROM inserted)
      RETURNING id, google_id, email, email_verified, role, name,
-               given_name, family_name, picture, locale, referral_code, referred_by_code,
+               given_name, family_name, picture, locale, phone, birth_date, description,
+               referral_code, referred_by_code,
                last_login_at, created_at, updated_at,
                false AS was_created
     )
     SELECT id, google_id, email, email_verified, role, name,
-          given_name, family_name, picture, locale, referral_code, referred_by_code,
+          given_name, family_name, picture, locale, phone, birth_date, description,
+          referral_code, referred_by_code,
           last_login_at, created_at, updated_at, was_created
     FROM inserted
     UNION ALL
     SELECT id, google_id, email, email_verified, role, name,
-          given_name, family_name, picture, locale, referral_code, referred_by_code,
+          given_name, family_name, picture, locale, phone, birth_date, description,
+          referral_code, referred_by_code,
           last_login_at, created_at, updated_at, was_created
     FROM updated
   `) as UpsertUserRow[];
@@ -489,7 +504,8 @@ export async function loadCurrentUser(
 
   const rows = (await getSql()`
     SELECT id, google_id, email, email_verified, role, name,
-           given_name, family_name, picture, locale, referral_code, referred_by_code,
+           given_name, family_name, picture, locale, phone, birth_date, description,
+           referral_code, referred_by_code,
            last_login_at, created_at, updated_at
     FROM users
     WHERE google_id = ${auth.session.sub}
@@ -511,9 +527,13 @@ export async function loadCurrentUser(
     family_name: auth.session.family_name ?? null,
     picture: auth.session.picture ?? null,
     locale: auth.session.locale ?? null,
+    phone: null,
+    birthDate: null,
+    description: null,
     referralCode: generateReferralCode(auth.session.sub),
     referredByCode: null,
     registeredAt: '',
     lastLoginAt: '',
+    updatedAt: '',
   };
 }

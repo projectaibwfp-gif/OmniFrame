@@ -12,50 +12,163 @@
         } @else {
           <span class="profile-photo placeholder">{{ initials() }}</span>
         }
-        <div>
+        <div class="header-content">
           <p class="eyebrow">Profil użytkownika</p>
           <h1>{{ currentUser()?.fullName }}</h1>
           <p class="subtitle mb-0">{{ currentUser()?.email }}</p>
         </div>
+        <button class="btn-edit" type="button" (click)="toggleEditMode()" [title]="editMode() ? 'Zamknij edycję' : 'Edytuj profil'">
+          @if (!editMode()) {
+            ✏️
+          } @else {
+            ✕
+          }
+        </button>
       </header>
 
-      <div class="profile-stack">
-        <article class="profile-item-card">
-          <span class="label">Imię</span>
-          <strong>{{ currentUser()?.givenName || '-' }}</strong>
-        </article>
+      @if (!editMode()) {
+        <div class="profile-stack">
+          <article class="profile-item-card">
+            <span class="label">Imię</span>
+            <strong>{{ currentUser()?.givenName || '-' }}</strong>
+          </article>
 
-        <article class="profile-item-card">
-          <span class="label">Nazwisko</span>
-          <strong>{{ currentUser()?.familyName || '-' }}</strong>
-        </article>
+          <article class="profile-item-card">
+            <span class="label">Nazwisko</span>
+            <strong>{{ currentUser()?.familyName || '-' }}</strong>
+          </article>
 
-        <article class="profile-item-card">
-          <span class="label">E-mail</span>
-          <strong>{{ currentUser()?.email || '-' }}</strong>
-        </article>
+          <article class="profile-item-card">
+            <span class="label">E-mail</span>
+            <strong>{{ currentUser()?.email || '-' }}</strong>
+          </article>
 
-        <article class="profile-item-card">
-          <span class="label">Rola</span>
-          <strong>{{ currentUser()?.role || '-' }}</strong>
-        </article>
+          <article class="profile-item-card">
+            <span class="label">Rola</span>
+            <strong>{{ currentUser()?.role || '-' }}</strong>
+          </article>
 
-        <article class="profile-item-card referral-card">
-          <span class="label">Link polecający</span>
-          <code>{{ referralLink() || '-' }}</code>
-          <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
-          <div class="referral-actions">
-            <button class="btn btn-primary btn-sm" type="button" (click)="copyReferralLink()">
-              Kopiuj link
-            </button>
-            @if (copyState() === 'success') {
-              <span class="copy-feedback success">Skopiowano</span>
-            } @else if (copyState() === 'error') {
-              <span class="copy-feedback error">Nie udało się skopiować</span>
+          @if (currentUser()?.phone) {
+            <article class="profile-item-card">
+              <span class="label">Telefon</span>
+              <strong>{{ currentUser()?.phone }}</strong>
+            </article>
+          }
+
+          @if (currentUser()?.birthDate) {
+            <article class="profile-item-card">
+              <span class="label">Data urodzenia</span>
+              <strong>{{ currentUser()?.birthDate | date : 'dd.MM.yyyy' }}</strong>
+            </article>
+          }
+
+          @if (currentUser()?.description) {
+            <article class="profile-item-card">
+              <span class="label">Opis</span>
+              <strong class="description-text">{{ currentUser()?.description }}</strong>
+            </article>
+          }
+
+          <article class="profile-item-card referral-card">
+            <span class="label">Link polecający</span>
+            <code>{{ referralLink() || '-' }}</code>
+            <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
+            <div class="referral-actions">
+              <button class="btn btn-primary btn-sm" type="button" (click)="copyReferralLink()">
+                Kopiuj link
+              </button>
+              @if (copyState() === 'success') {
+                <span class="copy-feedback success">Skopiowano</span>
+              } @else if (copyState() === 'error') {
+                <span class="copy-feedback error">Nie udało się skopiować</span>
+              }
+            </div>
+          </article>
+        </div>
+      } @else {
+        <form class="profile-edit-form" (ngSubmit)="saveProfile()">
+          <div class="form-section">
+            <h2>Edytuj profil</h2>
+
+            @if (saveError()) {
+              <div class="alert alert-error">{{ saveError() }}</div>
             }
+
+            <div class="form-group">
+              <label for="email">E-mail (nie do zmiany)</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                [value]="currentUser()?.email || ''"
+                readonly
+                disabled
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Telefon</label>
+              <input
+                id="phone"
+                type="tel"
+                class="form-control"
+                [class.is-invalid]="!!validationErrors()['phone']"
+                [(ngModel)]="editForm().phone"
+                name="phone"
+                placeholder="+48 123 456 789"
+              />
+              @if (validationErrors()['phone']) {
+                <span class="error-message">{{ validationErrors()['phone'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="birthDate">Data urodzenia</label>
+              <input
+                id="birthDate"
+                type="date"
+                class="form-control"
+                [class.is-invalid]="!!validationErrors()['birthDate']"
+                [(ngModel)]="editForm().birthDate"
+                name="birthDate"
+              />
+              @if (validationErrors()['birthDate']) {
+                <span class="error-message">{{ validationErrors()['birthDate'] }}</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="description">Opis</label>
+              <textarea
+                id="description"
+                class="form-control"
+                [class.is-invalid]="!!validationErrors()['description']"
+                [(ngModel)]="editForm().description"
+                name="description"
+                placeholder="Opowiedz nam o sobie..."
+                rows="4"
+              ></textarea>
+              <span class="char-count">{{ editForm().description.length }}/500 znaków</span>
+              @if (validationErrors()['description']) {
+                <span class="error-message">{{ validationErrors()['description'] }}</span>
+              }
+            </div>
           </div>
-        </article>
-      </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" [disabled]="isSaving()">
+              @if (isSaving()) {
+                Zapisuję...
+              } @else {
+                Zapisz zmiany
+              }
+            </button>
+            <button class="btn btn-secondary" type="button" (click)="cancelEdit()" [disabled]="isSaving()">
+              Anuluj
+            </button>
+          </div>
+        </form>
+      }
     </div>
   </section>
 </div>

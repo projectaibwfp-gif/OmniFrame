@@ -1,15 +1,12 @@
 import { __decorate } from "tslib";
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MdbCollapseModule } from 'mdb-angular-ui-kit/collapse';
-import { MdbTooltipModule } from 'mdb-angular-ui-kit/tooltip';
 import { AuthService } from './auth/auth.service';
 let AppComponent = class AppComponent {
     constructor() {
         this.authService = inject(AuthService);
         this.currentUser = this.authService.user;
         this.navOpen = signal(false);
-        this.appVersion = __APP_VERSION__;
         this.navItems = [
             { path: '/', label: 'Dashboard', icon: '▦', exact: true },
             { path: '/products', label: 'Produkty', icon: '▤', exact: false },
@@ -46,7 +43,7 @@ AppComponent = __decorate([
     Component({
         selector: 'app-root',
         standalone: true,
-        imports: [RouterLink, RouterLinkActive, RouterOutlet, MdbCollapseModule, MdbTooltipModule],
+        imports: [RouterLink, RouterLinkActive, RouterOutlet],
         templateUrl: './app.component.html',
         styleUrl: './app.component.scss',
         changeDetection: ChangeDetectionStrategy.OnPush,

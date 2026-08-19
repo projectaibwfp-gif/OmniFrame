@@ -193,8 +193,14 @@ let AuthService = class AuthService {
             email: user.email,
             picture: user.picture,
             role: user.role,
+            phone: user.phone,
+            birthDate: user.birthDate,
+            description: user.description,
             referralCode: user.referralCode,
             referredByCode: user.referredByCode,
+            registeredAt: user.registeredAt || '',
+            lastLoginAt: user.lastLoginAt || '',
+            updatedAt: user.updatedAt || '',
         };
     }
     setLoginIssue(reason) {
