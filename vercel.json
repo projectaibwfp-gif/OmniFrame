@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd front && npm run build && cd ../backend && npm run build",
+  "outputDirectory": "front/dist",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
