@@ -1,53 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
+import type { ApiResponse, DashboardDto } from '@shared/api-contract';
 import { buildApiUrl } from '../config/api.config';
 
-export interface DashboardOverview {
-  totalUsers: number;
-  verifiedUsers: number;
-  loginsToday: number;
-  newUsersToday: number;
-  referredUsers: number;
-  referralShare: number;
-  verifiedShare: number;
-}
-
-export interface DashboardActivityPoint {
-  label: string;
-  signups: number;
-  logins: number;
-  referredSignups: number;
-}
-
-export interface DashboardRecentUser {
-  id: number;
-  name: string;
-  email: string;
-  role: 'admin' | 'user' | 'moderator';
-  lastLoginAt: string;
-  registeredAt: string;
-  referredByCode: string | null;
-}
-
-export interface DashboardTopReferrer {
-  id: number;
-  name: string;
-  email: string;
-  referralCode: string;
-  referrals: number;
-}
-
-export interface DashboardData {
-  overview: DashboardOverview;
-  activity: DashboardActivityPoint[];
-  recentUsers: DashboardRecentUser[];
-  topReferrers: DashboardTopReferrer[];
-}
-
-interface DashboardResponse {
-  data: DashboardData;
-}
+export type DashboardOverview = DashboardDto['overview'];
+export type DashboardActivityPoint = DashboardDto['activity'][number];
+export type DashboardRecentUser = DashboardDto['recentUsers'][number];
+export type DashboardTopReferrer = DashboardDto['topReferrers'][number];
+export type DashboardData = DashboardDto;
+type DashboardResponse = ApiResponse<DashboardDto>;
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {

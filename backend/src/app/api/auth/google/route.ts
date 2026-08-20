@@ -1,29 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type {
+  ApiResponse,
+  AuthGoogleRequestDto,
+  AuthGoogleResponseDto,
+  AuthGoogleUserDto,
+} from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { clearPendingReferral, getPendingReferral } from '@/lib/referral';
 import {
   clearLoginState,
   isLoginStateValid,
   issueSessionCookie,
-  type UserRole,
   upsertGoogleUser,
   verifyGoogleToken,
 } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 
-interface LoginPayload {
-  credential?: string;
-  state?: string;
-}
-
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let payload: LoginPayload;
+  let payload: Partial<AuthGoogleRequestDto>;
 
   try {
-    payload = (await request.json()) as LoginPayload;
+    payload = (await request.json()) as Partial<AuthGoogleRequestDto>;
   } catch (error) {
     logError('auth.google', ErrorCode.REQUEST_INVALID_JSON, {}, error);
     return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
@@ -60,16 +60,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       googleToken,
       pendingReferral?.code ?? null,
     );
-    const sessionUser: {
-      given_name: string | null;
-      family_name: string | null;
-      name: string | null;
-      email: string;
-      picture: string | null;
-      role: UserRole;
-      referralCode: string;
-      referredByCode: string | null;
-    } = {
+    const sessionUser: AuthGoogleUserDto = {
       given_name: databaseUser.given_name,
       family_name: databaseUser.family_name,
       name: databaseUser.name,
@@ -80,7 +71,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       referredByCode: databaseUser.referredByCode,
     };
 
-    const response = NextResponse.json(
+    const response = NextResponse.json<ApiResponse<AuthGoogleResponseDto>>(
       {
         data: {
           user: sessionUser,

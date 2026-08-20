@@ -9,6 +9,11 @@ const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.met
 
 export default defineConfig(({ mode }) => ({
   root: './src',
+  resolve: {
+    alias: {
+      '@shared': path.resolve(import.meta.dirname, '../shared/src'),
+    },
+  },
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },

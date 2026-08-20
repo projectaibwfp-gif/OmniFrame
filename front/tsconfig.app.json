@@ -6,6 +6,11 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM"],
     "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    },
     "types": ["vite/client"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -19,7 +24,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": "..",
     "outDir": "./out-tsc/app"
   },
   "angularCompilerOptions": {
@@ -28,6 +33,6 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/src/**/*"],
   "exclude": ["node_modules", "dist", "out-tsc"]
 }

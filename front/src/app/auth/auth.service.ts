@@ -1,49 +1,26 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import type {
+  ApiResponse,
+  AuthCurrentUserResponseDto,
+  AuthGoogleResponseDto,
+  AuthGoogleUserDto,
+  AuthStateDto,
+  ReferralCaptureResponseDto,
+} from '@shared/api-contract';
 import { buildApiUrl } from '../config/api.config';
 import { withSkippedAuthInterceptor } from './auth-http-context';
-import { type AuthUser, type AuthRole } from './auth-session';
+import { type AuthUser } from './auth-session';
 
 type GoogleCredentialResponse = {
   credential?: string;
 };
 
-type AuthResponseUser = {
-  given_name: string | null;
-  family_name: string | null;
-  name: string | null;
-  email: string;
-  picture: string | null;
-  role: AuthRole;
-  referralCode: string;
-  referredByCode: string | null;
-  phone?: string | null;
-  birthDate?: string | null;
-  description?: string | null;
-  registeredAt?: string;
-  lastLoginAt?: string;
-  updatedAt?: string;
-};
-
-type AuthResponse = {
-  data: {
-    user: AuthResponseUser;
-  };
-};
-
-type AuthStateResponse = {
-  data: {
-    state: string;
-  };
-};
-
-type CaptureReferralResponse = {
-  data: {
-    referralCode: string;
-    stored: boolean;
-  };
-};
+type AuthResponse = ApiResponse<AuthGoogleResponseDto>;
+type CurrentUserResponse = ApiResponse<AuthCurrentUserResponseDto>;
+type AuthStateResponse = ApiResponse<AuthStateDto>;
+type CaptureReferralResponse = ApiResponse<ReferralCaptureResponseDto>;
 
 declare global {
   interface Window {
@@ -97,7 +74,9 @@ export class AuthService {
 
   async restoreSession(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.http.get<AuthResponse>(buildApiUrl('/auth/me')));
+      const response = await firstValueFrom(
+        this.http.get<CurrentUserResponse>(buildApiUrl('/auth/me')),
+      );
       this.user.set(this.mapUser(response.data.user));
       this.loginError.set(null);
     } catch (error) {
@@ -299,17 +278,14 @@ export class AuthService {
     }
   }
 
-  private mapUser(user: AuthResponseUser): AuthUser {
-    const givenName = user.given_name?.trim() || '';
-    const familyName = user.family_name?.trim() || '';
-    const fullNameFromClaim = user.name?.trim() || '';
-    const fullName =
-      fullNameFromClaim || `${givenName} ${familyName}`.trim() || 'Użytkownik Google';
+  private mapUser(user: AuthGoogleUserDto): AuthUser {
+    const givenName = this.normalizeNamePart(user.given_name);
+    const familyName = this.normalizeNamePart(user.family_name);
 
     return {
       givenName,
       familyName,
-      fullName,
+      fullName: this.resolveFullName(user, givenName, familyName),
       email: user.email,
       picture: user.picture,
       role: user.role,
@@ -322,6 +298,24 @@ export class AuthService {
       lastLoginAt: user.lastLoginAt || '',
       updatedAt: user.updatedAt || '',
     };
+  }
+
+  private normalizeNamePart(value: string | null | undefined): string {
+    return value?.trim() || '';
+  }
+
+  private resolveFullName(
+    user: AuthGoogleUserDto,
+    givenName: string,
+    familyName: string,
+  ): string {
+    const fullNameFromClaim = user.name?.trim() || '';
+    if (fullNameFromClaim) {
+      return fullNameFromClaim;
+    }
+
+    const fallbackName = `${givenName} ${familyName}`.trim();
+    return fallbackName || 'Użytkownik Google';
   }
 
   private setLoginIssue(reason: string): void {

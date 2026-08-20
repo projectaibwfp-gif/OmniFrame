@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, DashboardDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth, type UserRole } from '@/lib/auth';
+import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
@@ -23,7 +24,7 @@ interface ActivityRow {
 interface RecentUserRow {
   id: number;
   email: string;
-  role: UserRole;
+  role: import('@shared/api-contract').UserRole;
   name: string | null;
   given_name: string | null;
   family_name: string | null;
@@ -136,7 +137,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const verifiedUsers = toNumber(overview?.verifiedUsers ?? 0);
     const referredUsers = toNumber(overview?.referredUsers ?? 0);
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponse<DashboardDto>>({
       data: {
         overview: {
           totalUsers,

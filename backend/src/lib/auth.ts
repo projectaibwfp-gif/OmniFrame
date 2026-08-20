@@ -1,12 +1,13 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { SignJWT, createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
+import type { AuthCurrentUserDto, UserRole as SharedUserRole } from '@shared/api-contract';
 import { errorResponse } from './api-response';
 import { getSql } from './db';
 import { ErrorCode } from './errors';
 import { logInfo, logWarn } from './logger';
 
-export type UserRole = 'admin' | 'user' | 'moderator';
+export type UserRole = SharedUserRole;
 
 export interface GoogleTokenPayload {
   sub: string;
@@ -23,26 +24,7 @@ interface SessionTokenPayload extends GoogleTokenPayload {
   token_use: 'access' | 'refresh';
 }
 
-export interface AuthenticatedUser {
-  id: number;
-  google_id: string;
-  email: string;
-  email_verified: boolean;
-  role: UserRole;
-  name: string | null;
-  given_name: string | null;
-  family_name: string | null;
-  picture: string | null;
-  locale: string | null;
-  phone?: string | null;
-  birthDate?: string | null;
-  description?: string | null;
-  referralCode: string;
-  referredByCode: string | null;
-  registeredAt: string;
-  lastLoginAt: string;
-  updatedAt: string;
-}
+export type AuthenticatedUser = AuthCurrentUserDto;
 
 interface UserRow {
   id: number;

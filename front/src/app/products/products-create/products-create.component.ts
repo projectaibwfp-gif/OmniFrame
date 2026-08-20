@@ -27,32 +27,6 @@ export class ProductsCreateComponent {
   private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
 
-  validateForm(): boolean {
-    const errors: Record<string, string> = {};
-    const form = this.createForm();
-
-    const name = form.name.trim();
-    if (!name || name.length > 120) {
-      errors['name'] = 'Nazwa jest wymagana i nie może być dłuższa niż 120 znaków';
-    }
-
-    if (!['active', 'draft'].includes(form.status)) {
-      errors['status'] = 'Nieprawidłowy status';
-    }
-
-    const category = form.category.trim();
-    if (!category || category.length > 80) {
-      errors['category'] = 'Kategoria jest wymagana i nie może być dłuższa niż 80 znaków';
-    }
-
-    if (form.description && form.description.length > 500) {
-      errors['description'] = 'Opis nie może być dłuższy niż 500 znaków';
-    }
-
-    this.validationErrors.set(errors);
-    return Object.keys(errors).length === 0;
-  }
-
   createProduct(): void {
     if (!this.validateForm()) {
       return;
@@ -87,5 +61,30 @@ export class ProductsCreateComponent {
   cancel(): void {
     this.router.navigate(['/products']);
   }
-}
 
+  private validateForm(): boolean {
+    const errors: Record<string, string> = {};
+    const form = this.createForm();
+
+    const name = form.name.trim();
+    if (!name || name.length > 120) {
+      errors['name'] = 'Nazwa jest wymagana i nie może być dłuższa niż 120 znaków';
+    }
+
+    if (!['active', 'draft'].includes(form.status)) {
+      errors['status'] = 'Nieprawidłowy status';
+    }
+
+    const category = form.category.trim();
+    if (!category || category.length > 80) {
+      errors['category'] = 'Kategoria jest wymagana i nie może być dłuższa niż 80 znaków';
+    }
+
+    if (form.description && form.description.length > 500) {
+      errors['description'] = 'Opis nie może być dłuższy niż 500 znaków';
+    }
+
+    this.validationErrors.set(errors);
+    return Object.keys(errors).length === 0;
+  }
+}

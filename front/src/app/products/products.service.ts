@@ -1,26 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
+import type {
+  ApiResponse,
+  ProductCreateRequestDto,
+  ProductDto,
+  ProductUpdateRequestDto,
+} from '@shared/api-contract';
 import { buildApiUrl } from '../config/api.config';
 
-export interface Product {
-  id: number;
-  name: string;
-  status: 'active' | 'draft';
-  category: string;
-  description?: string;
-  createdBy?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProductsResponse {
-  data: Product[];
-}
-
-interface ProductResponse {
-  data: Product;
-}
+export type Product = ProductDto;
+type ProductsResponse = ApiResponse<ProductDto[]>;
+type ProductResponse = ApiResponse<ProductDto>;
+type CreateProductInput = ProductCreateRequestDto;
+type UpdateProductInput = ProductUpdateRequestDto;
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
@@ -38,13 +31,13 @@ export class ProductsService {
       .pipe(map((response) => response.data));
   }
 
-  createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Observable<Product> {
+  createProduct(product: CreateProductInput): Observable<Product> {
     return this.http
       .post<ProductResponse>(buildApiUrl('/products'), product)
       .pipe(map((response) => response.data));
   }
 
-  updateProduct(id: number, product: Partial<Omit<Product, 'id' | 'createdAt' | 'createdBy'>>): Observable<Product> {
+  updateProduct(id: number, product: UpdateProductInput): Observable<Product> {
     return this.http
       .patch<ProductResponse>(buildApiUrl(`/products/${id}`), product)
       .pipe(map((response) => response.data));

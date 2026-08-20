@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -25,6 +25,17 @@ export class ProductsDetailsComponent {
     this.loadProduct();
   }
 
+  goBack(): void {
+    this.router.navigate(['/products']);
+  }
+
+  goEdit(): void {
+    const product = this.product();
+    if (product) {
+      this.router.navigate(['/products', product.id, 'edit']);
+    }
+  }
+
   private loadProduct(): void {
     this.isLoading.set(true);
     this.apiError.set(null);
@@ -49,16 +60,4 @@ export class ProductsDetailsComponent {
         });
     });
   }
-
-  goBack(): void {
-    this.router.navigate(['/products']);
-  }
-
-  goEdit(): void {
-    const product = this.product();
-    if (product) {
-      this.router.navigate(['/products', product.id, 'edit']);
-    }
-  }
 }
-

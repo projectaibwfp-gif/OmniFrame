@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, ReferralCaptureRequestDto, ReferralCaptureResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { getPendingReferral, normalizeReferralCode, setPendingReferral } from '@/lib/referral';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 
-interface CaptureReferralPayload {
-  referralCode?: string;
-}
-
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let payload: CaptureReferralPayload;
+  let payload: Partial<ReferralCaptureRequestDto>;
 
   try {
-    payload = (await request.json()) as CaptureReferralPayload;
+    payload = (await request.json()) as Partial<ReferralCaptureRequestDto>;
   } catch (error) {
     logError('referrals.capture', ErrorCode.REQUEST_INVALID_JSON, {}, error);
     return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
@@ -30,7 +27,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const existingReferral = getPendingReferral(request);
-  const response = NextResponse.json(
+  const response = NextResponse.json<ApiResponse<ReferralCaptureResponseDto>>(
     {
       data: {
         referralCode: existingReferral?.code ?? referralCode,

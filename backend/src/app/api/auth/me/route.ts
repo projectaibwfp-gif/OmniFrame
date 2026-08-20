@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, loadCurrentUser } from '@/lib/auth';
 import { getSql } from '@/lib/db';
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return user;
     }
 
-    return NextResponse.json({ data: { user } });
+    return NextResponse.json<ApiResponse<AuthCurrentUserResponseDto>>({ data: { user } });
   } catch (error) {
     logError('auth.me', ErrorCode.INTERNAL_ERROR, {}, error);
     return errorResponse('Could not load current session', 500, ErrorCode.INTERNAL_ERROR);

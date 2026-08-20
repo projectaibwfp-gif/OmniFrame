@@ -1,28 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, ProductDto, ProductUpdateRequestDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
-
-interface ProductRow {
-  id: number;
-  name: string;
-  status: 'active' | 'draft';
-  category: string;
-  description?: string;
-  created_by_id?: number;
-  created_by_name?: string;
-  createdAt?: string;
-  updatedAt: string;
-}
-
-interface ProductPayload {
-  name?: string;
-  status?: 'active' | 'draft';
-  category?: string;
-  description?: string;
-}
 
 export const dynamic = 'force-dynamic';
 
@@ -49,19 +31,19 @@ export async function GET(
   try {
     const products = (await getSql()`
       SELECT id, name, status, category, description,
-             created_by_id, created_by_name,
+             created_by_id AS "createdById", created_by_name AS "createdByName",
              to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
              to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
       FROM projects
       WHERE id = ${id}
       LIMIT 1
-    `) as ProductRow[];
+    `) as ProductDto[];
 
     if (products.length === 0) {
       return errorResponse('Product not found', 404, ErrorCode.NOT_FOUND);
     }
 
-    return NextResponse.json({ data: products[0] });
+    return NextResponse.json<ApiResponse<ProductDto>>({ data: products[0] });
   } catch (error) {
     logError('products.get', ErrorCode.DB_QUERY_FAILED, { id }, error);
     return errorResponse('Could not load product', 500, ErrorCode.DB_QUERY_FAILED);
@@ -84,10 +66,10 @@ export async function PATCH(
     return errorResponse('Invalid product ID', 400, ErrorCode.VALIDATION_FAILED);
   }
 
-  let payload: ProductPayload;
+  let payload: ProductUpdateRequestDto;
 
   try {
-    payload = (await request.json()) as ProductPayload;
+    payload = (await request.json()) as ProductUpdateRequestDto;
   } catch (error) {
     logError('products.update', ErrorCode.REQUEST_INVALID_JSON, { id }, error);
     return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
@@ -128,16 +110,17 @@ export async function PATCH(
           updated_at = now()
       WHERE id = ${id}
       RETURNING id, name, status, category, description,
-                created_by_id, created_by_name,
+                created_by_id AS "createdById",
+                created_by_name AS "createdByName",
                 to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
                 to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-    `) as ProductRow[];
+    `) as ProductDto[];
 
     if (products.length === 0) {
       return errorResponse('Product not found', 404, ErrorCode.NOT_FOUND);
     }
 
-    return NextResponse.json({ data: products[0] });
+    return NextResponse.json<ApiResponse<ProductDto>>({ data: products[0] });
   } catch (error) {
     logError('products.update', ErrorCode.DB_QUERY_FAILED, { id }, error);
     return errorResponse('Could not update product', 500, ErrorCode.DB_QUERY_FAILED);

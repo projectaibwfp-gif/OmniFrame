@@ -6,4 +6,5 @@
 **/.env
 **/.env.local
 **/npm-debug.log*
+**/front/out-tsc
 mysql/mysql_data/

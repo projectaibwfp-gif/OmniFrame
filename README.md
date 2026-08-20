@@ -15,6 +15,7 @@ blokujących port 5432.
 OmniFrame/
 ├── front/       # Angular 22 + Vite, dashboard i routing
 └── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
+├── shared/      # Wspólne DTO/kontrakty API importowane przez front i backend
 ```
 
 Najważniejsze pliki:
@@ -391,6 +392,8 @@ każdą zmianą wpływającą na uruchamianie lub architekturę. W szczególnoś
 4. Po zmianie zasad migracji opisz kolejność uruchamiania i wpływ na
    istniejące dane.
 5. Po zmianie komend npm zaktualizuj sekcję „Komendy deweloperskie".
+6. Artefakty builda frontu (`front/out-tsc/`) są ignorowane w Git i nie
+   powinny być commitowane.
 
 ## Walidacja
 

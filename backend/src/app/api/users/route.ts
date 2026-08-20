@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ApiResponse, UserRole, UsersListItemDto, UsersListResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth, type UserRole, upsertUser } from '@/lib/auth';
+import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
 import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 
-interface GoogleUserPayload {
+export const dynamic = 'force-dynamic';
+
+type GoogleUserPayload = {
   google_id: string;
   email: string;
   email_verified?: boolean;
@@ -15,27 +18,7 @@ interface GoogleUserPayload {
   picture?: string;
   locale?: string;
   role?: UserRole;
-}
-
-interface UserRow {
-  id: number;
-  google_id: string;
-  email: string;
-  email_verified: boolean;
-  role: UserRole;
-  name: string | null;
-  given_name: string | null;
-  family_name: string | null;
-  picture: string | null;
-  referralCode: string;
-  referredByCode: string | null;
-  referredByName: string | null;
-  locale: string | null;
-  registeredAt: string;
-  lastLoginAt: string;
-}
-
-export const dynamic = 'force-dynamic';
+};
 
 /**
  * GET /api/users
@@ -66,13 +49,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
         WHERE users.google_id = ${googleId}
         LIMIT 1
-      `) as UserRow[];
+      `) as UsersListItemDto[];
 
       if (rows.length === 0) {
         return errorResponse('User not found', 404, ErrorCode.NOT_FOUND);
       }
 
-      return NextResponse.json({ data: rows[0] });
+      return NextResponse.json<ApiResponse<UsersListItemDto>>({ data: rows[0] });
     } catch (error) {
       logError('users.getOne', ErrorCode.DB_QUERY_FAILED, { googleId }, error);
       return errorResponse('Could not fetch user', 500, ErrorCode.DB_QUERY_FAILED);
@@ -95,9 +78,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
       ORDER BY users.created_at DESC
       LIMIT ${limit}
-    `) as UserRow[];
+    `) as UsersListItemDto[];
 
-    return NextResponse.json({ data: rows, total: rows.length });
+    return NextResponse.json<UsersListResponseDto>({ data: rows, total: rows.length });
   } catch (error) {
     logError('users.list', ErrorCode.DB_QUERY_FAILED, { limit }, error);
     return errorResponse('Could not list users', 500, ErrorCode.DB_QUERY_FAILED);

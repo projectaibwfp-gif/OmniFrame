@@ -1,29 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
+import type { UsersListItemDto, UsersListResponseDto } from '@shared/api-contract';
 import { buildApiUrl } from '../config/api.config';
 
-export interface User {
-  id: number;
-  google_id: string;
-  email: string;
-  email_verified: boolean;
-  role: 'admin' | 'user' | 'moderator';
-  name: string | null;
-  given_name: string | null;
-  family_name: string | null;
-  picture: string | null;
-  referralCode: string;
-  referredByCode: string | null;
-  referredByName: string | null;
-  registeredAt: string;
-  lastLoginAt: string;
-}
-
-interface UsersResponse {
-  data: User[];
-  total: number;
-}
+export type User = UsersListItemDto;
+type UsersResponse = UsersListResponseDto;
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {

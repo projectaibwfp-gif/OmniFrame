@@ -1,4 +1,6 @@
-export type AuthRole = 'admin' | 'user' | 'moderator';
+import type { UserRole } from '@shared/api-contract';
+
+export type AuthRole = UserRole;
 
 export interface AuthUser {
   givenName: string;

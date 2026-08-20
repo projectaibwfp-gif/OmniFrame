@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
+import { type AuthUser } from '../auth/auth-session';
 import { buildApiUrl } from '../config/api.config';
 
 @Component({
@@ -27,9 +29,6 @@ export class ProfileComponent {
     description: '',
   });
 
-  private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
-
   readonly initials = computed(() => {
     const user = this.currentUser();
     if (!user) {
@@ -53,6 +52,9 @@ export class ProfileComponent {
     const origin = globalThis.location?.origin ?? '';
     return `${origin}/login?ref=${user.referralCode}`;
   });
+
+  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   toggleEditMode(): void {
     if (!this.editMode()) {
@@ -115,14 +117,14 @@ export class ProfileComponent {
     const form = this.editForm();
 
     this.http
-      .patch<{ data: { user: any } }>(buildApiUrl('/auth/me'), {
+      .patch<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me'), {
         phone: form.phone || null,
         birthDate: form.birthDate || null,
         description: form.description || null,
       })
       .subscribe({
         next: (response) => {
-          this.authService.user.set(response.data.user);
+          this.authService.user.set(this.mapUser(response.data.user));
           this.editMode.set(false);
           this.isSaving.set(false);
         },
@@ -155,5 +157,34 @@ export class ProfileComponent {
     } catch {
       this.copyState.set('error');
     }
+  }
+
+  private mapUser(user: AuthCurrentUserResponseDto['user']): AuthUser {
+    return {
+      givenName: user.given_name?.trim() || '',
+      familyName: user.family_name?.trim() || '',
+      fullName: this.buildFullName(user),
+      email: user.email,
+      picture: user.picture,
+      role: user.role,
+      phone: user.phone,
+      birthDate: user.birthDate,
+      description: user.description,
+      referralCode: user.referralCode,
+      referredByCode: user.referredByCode,
+      registeredAt: user.registeredAt || '',
+      lastLoginAt: user.lastLoginAt || '',
+      updatedAt: user.updatedAt || '',
+    };
+  }
+
+  private buildFullName(user: AuthCurrentUserResponseDto['user']): string {
+    const fullNameFromClaim = user.name?.trim() || '';
+    if (fullNameFromClaim) {
+      return fullNameFromClaim;
+    }
+
+    const fallbackName = `${user.given_name ?? ''} ${user.family_name ?? ''}`.trim();
+    return fallbackName || 'Użytkownik Google';
   }
 }
