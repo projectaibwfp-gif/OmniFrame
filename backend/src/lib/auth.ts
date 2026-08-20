@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { SignJWT, createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 import type { AuthCurrentUserDto, UserRole as SharedUserRole } from '@shared/api-contract';
+import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { errorResponse } from './api-response';
 import { getSql } from './db';
 import { ErrorCode } from './errors';
@@ -86,8 +87,6 @@ const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 // so the user is logged out after ~30 minutes of inactivity (REFRESH_TOKEN_TTL_SECONDS).
 const REFRESH_TOKEN_TTL_SECONDS = 30 * 60;
 const OAUTH_STATE_TTL_SECONDS = 10 * 60;
-const DEFAULT_GOOGLE_CLIENT_ID =
-  '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
 const DEFAULT_SESSION_SECRET = 'omniframe-dev-session-secret-change-me';
 const DEFAULT_REFRESH_SECRET = 'omniframe-dev-refresh-secret-change-me';
 const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));

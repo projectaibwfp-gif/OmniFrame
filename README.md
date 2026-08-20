@@ -14,8 +14,8 @@ blokujących port 5432.
 ```text
 OmniFrame/
 ├── front/       # Angular 22 + Vite, dashboard i routing
-└── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
-├── shared/      # Wspólne DTO/kontrakty API importowane przez front i backend
+├── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
+└── backend/shared/ # Wspólne DTO/kontrakty API importowane przez front i backend
 ```
 
 Najważniejsze pliki:
@@ -25,7 +25,7 @@ front/src/app/                 # layout, routing, dashboard, profil, użytkownic
 front/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
 backend/src/app/api/health/    # kontrola API i połączenia z bazą
 backend/src/app/api/dashboard/ # statystyki dashboardu oparte o użytkowników
-backend/src/app/api/products/  # odczyt i tworzenie projektów
+backend/src/app/api/products/  # odczyt i tworzenie produktów
 backend/src/app/api/users/     # lista użytkowników, rejestracje i role
 backend/src/app/api/auth/      # Google login, sesja, refresh, logout, me
 backend/src/app/api/referrals/ # przechwytywanie linków polecających
@@ -33,7 +33,7 @@ backend/src/lib/db.ts          # klient Neon (DATABASE_URL)
 backend/src/lib/auth.ts        # weryfikacja Google, JWT cookie, upsert users
 backend/src/lib/referral.ts    # cookie referral + walidacja kodów
 backend/scripts/migrate.ts     # TypeScript runner migracji (tabela _migrations)
-backend/migration/001_init.sql # tabela projects
+backend/migration/001_init.sql # tabela products (wcześniej projects)
 backend/migration/002_seed.sql # dane przykładowe (idempotentne)
 backend/migration/005_user_referrals.sql # przypisanie poleceń + tabela atrybucji
 backend/migration/006_referral_codes.sql # stałe hashe referral_code dla users

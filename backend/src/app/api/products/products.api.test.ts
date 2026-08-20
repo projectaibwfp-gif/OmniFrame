@@ -3,6 +3,7 @@ import { createDeniedResponse, createJsonRequest, createRequest } from '@/test/h
 
 const authMocks = vi.hoisted(() => ({
   isAuthDenied: vi.fn(),
+  loadCurrentUser: vi.fn(),
   requireAuth: vi.fn(),
 }));
 
@@ -13,6 +14,7 @@ const dbMocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/auth', () => ({
   isAuthDenied: authMocks.isAuthDenied,
+  loadCurrentUser: authMocks.loadCurrentUser,
   requireAuth: authMocks.requireAuth,
 }));
 
@@ -27,6 +29,11 @@ describe('Products API', () => {
     vi.clearAllMocks();
     authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
+    authMocks.loadCurrentUser.mockResolvedValue({
+      id: 7,
+      name: 'Anna Nowak',
+      email: 'anna@example.com',
+    });
     dbMocks.getSql.mockReturnValue(dbMocks.sql);
   });
 
@@ -67,22 +74,34 @@ describe('Products API', () => {
     });
   });
 
-  it('creates a new project in POST /api/products', async () => {
-    dbMocks.sql.mockResolvedValue([{ id: 9 }]);
+  it('creates a new product in POST /api/products', async () => {
+    dbMocks.sql.mockResolvedValue([
+      {
+        id: 9,
+        name: 'Nowy produkt',
+        status: 'active',
+        category: 'Ops',
+        description: null,
+        createdById: 7,
+        createdByName: 'Anna Nowak',
+        createdAt: '2026-08-20',
+        updatedAt: '2026-08-20',
+      },
+    ]);
 
     const response = await POST(
       createJsonRequest('http://localhost/api/products', 'POST', {
-        name: 'Nowy projekt',
+        name: 'Nowy produkt',
         status: 'active',
         category: 'Ops',
       }),
     );
 
     expect(response.status).toBe(201);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
       data: {
         id: 9,
-        name: 'Nowy projekt',
+        name: 'Nowy produkt',
         status: 'active',
         category: 'Ops',
       },

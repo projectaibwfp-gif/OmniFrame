@@ -34,7 +34,7 @@ export async function GET(
              created_by_id AS "createdById", created_by_name AS "createdByName",
              to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
              to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-      FROM projects
+      FROM products
       WHERE id = ${id}
       LIMIT 1
     `) as ProductDto[];
@@ -102,7 +102,7 @@ export async function PATCH(
 
   try {
     const products = (await getSql()`
-      UPDATE projects
+      UPDATE products
       SET name = COALESCE(${name || null}, name),
           status = COALESCE(${status || null}, status),
           category = COALESCE(${category || null}, category),
@@ -145,7 +145,7 @@ export async function DELETE(
 
   try {
     const result = await getSql()`
-      DELETE FROM projects
+      DELETE FROM products
       WHERE id = ${id}
       RETURNING id
     `;

@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   root: './src',
   resolve: {
     alias: {
-      '@shared': path.resolve(import.meta.dirname, '../shared/src'),
+      '@shared': path.resolve(import.meta.dirname, '../backend/shared'),
     },
   },
   define: {

@@ -156,10 +156,12 @@ select.form-control {
 
     &.btn-primary {
       background: c.$brand-primary;
-      color: white;
+      border: 1px solid c.$brand-primary;
+      color: c.$text-on-primary;
 
       &:hover:not(:disabled) {
         background: c.$brand-primary-strong;
+        border-color: c.$brand-primary-strong;
       }
 
       &:active:not(:disabled) {
@@ -173,12 +175,13 @@ select.form-control {
     }
 
     &.btn-secondary {
-      background: c.$surface-alt;
+      background: c.$surface-card;
       color: c.$text-700;
-      border: 1px solid c.$border-subtle;
+      border: 1px solid c.$brand-primary;
 
       &:hover:not(:disabled) {
-        background: c.$surface-dark;
+        background: c.$brand-primary;
+        color: c.$text-on-primary;
       }
 
       &:active:not(:disabled) {
@@ -228,4 +231,3 @@ select.form-control {
     }
   }
 }
-

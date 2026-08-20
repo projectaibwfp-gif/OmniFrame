@@ -20,7 +20,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            created_by_id AS "createdById", created_by_name AS "createdByName",
              to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
              to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-      FROM projects
+      FROM products
       ORDER BY updated_at DESC
       LIMIT 20
    `) as ProductDto[];
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
    return NextResponse.json<ApiResponse<ProductDto[]>>({ data: products });
   } catch (error) {
     logError('products.list', ErrorCode.DB_QUERY_FAILED, {}, error);
-    return errorResponse('Could not load projects', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse('Could not load products', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const result = (await getSql()`
-      INSERT INTO projects (name, status, category, description, created_by_id, created_by_name)
+      INSERT INTO products (name, status, category, description, created_by_id, created_by_name)
       VALUES (${name}, ${status}, ${category}, ${description}, ${user.id}, ${createdByName})
       RETURNING id, name, status, category, description,
                 created_by_id AS "createdById",
@@ -92,6 +92,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json<ApiResponse<ProductDto>>({ data: result[0] }, { status: 201 });
   } catch (error) {
     logError('products.create', ErrorCode.DB_QUERY_FAILED, { name }, error);
-    return errorResponse('Could not create project', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse('Could not create product', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }

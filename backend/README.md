@@ -34,14 +34,14 @@ Domyślnie API działa na `http://localhost:3000`.
 ## Endpointy
 
 - `GET /api/health` - status API + połączenie z bazą,
-- `GET /api/products` - lista projektów/produktów (`id`, `name`, `status`, `category`, `updatedAt`),
+- `GET /api/products` - lista produktów (`id`, `name`, `status`, `category`, `updatedAt`),
 - `POST /api/products` - tworzenie rekordu.
 
 Przykład payloadu:
 
 ```json
 {
-  "name": "Nowy projekt",
+  "name": "Nowy produkt",
   "category": "Operations",
   "status": "draft"
 }

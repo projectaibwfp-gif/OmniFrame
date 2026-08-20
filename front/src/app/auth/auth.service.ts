@@ -9,6 +9,7 @@ import type {
   AuthStateDto,
   ReferralCaptureResponseDto,
 } from '@shared/api-contract';
+import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { buildApiUrl } from '../config/api.config';
 import { withSkippedAuthInterceptor } from './auth-http-context';
 import { type AuthUser } from './auth-session';
@@ -56,8 +57,6 @@ interface GooglePromptMomentNotification {
   getSkippedReason: () => string;
 }
 
-const DEFAULT_GOOGLE_CLIENT_ID =
-  '181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com';
 const GOOGLE_CLIENT_ID = (import.meta.env['VITE_GOOGLE_CLIENT_ID'] || DEFAULT_GOOGLE_CLIENT_ID).trim();
 
 @Injectable({ providedIn: 'root' })

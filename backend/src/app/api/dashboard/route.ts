@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { ApiResponse, DashboardDto } from '@shared/api-contract';
+import type { ApiResponse, DashboardDto, UserRole } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { getSql } from '@/lib/db';
@@ -24,7 +24,7 @@ interface ActivityRow {
 interface RecentUserRow {
   id: number;
   email: string;
-  role: import('@shared/api-contract').UserRole;
+  role: UserRole;
   name: string | null;
   given_name: string | null;
   family_name: string | null;
