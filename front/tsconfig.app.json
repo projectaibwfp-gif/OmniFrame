@@ -9,7 +9,7 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@shared/*": ["../backend/shared/*"]
+      "@shared/*": ["../shared/*"]
     },
     "types": ["vite/client"],
     "experimentalDecorators": true,
@@ -33,6 +33,6 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "include": ["src/**/*", "../backend/shared/**/*"],
+  "include": ["src/**/*", "../shared/**/*"],
   "exclude": ["node_modules", "dist", "out-tsc"]
 }

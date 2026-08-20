@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth, loadCurrentUser } from '@/lib/auth';
-import { getSql } from '@/lib/db';
+import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
+import { getCurrentUserProfile, updateCurrentUserProfile } from '@/lib/profile';
 
 interface UpdateProfilePayload {
   phone?: string | null;
@@ -15,10 +15,15 @@ interface UpdateProfilePayload {
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const auth = await requireAuth(request);
+  if (isAuthDenied(auth)) {
+    return auth.response;
+  }
+
   try {
-    const user = await loadCurrentUser(request);
-    if (user instanceof NextResponse) {
-      return user;
+    const user = await getCurrentUserProfile(auth.session.sub);
+    if (user === null) {
+      return errorResponse('Current user not found', 404, ErrorCode.NOT_FOUND);
     }
 
     return NextResponse.json<ApiResponse<AuthCurrentUserResponseDto>>({ data: { user } });
@@ -79,18 +84,16 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    await getSql()`
-      UPDATE users
-      SET phone = ${phone},
-          birth_date = ${birthDate},
-          description = ${description},
-          updated_at = now()
-      WHERE google_id = ${auth.session.sub}
-    `;
+    await updateCurrentUserProfile({
+      googleId: auth.session.sub,
+      phone,
+      birthDate,
+      description,
+    });
 
-    const user = await loadCurrentUser(request);
-    if (user instanceof NextResponse) {
-      return user;
+    const user = await getCurrentUserProfile(auth.session.sub);
+    if (user === null) {
+      return errorResponse('Current user not found', 404, ErrorCode.NOT_FOUND);
     }
 
     return NextResponse.json({ data: { user } });

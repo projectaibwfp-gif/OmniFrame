@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, UserRole, UsersListItemDto, UsersListResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
-import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
+import { getUserByGoogleId, listUsers } from '@/lib/users';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,25 +37,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   if (googleId) {
     try {
-      const rows = (await getSql()`
-        SELECT users.id, users.google_id, users.email, users.email_verified, users.role, users.name,
-               users.given_name, users.family_name, users.picture, users.locale,
-               users.referral_code AS "referralCode",
-               users.referred_by_code AS "referredByCode",
-               COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
-               to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-               to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
-        FROM users
-        LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
-        WHERE users.google_id = ${googleId}
-        LIMIT 1
-      `) as UsersListItemDto[];
-
-      if (rows.length === 0) {
+      const user = await getUserByGoogleId(googleId);
+      if (user === null) {
         return errorResponse('User not found', 404, ErrorCode.NOT_FOUND);
       }
 
-      return NextResponse.json<ApiResponse<UsersListItemDto>>({ data: rows[0] });
+      return NextResponse.json<ApiResponse<UsersListItemDto>>({ data: user });
     } catch (error) {
       logError('users.getOne', ErrorCode.DB_QUERY_FAILED, { googleId }, error);
       return errorResponse('Could not fetch user', 500, ErrorCode.DB_QUERY_FAILED);
@@ -66,19 +53,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const limit = Math.min(Math.max(parseInt(limitParam ?? '50', 10) || 50, 1), 200);
 
   try {
-    const rows = (await getSql()`
-      SELECT users.id, users.google_id, users.email, users.email_verified, users.role, users.name,
-             users.given_name, users.family_name, users.picture, users.locale,
-             users.referral_code AS "referralCode",
-             users.referred_by_code AS "referredByCode",
-             COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
-             to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-             to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
-      FROM users
-      LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
-      ORDER BY users.created_at DESC
-      LIMIT ${limit}
-    `) as UsersListItemDto[];
+    const rows = await listUsers(limit);
 
     return NextResponse.json<UsersListResponseDto>({ data: rows, total: rows.length });
   } catch (error) {

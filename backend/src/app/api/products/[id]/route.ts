@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, ProductDto, ProductUpdateRequestDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
-import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
+import { deleteProduct, getProductById, updateProduct } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,21 +29,12 @@ export async function GET(
   }
 
   try {
-    const products = (await getSql()`
-      SELECT id, name, status, category, description,
-             created_by_id AS "createdById", created_by_name AS "createdByName",
-             to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-             to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-      FROM products
-      WHERE id = ${id}
-      LIMIT 1
-    `) as ProductDto[];
-
-    if (products.length === 0) {
+    const product = await getProductById(id);
+    if (product === null) {
       return errorResponse('Product not found', 404, ErrorCode.NOT_FOUND);
     }
 
-    return NextResponse.json<ApiResponse<ProductDto>>({ data: products[0] });
+    return NextResponse.json<ApiResponse<ProductDto>>({ data: product });
   } catch (error) {
     logError('products.get', ErrorCode.DB_QUERY_FAILED, { id }, error);
     return errorResponse('Could not load product', 500, ErrorCode.DB_QUERY_FAILED);
@@ -101,26 +92,18 @@ export async function PATCH(
   }
 
   try {
-    const products = (await getSql()`
-      UPDATE products
-      SET name = COALESCE(${name || null}, name),
-          status = COALESCE(${status || null}, status),
-          category = COALESCE(${category || null}, category),
-          description = ${description === undefined ? null : description},
-          updated_at = now()
-      WHERE id = ${id}
-      RETURNING id, name, status, category, description,
-                created_by_id AS "createdById",
-                created_by_name AS "createdByName",
-                to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-                to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-    `) as ProductDto[];
+    const product = await updateProduct(id, {
+      name,
+      category,
+      status,
+      description,
+    });
 
-    if (products.length === 0) {
+    if (product === null) {
       return errorResponse('Product not found', 404, ErrorCode.NOT_FOUND);
     }
 
-    return NextResponse.json<ApiResponse<ProductDto>>({ data: products[0] });
+    return NextResponse.json<ApiResponse<ProductDto>>({ data: product });
   } catch (error) {
     logError('products.update', ErrorCode.DB_QUERY_FAILED, { id }, error);
     return errorResponse('Could not update product', 500, ErrorCode.DB_QUERY_FAILED);
@@ -144,13 +127,8 @@ export async function DELETE(
   }
 
   try {
-    const result = await getSql()`
-      DELETE FROM products
-      WHERE id = ${id}
-      RETURNING id
-    `;
-
-    if (result.length === 0) {
+    const deleted = await deleteProduct(id);
+    if (!deleted) {
       return errorResponse('Product not found', 404, ErrorCode.NOT_FOUND);
     }
 

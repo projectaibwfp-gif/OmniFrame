@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, ProductCreateRequestDto, ProductDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, loadCurrentUser } from '@/lib/auth';
-import { getSql } from '@/lib/db';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
+import { createProduct, listProducts } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,15 +15,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const products = (await getSql()`
-      SELECT id, name, status, category, description,
-           created_by_id AS "createdById", created_by_name AS "createdByName",
-             to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-             to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-      FROM products
-      ORDER BY updated_at DESC
-      LIMIT 20
-   `) as ProductDto[];
+   const products = await listProducts();
 
    return NextResponse.json<ApiResponse<ProductDto[]>>({ data: products });
   } catch (error) {
@@ -79,17 +71,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const result = (await getSql()`
-      INSERT INTO products (name, status, category, description, created_by_id, created_by_name)
-      VALUES (${name}, ${status}, ${category}, ${description}, ${user.id}, ${createdByName})
-      RETURNING id, name, status, category, description,
-                created_by_id AS "createdById",
-                created_by_name AS "createdByName",
-                to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-                to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
-    `) as ProductDto[];
+    const result = await createProduct({
+      userId: user.id,
+      createdByName,
+      payload: {
+        name,
+        status,
+        category,
+        description,
+      },
+    });
 
-    return NextResponse.json<ApiResponse<ProductDto>>({ data: result[0] }, { status: 201 });
+    return NextResponse.json<ApiResponse<ProductDto>>({ data: result }, { status: 201 });
   } catch (error) {
     logError('products.create', ErrorCode.DB_QUERY_FAILED, { name }, error);
     return errorResponse('Could not create product', 500, ErrorCode.DB_QUERY_FAILED);

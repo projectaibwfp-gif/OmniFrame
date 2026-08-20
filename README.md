@@ -15,7 +15,7 @@ blokujących port 5432.
 OmniFrame/
 ├── front/       # Angular 22 + Vite, dashboard i routing
 ├── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
-└── backend/shared/ # Wspólne DTO/kontrakty API importowane przez front i backend
+└── shared/      # Wspólne DTO/kontrakty API importowane przez front i backend
 ```
 
 Najważniejsze pliki:

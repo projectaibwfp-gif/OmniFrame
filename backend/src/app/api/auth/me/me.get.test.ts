@@ -3,11 +3,21 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequest } from '@/test/http';
 
 const authMocks = vi.hoisted(() => ({
-  loadCurrentUser: vi.fn(),
+  isAuthDenied: vi.fn(),
+  requireAuth: vi.fn(),
+}));
+
+const profileMocks = vi.hoisted(() => ({
+  getCurrentUserProfile: vi.fn(),
 }));
 
 vi.mock('@/lib/auth', () => ({
-  loadCurrentUser: authMocks.loadCurrentUser,
+  isAuthDenied: authMocks.isAuthDenied,
+  requireAuth: authMocks.requireAuth,
+}));
+
+vi.mock('@/lib/profile', () => ({
+  getCurrentUserProfile: profileMocks.getCurrentUserProfile,
 }));
 
 import { GET } from './route';
@@ -15,10 +25,12 @@ import { GET } from './route';
 describe('GET /api/auth/me', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
+    authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
   });
 
   it('returns the current user when session exists', async () => {
-    authMocks.loadCurrentUser.mockResolvedValue({
+    profileMocks.getCurrentUserProfile.mockResolvedValue({
       email: 'anna@example.com',
       role: 'user',
     });
@@ -41,7 +53,7 @@ describe('GET /api/auth/me', () => {
       { error: { message: 'Authentication required' } },
       { status: 401 },
     );
-    authMocks.loadCurrentUser.mockResolvedValue(denied);
+    authMocks.requireAuth.mockResolvedValue({ response: denied });
 
     const response = await GET(createRequest('http://localhost/api/auth/me'));
 
@@ -54,7 +66,7 @@ describe('GET /api/auth/me', () => {
   });
 
   it('returns 500 when session lookup throws', async () => {
-    authMocks.loadCurrentUser.mockRejectedValue(new Error('boom'));
+    profileMocks.getCurrentUserProfile.mockRejectedValue(new Error('boom'));
 
     const response = await GET(createRequest('http://localhost/api/auth/me'));
 

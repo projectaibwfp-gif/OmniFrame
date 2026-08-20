@@ -7,7 +7,7 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
-      '@shared': path.resolve(projectRoot, '../backend/shared'),
+      '@shared': path.resolve(projectRoot, '../shared'),
     },
   },
   test: {
