@@ -33,7 +33,7 @@ export class UsersComponent {
   }
 
   fullName(user: User): string {
-    const parts = [user.given_name, user.family_name].filter(Boolean);
+    const parts = [user.givenName, user.familyName].filter(Boolean);
     return parts.length ? parts.join(' ') : (user.name ?? '—');
   }
 

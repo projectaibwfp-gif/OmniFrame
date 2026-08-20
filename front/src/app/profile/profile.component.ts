@@ -161,8 +161,8 @@ export class ProfileComponent {
 
   private mapUser(user: AuthCurrentUserResponseDto['user']): AuthUser {
     return {
-      givenName: user.given_name?.trim() || '',
-      familyName: user.family_name?.trim() || '',
+      givenName: user.givenName?.trim() || '',
+      familyName: user.familyName?.trim() || '',
       fullName: this.buildFullName(user),
       email: user.email,
       picture: user.picture,
@@ -184,7 +184,7 @@ export class ProfileComponent {
       return fullNameFromClaim;
     }
 
-    const fallbackName = `${user.given_name ?? ''} ${user.family_name ?? ''}`.trim();
+    const fallbackName = `${user.givenName ?? ''} ${user.familyName ?? ''}`.trim();
     return fallbackName || 'Użytkownik Google';
   }
 }

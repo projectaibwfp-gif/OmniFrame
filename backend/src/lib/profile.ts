@@ -32,13 +32,13 @@ interface UpdateProfileInput {
 function mapUserRow(row: UserRow): AuthCurrentUserDto {
   return {
     id: row.id,
-    google_id: row.google_id,
+    googleId: row.google_id,
     email: row.email,
-    email_verified: row.email_verified,
+    emailVerified: row.email_verified,
     role: row.role,
     name: row.name,
-    given_name: row.given_name,
-    family_name: row.family_name,
+    givenName: row.given_name,
+    familyName: row.family_name,
     picture: row.picture,
     locale: row.locale,
     phone: row.phone,

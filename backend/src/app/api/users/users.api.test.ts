@@ -66,7 +66,7 @@ describe('Users API', () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       data: {
-        google_id: 'google-1',
+        googleId: 'google-1',
         email: 'anna@example.com',
       },
     });
@@ -75,7 +75,7 @@ describe('Users API', () => {
   it('validates email in POST /api/users', async () => {
     const response = await POST(
       createJsonRequest('http://localhost/api/users', 'POST', {
-        google_id: 'google-1',
+        googleId: 'google-1',
         email: 'bad-mail',
       }),
     );
@@ -92,7 +92,7 @@ describe('Users API', () => {
   it('upserts user data in POST /api/users', async () => {
     authMocks.upsertUser.mockResolvedValue({
       user: {
-        google_id: 'google-1',
+        googleId: 'google-1',
         email: 'anna@example.com',
         role: 'moderator',
       },
@@ -100,7 +100,7 @@ describe('Users API', () => {
 
     const response = await POST(
       createJsonRequest('http://localhost/api/users', 'POST', {
-        google_id: 'google-1',
+        googleId: 'google-1',
         email: 'anna@example.com',
         role: 'moderator',
       }),
@@ -120,7 +120,7 @@ describe('Users API', () => {
     });
     await expect(response.json()).resolves.toEqual({
       data: {
-        google_id: 'google-1',
+        googleId: 'google-1',
         email: 'anna@example.com',
         role: 'moderator',
       },

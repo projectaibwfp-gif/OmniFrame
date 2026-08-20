@@ -61,8 +61,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       pendingReferral?.code ?? null,
     );
     const sessionUser: AuthGoogleUserDto = {
-      given_name: databaseUser.given_name,
-      family_name: databaseUser.family_name,
+      givenName: databaseUser.givenName,
+      familyName: databaseUser.familyName,
       name: databaseUser.name,
       email: databaseUser.email,
       picture: databaseUser.picture,

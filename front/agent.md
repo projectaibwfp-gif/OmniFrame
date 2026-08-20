@@ -6,3 +6,4 @@
 6. For Route Handler tests, mock external boundaries like auth, database, cookies, and third-party services, then assert both HTTP status and JSON payload.
 7. When a route supports multiple methods, cover each method explicitly and prefer one focused expectation per scenario over broad integration-style assertions.
 8. Use `shared/api-contract.ts` as the source of truth for API DTOs shared between front and backend, and do not commit `front/out-tsc/` artifacts.
+9. Keep shared API DTOs in camelCase; reserve snake_case only for database row mapping and SQL boundaries.

@@ -15,8 +15,8 @@ export interface AuthGoogleRequestDto {
 }
 
 export interface AuthGoogleUserDto {
-  given_name: string | null;
-  family_name: string | null;
+  givenName: string | null;
+  familyName: string | null;
   name: string | null;
   email: string;
   picture: string | null;
@@ -33,8 +33,8 @@ export interface AuthGoogleUserDto {
 
 export interface AuthCurrentUserDto extends AuthGoogleUserDto {
   id: number;
-  google_id: string;
-  email_verified: boolean;
+  googleId: string;
+  emailVerified: boolean;
   locale: string | null;
 }
 
@@ -83,13 +83,13 @@ export interface ProductUpdateRequestDto {
 
 export interface UsersListItemDto {
   id: number;
-  google_id: string;
+  googleId: string;
   email: string;
-  email_verified: boolean;
+  emailVerified: boolean;
   role: UserRole;
   name: string | null;
-  given_name: string | null;
-  family_name: string | null;
+  givenName: string | null;
+  familyName: string | null;
   picture: string | null;
   locale: string | null;
   referralCode: string;

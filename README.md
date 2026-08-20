@@ -18,6 +18,8 @@ OmniFrame/
 └── shared/      # Wspólne DTO/kontrakty API importowane przez front i backend
 ```
 
+Wspólny kontrakt API używa camelCase w DTO; snake_case zostaje tylko przy mapowaniu do/z bazy danych.
+
 Najważniejsze pliki:
 
 ```text

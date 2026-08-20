@@ -9,12 +9,12 @@ import { getUserByGoogleId, listUsers } from '@/lib/users';
 export const dynamic = 'force-dynamic';
 
 type GoogleUserPayload = {
-  google_id: string;
+  googleId: string;
   email: string;
-  email_verified?: boolean;
+  emailVerified?: boolean;
   name?: string;
-  given_name?: string;
-  family_name?: string;
+  givenName?: string;
+  familyName?: string;
   picture?: string;
   locale?: string;
   role?: UserRole;
@@ -82,12 +82,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
   }
 
-  const { google_id, email, email_verified, name, given_name, family_name, picture, locale } =
-    payload;
+  const { googleId, email, emailVerified, name, givenName, familyName, picture, locale } = payload;
   const role = payload.role ?? 'user';
 
-  if (!google_id?.trim()) {
-    return errorResponse('google_id is required', 400, ErrorCode.VALIDATION_FAILED);
+  if (!googleId?.trim()) {
+    return errorResponse('googleId is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
   if (!email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -104,12 +103,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const { user } = await upsertUser({
-      google_id,
+      google_id: googleId,
       email,
-      email_verified,
+      email_verified: emailVerified,
       name,
-      given_name,
-      family_name,
+      given_name: givenName,
+      family_name: familyName,
       picture,
       locale,
       role,
@@ -117,7 +116,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ data: user }, { status: 200 });
   } catch (error) {
-    logError('users.create', ErrorCode.AUTH_USER_UPSERT_FAILED, { google_id }, error);
+    logError('users.create', ErrorCode.AUTH_USER_UPSERT_FAILED, { googleId }, error);
     return errorResponse('Could not upsert user', 500, ErrorCode.AUTH_USER_UPSERT_FAILED);
   }
 }

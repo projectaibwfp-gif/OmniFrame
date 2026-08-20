@@ -75,8 +75,8 @@ describe('POST /api/auth/google', () => {
     });
     authMocks.upsertGoogleUser.mockResolvedValue({
       user: {
-        given_name: 'Anna',
-        family_name: 'Nowak',
+        givenName: 'Anna',
+        familyName: 'Nowak',
         name: 'Anna Nowak',
         email: 'anna@example.com',
         picture: null,

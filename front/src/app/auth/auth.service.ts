@@ -278,8 +278,8 @@ export class AuthService {
   }
 
   private mapUser(user: AuthGoogleUserDto): AuthUser {
-    const givenName = this.normalizeNamePart(user.given_name);
-    const familyName = this.normalizeNamePart(user.family_name);
+    const givenName = this.normalizeNamePart(user.givenName);
+    const familyName = this.normalizeNamePart(user.familyName);
 
     return {
       givenName,
