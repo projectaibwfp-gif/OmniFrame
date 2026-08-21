@@ -60,6 +60,50 @@ przesyła je przy wywołaniach cross-origin z credentialed request.
 - `/products` - lista produktów z API,
 - `/about` - informacje o projekcie.
 
+## Internacjonalizacja (i18n)
+
+Aplikacja obsługuje dwa języki: **angielski (en)** i **polski (pl)**.
+
+### Jak dodać nową tłumaczenie?
+
+1. Edytuj pliki XLF w `src/i18n/`:
+   - `messages.en.xlf` - tłumaczenia angielskie
+   - `messages.pl.xlf` - tłumaczenia polskie
+
+2. Dodaj nową `<trans-unit>` z unikalnym ID:
+   ```xml
+   <trans-unit id="my-key" datatype="html">
+     <source>English text</source>
+     <target>Polish translation</target>
+   </trans-unit>
+   ```
+
+3. W szablonie HTML użyj `$localize`:
+   ```html
+   <p i18n="@@my-key">English text</p>
+   ```
+
+4. W TypeScript/komponencie użyj `LocalizationService`:
+   ```typescript
+   readonly localizationService = inject(LocalizationService);
+   locale = this.localizationService.currentLocale(); // 'en' | 'pl'
+   ```
+
+### Switcher języków
+
+Language switcher jest dostępny w topbarze. Zmiana języka jest przechowywana w pamięci sesji.
+
+### Struktura
+
+```
+src/i18n/
+  ├── messages.en.xlf    # Angielskie tłumaczenia
+  ├── messages.pl.xlf    # Polskie tłumaczenia
+src/app/
+  ├── services/
+  │   └── localization.service.ts  # Serwis zarządzania język
+```
+
 ## Komendy
 
 ```bash

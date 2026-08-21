@@ -1,5 +1,6 @@
 import 'zone.js';
 import '@angular/compiler';
+import '@angular/localize';
 import './styles.scss';
 import { APP_INITIALIZER } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';

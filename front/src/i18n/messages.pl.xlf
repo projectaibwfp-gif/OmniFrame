@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" target-language="pl" datatype="plaintext" original="ng2.template">
+    <body>
+      <!-- Navigation labels -->
+      <trans-unit id="nav-dashboard" datatype="html">
+        <source>Dashboard</source>
+        <target>Pulpit</target>
+      </trans-unit>
+      <trans-unit id="nav-products" datatype="html">
+        <source>Products</source>
+        <target>Produkty</target>
+      </trans-unit>
+      <trans-unit id="nav-users" datatype="html">
+        <source>Users</source>
+        <target>Użytkownicy</target>
+      </trans-unit>
+      <trans-unit id="nav-profile" datatype="html">
+        <source>Profile</source>
+        <target>Profil</target>
+      </trans-unit>
+      <trans-unit id="nav-about" datatype="html">
+        <source>About project</source>
+        <target>O projekcie</target>
+      </trans-unit>
+
+      <!-- Common actions -->
+      <trans-unit id="action-logout" datatype="html">
+        <source>Logout</source>
+        <target>Wyloguj się</target>
+      </trans-unit>
+      <trans-unit id="action-login" datatype="html">
+        <source>Login</source>
+        <target>Zaloguj się</target>
+      </trans-unit>
+      <trans-unit id="action-save" datatype="html">
+        <source>Save</source>
+        <target>Zapisz</target>
+      </trans-unit>
+      <trans-unit id="action-cancel" datatype="html">
+        <source>Cancel</source>
+        <target>Anuluj</target>
+      </trans-unit>
+      <trans-unit id="action-delete" datatype="html">
+        <source>Delete</source>
+        <target>Usuń</target>
+      </trans-unit>
+      <trans-unit id="action-edit" datatype="html">
+        <source>Edit</source>
+        <target>Edytuj</target>
+      </trans-unit>
+      <trans-unit id="action-create" datatype="html">
+        <source>Create</source>
+        <target>Stwórz</target>
+      </trans-unit>
+
+      <!-- Messages -->
+      <trans-unit id="msg-loading" datatype="html">
+        <source>Loading...</source>
+        <target>Ładowanie...</target>
+      </trans-unit>
+      <trans-unit id="msg-error" datatype="html">
+        <source>An error occurred</source>
+        <target>Wystąpił błąd</target>
+      </trans-unit>
+      <trans-unit id="msg-success" datatype="html">
+        <source>Operation completed successfully</source>
+        <target>Operacja zakończona pomyślnie</target>
+      </trans-unit>
+      <trans-unit id="msg-confirm-delete" datatype="html">
+        <source>Are you sure you want to delete this item?</source>
+        <target>Czy na pewno chcesz usunąć ten element?</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -21,6 +21,7 @@
         </nav>
 
         <div class="topbar-actions">
+          <app-language-switcher></app-language-switcher>
           <div class="workspace-user compact">
             <span class="workspace-avatar">{{ initials() || 'U' }}</span>
             <div>
@@ -73,7 +74,7 @@
             </a>
           }
           <a class="btn btn-outline-primary w-100" routerLink="/profile" (click)="closeMobileNav()">
-            Otwórz profil
+            {{ currentLocale() === 'pl' ? 'Otwórz profil' : 'Open profile' }}
           </a>
         </div>
       </section>

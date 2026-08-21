@@ -7,3 +7,4 @@
 7. When a route supports multiple methods, cover each method explicitly and prefer one focused expectation per scenario over broad integration-style assertions.
 8. Use `shared/api-contract.ts` as the source of truth for API DTOs shared between front and backend, and do not commit `front/out-tsc/` artifacts.
 9. Keep shared API DTOs in camelCase; reserve snake_case only for database row mapping and SQL boundaries.
+10. **i18n (Internationalization)**: Frontend supports English (en) and Polish (pl). Add translations in `src/i18n/messages.{en,pl}.xlf`. Use `LocalizationService` to get current locale or switch languages. Display language switcher in topbar for users to change locale dynamically. Navigation labels and static text should respect the current locale signal.

@@ -1,26 +1,36 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { LocalizationService, type Locale } from './services/localization.service';
+import { LanguageSwitcherComponent } from './components/language-switcher.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, LanguageSwitcherComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   readonly authService = inject(AuthService);
+  readonly localizationService = inject(LocalizationService);
   readonly currentUser = this.authService.user;
+  readonly currentLocale = this.localizationService.currentLocale;
   readonly navOpen = signal(false);
-  readonly navItems = [
-    { path: '/', label: 'Dashboard', icon: '▦', exact: true },
-    { path: '/products', label: 'Produkty', icon: '▤', exact: false },
-    { path: '/users', label: 'Użytkownicy', icon: '👤', exact: false },
-    { path: '/profile', label: 'Profil', icon: '◌', exact: false },
-    { path: '/about', label: 'O projekcie', icon: 'ⓘ', exact: false },
-  ] as const;
+
+  readonly navItems = computed(() => {
+    const locale = this.currentLocale();
+    const translations = this.getNavTranslations(locale);
+    return [
+      { path: '/', label: translations.dashboard, icon: '▦', exact: true },
+      { path: '/products', label: translations.products, icon: '▤', exact: false },
+      { path: '/users', label: translations.users, icon: '👤', exact: false },
+      { path: '/profile', label: translations.profile, icon: '◌', exact: false },
+      { path: '/about', label: translations.about, icon: 'ⓘ', exact: false },
+    ] as const;
+  });
+
   readonly initials = computed(() => {
     const user = this.currentUser();
     if (!user) {
@@ -48,4 +58,29 @@ export class AppComponent {
     this.authService.logout();
     void this.router.navigateByUrl('/login');
   }
+
+  setLocale(locale: Locale): void {
+    this.localizationService.setLocale(locale);
+  }
+
+  private getNavTranslations(locale: Locale): { dashboard: string; products: string; users: string; profile: string; about: string } {
+    const translations = {
+      en: {
+        dashboard: 'Dashboard',
+        products: 'Products',
+        users: 'Users',
+        profile: 'Profile',
+        about: 'About project',
+      },
+      pl: {
+        dashboard: 'Pulpit',
+        products: 'Produkty',
+        users: 'Użytkownicy',
+        profile: 'Profil',
+        about: 'O projekcie',
+      },
+    };
+    return translations[locale];
+  }
 }
+
