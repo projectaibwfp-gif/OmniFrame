@@ -1,10 +1,15 @@
 .language-switcher {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .lang-btn {
-  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.375rem 0.75rem;
   border: 1px solid var(--bs-gray-400);
   background: transparent;
   cursor: pointer;
@@ -12,6 +17,7 @@
   transition: all 0.2s ease;
   font-size: 0.875rem;
   font-weight: 500;
+  color: inherit;
 
   &:hover {
     border-color: var(--bs-primary);
