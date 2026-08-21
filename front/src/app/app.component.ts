@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from './auth/auth.service';
 import { LocalizationService, type Locale } from './services/localization.service';
 import { LanguageSwitcherComponent } from './components/language-switcher.component';
+import { ThemeSwitcherComponent } from './components/theme-switcher.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, LanguageSwitcherComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, LanguageSwitcherComponent, ThemeSwitcherComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

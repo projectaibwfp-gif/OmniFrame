@@ -11,6 +11,7 @@ import { AppComponent } from './app/app.component';
 import { authInterceptor } from './app/auth/auth.interceptor';
 import { credentialsInterceptor } from './app/auth/credentials.interceptor';
 import { AuthService } from './app/auth/auth.service';
+import { ThemeService } from './app/services/theme.service';
 import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
@@ -18,6 +19,16 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptors([credentialsInterceptor, authInterceptor])),
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory:
+        (themeService: ThemeService): (() => void) =>
+        () => {
+          themeService.getTheme();
+        },
+      deps: [ThemeService],
+    },
     {
       provide: APP_INITIALIZER,
       multi: true,

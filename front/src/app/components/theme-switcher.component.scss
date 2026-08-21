@@ -1,0 +1,19 @@
+.theme-btn {
+  display: inline-block;
+  width: auto;
+  padding: 0.25rem 0.5rem;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  font-size: 1.25rem;
+  line-height: 1;
+  text-align: center;
+  flex-shrink: 0;
+
+  &:hover {
+    transform: scale(1.1) rotate(15deg);
+    opacity: 0.8;
+  }
+}

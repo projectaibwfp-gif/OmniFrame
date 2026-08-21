@@ -100,14 +100,19 @@ src/i18n/
   ├── messages.en.xlf    # Angielskie tłumaczenia
   └── messages.pl.xlf    # Polskie tłumaczenia
 
-src/app/
-  ├── services/
-  │   └── localization.service.ts         # Serwis zarządzania język
-  └── components/
-      └── language-switcher/
-          ├── language-switcher.component.ts     # Logika komponentu
-          ├── language-switcher.component.html   # Szablon
-          └── language-switcher.component.scss   # Style
+src/app/services/
+  ├── localization.service.ts  # Serwis zarządzania językami
+  └── theme.service.ts         # Serwis zarządzania dark mode
+
+src/app/components/
+  ├── language-switcher/
+  │   ├── language-switcher.component.ts      # Logika switcher języków
+  │   ├── language-switcher.component.html    # Szablon
+  │   └── language-switcher.component.scss    # Style
+  └── theme-switcher/
+      ├── theme-switcher.component.ts         # Logika switcher trybu
+      ├── theme-switcher.component.html       # Szablon
+      └── theme-switcher.component.scss       # Style
 ```
 
 ## Komendy
