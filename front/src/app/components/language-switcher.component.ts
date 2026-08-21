@@ -10,7 +10,6 @@ import { LocalizationService, type Locale } from '../services/localization.servi
 })
 export class LanguageSwitcherComponent {
   readonly localizationService = inject(LocalizationService);
-  readonly locales: Locale[] = ['en', 'pl'];
   readonly localeChanged = output<Locale>();
 
   setLocale(locale: Locale): void {
