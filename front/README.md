@@ -98,10 +98,16 @@ Language switcher jest dostępny w topbarze. Zmiana języka jest przechowywana w
 ```
 src/i18n/
   ├── messages.en.xlf    # Angielskie tłumaczenia
-  ├── messages.pl.xlf    # Polskie tłumaczenia
+  └── messages.pl.xlf    # Polskie tłumaczenia
+
 src/app/
   ├── services/
-  │   └── localization.service.ts  # Serwis zarządzania język
+  │   └── localization.service.ts         # Serwis zarządzania język
+  └── components/
+      └── language-switcher/
+          ├── language-switcher.component.ts     # Logika komponentu
+          ├── language-switcher.component.html   # Szablon
+          └── language-switcher.component.scss   # Style
 ```
 
 ## Komendy

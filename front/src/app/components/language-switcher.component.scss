@@ -1,0 +1,26 @@
+.language-switcher {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lang-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--bs-gray-400);
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &:hover {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+  }
+
+  &.active {
+    background: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+  }
+}

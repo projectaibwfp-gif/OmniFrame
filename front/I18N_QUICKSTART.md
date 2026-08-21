@@ -13,9 +13,12 @@ src/i18n/
 
 src/app/
   ├── services/
-  │   └── localization.service.ts      # Zarządzanie lokalem
+  │   └── localization.service.ts         # Zarządzanie lokalem + auto-detect
   └── components/
-      └── language-switcher.component.ts # Przełącznik języków w UI
+      └── language-switcher/
+          ├── language-switcher.component.ts     # Logika komponentu
+          ├── language-switcher.component.html   # Szablon HTML
+          └── language-switcher.component.scss   # Style SCSS
 ```
 
 ## Jak dodać nową tłumaczenie?

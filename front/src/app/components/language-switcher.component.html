@@ -1,0 +1,13 @@
+<div class="language-switcher">
+  @for (locale of locales; track locale) {
+    <button
+      class="lang-btn"
+      [class.active]="localizationService.currentLocale() === locale"
+      (click)="setLocale(locale)"
+      type="button"
+      [title]="locale === 'en' ? 'English' : 'Polski'"
+    >
+      {{ locale.toUpperCase() }}
+    </button>
+  }
+</div>

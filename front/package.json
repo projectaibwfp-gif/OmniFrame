@@ -38,6 +38,7 @@
     "angular-eslint": "^22.1.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^29.1.1",
     "prettier": "^3.9.6",
     "sass-embedded": "^1.93.3",
     "typescript": "~6.0.0",

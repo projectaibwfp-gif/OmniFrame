@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach } from 'vitest';
 import { LocalizationService } from './localization.service';
 
 describe('LocalizationService', () => {
@@ -6,10 +6,11 @@ describe('LocalizationService', () => {
 
   beforeEach(() => {
     // Mock navigator.language for testing
-    Object.defineProperty(global, 'navigator', {
-      value: {
-        language: 'en-US',
-      },
+    const navigatorMock = {
+      language: 'en-US',
+    };
+    Object.defineProperty(window, 'navigator', {
+      value: navigatorMock,
       configurable: true,
     });
 
