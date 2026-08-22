@@ -30,10 +30,10 @@
 }
 
 .topbar-body {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
+  gap: 12px;
   padding: 14px 18px;
 }
 
@@ -51,10 +51,24 @@
   color: c.$brand-primary;
 }
 
-.topbar-nav {
+.workspace-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.side-menu {
+  position: sticky;
+  top: 92px;
+  background: c.$surface-card;
+}
+
+.side-menu-body {
   display: flex;
-  justify-content: center;
-  gap: 4px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
 }
 
 .nav-item {
@@ -195,12 +209,12 @@
 }
 
 @media (max-width: 991.98px) {
-  .topbar-body {
-    grid-template-columns: auto auto;
+  .side-menu {
+    display: none;
   }
 
-  .topbar-nav {
-    display: none;
+  .workspace-layout {
+    grid-template-columns: 1fr;
   }
 
   .topbar-menu {
@@ -223,8 +237,8 @@
   }
 
   .topbar-body {
-    grid-template-columns: 1fr;
     align-items: stretch;
+    flex-direction: column;
   }
 
   .topbar-actions {

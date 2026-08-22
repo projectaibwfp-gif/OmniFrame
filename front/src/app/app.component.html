@@ -6,20 +6,6 @@
           <span>Omni<span class="brand-accent">Frame</span></span>
         </a>
 
-        <nav class="topbar-nav" aria-label="Główna nawigacja">
-          @for (item of navItems(); track item.path) {
-            <a
-              class="nav-item"
-              [routerLink]="item.path"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: item.exact }"
-              (click)="closeMobileNav()"
-            >
-              <span>{{ item.label }}</span>
-            </a>
-          }
-        </nav>
-
         <div class="topbar-actions">
           <app-theme-switcher></app-theme-switcher>
           <app-language-switcher></app-language-switcher>
@@ -59,9 +45,9 @@
       </div>
     </header>
 
-    @if (navOpen()) {
-      <section class="mobile-nav card">
-        <div class="card-body">
+    <div class="workspace-layout">
+      <aside class="side-menu card" aria-label="Nawigacja boczna">
+        <div class="card-body side-menu-body">
           @for (item of navItems(); track item.path) {
             <a
               class="nav-item"
@@ -74,25 +60,44 @@
               <span>{{ item.label }}</span>
             </a>
           }
-          <a class="btn btn-outline-primary w-100" routerLink="/profile" (click)="closeMobileNav()">
-            {{ currentLocale() === 'pl' ? 'Otwórz profil' : 'Open profile' }}
-          </a>
         </div>
-      </section>
-    }
+      </aside>
 
-    <main class="content">
-      <section class="page">
-        <router-outlet></router-outlet>
-      </section>
+      <main class="content">
+        @if (navOpen()) {
+          <section class="mobile-nav card">
+            <div class="card-body">
+              @for (item of navItems(); track item.path) {
+                <a
+                  class="nav-item"
+                  [routerLink]="item.path"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: item.exact }"
+                  (click)="closeMobileNav()"
+                >
+                  <span class="nav-icon">{{ item.icon }}</span>
+                  <span>{{ item.label }}</span>
+                </a>
+              }
+              <a class="btn btn-outline-primary w-100" routerLink="/profile" (click)="closeMobileNav()">
+                {{ currentLocale() === 'pl' ? 'Otwórz profil' : 'Open profile' }}
+              </a>
+            </div>
+          </section>
+        }
 
-      <footer class="footer card">
-        <div class="card-body footer-body">
-          <span>OmniFrame</span>
-          <span>Google OAuth dashboard • Real API</span>
-        </div>
-      </footer>
-    </main>
+        <section class="page">
+          <router-outlet></router-outlet>
+        </section>
+
+        <footer class="footer card">
+          <div class="card-body footer-body">
+            <span>OmniFrame</span>
+            <span>Google OAuth dashboard • Real API</span>
+          </div>
+        </footer>
+      </main>
+    </div>
   </div>
 } @else {
   <router-outlet></router-outlet>

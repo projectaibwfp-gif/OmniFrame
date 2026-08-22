@@ -145,3 +145,14 @@ export interface DashboardDto {
   recentUsers: DashboardRecentUserDto[];
   topReferrers: DashboardTopReferrerDto[];
 }
+
+export interface BoostableBossDto {
+  name: string;
+  imageUrl: string;
+  featured: boolean;
+}
+
+export interface BoostableBossesDto {
+  boosted: BoostableBossDto | null;
+  boostableBossList: BoostableBossDto[];
+}

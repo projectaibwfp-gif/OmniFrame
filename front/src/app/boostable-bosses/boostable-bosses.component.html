@@ -1,0 +1,53 @@
+<div class="boostable-bosses-page">
+  <header class="boostable-bosses-page__header">
+    <p class="boostable-bosses-page__eyebrow">TibiaData v4</p>
+    <h1>Boostable bossowie</h1>
+    <p class="boostable-bosses-page__intro">Aktualnie boostowany boss oraz lista wszystkich dostępnych bossów z grafikami.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="boostable-bosses-page__message">Ładowanie danych bossów...</div>
+  } @else if (apiError()) {
+    <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
+      Nie udało się pobrać listy boostable bossów.
+    </div>
+  } @else if (data(); as bossesData) {
+    <section class="boss-card">
+      <h2>Aktualnie boostowany</h2>
+      @if (bossesData.boosted; as boosted) {
+        <article class="boss-item boss-item--highlighted">
+          <img [src]="boosted.imageUrl" [alt]="boosted.name" loading="lazy" />
+          <div>
+            <strong>{{ boosted.name }}</strong>
+            <small>Featured: {{ boosted.featured ? 'Tak' : 'Nie' }}</small>
+          </div>
+        </article>
+      } @else {
+        <div class="boostable-bosses-page__message">Brak aktualnie boostowanego bossa.</div>
+      }
+    </section>
+
+    <section class="boss-card">
+      <h2>Dostępni bossowie</h2>
+      @if (availableBosses().length > 0) {
+        <div class="boss-list">
+          @for (boss of availableBosses(); track boss.name) {
+            <article class="boss-item">
+              <img [src]="boss.imageUrl" [alt]="boss.name" loading="lazy" />
+              <div>
+                <strong>{{ boss.name }}</strong>
+                @if (boss.featured) {
+                  <small class="boss-item__featured">Featured</small>
+                } @else {
+                  <small>Standard</small>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="boostable-bosses-page__message">Brak bossów na liście.</div>
+      }
+    </section>
+  }
+</div>

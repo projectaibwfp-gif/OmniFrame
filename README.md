@@ -97,6 +97,7 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 | -------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
 | `GOOGLE_CLIENT_ID` | client ID Google używany do weryfikacji ID tokena             |
+| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://api.tibiadata.com/v4`) |
 
 Endpointy:
 
@@ -109,6 +110,7 @@ Endpointy:
 - `POST /api/auth/logout` - czyści cookie sesji,
 - `GET /api/products` - zwraca ostatnie projekty z bazy,
 - `POST /api/products` - tworzy projekt,
+- `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
@@ -168,6 +170,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 
 - `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
 - `/products` - podstrona z listą produktów pobieraną z API,
+- `/boostable-bosses` - podstrona z aktualnie boostowanym bossem i listą bossów z grafikami,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.
