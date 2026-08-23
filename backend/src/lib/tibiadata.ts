@@ -119,15 +119,31 @@ interface TibiaDataHighscoresPayload {
 
 interface TibiaDataHighscoresResponse {
   highscores?: TibiaDataHighscoresPayload;
+  information?: {
+    status?: {
+      error?: unknown;
+      message?: unknown;
+    };
+  };
 }
 
 type JsonRecord = Record<string, unknown>;
 const MAX_HIGHSCORE_PAGES = 20;
+const RESTRICTION_MODE_ERROR_CODE = 9002;
+
+type TibiaHighscoresVocation = 'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers';
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'TibiaDataNotFoundError';
+  }
+}
+
+class TibiaDataRestrictionModeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TibiaDataRestrictionModeError';
   }
 }
 
@@ -249,15 +265,50 @@ function findCharacterInHighscores(
   return null;
 }
 
-async function fetchHighscoresPage(world: string, page: number): Promise<TibiaDataHighscoresPayload> {
+function mapCharacterVocationToHighscoresVocation(vocation: string | null): TibiaHighscoresVocation | null {
+  if (!vocation) {
+    return null;
+  }
+
+  const normalizedVocation = vocation.toLowerCase();
+  if (normalizedVocation.includes('knight')) {
+    return 'knights';
+  }
+  if (normalizedVocation.includes('paladin')) {
+    return 'paladins';
+  }
+  if (normalizedVocation.includes('druid')) {
+    return 'druids';
+  }
+  if (normalizedVocation.includes('sorcerer')) {
+    return 'sorcerers';
+  }
+
+  return null;
+}
+
+async function fetchHighscoresPage(
+  world: string,
+  page: number,
+  vocation: TibiaHighscoresVocation,
+): Promise<TibiaDataHighscoresPayload> {
   const response = await fetch(
-    `${TIBIA_DATA_API_BASE_URL}/highscores/${encodeURIComponent(world)}/experience/all/${page}`,
+    `${TIBIA_DATA_API_BASE_URL}/highscores/${encodeURIComponent(world)}/experience/${vocation}/${page}`,
     {
       cache: 'no-store',
     },
   );
 
   if (!response.ok) {
+    if (response.status === 400) {
+      const payload = (await response.json()) as TibiaDataHighscoresResponse;
+      const errorCode = readNumber(payload.information?.status?.error);
+      const message = readString(payload.information?.status?.message) ?? 'highscores restriction mode';
+      if (errorCode === RESTRICTION_MODE_ERROR_CODE) {
+        throw new TibiaDataRestrictionModeError(message);
+      }
+    }
+
     throw new Error(`TibiaData highscores request failed with status ${response.status}`);
   }
 
@@ -270,11 +321,12 @@ async function fetchHighscoresPage(world: string, page: number): Promise<TibiaDa
   return highscores;
 }
 
-async function fetchCharacterExperienceFromHighscores(
+async function findCharacterInHighscoresPages(
   characterName: string,
   world: string,
+  vocation: TibiaHighscoresVocation,
 ): Promise<TibiaCharacterExperienceDto> {
-  const firstPage = await fetchHighscoresPage(world, 1);
+  const firstPage = await fetchHighscoresPage(world, 1, vocation);
   const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
   const firstMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
   if (firstMatch) {
@@ -292,7 +344,7 @@ async function fetchCharacterExperienceFromHighscores(
   const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
 
   for (let page = 2; page <= totalPages; page += 1) {
-    const currentPage = await fetchHighscoresPage(world, page);
+    const currentPage = await fetchHighscoresPage(world, page, vocation);
     const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
     if (match) {
       return {
@@ -314,6 +366,43 @@ async function fetchCharacterExperienceFromHighscores(
     world,
     highscoreAgeMinutes,
   };
+}
+
+async function fetchCharacterExperienceFromHighscores(
+  characterName: string,
+  world: string,
+  characterVocation: string | null,
+): Promise<TibiaCharacterExperienceDto> {
+  const preferredVocation = mapCharacterVocationToHighscoresVocation(characterVocation);
+  const usesVocationFallback = preferredVocation !== null;
+
+  if (preferredVocation !== null) {
+    try {
+      return await findCharacterInHighscoresPages(characterName, world, preferredVocation);
+    } catch (error) {
+      if (!(error instanceof TibiaDataRestrictionModeError)) {
+        throw error;
+      }
+    }
+  }
+
+  const allResult = await findCharacterInHighscoresPages(characterName, world, 'all');
+  if (allResult.status === 'found') {
+    return allResult;
+  }
+
+  if (usesVocationFallback) {
+    return {
+      status: 'unavailable',
+      exactExperience: null,
+      rank: null,
+      vocation: characterVocation,
+      world,
+      highscoreAgeMinutes: allResult.highscoreAgeMinutes,
+    };
+  }
+
+  return allResult;
 }
 
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
@@ -380,11 +469,16 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
   const guild = asRecord(characterInfo['guild']);
   const accountInformation = asRecord(characterRoot?.['account_information']);
   const worldName = readString(characterInfo['world']);
+  const characterVocation = readString(characterInfo['vocation']);
   let experience: TibiaCharacterExperienceDto | null = null;
 
   if (worldName) {
     try {
-      experience = await fetchCharacterExperienceFromHighscores(characterName, worldName);
+      experience = await fetchCharacterExperienceFromHighscores(
+        characterName,
+        worldName,
+        characterVocation,
+      );
     } catch {
       experience = {
         status: 'unavailable',

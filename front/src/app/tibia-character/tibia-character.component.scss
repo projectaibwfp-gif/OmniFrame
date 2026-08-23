@@ -186,6 +186,32 @@
     color: c.$text-400;
     font-size: 13px;
   }
+
+  .history-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid c.$border-subtle;
+      text-align: left;
+      color: c.$text-500;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    th {
+      color: c.$text-700;
+      font-weight: 700;
+      background: c.$surface-page-tint-2;
+    }
+  }
 }
 
 @media (max-width: c.$bp-mobile) {

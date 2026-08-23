@@ -112,5 +112,43 @@
         <p class="empty-data">Brak dodatkowych postaci.</p>
       }
     </section>
+
+    <section class="character-card">
+      <h2>Historia sprawdzeń</h2>
+      @if (history().length > 0) {
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Data sprawdzenia</th>
+                <th>Postać</th>
+                <th>Świat</th>
+                <th>Vocation</th>
+                <th>Level</th>
+                <th>EXP</th>
+                <th>Status</th>
+                <th>Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of history(); track entry.id) {
+                <tr>
+                  <td>{{ entry.checkedAt }}</td>
+                  <td>{{ entry.name }}</td>
+                  <td>{{ entry.world ?? 'Brak danych' }}</td>
+                  <td>{{ entry.vocation ?? 'Brak danych' }}</td>
+                  <td>{{ entry.level ?? 'Brak danych' }}</td>
+                  <td>{{ entry.exactExperience ?? 'Brak danych' }}</td>
+                  <td>{{ entry.experienceStatus ?? 'Brak danych' }}</td>
+                  <td>{{ entry.experienceRank ?? 'Brak danych' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty-data">Brak historii sprawdzeń dla tej postaci.</p>
+      }
+    </section>
   }
 </div>

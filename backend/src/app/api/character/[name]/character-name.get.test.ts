@@ -21,6 +21,16 @@ vi.mock('@/lib/tibiadata', () => ({
   TibiaDataNotFoundError: tibiadataMocks.TibiaDataNotFoundError,
 }));
 
+const lookupMocks = vi.hoisted(() => ({
+  saveCharacterLookup: vi.fn(),
+  listCharacterLookupHistory: vi.fn(),
+}));
+
+vi.mock('@/lib/character-lookups', () => ({
+  saveCharacterLookup: lookupMocks.saveCharacterLookup,
+  listCharacterLookupHistory: lookupMocks.listCharacterLookupHistory,
+}));
+
 import { GET } from './route';
 
 describe('GET /api/character/:name', () => {
@@ -28,6 +38,7 @@ describe('GET /api/character/:name', () => {
     vi.clearAllMocks();
     authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
+    lookupMocks.listCharacterLookupHistory.mockResolvedValue([]);
   });
 
   it('denies unauthenticated access', async () => {
@@ -61,6 +72,7 @@ describe('GET /api/character/:name', () => {
       accountCreated: '2004-08-12T09:28:46Z',
       loyaltyTitle: 'Keeper of Tibia',
       achievements: [{ name: 'Explorer', grade: 2, secret: false }],
+      experience: null,
       otherCharacters: [
         {
           name: 'Trollemor',
@@ -80,37 +92,48 @@ describe('GET /api/character/:name', () => {
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       data: {
-        name: 'Trollefar',
-        sex: 'male',
-        title: 'Trolltrasher',
-        vocation: 'Knight',
-        level: 202,
-        achievementPoints: 379,
-        world: 'Vunira',
-        residence: 'Thais',
-        marriedTo: 'Mighty troll',
-        lastLogin: '2026-07-05T00:33:18Z',
-        accountStatus: 'Free Account',
-        unlockedTitles: 9,
-        comment: 'Sample comment',
-        guild: { name: 'Elysium', rank: 'Follower' },
-        formerNames: [],
-        formerWorlds: [],
-        accountCreated: '2004-08-12T09:28:46Z',
-        loyaltyTitle: 'Keeper of Tibia',
-        achievements: [{ name: 'Explorer', grade: 2, secret: false }],
-        otherCharacters: [
-          {
-            name: 'Trollemor',
-            world: 'Vunira',
-            status: 'offline',
-            deleted: false,
-            main: false,
-            traded: false,
-          },
-        ],
+        character: {
+          name: 'Trollefar',
+          sex: 'male',
+          title: 'Trolltrasher',
+          vocation: 'Knight',
+          level: 202,
+          achievementPoints: 379,
+          world: 'Vunira',
+          residence: 'Thais',
+          marriedTo: 'Mighty troll',
+          lastLogin: '2026-07-05T00:33:18Z',
+          accountStatus: 'Free Account',
+          unlockedTitles: 9,
+          comment: 'Sample comment',
+          guild: { name: 'Elysium', rank: 'Follower' },
+          formerNames: [],
+          formerWorlds: [],
+          accountCreated: '2004-08-12T09:28:46Z',
+          loyaltyTitle: 'Keeper of Tibia',
+          achievements: [{ name: 'Explorer', grade: 2, secret: false }],
+          experience: null,
+          otherCharacters: [
+            {
+              name: 'Trollemor',
+              world: 'Vunira',
+              status: 'offline',
+              deleted: false,
+              main: false,
+              traded: false,
+            },
+          ],
+        },
+        history: [],
       },
     });
+
+    expect(lookupMocks.saveCharacterLookup).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Trollefar' }),
+      'Trollefar',
+      'google-1',
+    );
+    expect(lookupMocks.listCharacterLookupHistory).toHaveBeenCalledWith('Trollefar');
   });
 
   it('returns 404 when character does not exist', async () => {

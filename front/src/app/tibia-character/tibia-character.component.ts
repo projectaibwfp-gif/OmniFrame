@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import type { TibiaCharacterDto, TibiaCharacterExperienceDto } from '@shared/api-contract';
+import type {
+  TibiaCharacterExperienceDto,
+  TibiaCharacterLookupDto,
+} from '@shared/api-contract';
 import { TibiaCharacterService } from './tibia-character.service';
 
 @Component({
@@ -13,10 +16,12 @@ import { TibiaCharacterService } from './tibia-character.service';
 })
 export class TibiaCharacterComponent {
   protected readonly characterName = signal('');
-  protected readonly character = signal<TibiaCharacterDto | null>(null);
+  protected readonly lookup = signal<TibiaCharacterLookupDto | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly apiError = signal<string | null>(null);
 
+  protected readonly character = computed(() => this.lookup()?.character ?? null);
+  protected readonly history = computed(() => this.lookup()?.history ?? []);
   protected readonly achievements = computed(() => this.character()?.achievements ?? []);
   protected readonly otherCharacters = computed(() => this.character()?.otherCharacters ?? []);
   protected readonly experience = computed(() => this.character()?.experience ?? null);
@@ -36,26 +41,26 @@ export class TibiaCharacterComponent {
       return 'Postać poza top 1000 highscores';
     }
 
-    return 'Highscores chwilowo niedostępne';
+    return 'Nie można potwierdzić EXP per profesja (ograniczenie TibiaData)';
   }
 
   protected loadCharacter(): void {
     const name = this.characterName().trim();
     if (!name) {
-      this.character.set(null);
+      this.lookup.set(null);
       this.apiError.set('Podaj nazwę postaci.');
       return;
     }
 
     this.isLoading.set(true);
-    this.character.set(null);
+    this.lookup.set(null);
     this.apiError.set(null);
 
     this.tibiaCharacterService
       .getCharacter(name)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (response) => this.character.set(response),
+        next: (response) => this.lookup.set(response),
         error: (error) => {
           if (error?.status === 404) {
             this.apiError.set(`Nie znaleziono postaci "${name}".`);

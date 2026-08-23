@@ -113,7 +113,7 @@ Endpointy:
 - `POST /api/products` - tworzy projekt,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
-- `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`) oraz próbę dokładnego EXP z `/v4/highscores/{world}/experience/all/{page}`,
+- `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`),
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
@@ -177,7 +177,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
 - `/products` - podstrona z listą produktów pobieraną z API,
 - `/boosted` - podstrona z aktualnie boostowanym bossem i potworem, plus dwie domyślnie zwinięte listy (bossów i creature),
-- `/character` - podstrona do wyszukiwania postaci po nazwie i pobierania danych z TibiaData,
+- `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.

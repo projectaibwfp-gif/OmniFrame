@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { ApiResponse, TibiaCharacterDto } from '@shared/api-contract';
+import type { ApiResponse, TibiaCharacterLookupDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
+import { listCharacterLookupHistory, saveCharacterLookup } from '@/lib/character-lookups';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { fetchCharacter, TibiaDataNotFoundError } from '@/lib/tibiadata';
@@ -29,8 +30,29 @@ export async function GET(
   }
 
   try {
-    const data = await fetchCharacter(characterName);
-    return NextResponse.json<ApiResponse<TibiaCharacterDto>>({ data });
+    const character = await fetchCharacter(characterName);
+
+    try {
+      await saveCharacterLookup(character, characterName, auth.session.sub);
+    } catch (error) {
+      logError('character.saveLookup', ErrorCode.DB_QUERY_FAILED, { name: characterName }, error);
+      return errorResponse('Could not save character lookup history', 500, ErrorCode.DB_QUERY_FAILED);
+    }
+
+    let history;
+    try {
+      history = await listCharacterLookupHistory(characterName);
+    } catch (error) {
+      logError('character.lookupHistory', ErrorCode.DB_QUERY_FAILED, { name: characterName }, error);
+      return errorResponse('Could not load character lookup history', 500, ErrorCode.DB_QUERY_FAILED);
+    }
+
+    const data: TibiaCharacterLookupDto = {
+      character,
+      history,
+    };
+
+    return NextResponse.json<ApiResponse<TibiaCharacterLookupDto>>({ data });
   } catch (error) {
     if (error instanceof TibiaDataNotFoundError) {
       return errorResponse('Character not found', 404, ErrorCode.NOT_FOUND);

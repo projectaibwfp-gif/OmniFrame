@@ -13,4 +13,5 @@
 13. **Boosted data page (`/boosted`)**: Use backend endpoint `GET /api/boostable-bosses` and shared DTOs `BoostableBossDto` / `BoostableBossesDto` from `shared/api-contract.ts` as the source of truth.
 14. **TibiaData contracts**: Treat `shared/api/swagger.json` as the local snapshot of TibiaData API docs and align Tibia endpoints/DTO mapping with that file (including `/v4/character/{name}`).
 15. **Creatures page data**: For boosted creature and creature list, use backend endpoint `GET /api/creatures` (mapped from TibiaData `/v4/creatures`) and shared DTOs `TibiaCreatureDto` / `TibiaCreaturesDto`.
-16. **Character experience**: For `/character`, enrich character payload with exact EXP lookup from TibiaData highscores endpoint `/v4/highscores/{world}/experience/all/{page}` when available.
+16. **Character experience**: For `/character`, enrich character payload with exact EXP lookup from TibiaData highscores endpoint (`/v4/highscores/{world}/experience/{vocation}/{page}` first, fallback to `experience/all` in restriction mode).
+17. **Character lookup history**: `/character` response should include persisted lookup history from backend DB (`character_lookups`) and frontend should render it as a table under character details.

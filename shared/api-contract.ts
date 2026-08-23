@@ -223,3 +223,20 @@ export interface TibiaCharacterDto {
   otherCharacters: TibiaCharacterOtherCharacterDto[];
   experience: TibiaCharacterExperienceDto | null;
 }
+
+export interface TibiaCharacterHistoryEntryDto {
+  id: number;
+  checkedAt: string;
+  name: string;
+  world: string | null;
+  vocation: string | null;
+  level: number | null;
+  exactExperience: number | null;
+  experienceStatus: TibiaCharacterExperienceStatus | null;
+  experienceRank: number | null;
+}
+
+export interface TibiaCharacterLookupDto {
+  character: TibiaCharacterDto;
+  history: TibiaCharacterHistoryEntryDto[];
+}
