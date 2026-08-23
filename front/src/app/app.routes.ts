@@ -74,5 +74,13 @@ export const routes: Routes = [
         ({ BoostableBossesComponent }) => BoostableBossesComponent,
       ),
   },
+  {
+    path: 'character',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-character/tibia-character.component').then(
+        ({ TibiaCharacterComponent }) => TibiaCharacterComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

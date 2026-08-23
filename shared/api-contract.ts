@@ -156,3 +156,46 @@ export interface BoostableBossesDto {
   boosted: BoostableBossDto | null;
   boostableBossList: BoostableBossDto[];
 }
+
+export interface TibiaCharacterGuildDto {
+  name: string;
+  rank: string;
+}
+
+export interface TibiaCharacterAchievementDto {
+  name: string;
+  grade: number | null;
+  secret: boolean;
+}
+
+export interface TibiaCharacterOtherCharacterDto {
+  name: string;
+  world: string | null;
+  status: string | null;
+  deleted: boolean;
+  main: boolean;
+  traded: boolean;
+}
+
+export interface TibiaCharacterDto {
+  name: string;
+  sex: string | null;
+  title: string | null;
+  vocation: string | null;
+  level: number | null;
+  achievementPoints: number | null;
+  world: string | null;
+  residence: string | null;
+  marriedTo: string | null;
+  lastLogin: string | null;
+  accountStatus: string | null;
+  unlockedTitles: number | null;
+  comment: string | null;
+  guild: TibiaCharacterGuildDto | null;
+  formerNames: string[];
+  formerWorlds: string[];
+  accountCreated: string | null;
+  loyaltyTitle: string | null;
+  achievements: TibiaCharacterAchievementDto[];
+  otherCharacters: TibiaCharacterOtherCharacterDto[];
+}

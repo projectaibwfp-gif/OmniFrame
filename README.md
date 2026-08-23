@@ -34,6 +34,7 @@ backend/src/app/api/referrals/ # przechwytywanie linków polecających
 backend/src/lib/db.ts          # klient Neon (DATABASE_URL)
 backend/src/lib/auth.ts        # weryfikacja Google, JWT cookie, upsert users
 backend/src/lib/referral.ts    # cookie referral + walidacja kodów
+shared/api/swagger.json        # snapshot specyfikacji TibiaData API (v4)
 backend/scripts/migrate.ts     # TypeScript runner migracji (tabela _migrations)
 backend/migration/001_init.sql # tabela products (wcześniej projects)
 backend/migration/002_seed.sql # dane przykładowe (idempotentne)
@@ -111,9 +112,13 @@ Endpointy:
 - `GET /api/products` - zwraca ostatnie projekty z bazy,
 - `POST /api/products` - tworzy projekt,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
+- `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`),
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
+
+Dla endpointów TibiaData punktem odniesienia jest lokalna specyfikacja
+`shared/api/swagger.json` (snapshot dokumentacji `https://docs.tibiadata.com/swagger.json`).
 
 Format danych dla `POST /api/products`:
 
@@ -171,6 +176,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
 - `/products` - podstrona z listą produktów pobieraną z API,
 - `/boostable-bosses` - podstrona z aktualnie boostowanym bossem i listą bossów z grafikami,
+- `/character` - podstrona do wyszukiwania postaci po nazwie i pobierania danych z TibiaData,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.

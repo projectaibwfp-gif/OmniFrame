@@ -1,0 +1,189 @@
+@use 'colors' as c;
+
+.tibia-character-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    h1 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$text-300;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__intro {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 13px;
+  }
+
+  &__message {
+    padding: 14px 16px;
+    color: c.$text-500;
+    background: c.$surface-card;
+    border: 1px solid c.$border-subtle;
+    border-radius: 12px;
+  }
+
+  &__message--error {
+    color: c.$danger-fg-soft;
+    border-color: c.$danger-strong-border;
+    background: c.$danger-strong-bg;
+  }
+
+  .search-card,
+  .character-card {
+    padding: 20px;
+    background: c.$surface-card-overlay;
+    border: 1px solid c.$border-translucent;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px c.$shadow-medium;
+  }
+
+  .search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    label {
+      color: c.$text-700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    &__row {
+      display: flex;
+      gap: 10px;
+    }
+
+    &__input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid c.$border-subtle;
+      border-radius: 8px;
+      background: c.$surface-card;
+      color: c.$text-700;
+      font-size: 14px;
+
+      &:focus {
+        outline: none;
+        border-color: c.$brand-primary;
+        box-shadow: 0 0 0 3px c.$brand-primary-tint;
+      }
+    }
+
+    &__button {
+      padding: 10px 16px;
+      border: 1px solid c.$brand-primary;
+      border-radius: 8px;
+      background: c.$brand-primary;
+      color: c.$text-on-primary;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+
+      &:disabled {
+        opacity: 0.6;
+      }
+    }
+  }
+
+  .character-card {
+    h2 {
+      margin: 0 0 14px;
+      color: c.$text-700;
+      font-size: 18px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 0;
+      color: c.$text-500;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+  }
+
+  .character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 16px;
+    margin-bottom: 14px;
+  }
+
+  .guild {
+    margin-bottom: 8px;
+  }
+
+  .comment {
+    margin-top: 12px;
+    padding: 12px;
+    background: c.$surface-card;
+    border: 1px solid c.$border-subtle;
+    border-radius: 10px;
+
+    p {
+      white-space: pre-wrap;
+    }
+  }
+
+  .achievements-list,
+  .other-characters-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .achievement-item,
+  .other-character-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    background: c.$surface-card;
+    border: 1px solid c.$border-subtle;
+    border-radius: 10px;
+
+    strong {
+      color: c.$text-700;
+      font-size: 14px;
+    }
+
+    small {
+      color: c.$text-400;
+      font-size: 12px;
+    }
+  }
+
+  .empty-data {
+    color: c.$text-400;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .tibia-character-page {
+    .search-form {
+      &__row {
+        flex-direction: column;
+      }
+    }
+  }
+}

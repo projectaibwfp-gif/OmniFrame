@@ -25,6 +25,7 @@ export class AppComponent {
     const translations = this.getNavTranslations(locale);
     return [
       { path: '/boostable-bosses', label: translations.boostableBosses, icon: '⚔', exact: false },
+      { path: '/character', label: translations.character, icon: '🧙', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/products', label: translations.products, icon: '▤', exact: false },
       { path: '/users', label: translations.users, icon: '👤', exact: false },
@@ -69,6 +70,7 @@ export class AppComponent {
     dashboard: string;
     products: string;
     boostableBosses: string;
+    character: string;
     users: string;
     profile: string;
     about: string;
@@ -78,6 +80,7 @@ export class AppComponent {
         dashboard: 'Dashboard',
         products: 'Products',
         boostableBosses: 'Boostable bosses',
+        character: 'Character lookup',
         users: 'Users',
         profile: 'Profile',
         about: 'About project',
@@ -86,6 +89,7 @@ export class AppComponent {
         dashboard: 'Pulpit',
         products: 'Produkty',
         boostableBosses: 'Boostable bossowie',
+        character: 'Wyszukaj postać',
         users: 'Użytkownicy',
         profile: 'Profil',
         about: 'O projekcie',
