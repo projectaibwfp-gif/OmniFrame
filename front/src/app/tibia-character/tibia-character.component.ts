@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
-import type { TibiaCharacterDto } from '@shared/api-contract';
+import type { TibiaCharacterDto, TibiaCharacterExperienceDto } from '@shared/api-contract';
 import { TibiaCharacterService } from './tibia-character.service';
 
 @Component({
@@ -19,11 +19,24 @@ export class TibiaCharacterComponent {
 
   protected readonly achievements = computed(() => this.character()?.achievements ?? []);
   protected readonly otherCharacters = computed(() => this.character()?.otherCharacters ?? []);
+  protected readonly experience = computed(() => this.character()?.experience ?? null);
 
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
 
   protected setCharacterName(value: string): void {
     this.characterName.set(value);
+  }
+
+  protected getExperienceStatusLabel(experience: TibiaCharacterExperienceDto): string {
+    if (experience.status === 'found') {
+      return 'Dokładny EXP z highscores';
+    }
+
+    if (experience.status === 'outside_top1000') {
+      return 'Postać poza top 1000 highscores';
+    }
+
+    return 'Highscores chwilowo niedostępne';
   }
 
   protected loadCharacter(): void {

@@ -143,6 +143,16 @@
     p {
       white-space: pre-wrap;
     }
+
+    .experience-box {
+      margin-bottom: 14px;
+      padding: 12px;
+      background: c.$info-bg-alt;
+      border: 1px solid c.$border-subtle;
+      border-radius: 10px;
+      display: grid;
+      gap: 6px;
+    }
   }
 
   .achievements-list,

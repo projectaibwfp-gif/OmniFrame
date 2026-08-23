@@ -157,6 +157,18 @@ export interface BoostableBossesDto {
   boostableBossList: BoostableBossDto[];
 }
 
+export interface TibiaCreatureDto {
+  name: string;
+  race: string;
+  imageUrl: string;
+  featured: boolean;
+}
+
+export interface TibiaCreaturesDto {
+  boosted: TibiaCreatureDto | null;
+  creatureList: TibiaCreatureDto[];
+}
+
 export interface TibiaCharacterGuildDto {
   name: string;
   rank: string;
@@ -175,6 +187,17 @@ export interface TibiaCharacterOtherCharacterDto {
   deleted: boolean;
   main: boolean;
   traded: boolean;
+}
+
+export type TibiaCharacterExperienceStatus = 'found' | 'outside_top1000' | 'unavailable';
+
+export interface TibiaCharacterExperienceDto {
+  status: TibiaCharacterExperienceStatus;
+  exactExperience: number | null;
+  rank: number | null;
+  vocation: string | null;
+  world: string | null;
+  highscoreAgeMinutes: number | null;
 }
 
 export interface TibiaCharacterDto {
@@ -198,4 +221,5 @@ export interface TibiaCharacterDto {
   loyaltyTitle: string | null;
   achievements: TibiaCharacterAchievementDto[];
   otherCharacters: TibiaCharacterOtherCharacterDto[];
+  experience: TibiaCharacterExperienceDto | null;
 }

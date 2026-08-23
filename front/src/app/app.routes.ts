@@ -67,12 +67,17 @@ export const routes: Routes = [
       import('./users/users.component').then(({ UsersComponent }) => UsersComponent),
   },
   {
-    path: 'boostable-bosses',
+    path: 'boosted',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./boostable-bosses/boostable-bosses.component').then(
         ({ BoostableBossesComponent }) => BoostableBossesComponent,
       ),
+  },
+  {
+    path: 'boostable-bosses',
+    redirectTo: 'boosted',
+    pathMatch: 'full',
   },
   {
     path: 'character',

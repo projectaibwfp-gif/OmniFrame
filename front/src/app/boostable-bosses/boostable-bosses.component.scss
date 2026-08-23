@@ -41,6 +41,12 @@
     background: c.$danger-strong-bg;
   }
 
+  &__collapsed-note {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 13px;
+  }
+
   .boss-card {
     padding: 20px;
     background: c.$surface-card-overlay;
@@ -52,6 +58,35 @@
       margin: 0 0 16px;
       color: c.$text-700;
       font-size: 17px;
+    }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  .toggle-button {
+    padding: 8px 12px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 8px;
+    background: c.$surface-card;
+    color: c.$text-700;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+
+    &:hover {
+      border-color: c.$brand-primary;
+      color: c.$brand-primary;
     }
   }
 
@@ -110,6 +145,11 @@
 
 @media (max-width: c.$bp-mobile) {
   .boostable-bosses-page {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
     .boss-item {
       align-items: flex-start;
 

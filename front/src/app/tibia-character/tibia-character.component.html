@@ -49,6 +49,20 @@
         <p><strong>Ostatni login:</strong> {{ currentCharacter.lastLogin ?? 'Brak danych' }}</p>
       </div>
 
+      @if (experience(); as characterExperience) {
+        <div class="experience-box">
+          <h3>Experience z highscores</h3>
+          <p>
+            <strong>Status:</strong>
+            {{ getExperienceStatusLabel(characterExperience) }}
+          </p>
+          <p><strong>Dokładny EXP:</strong> {{ characterExperience.exactExperience ?? 'Brak danych' }}</p>
+          <p><strong>Pozycja rankingu:</strong> {{ characterExperience.rank ?? 'Brak danych' }}</p>
+          <p><strong>Vocation (ranking):</strong> {{ characterExperience.vocation ?? 'Brak danych' }}</p>
+          <p><strong>Wiek danych:</strong> {{ characterExperience.highscoreAgeMinutes ?? 'Brak danych' }} min</p>
+        </div>
+      }
+
       @if (currentCharacter.guild; as guild) {
         <p class="guild"><strong>Guild:</strong> {{ guild.name }} ({{ guild.rank }})</p>
       }

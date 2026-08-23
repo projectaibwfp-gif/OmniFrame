@@ -1,20 +1,22 @@
 <div class="boostable-bosses-page">
   <header class="boostable-bosses-page__header">
     <p class="boostable-bosses-page__eyebrow">TibiaData v4</p>
-    <h1>Boostable bossowie</h1>
-    <p class="boostable-bosses-page__intro">Aktualnie boostowany boss oraz lista wszystkich dostępnych bossów z grafikami.</p>
+    <h1>Boosted boss i boosted creature</h1>
+    <p class="boostable-bosses-page__intro">
+      Jedna strona z dwoma usługami: `GET /v4/boostablebosses` i `GET /v4/creatures`.
+    </p>
   </header>
 
-  @if (isLoading()) {
+  @if (isLoadingBosses()) {
     <div class="boostable-bosses-page__message">Ładowanie danych bossów...</div>
-  } @else if (apiError()) {
+  } @else if (bossApiError()) {
     <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
       Nie udało się pobrać listy boostable bossów.
     </div>
-  } @else if (data(); as bossesData) {
+  } @else if (bossesData(); as currentBossesData) {
     <section class="boss-card">
       <h2>Aktualnie boostowany</h2>
-      @if (bossesData.boosted; as boosted) {
+      @if (currentBossesData.boosted; as boosted) {
         <article class="boss-item boss-item--highlighted">
           <img [src]="boosted.imageUrl" [alt]="boosted.name" loading="lazy" />
           <div>
@@ -28,25 +30,85 @@
     </section>
 
     <section class="boss-card">
-      <h2>Dostępni bossowie</h2>
-      @if (availableBosses().length > 0) {
-        <div class="boss-list">
-          @for (boss of availableBosses(); track boss.name) {
-            <article class="boss-item">
-              <img [src]="boss.imageUrl" [alt]="boss.name" loading="lazy" />
-              <div>
-                <strong>{{ boss.name }}</strong>
-                @if (boss.featured) {
-                  <small class="boss-item__featured">Featured</small>
-                } @else {
-                  <small>Standard</small>
-                }
-              </div>
-            </article>
-          }
-        </div>
+      <div class="section-header">
+        <h2>Dostępni bossowie</h2>
+        <button class="toggle-button" type="button" (click)="toggleBossList()">
+          {{ isBossListCollapsed() ? 'Rozwiń listę' : 'Zwiń listę' }}
+        </button>
+      </div>
+      @if (isBossListCollapsed()) {
+        <p class="boostable-bosses-page__collapsed-note">Lista jest domyślnie zwinięta.</p>
       } @else {
-        <div class="boostable-bosses-page__message">Brak bossów na liście.</div>
+        @if (availableBosses().length > 0) {
+          <div class="boss-list">
+            @for (boss of availableBosses(); track boss.name) {
+              <article class="boss-item">
+                <img [src]="boss.imageUrl" [alt]="boss.name" loading="lazy" />
+                <div>
+                  <strong>{{ boss.name }}</strong>
+                  @if (boss.featured) {
+                    <small class="boss-item__featured">Featured</small>
+                  } @else {
+                    <small>Standard</small>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="boostable-bosses-page__message">Brak bossów na liście.</div>
+        }
+      }
+    </section>
+  }
+
+  @if (isLoadingCreatures()) {
+    <div class="boostable-bosses-page__message">Ładowanie danych creature...</div>
+  } @else if (creatureApiError()) {
+    <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
+      Nie udało się pobrać listy creature.
+    </div>
+  } @else if (creaturesData(); as currentCreaturesData) {
+    <section class="boss-card">
+      <h2>Aktualnie boostowany potwór</h2>
+      @if (currentCreaturesData.boosted; as boostedCreature) {
+        <article class="boss-item boss-item--highlighted">
+          <img [src]="boostedCreature.imageUrl" [alt]="boostedCreature.name" loading="lazy" />
+          <div>
+            <strong>{{ boostedCreature.name }}</strong>
+            <small>Race: {{ boostedCreature.race }}</small>
+          </div>
+        </article>
+      } @else {
+        <div class="boostable-bosses-page__message">Brak aktualnie boostowanego potwora.</div>
+      }
+    </section>
+
+    <section class="boss-card">
+      <div class="section-header">
+        <h2>Lista zwykłych potworów</h2>
+        <button class="toggle-button" type="button" (click)="toggleCreatureList()">
+          {{ isCreatureListCollapsed() ? 'Rozwiń listę' : 'Zwiń listę' }}
+        </button>
+      </div>
+      @if (isCreatureListCollapsed()) {
+        <p class="boostable-bosses-page__collapsed-note">Lista jest domyślnie zwinięta.</p>
+      } @else {
+        @if (availableCreatures().length > 0) {
+          <div class="boss-list">
+            @for (creature of availableCreatures(); track creature.race) {
+              <article class="boss-item">
+                <img [src]="creature.imageUrl" [alt]="creature.name" loading="lazy" />
+                <div>
+                  <strong>{{ creature.name }}</strong>
+                  <small>Race: {{ creature.race }}</small>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="boostable-bosses-page__message">Brak potworów na liście.</div>
+        }
       }
     </section>
   }

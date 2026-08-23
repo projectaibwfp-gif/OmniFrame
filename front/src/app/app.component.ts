@@ -24,7 +24,7 @@ export class AppComponent {
     const locale = this.currentLocale();
     const translations = this.getNavTranslations(locale);
     return [
-      { path: '/boostable-bosses', label: translations.boostableBosses, icon: '⚔', exact: false },
+      { path: '/boosted', label: translations.boostedData, icon: '⚔', exact: false },
       { path: '/character', label: translations.character, icon: '🧙', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/products', label: translations.products, icon: '▤', exact: false },
@@ -69,7 +69,7 @@ export class AppComponent {
   private getNavTranslations(locale: Locale): {
     dashboard: string;
     products: string;
-    boostableBosses: string;
+    boostedData: string;
     character: string;
     users: string;
     profile: string;
@@ -79,7 +79,7 @@ export class AppComponent {
       en: {
         dashboard: 'Dashboard',
         products: 'Products',
-        boostableBosses: 'Boostable bosses',
+        boostedData: 'Boosted data',
         character: 'Character lookup',
         users: 'Users',
         profile: 'Profile',
@@ -88,7 +88,7 @@ export class AppComponent {
       pl: {
         dashboard: 'Pulpit',
         products: 'Produkty',
-        boostableBosses: 'Boostable bossowie',
+        boostedData: 'Boosted dane',
         character: 'Wyszukaj postać',
         users: 'Użytkownicy',
         profile: 'Profil',

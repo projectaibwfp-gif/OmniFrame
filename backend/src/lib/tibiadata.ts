@@ -3,6 +3,9 @@ import type {
   BoostableBossesDto,
   TibiaCharacterAchievementDto,
   TibiaCharacterDto,
+  TibiaCharacterExperienceDto,
+  TibiaCreatureDto,
+  TibiaCreaturesDto,
   TibiaCharacterOtherCharacterDto,
 } from '@shared/api-contract';
 
@@ -21,6 +24,20 @@ interface TibiaDataBoostableBossesResponse {
   boostable_bosses?: {
     boosted?: TibiaDataBoostableBoss;
     boostable_boss_list?: TibiaDataBoostableBoss[];
+  };
+}
+
+interface TibiaDataCreature {
+  name?: unknown;
+  race?: unknown;
+  image_url?: unknown;
+  featured?: unknown;
+}
+
+interface TibiaDataCreaturesResponse {
+  creatures?: {
+    boosted?: TibiaDataCreature;
+    creature_list?: TibiaDataCreature[];
   };
 }
 
@@ -81,7 +98,31 @@ interface TibiaDataCharacterResponse {
   information?: TibiaDataInformation;
 }
 
+interface TibiaDataHighscoreEntry {
+  name?: unknown;
+  rank?: unknown;
+  vocation?: unknown;
+  world?: unknown;
+  level?: unknown;
+  value?: unknown;
+}
+
+interface TibiaDataHighscorePage {
+  total_pages?: unknown;
+}
+
+interface TibiaDataHighscoresPayload {
+  highscore_age?: unknown;
+  highscore_list?: TibiaDataHighscoreEntry[];
+  highscore_page?: TibiaDataHighscorePage;
+}
+
+interface TibiaDataHighscoresResponse {
+  highscores?: TibiaDataHighscoresPayload;
+}
+
 type JsonRecord = Record<string, unknown>;
+const MAX_HIGHSCORE_PAGES = 20;
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {
@@ -103,6 +144,27 @@ function mapBoss(boss: TibiaDataBoostableBoss | undefined): BoostableBossDto | n
     name: boss.name,
     imageUrl: boss.image_url,
     featured: boss.featured === true,
+  };
+}
+
+function mapCreature(creature: TibiaDataCreature | undefined): TibiaCreatureDto | null {
+  if (!creature) {
+    return null;
+  }
+
+  if (
+    typeof creature.name !== 'string' ||
+    typeof creature.race !== 'string' ||
+    typeof creature.image_url !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    name: creature.name,
+    race: creature.race,
+    imageUrl: creature.image_url,
+    featured: creature.featured === true,
   };
 }
 
@@ -169,6 +231,91 @@ function mapOtherCharacters(value: unknown): TibiaCharacterOtherCharacterDto[] {
     .filter((item) => item.name.length > 0);
 }
 
+function findCharacterInHighscores(
+  rows: TibiaDataHighscoreEntry[] | undefined,
+  characterName: string,
+): TibiaDataHighscoreEntry | null {
+  if (!Array.isArray(rows)) {
+    return null;
+  }
+
+  const normalizedCharacterName = characterName.toLowerCase();
+  for (const row of rows) {
+    if (typeof row.name === 'string' && row.name.toLowerCase() === normalizedCharacterName) {
+      return row;
+    }
+  }
+
+  return null;
+}
+
+async function fetchHighscoresPage(world: string, page: number): Promise<TibiaDataHighscoresPayload> {
+  const response = await fetch(
+    `${TIBIA_DATA_API_BASE_URL}/highscores/${encodeURIComponent(world)}/experience/all/${page}`,
+    {
+      cache: 'no-store',
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`TibiaData highscores request failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as TibiaDataHighscoresResponse;
+  const highscores = payload.highscores;
+  if (!highscores) {
+    throw new Error('TibiaData highscores payload is missing highscores section');
+  }
+
+  return highscores;
+}
+
+async function fetchCharacterExperienceFromHighscores(
+  characterName: string,
+  world: string,
+): Promise<TibiaCharacterExperienceDto> {
+  const firstPage = await fetchHighscoresPage(world, 1);
+  const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
+  const firstMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
+  if (firstMatch) {
+    return {
+      status: 'found',
+      exactExperience: readNumber(firstMatch.value),
+      rank: readNumber(firstMatch.rank),
+      vocation: readString(firstMatch.vocation),
+      world: readString(firstMatch.world) ?? world,
+      highscoreAgeMinutes,
+    };
+  }
+
+  const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
+  const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const currentPage = await fetchHighscoresPage(world, page);
+    const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
+    if (match) {
+      return {
+        status: 'found',
+        exactExperience: readNumber(match.value),
+        rank: readNumber(match.rank),
+        vocation: readString(match.vocation),
+        world: readString(match.world) ?? world,
+        highscoreAgeMinutes,
+      };
+    }
+  }
+
+  return {
+    status: 'outside_top1000',
+    exactExperience: null,
+    rank: null,
+    vocation: null,
+    world,
+    highscoreAgeMinutes,
+  };
+}
+
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
   const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/boostablebosses`, { cache: 'no-store' });
   if (!response.ok) {
@@ -181,6 +328,21 @@ export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
     boostableBossList: (payload.boostable_bosses?.boostable_boss_list ?? [])
       .map((boss) => mapBoss(boss))
       .filter((boss): boss is BoostableBossDto => boss !== null),
+  };
+}
+
+export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
+  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/creatures`, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`TibiaData request failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as TibiaDataCreaturesResponse;
+  return {
+    boosted: mapCreature(payload.creatures?.boosted),
+    creatureList: (payload.creatures?.creature_list ?? [])
+      .map((creature) => mapCreature(creature))
+      .filter((creature): creature is TibiaCreatureDto => creature !== null),
   };
 }
 
@@ -217,6 +379,23 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
 
   const guild = asRecord(characterInfo['guild']);
   const accountInformation = asRecord(characterRoot?.['account_information']);
+  const worldName = readString(characterInfo['world']);
+  let experience: TibiaCharacterExperienceDto | null = null;
+
+  if (worldName) {
+    try {
+      experience = await fetchCharacterExperienceFromHighscores(characterName, worldName);
+    } catch {
+      experience = {
+        status: 'unavailable',
+        exactExperience: null,
+        rank: null,
+        vocation: null,
+        world: worldName,
+        highscoreAgeMinutes: null,
+      };
+    }
+  }
 
   return {
     name: characterName,
@@ -242,5 +421,6 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
     loyaltyTitle: readString(accountInformation?.['loyalty_title']),
     achievements: mapAchievements(characterRoot?.['achievements']),
     otherCharacters: mapOtherCharacters(characterRoot?.['other_characters']),
+    experience,
   };
 }
