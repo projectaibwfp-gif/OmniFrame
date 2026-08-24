@@ -287,11 +287,51 @@ function mapCharacterVocationToHighscoresVocation(vocation: string | null): Tibi
   return null;
 }
 
+// In-memory cache for highscores pages (15 minutes TTL)
+const HIGHSCORES_CACHE_TTL_MS = 15 * 60 * 1000;
+interface CacheEntry {
+  data: TibiaDataHighscoresPayload;
+  timestamp: number;
+}
+const highscoresPageCache = new Map<string, CacheEntry>();
+
+function getCacheKey(world: string, page: number, vocation: TibiaHighscoresVocation): string {
+  return `${world}:${vocation}:${page}`;
+}
+
+function getFromCache(cacheKey: string): TibiaDataHighscoresPayload | null {
+  const entry = highscoresPageCache.get(cacheKey);
+  if (!entry) {
+    return null;
+  }
+
+  const now = Date.now();
+  if (now - entry.timestamp > HIGHSCORES_CACHE_TTL_MS) {
+    highscoresPageCache.delete(cacheKey);
+    return null;
+  }
+
+  return entry.data;
+}
+
+function setInCache(cacheKey: string, data: TibiaDataHighscoresPayload): void {
+  highscoresPageCache.set(cacheKey, {
+    data,
+    timestamp: Date.now(),
+  });
+}
+
 async function fetchHighscoresPage(
   world: string,
   page: number,
   vocation: TibiaHighscoresVocation,
 ): Promise<TibiaDataHighscoresPayload> {
+  const cacheKey = getCacheKey(world, page, vocation);
+  const cached = getFromCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const response = await fetch(
     `${TIBIA_DATA_API_BASE_URL}/highscores/${encodeURIComponent(world)}/experience/${vocation}/${page}`,
     {
@@ -318,6 +358,7 @@ async function fetchHighscoresPage(
     throw new Error('TibiaData highscores payload is missing highscores section');
   }
 
+  setInCache(cacheKey, highscores);
   return highscores;
 }
 
@@ -404,34 +445,54 @@ async function fetchCharacterExperienceFromHighscores(
   }
 }
 
+let boostableBossesCache: { data: BoostableBossesDto; timestamp: number } | null = null;
+let creaturesCache: { data: TibiaCreaturesDto; timestamp: number } | null = null;
+
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
+  const now = Date.now();
+  if (
+    boostableBossesCache &&
+    now - boostableBossesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS
+  ) {
+    return boostableBossesCache.data;
+  }
+
   const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/boostablebosses`, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`TibiaData request failed with status ${response.status}`);
   }
 
   const payload = (await response.json()) as TibiaDataBoostableBossesResponse;
-  return {
+  const data = {
     boosted: mapBoss(payload.boostable_bosses?.boosted),
     boostableBossList: (payload.boostable_bosses?.boostable_boss_list ?? [])
       .map((boss) => mapBoss(boss))
       .filter((boss): boss is BoostableBossDto => boss !== null),
   };
+  boostableBossesCache = { data, timestamp: now };
+  return data;
 }
 
 export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
+  const now = Date.now();
+  if (creaturesCache && now - creaturesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
+    return creaturesCache.data;
+  }
+
   const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/creatures`, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`TibiaData request failed with status ${response.status}`);
   }
 
   const payload = (await response.json()) as TibiaDataCreaturesResponse;
-  return {
+  const data = {
     boosted: mapCreature(payload.creatures?.boosted),
     creatureList: (payload.creatures?.creature_list ?? [])
       .map((creature) => mapCreature(creature))
       .filter((creature): creature is TibiaCreatureDto => creature !== null),
   };
+  creaturesCache = { data, timestamp: now };
+  return data;
 }
 
 export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
