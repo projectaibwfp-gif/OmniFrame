@@ -198,6 +198,7 @@ export interface TibiaCharacterExperienceDto {
   vocation: string | null;
   world: string | null;
   highscoreAgeMinutes: number | null;
+  lookupLog?: string;
 }
 
 export interface TibiaCharacterDto {

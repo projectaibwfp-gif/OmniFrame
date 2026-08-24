@@ -367,7 +367,7 @@ async function findCharacterInHighscoresPages(
   characterName: string,
   world: string,
   vocation: TibiaHighscoresVocation,
-): Promise<TibiaCharacterExperienceDto> {
+): Promise<TibiaCharacterExperienceDto & { lookupLog: string }> {
   const allSnapshots: Array<{
     characterName: string;
     world: string;
@@ -376,9 +376,14 @@ async function findCharacterInHighscoresPages(
     rank: number;
     exactExperience: number;
   }> = [];
+  
+  const logs: string[] = [];
+  logs.push(`Searching: ${characterName} on ${world} (${vocation})`);
 
   const firstPage = await fetchHighscoresPage(world, 1, vocation);
   const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
+  
+  logs.push(`Page 1: ${firstPage.highscore_list?.length ?? 0} entries`);
 
   // Collect all characters from first page
   if (firstPage.highscore_list) {
@@ -405,6 +410,7 @@ async function findCharacterInHighscoresPages(
   if (firstMatch) {
     // Save snapshots in background (non-blocking)
     void saveHighscoresSnapshots(allSnapshots);
+    logs.push(`✅ FOUND on page 1: rank=${firstMatch.rank}`);
     return {
       status: 'found',
       exactExperience: readNumber(firstMatch.value),
@@ -412,6 +418,7 @@ async function findCharacterInHighscoresPages(
       vocation: readString(firstMatch.vocation),
       world: readString(firstMatch.world) ?? world,
       highscoreAgeMinutes,
+      lookupLog: logs.join('\n'),
     };
   }
 
@@ -444,6 +451,7 @@ async function findCharacterInHighscoresPages(
 
     const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
     if (match) {
+      logs.push(`✅ FOUND on page ${page}: rank=${match.rank}`);
       // Save snapshots in background (non-blocking)
       void saveHighscoresSnapshots(allSnapshots);
       return {
@@ -453,6 +461,7 @@ async function findCharacterInHighscoresPages(
         vocation: readString(match.vocation),
         world: readString(match.world) ?? world,
         highscoreAgeMinutes,
+        lookupLog: logs.join('\n'),
       };
     }
   }
@@ -460,6 +469,7 @@ async function findCharacterInHighscoresPages(
   // Save all collected snapshots even if character not found
   void saveHighscoresSnapshots(allSnapshots);
 
+  logs.push(`❌ NOT FOUND in top ${totalPages} pages`);
   return {
     status: 'outside_top1000',
     exactExperience: null,
@@ -467,6 +477,7 @@ async function findCharacterInHighscoresPages(
     vocation: null,
     world,
     highscoreAgeMinutes,
+    lookupLog: logs.join('\n'),
   };
 }
 
@@ -485,6 +496,7 @@ async function fetchCharacterExperienceFromHighscores(
       vocation: characterVocation,
       world,
       highscoreAgeMinutes: null,
+      lookupLog: `Vocation "${characterVocation}" not recognized - cannot search highscores`,
     };
   }
 
@@ -499,6 +511,7 @@ async function fetchCharacterExperienceFromHighscores(
         vocation: characterVocation,
         world,
         highscoreAgeMinutes: null,
+        lookupLog: `TibiaData restriction mode active - cannot query ${preferredVocation} highscores`,
       };
     }
 

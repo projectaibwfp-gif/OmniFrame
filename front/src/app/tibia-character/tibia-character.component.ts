@@ -60,7 +60,17 @@ export class TibiaCharacterComponent {
       .getCharacter(name)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (response) => this.lookup.set(response),
+        next: (response) => {
+          const exp = response.character?.experience;
+          console.log(`📊 Lookup: ${name}`);
+          console.log(`🌍 World: ${response.character?.world}`);
+          console.log(`⚔️ Vocation: ${response.character?.vocation}`);
+          console.log(`📈 EXP Status: ${exp?.status}`);
+          if (exp?.lookupLog) {
+            console.log(`📋 Lookup Log:\n${exp.lookupLog}`);
+          }
+          this.lookup.set(response);
+        },
         error: (error) => {
           if (error?.status === 404) {
             this.apiError.set(`Nie znaleziono postaci "${name}".`);
