@@ -374,36 +374,33 @@ async function fetchCharacterExperienceFromHighscores(
   characterVocation: string | null,
 ): Promise<TibiaCharacterExperienceDto> {
   const preferredVocation = mapCharacterVocationToHighscoresVocation(characterVocation);
-  const usesVocationFallback = preferredVocation !== null;
 
-  if (preferredVocation !== null) {
-    try {
-      return await findCharacterInHighscoresPages(characterName, world, preferredVocation);
-    } catch (error) {
-      if (!(error instanceof TibiaDataRestrictionModeError)) {
-        throw error;
-      }
-    }
-  }
-
-  const allResult = await findCharacterInHighscoresPages(characterName, world, 'all');
-  
-  if (allResult.status === 'found') {
-    return allResult;
-  }
-  
-  if (usesVocationFallback && allResult.status === 'outside_top1000') {
+  if (preferredVocation === null) {
     return {
       status: 'unavailable',
       exactExperience: null,
       rank: null,
       vocation: characterVocation,
       world,
-      highscoreAgeMinutes: allResult.highscoreAgeMinutes,
+      highscoreAgeMinutes: null,
     };
   }
 
-  return allResult;
+  try {
+    return await findCharacterInHighscoresPages(characterName, world, preferredVocation);
+  } catch (error) {
+    if (error instanceof TibiaDataRestrictionModeError) {
+      return {
+        status: 'unavailable',
+        exactExperience: null,
+        rank: null,
+        vocation: characterVocation,
+        world,
+        highscoreAgeMinutes: null,
+      };
+    }
+    throw error;
+  }
 }
 
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
