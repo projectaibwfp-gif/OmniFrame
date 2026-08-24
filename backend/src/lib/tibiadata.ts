@@ -8,6 +8,7 @@ import type {
   TibiaCreaturesDto,
   TibiaCharacterOtherCharacterDto,
 } from '@shared/api-contract';
+import { saveHighscoresSnapshots } from './highscores-snapshots';
 
 const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://api.tibiadata.com/v4';
 
@@ -367,10 +368,43 @@ async function findCharacterInHighscoresPages(
   world: string,
   vocation: TibiaHighscoresVocation,
 ): Promise<TibiaCharacterExperienceDto> {
+  const allSnapshots: Array<{
+    characterName: string;
+    world: string;
+    vocation: string;
+    level: number;
+    rank: number;
+    exactExperience: number;
+  }> = [];
+
   const firstPage = await fetchHighscoresPage(world, 1, vocation);
   const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
+
+  // Collect all characters from first page
+  if (firstPage.highscore_list) {
+    for (const entry of firstPage.highscore_list) {
+      const name = readString(entry.name);
+      const level = readNumber(entry.level);
+      const rank = readNumber(entry.rank);
+      const value = readNumber(entry.value);
+      const entryVocation = readString(entry.vocation);
+      if (name && level !== null && rank !== null && value !== null && entryVocation) {
+        allSnapshots.push({
+          characterName: name,
+          world,
+          vocation: entryVocation,
+          level,
+          rank,
+          exactExperience: value,
+        });
+      }
+    }
+  }
+
   const firstMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
   if (firstMatch) {
+    // Save snapshots in background (non-blocking)
+    void saveHighscoresSnapshots(allSnapshots);
     return {
       status: 'found',
       exactExperience: readNumber(firstMatch.value),
@@ -386,8 +420,32 @@ async function findCharacterInHighscoresPages(
 
   for (let page = 2; page <= totalPages; page += 1) {
     const currentPage = await fetchHighscoresPage(world, page, vocation);
+
+    // Collect all characters from current page
+    if (currentPage.highscore_list) {
+      for (const entry of currentPage.highscore_list) {
+        const name = readString(entry.name);
+        const level = readNumber(entry.level);
+        const rank = readNumber(entry.rank);
+        const value = readNumber(entry.value);
+        const entryVocation = readString(entry.vocation);
+        if (name && level !== null && rank !== null && value !== null && entryVocation) {
+          allSnapshots.push({
+            characterName: name,
+            world,
+            vocation: entryVocation,
+            level,
+            rank,
+            exactExperience: value,
+          });
+        }
+      }
+    }
+
     const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
     if (match) {
+      // Save snapshots in background (non-blocking)
+      void saveHighscoresSnapshots(allSnapshots);
       return {
         status: 'found',
         exactExperience: readNumber(match.value),
@@ -398,6 +456,9 @@ async function findCharacterInHighscoresPages(
       };
     }
   }
+
+  // Save all collected snapshots even if character not found
+  void saveHighscoresSnapshots(allSnapshots);
 
   return {
     status: 'outside_top1000',
