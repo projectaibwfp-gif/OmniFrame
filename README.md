@@ -115,7 +115,7 @@ Endpointy:
 - `POST /api/products` - tworzy projekt,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
-- `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`),
+- `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca wszystkie rekordy snapshots highscores z paginacją, sortowaniem po `level` i filtrem po świecie,
 - `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation (wymaga `Authorization: Bearer <CRON_API_KEY>`); uruchomić co 15 minut,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,

@@ -37,6 +37,7 @@ export async function saveCharacterLookup(
   requestedBySub: string | null,
 ): Promise<void> {
   const sql = getSql();
+  const characterSnapshot = JSON.stringify(character);
   await sql`
     INSERT INTO character_lookups (
       requested_name,
@@ -47,7 +48,9 @@ export async function saveCharacterLookup(
       experience_status,
       exact_experience,
       experience_rank,
-      requested_by_sub
+      requested_by_sub,
+      lookup_log,
+      character_snapshot
     ) VALUES (
       ${character.name},
       ${normalizeCharacterName(requestedName)},
@@ -57,7 +60,9 @@ export async function saveCharacterLookup(
       ${character.experience?.status ?? null},
       ${character.experience?.exactExperience ?? null},
       ${character.experience?.rank ?? null},
-      ${requestedBySub}
+      ${requestedBySub},
+      ${character.experience?.lookupLog ?? null},
+      CAST(${characterSnapshot} AS jsonb)
     )
   `;
 }
