@@ -15,10 +15,10 @@ interface CronStats {
 }
 
 /**
- * Validate cron API key from Authorization header
+ * Validate cron API key from X-API-Key header
  */
 function validateCronAuth(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
+  const apiKey = request.headers.get('x-api-key');
   const expectedKey = process.env.CRON_API_KEY;
 
   if (!expectedKey) {
@@ -26,12 +26,11 @@ function validateCronAuth(request: NextRequest): boolean {
     return false;
   }
 
-  if (!authHeader) {
+  if (!apiKey) {
     return false;
   }
 
-  const token = authHeader.replace(/^Bearer\s+/i, '');
-  return token === expectedKey;
+  return apiKey === expectedKey;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
