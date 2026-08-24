@@ -374,15 +374,8 @@ async function fetchCharacterExperienceFromHighscores(
   characterVocation: string | null,
 ): Promise<TibiaCharacterExperienceDto> {
   const preferredVocation = mapCharacterVocationToHighscoresVocation(characterVocation);
-  console.log('[fetchCharacterExperienceFromHighscores]', {
-    characterName,
-    world,
-    characterVocation,
-    preferredVocation,
-  });
 
   if (preferredVocation === null) {
-    console.log('[fetchCharacterExperienceFromHighscores] preferredVocation is null, returning unavailable');
     return {
       status: 'unavailable',
       exactExperience: null,
@@ -394,18 +387,9 @@ async function fetchCharacterExperienceFromHighscores(
   }
 
   try {
-    const result = await findCharacterInHighscoresPages(characterName, world, preferredVocation);
-    console.log('[fetchCharacterExperienceFromHighscores] found result in vocation-specific:', result);
-    return result;
+    return await findCharacterInHighscoresPages(characterName, world, preferredVocation);
   } catch (error) {
-    console.log('[fetchCharacterExperienceFromHighscores] vocation-specific error:', {
-      errorName: error instanceof Error ? error.name : typeof error,
-      errorMessage: error instanceof Error ? error.message : String(error),
-      isRestrictionMode: error instanceof TibiaDataRestrictionModeError,
-    });
-    
     if (error instanceof TibiaDataRestrictionModeError) {
-      console.log('[fetchCharacterExperienceFromHighscores] TibiaData restriction mode active, returning unavailable');
       return {
         status: 'unavailable',
         exactExperience: null,
@@ -415,7 +399,7 @@ async function fetchCharacterExperienceFromHighscores(
         highscoreAgeMinutes: null,
       };
     }
-    
+
     throw error;
   }
 }
