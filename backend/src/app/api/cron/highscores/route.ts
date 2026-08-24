@@ -74,13 +74,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     stats.duration = Date.now() - startTime;
-    logInfo('cron.complete', 'Cron highscores collection completed', stats);
+    logInfo('cron.complete', 'Cron highscores collection completed', stats as unknown as Record<string, unknown>);
 
     return NextResponse.json({ success: true, stats });
   } catch (error) {
     stats.duration = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
-    logError('cron.error', ErrorCode.INTERNAL_ERROR, stats, new Error(message));
+    logError('cron.error', ErrorCode.INTERNAL_ERROR, stats as unknown as Record<string, unknown>, new Error(message));
     return NextResponse.json(
       { success: false, error: message, stats },
       { status: 500 },

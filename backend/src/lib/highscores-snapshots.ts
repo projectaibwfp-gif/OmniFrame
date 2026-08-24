@@ -1,4 +1,4 @@
-import { query } from '@/lib/db';
+import { getSql } from '@/lib/db';
 
 interface HighscoresSnapshot {
   characterName: string;
@@ -25,17 +25,17 @@ function roundTo15MinBucket(timestamp: Date): Date {
  */
 async function shouldSaveCharacter(normalizedName: string, world: string): Promise<boolean> {
   try {
-    const result = await query(
-      `SELECT last_save_bucket FROM character_highscores_last_save 
-       WHERE normalized_name = $1 AND world = $2`,
-      [normalizedName.toLowerCase(), world],
-    );
+    const sql = getSql();
+    const result = await sql`
+      SELECT last_save_bucket FROM character_highscores_last_save 
+      WHERE normalized_name = ${normalizedName.toLowerCase()} AND world = ${world}
+    `;
 
-    if (!result.rows.length) {
+    if (!result.length) {
       return true; // Not saved before
     }
 
-    const lastBucket = new Date(result.rows[0].last_save_bucket);
+    const lastBucket = new Date(result[0].last_save_bucket as string);
     const currentBucket = roundTo15MinBucket(new Date());
     return lastBucket.getTime() !== currentBucket.getTime();
   } catch (error) {
@@ -69,35 +69,27 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
   }
 
   try {
+    const sql = getSql();
+
     // Insert snapshots
     for (const snapshot of charactersToSave) {
-      await query(
-        `INSERT INTO character_highscores_snapshots 
-         (character_name, normalized_name, world, vocation, level, rank, exact_experience, checked_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [
-          snapshot.characterName,
-          snapshot.characterName.toLowerCase(),
-          snapshot.world,
-          snapshot.vocation,
-          snapshot.level,
-          snapshot.rank,
-          snapshot.exactExperience,
-          now,
-        ],
-      );
+      await sql`
+        INSERT INTO character_highscores_snapshots 
+        (character_name, normalized_name, world, vocation, level, rank, exact_experience, checked_at)
+        VALUES (${snapshot.characterName}, ${snapshot.characterName.toLowerCase()}, ${snapshot.world}, 
+                ${snapshot.vocation}, ${snapshot.level}, ${snapshot.rank}, ${snapshot.exactExperience}, ${now})
+      `;
     }
 
     // Update last save buckets
     for (const snapshot of charactersToSave) {
       const normalizedName = snapshot.characterName.toLowerCase();
-      await query(
-        `INSERT INTO character_highscores_last_save (normalized_name, world, last_save_bucket)
-         VALUES ($1, $2, $3)
-         ON CONFLICT (normalized_name, world) DO UPDATE 
-         SET last_save_bucket = $3`,
-        [normalizedName, snapshot.world, currentBucket],
-      );
+      await sql`
+        INSERT INTO character_highscores_last_save (normalized_name, world, last_save_bucket)
+        VALUES (${normalizedName}, ${snapshot.world}, ${currentBucket})
+        ON CONFLICT (normalized_name, world) DO UPDATE 
+        SET last_save_bucket = ${currentBucket}
+      `;
     }
   } catch (error) {
     console.error('[highscores.saveSnapshots] Error saving snapshots:', error);
