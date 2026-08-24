@@ -62,12 +62,12 @@ export class TibiaCharacterComponent {
       .subscribe({
         next: (response) => {
           const exp = response.character?.experience;
-          console.log(`📊 Lookup: ${name}`);
-          console.log(`🌍 World: ${response.character?.world}`);
-          console.log(`⚔️ Vocation: ${response.character?.vocation}`);
-          console.log(`📈 EXP Status: ${exp?.status}`);
+          console.warn(`📊 Lookup: ${name}`);
+          console.warn(`🌍 World: ${response.character?.world}`);
+          console.warn(`⚔️ Vocation: ${response.character?.vocation}`);
+          console.warn(`📈 EXP Status: ${exp?.status}`);
           if (exp?.lookupLog) {
-            console.log(`📋 Lookup Log:\n${exp.lookupLog}`);
+            console.warn(`📋 Lookup Log:\n${exp.lookupLog}`);
           }
           this.lookup.set(response);
         },

@@ -1,0 +1,90 @@
+<section class="highscores-snapshots-page">
+  <header class="highscores-snapshots-page__header">
+    <h1>Highscores snapshots</h1>
+    <p>Wszystkie rekordy zapisane do bazy z paginacją, sortowaniem po level i filtrem po świecie.</p>
+  </header>
+
+  <div class="highscores-snapshots-page__controls">
+    <label class="control-group">
+      <span>Świat</span>
+      <select
+        [value]="selectedWorld() ?? ''"
+        (change)="onWorldChange($event)"
+        [disabled]="isLoading()"
+      >
+        <option value="">Wszystkie światy</option>
+        @for (world of worlds(); track world) {
+          <option [value]="world">{{ world }}</option>
+        }
+      </select>
+    </label>
+
+    <button class="action-button" type="button" (click)="toggleSortDirection()" [disabled]="isLoading()">
+      Sortuj level: {{ sortDir() === 'desc' ? 'malejąco' : 'rosnąco' }}
+    </button>
+
+    <button class="action-button" type="button" (click)="refresh()" [disabled]="isLoading()">
+      Odśwież
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="highscores-snapshots-page__message">Ładowanie rekordów...</div>
+  } @else if (apiError()) {
+    <div class="highscores-snapshots-page__message highscores-snapshots-page__message--error">
+      Nie udało się pobrać rekordów.
+    </div>
+  } @else if (!hasRecords()) {
+    <div class="highscores-snapshots-page__message">Brak rekordów dla wybranego filtra.</div>
+  } @else {
+    <div class="highscores-snapshots-page__summary">
+      Rekordy: <strong>{{ total() }}</strong> | Strona <strong>{{ page() }}</strong> z
+      <strong>{{ totalPages() }}</strong>
+    </div>
+
+    <div class="highscores-snapshots-page__table-wrapper">
+      <table class="records-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Postać</th>
+            <th>Świat</th>
+            <th>Profesja</th>
+            <th>Level</th>
+            <th>Rank</th>
+            <th>EXP</th>
+            <th>Checked at</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (record of records(); track record.id) {
+            <tr>
+              <td>{{ record.id }}</td>
+              <td>{{ record.characterName }}</td>
+              <td>{{ record.world }}</td>
+              <td>{{ record.vocation }}</td>
+              <td>{{ record.level }}</td>
+              <td>{{ record.rank }}</td>
+              <td>{{ record.exactExperience }}</td>
+              <td>{{ record.checkedAt }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highscores-snapshots-page__pagination">
+      <button type="button" (click)="goToPreviousPage()" [disabled]="isLoading() || page() <= 1">
+        Poprzednia
+      </button>
+      <span>Strona {{ page() }} / {{ totalPages() }}</span>
+      <button
+        type="button"
+        (click)="goToNextPage()"
+        [disabled]="isLoading() || page() >= totalPages()"
+      >
+        Następna
+      </button>
+    </div>
+  }
+</section>

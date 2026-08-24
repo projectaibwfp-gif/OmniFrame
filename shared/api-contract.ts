@@ -241,3 +241,26 @@ export interface TibiaCharacterLookupDto {
   character: TibiaCharacterDto;
   history: TibiaCharacterHistoryEntryDto[];
 }
+
+export interface HighscoresSnapshotRecordDto {
+  id: number;
+  characterName: string;
+  world: string;
+  vocation: string;
+  level: number;
+  rank: number;
+  exactExperience: number;
+  checkedAt: string;
+}
+
+export interface HighscoresSnapshotsListDto {
+  data: HighscoresSnapshotRecordDto[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  sortBy: 'level';
+  sortDir: 'asc' | 'desc';
+  world: string | null;
+  worlds: string[];
+}

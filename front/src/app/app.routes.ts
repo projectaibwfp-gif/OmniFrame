@@ -87,5 +87,13 @@ export const routes: Routes = [
         ({ TibiaCharacterComponent }) => TibiaCharacterComponent,
       ),
   },
+  {
+    path: 'highscores-snapshots',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./highscores-snapshots/highscores-snapshots.component').then(
+        ({ HighscoresSnapshotsComponent }) => HighscoresSnapshotsComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

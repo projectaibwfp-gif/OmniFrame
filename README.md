@@ -98,7 +98,7 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 | -------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
 | `GOOGLE_CLIENT_ID` | client ID Google używany do weryfikacji ID tokena             |
-| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://api.tibiadata.com/v4`) |
+| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://dev.tibiadata.com/v4`) |
 | `CRON_API_KEY` | klucz API do endpointu `/api/cron/highscores` (brak domyślnie; jeśli nie ustawione, cron zwróci 400) |
 | `CRON_WORLDS` | lista światów do skanowania przez cron, oddzielone przecinkami (domyślnie `Dia,Amera,Antica`) |
 
@@ -116,6 +116,7 @@ Endpointy:
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`),
+- `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca wszystkie rekordy snapshots highscores z paginacją, sortowaniem po `level` i filtrem po świecie,
 - `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation (wymaga `Authorization: Bearer <CRON_API_KEY>`); uruchomić co 15 minut,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,

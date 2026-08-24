@@ -1,3 +1,4 @@
+import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { getSql } from '@/lib/db';
 
 interface HighscoresSnapshot {
@@ -21,6 +22,23 @@ export interface LatestHighscoresSnapshot {
   rank: number;
   vocation: string;
   checkedAt: string;
+}
+
+interface HighscoresSnapshotListRow {
+  id: number;
+  characterName: string;
+  world: string;
+  vocation: string;
+  level: number;
+  rank: number;
+  exactExperience: number;
+  checkedAt: string;
+}
+
+export interface HighscoresSnapshotsListResult {
+  data: HighscoresSnapshotRecordDto[];
+  total: number;
+  worlds: string[];
 }
 
 /**
@@ -54,7 +72,7 @@ async function shouldSaveCharacter(normalizedName: string, world: string): Promi
     return lastBucket.getTime() !== currentBucket.getTime();
   } catch (error) {
     console.error('[highscores.saveSnapshots] Error checking last save:', error);
-    return false;
+    return true;
   }
 }
 
@@ -107,6 +125,7 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
     }
   } catch (error) {
     console.error('[highscores.saveSnapshots] Error saving snapshots:', error);
+    throw error;
   }
 }
 
@@ -132,4 +151,121 @@ export async function getLatestHighscoresSnapshot(
   }
 
   return rows[0];
+}
+
+export async function listHighscoresSnapshots(
+  page: number,
+  pageSize: number,
+  world: string | null,
+  sortDir: 'asc' | 'desc',
+): Promise<HighscoresSnapshotsListResult> {
+  const sql = getSql();
+  const offset = (page - 1) * pageSize;
+  const normalizedWorld = world?.trim() ?? null;
+
+  let rows: HighscoresSnapshotListRow[];
+  let countRows: Array<{ total: string | number }>;
+
+  if (normalizedWorld) {
+    if (sortDir === 'asc') {
+      rows = (await sql`
+        SELECT id,
+               character_name AS "characterName",
+               world,
+               vocation,
+               level,
+               rank,
+               exact_experience AS "exactExperience",
+               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+        FROM character_highscores_snapshots
+        WHERE world = ${normalizedWorld}
+        ORDER BY level ASC, checked_at DESC
+        LIMIT ${pageSize}
+        OFFSET ${offset}
+      `) as HighscoresSnapshotListRow[];
+    } else {
+      rows = (await sql`
+        SELECT id,
+               character_name AS "characterName",
+               world,
+               vocation,
+               level,
+               rank,
+               exact_experience AS "exactExperience",
+               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+        FROM character_highscores_snapshots
+        WHERE world = ${normalizedWorld}
+        ORDER BY level DESC, checked_at DESC
+        LIMIT ${pageSize}
+        OFFSET ${offset}
+      `) as HighscoresSnapshotListRow[];
+    }
+
+    countRows = (await sql`
+      SELECT COUNT(*)::text AS total
+      FROM character_highscores_snapshots
+      WHERE world = ${normalizedWorld}
+    `) as Array<{ total: string | number }>;
+  } else {
+    if (sortDir === 'asc') {
+      rows = (await sql`
+        SELECT id,
+               character_name AS "characterName",
+               world,
+               vocation,
+               level,
+               rank,
+               exact_experience AS "exactExperience",
+               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+        FROM character_highscores_snapshots
+        ORDER BY level ASC, checked_at DESC
+        LIMIT ${pageSize}
+        OFFSET ${offset}
+      `) as HighscoresSnapshotListRow[];
+    } else {
+      rows = (await sql`
+        SELECT id,
+               character_name AS "characterName",
+               world,
+               vocation,
+               level,
+               rank,
+               exact_experience AS "exactExperience",
+               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+        FROM character_highscores_snapshots
+        ORDER BY level DESC, checked_at DESC
+        LIMIT ${pageSize}
+        OFFSET ${offset}
+      `) as HighscoresSnapshotListRow[];
+    }
+
+    countRows = (await sql`
+      SELECT COUNT(*)::text AS total
+      FROM character_highscores_snapshots
+    `) as Array<{ total: string | number }>;
+  }
+
+  const worldRows = (await sql`
+    SELECT DISTINCT world
+    FROM character_highscores_snapshots
+    ORDER BY world ASC
+  `) as Array<{ world: string }>;
+
+  const totalRaw = countRows[0]?.total ?? 0;
+  const total = typeof totalRaw === 'string' ? Number.parseInt(totalRaw, 10) : Number(totalRaw);
+
+  return {
+    data: rows.map((row) => ({
+      id: row.id,
+      characterName: row.characterName,
+      world: row.world,
+      vocation: row.vocation,
+      level: row.level,
+      rank: row.rank,
+      exactExperience: row.exactExperience,
+      checkedAt: row.checkedAt,
+    })),
+    total,
+    worlds: worldRows.map((row) => row.world),
+  };
 }

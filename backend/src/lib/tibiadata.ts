@@ -10,7 +10,7 @@ import type {
 } from '@shared/api-contract';
 import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
 
-const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://api.tibiadata.com/v4';
+const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://dev.tibiadata.com/v4';
 
 export const TIBIA_DATA_API_BASE_URL =
   process.env.TIBIA_DATA_API_BASE_URL?.trim() || DEFAULT_TIBIA_DATA_API_BASE_URL;
@@ -382,7 +382,7 @@ async function findCharacterInHighscoresPages(
 
   const firstPage = await fetchHighscoresPage(world, 1, vocation);
   const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
-  
+
   logs.push(`Page 1: ${firstPage.highscore_list?.length ?? 0} entries`);
 
   // Collect all characters from first page
@@ -407,26 +407,16 @@ async function findCharacterInHighscoresPages(
   }
 
   const firstMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
-  if (firstMatch) {
-    // Save snapshots in background (non-blocking)
-    void saveHighscoresSnapshots(allSnapshots);
-    logs.push(`✅ FOUND on page 1: rank=${firstMatch.rank}`);
-    return {
-      status: 'found',
-      exactExperience: readNumber(firstMatch.value),
-      rank: readNumber(firstMatch.rank),
-      vocation: readString(firstMatch.vocation),
-      world: readString(firstMatch.world) ?? world,
-      highscoreAgeMinutes,
-      lookupLog: logs.join('\n'),
-    };
-  }
+  let foundMatch = firstMatch ?? null;
+  let foundPage = firstMatch ? 1 : null;
 
   const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
   const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
+  logs.push(`Total pages to scan: ${totalPages}`);
 
   for (let page = 2; page <= totalPages; page += 1) {
     const currentPage = await fetchHighscoresPage(world, page, vocation);
+    logs.push(`Page ${page}: ${currentPage.highscore_list?.length ?? 0} entries`);
 
     // Collect all characters from current page
     if (currentPage.highscore_list) {
@@ -449,27 +439,34 @@ async function findCharacterInHighscoresPages(
       }
     }
 
-    const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
-    if (match) {
-      logs.push(`✅ FOUND on page ${page}: rank=${match.rank}`);
-      // Save snapshots in background (non-blocking)
-      void saveHighscoresSnapshots(allSnapshots);
-      return {
-        status: 'found',
-        exactExperience: readNumber(match.value),
-        rank: readNumber(match.rank),
-        vocation: readString(match.vocation),
-        world: readString(match.world) ?? world,
-        highscoreAgeMinutes,
-        lookupLog: logs.join('\n'),
-      };
+    if (foundMatch === null) {
+      const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
+      if (match) {
+        foundMatch = match;
+        foundPage = page;
+      }
     }
   }
 
-  // Save all collected snapshots even if character not found
-  void saveHighscoresSnapshots(allSnapshots);
+  // Save all collected snapshots after scanning all pages
+  await saveHighscoresSnapshots(allSnapshots);
+
+  if (foundMatch) {
+    logs.push(`✅ FOUND on page ${foundPage}: rank=${foundMatch.rank}`);
+    logs.push(`Saved snapshots: ${allSnapshots.length} entries`);
+    return {
+      status: 'found',
+      exactExperience: readNumber(foundMatch.value),
+      rank: readNumber(foundMatch.rank),
+      vocation: readString(foundMatch.vocation),
+      world: readString(foundMatch.world) ?? world,
+      highscoreAgeMinutes,
+      lookupLog: logs.join('\n'),
+    };
+  }
 
   logs.push(`❌ NOT FOUND in top ${totalPages} pages`);
+  logs.push(`Saved snapshots: ${allSnapshots.length} entries`);
   return {
     status: 'outside_top1000',
     exactExperience: null,
@@ -631,7 +628,8 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
         worldName,
         characterVocation,
       );
-    } catch {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'unknown highscores error';
       experience = {
         status: 'unavailable',
         exactExperience: null,
@@ -639,6 +637,7 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
         vocation: null,
         world: worldName,
         highscoreAgeMinutes: null,
+        lookupLog: `Highscores lookup failed: ${errorMessage}`,
       };
     }
   }

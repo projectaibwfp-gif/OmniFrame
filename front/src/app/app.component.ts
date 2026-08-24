@@ -26,6 +26,7 @@ export class AppComponent {
     return [
       { path: '/boosted', label: translations.boostedData, icon: '⚔', exact: false },
       { path: '/character', label: translations.character, icon: '🧙', exact: false },
+      { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/products', label: translations.products, icon: '▤', exact: false },
       { path: '/users', label: translations.users, icon: '👤', exact: false },
@@ -71,6 +72,7 @@ export class AppComponent {
     products: string;
     boostedData: string;
     character: string;
+    snapshots: string;
     users: string;
     profile: string;
     about: string;
@@ -81,6 +83,7 @@ export class AppComponent {
         products: 'Products',
         boostedData: 'Boosted data',
         character: 'Character lookup',
+        snapshots: 'Highscores DB',
         users: 'Users',
         profile: 'Profile',
         about: 'About project',
@@ -90,6 +93,7 @@ export class AppComponent {
         products: 'Produkty',
         boostedData: 'Boosted dane',
         character: 'Wyszukaj postać',
+        snapshots: 'Highscores DB',
         users: 'Użytkownicy',
         profile: 'Profil',
         about: 'O projekcie',
