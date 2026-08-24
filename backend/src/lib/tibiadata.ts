@@ -387,11 +387,12 @@ async function fetchCharacterExperienceFromHighscores(
   }
 
   const allResult = await findCharacterInHighscoresPages(characterName, world, 'all');
+  
   if (allResult.status === 'found') {
     return allResult;
   }
-
-  if (usesVocationFallback) {
+  
+  if (usesVocationFallback && allResult.status === 'outside_top1000') {
     return {
       status: 'unavailable',
       exactExperience: null,
