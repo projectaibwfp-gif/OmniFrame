@@ -15,3 +15,7 @@
 15. **Creatures page data**: For boosted creature and creature list, use backend endpoint `GET /api/creatures` (mapped from TibiaData `/v4/creatures`) and shared DTOs `TibiaCreatureDto` / `TibiaCreaturesDto`.
 16. **Character experience**: For `/character`, enrich character payload with exact EXP lookup from TibiaData highscores endpoint (`/v4/highscores/{world}/experience/{vocation}/{page}` first, fallback to `experience/all` in restriction mode).
 17. **Character lookup history**: `/character` response should include persisted lookup history from backend DB (`character_lookups`) and frontend should render it as a table under character details.
+18. **TibiaData caching**: Backend maintains 15-minute in-memory cache for highscores pages, boostable bosses, and creatures. Cache is keyed per (world, vocation, page) for highscores. Prevents duplicate API calls.
+19. **Highscores snapshots**: All characters from highscores are persisted to `character_highscores_snapshots` table with 15-minute bucketing (timestamps rounded to 10:00, 10:15, 10:30, 10:45, etc). Each character saved at most once per 15-min bucket.
+20. **Cron endpoint (`POST /api/cron/highscores`)**: Requires `Authorization: Bearer <CRON_API_KEY>`. Iterates over configured worlds (env `CRON_WORLDS`, default `Dia,Amera,Antica`) and all 4 vocations, fetches all highscores pages, saves to DB. Designed to run every 15 minutes via GitHub Actions, Vercel Cron, or external cron service. Returns statistics (worlds processed, vocations processed, characters collected, duration).
+
