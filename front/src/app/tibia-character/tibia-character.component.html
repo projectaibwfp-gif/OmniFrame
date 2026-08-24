@@ -29,6 +29,19 @@
         </button>
       </div>
     </form>
+
+    @if (recentCharacterNames().length > 0) {
+      <div class="recent-searches">
+        <p class="recent-searches__label">Ostatnio sprawdzane:</p>
+        <div class="recent-searches__list">
+          @for (name of recentCharacterNames(); track name) {
+            <button type="button" class="recent-searches__chip" (click)="repeatLookup(name)">
+              {{ name }}
+            </button>
+          }
+        </div>
+      </div>
+    }
   </section>
 
   @if (apiError(); as errorMessage) {
@@ -47,6 +60,10 @@
         <p><strong>Status konta:</strong> {{ currentCharacter.accountStatus ?? 'Brak danych' }}</p>
         <p><strong>Achievement points:</strong> {{ currentCharacter.achievementPoints ?? 'Brak danych' }}</p>
         <p><strong>Ostatni login:</strong> {{ currentCharacter.lastLogin ?? 'Brak danych' }}</p>
+        <p><strong>Tytuł:</strong> {{ currentCharacter.title ?? 'Brak danych' }}</p>
+        <p><strong>Loyalty title:</strong> {{ currentCharacter.loyaltyTitle ?? 'Brak danych' }}</p>
+        <p><strong>Utworzone konto:</strong> {{ currentCharacter.accountCreated ?? 'Brak danych' }}</p>
+        <p><strong>Odblokowane tytuły:</strong> {{ currentCharacter.unlockedTitles ?? 'Brak danych' }}</p>
       </div>
 
       @if (experience(); as characterExperience) {
@@ -60,6 +77,12 @@
           <p><strong>Pozycja rankingu:</strong> {{ characterExperience.rank ?? 'Brak danych' }}</p>
           <p><strong>Vocation (ranking):</strong> {{ characterExperience.vocation ?? 'Brak danych' }}</p>
           <p><strong>Wiek danych:</strong> {{ characterExperience.highscoreAgeMinutes ?? 'Brak danych' }} min</p>
+          @if (experienceLookupLog(); as lookupLog) {
+            <div class="lookup-log">
+              <strong>Log sprawdzenia:</strong>
+              <pre>{{ lookupLog }}</pre>
+            </div>
+          }
         </div>
       }
 
@@ -70,6 +93,9 @@
       @if (currentCharacter.marriedTo) {
         <p><strong>Małżeństwo:</strong> {{ currentCharacter.marriedTo }}</p>
       }
+
+      <p><strong>Dawne nazwy:</strong> {{ currentCharacter.formerNames.length ? currentCharacter.formerNames.join(', ') : 'Brak danych' }}</p>
+      <p><strong>Dawne światy:</strong> {{ currentCharacter.formerWorlds.length ? currentCharacter.formerWorlds.join(', ') : 'Brak danych' }}</p>
 
       @if (currentCharacter.comment) {
         <div class="comment">

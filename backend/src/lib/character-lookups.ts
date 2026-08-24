@@ -13,6 +13,10 @@ interface CharacterLookupRow {
   experienceRank: number | null;
 }
 
+interface CharacterSnapshotRow {
+  characterSnapshot: TibiaCharacterDto | null;
+}
+
 function normalizeCharacterName(name: string): string {
   return name.trim().toLowerCase();
 }
@@ -89,4 +93,24 @@ export async function listCharacterLookupHistory(
   `) as CharacterLookupRow[];
 
   return rows.map(mapCharacterLookupRow);
+}
+
+export async function getLatestCharacterSnapshot(
+  characterName: string,
+): Promise<TibiaCharacterDto | null> {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT character_snapshot AS "characterSnapshot"
+    FROM character_lookups
+    WHERE normalized_name = ${normalizeCharacterName(characterName)}
+      AND character_snapshot IS NOT NULL
+    ORDER BY checked_at DESC
+    LIMIT 1
+  `) as CharacterSnapshotRow[];
+
+  if (!rows.length) {
+    return null;
+  }
+
+  return rows[0].characterSnapshot;
 }

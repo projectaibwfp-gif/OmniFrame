@@ -24,11 +24,13 @@ vi.mock('@/lib/tibiadata', () => ({
 const lookupMocks = vi.hoisted(() => ({
   saveCharacterLookup: vi.fn(),
   listCharacterLookupHistory: vi.fn(),
+  getLatestCharacterSnapshot: vi.fn(),
 }));
 
 vi.mock('@/lib/character-lookups', () => ({
   saveCharacterLookup: lookupMocks.saveCharacterLookup,
   listCharacterLookupHistory: lookupMocks.listCharacterLookupHistory,
+  getLatestCharacterSnapshot: lookupMocks.getLatestCharacterSnapshot,
 }));
 
 import { GET } from './route';
@@ -39,6 +41,7 @@ describe('GET /api/character/:name', () => {
     authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
     lookupMocks.listCharacterLookupHistory.mockResolvedValue([]);
+    lookupMocks.getLatestCharacterSnapshot.mockResolvedValue(null);
   });
 
   it('denies unauthenticated access', async () => {
@@ -152,5 +155,49 @@ describe('GET /api/character/:name', () => {
         message: 'Character not found',
       },
     });
+  });
+
+  it('returns cached snapshot when TibiaData is temporarily unavailable', async () => {
+    tibiadataMocks.fetchCharacter.mockRejectedValue(new Error('upstream down'));
+    lookupMocks.getLatestCharacterSnapshot.mockResolvedValue({
+      name: 'Trollefar',
+      sex: 'male',
+      title: 'Trolltrasher',
+      vocation: 'Knight',
+      level: 202,
+      achievementPoints: 379,
+      world: 'Vunira',
+      residence: 'Thais',
+      marriedTo: 'Mighty troll',
+      lastLogin: '2026-07-05T00:33:18Z',
+      accountStatus: 'Free Account',
+      unlockedTitles: 9,
+      comment: 'Snapshot comment',
+      guild: { name: 'Elysium', rank: 'Follower' },
+      formerNames: [],
+      formerWorlds: [],
+      accountCreated: '2004-08-12T09:28:46Z',
+      loyaltyTitle: 'Keeper of Tibia',
+      achievements: [],
+      experience: null,
+      otherCharacters: [],
+    });
+
+    const response = await GET(createRequest('http://localhost/api/character/Trollefar'), {
+      params: Promise.resolve({ name: 'Trollefar' }),
+    });
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        character: expect.objectContaining({
+          name: 'Trollefar',
+          world: 'Vunira',
+          comment: 'Snapshot comment',
+        }),
+        history: [],
+      },
+    });
+    expect(lookupMocks.getLatestCharacterSnapshot).toHaveBeenCalledWith('Trollefar');
   });
 });

@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { ApiResponse, TibiaCharacterLookupDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
-import { listCharacterLookupHistory, saveCharacterLookup } from '@/lib/character-lookups';
+import {
+  getLatestCharacterSnapshot,
+  listCharacterLookupHistory,
+  saveCharacterLookup,
+} from '@/lib/character-lookups';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { fetchCharacter, TibiaDataNotFoundError } from '@/lib/tibiadata';
@@ -56,6 +60,20 @@ export async function GET(
   } catch (error) {
     if (error instanceof TibiaDataNotFoundError) {
       return errorResponse('Character not found', 404, ErrorCode.NOT_FOUND);
+    }
+
+    try {
+      const cachedCharacter = await getLatestCharacterSnapshot(characterName);
+      if (cachedCharacter) {
+        const history = await listCharacterLookupHistory(characterName);
+        const data: TibiaCharacterLookupDto = {
+          character: cachedCharacter,
+          history,
+        };
+        return NextResponse.json<ApiResponse<TibiaCharacterLookupDto>>({ data });
+      }
+    } catch (fallbackError) {
+      logError('character.fallback', ErrorCode.DB_QUERY_FAILED, { name: characterName }, fallbackError);
     }
 
     logError('character.get', ErrorCode.INTERNAL_ERROR, { name: characterName }, error);

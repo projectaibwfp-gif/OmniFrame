@@ -19,12 +19,14 @@ export class TibiaCharacterComponent {
   protected readonly lookup = signal<TibiaCharacterLookupDto | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly apiError = signal<string | null>(null);
+  protected readonly recentCharacterNames = signal<string[]>([]);
 
   protected readonly character = computed(() => this.lookup()?.character ?? null);
   protected readonly history = computed(() => this.lookup()?.history ?? []);
   protected readonly achievements = computed(() => this.character()?.achievements ?? []);
   protected readonly otherCharacters = computed(() => this.character()?.otherCharacters ?? []);
   protected readonly experience = computed(() => this.character()?.experience ?? null);
+  protected readonly experienceLookupLog = computed(() => this.experience()?.lookupLog ?? null);
 
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
 
@@ -52,6 +54,20 @@ export class TibiaCharacterComponent {
       return;
     }
 
+    this.loadCharacterByName(name);
+  }
+
+  protected repeatLookup(name: string): void {
+    const normalizedName = name.trim();
+    if (!normalizedName) {
+      return;
+    }
+
+    this.characterName.set(normalizedName);
+    this.loadCharacterByName(normalizedName);
+  }
+
+  private loadCharacterByName(name: string): void {
     this.isLoading.set(true);
     this.lookup.set(null);
     this.apiError.set(null);
@@ -61,14 +77,7 @@ export class TibiaCharacterComponent {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response) => {
-          const exp = response.character?.experience;
-          console.warn(`📊 Lookup: ${name}`);
-          console.warn(`🌍 World: ${response.character?.world}`);
-          console.warn(`⚔️ Vocation: ${response.character?.vocation}`);
-          console.warn(`📈 EXP Status: ${exp?.status}`);
-          if (exp?.lookupLog) {
-            console.warn(`📋 Lookup Log:\n${exp.lookupLog}`);
-          }
+          this.pushRecentCharacterName(name);
           this.lookup.set(response);
         },
         error: (error) => {
@@ -80,5 +89,14 @@ export class TibiaCharacterComponent {
           this.apiError.set('Nie udało się pobrać danych postaci. Spróbuj ponownie.');
         },
       });
+  }
+
+  private pushRecentCharacterName(name: string): void {
+    this.recentCharacterNames.update((current) => {
+      const existingWithoutCurrent = current.filter(
+        (currentName) => currentName.toLowerCase() !== name.toLowerCase(),
+      );
+      return [name, ...existingWithoutCurrent].slice(0, 12);
+    });
   }
 }
