@@ -9,6 +9,20 @@ interface HighscoresSnapshot {
   exactExperience: number;
 }
 
+interface LatestHighscoresSnapshotRow {
+  exactExperience: number;
+  rank: number;
+  vocation: string;
+  checkedAt: string;
+}
+
+export interface LatestHighscoresSnapshot {
+  exactExperience: number;
+  rank: number;
+  vocation: string;
+  checkedAt: string;
+}
+
 /**
  * Round timestamp to nearest 15-minute interval
  * 10:00, 10:15, 10:30, 10:45, 11:00, etc.
@@ -94,4 +108,28 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
   } catch (error) {
     console.error('[highscores.saveSnapshots] Error saving snapshots:', error);
   }
+}
+
+export async function getLatestHighscoresSnapshot(
+  characterName: string,
+  world: string,
+): Promise<LatestHighscoresSnapshot | null> {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT exact_experience AS "exactExperience",
+           rank,
+           vocation,
+           to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+    FROM character_highscores_snapshots
+    WHERE normalized_name = ${characterName.toLowerCase()}
+      AND world = ${world}
+    ORDER BY checked_at DESC
+    LIMIT 1
+  `) as LatestHighscoresSnapshotRow[];
+
+  if (!rows.length) {
+    return null;
+  }
+
+  return rows[0];
 }

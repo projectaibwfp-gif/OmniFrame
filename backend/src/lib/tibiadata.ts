@@ -8,7 +8,7 @@ import type {
   TibiaCreaturesDto,
   TibiaCharacterOtherCharacterDto,
 } from '@shared/api-contract';
-import { saveHighscoresSnapshots } from './highscores-snapshots';
+import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
 
 const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://api.tibiadata.com/v4';
 
@@ -504,6 +504,24 @@ async function fetchCharacterExperienceFromHighscores(
     return await findCharacterInHighscoresPages(characterName, world, preferredVocation);
   } catch (error) {
     if (error instanceof TibiaDataRestrictionModeError) {
+      const latestSnapshot = await getLatestHighscoresSnapshot(characterName, world);
+      if (latestSnapshot) {
+        const checkedAtMs = Date.parse(latestSnapshot.checkedAt);
+        const highscoreAgeMinutes = Number.isNaN(checkedAtMs)
+          ? null
+          : Math.max(0, Math.floor((Date.now() - checkedAtMs) / 60000));
+
+        return {
+          status: 'found',
+          exactExperience: latestSnapshot.exactExperience,
+          rank: latestSnapshot.rank,
+          vocation: latestSnapshot.vocation,
+          world,
+          highscoreAgeMinutes,
+          lookupLog: `TibiaData restriction mode active - live query blocked for ${preferredVocation}. Using latest DB snapshot from ${latestSnapshot.checkedAt}.`,
+        };
+      }
+
       return {
         status: 'unavailable',
         exactExperience: null,
@@ -511,7 +529,7 @@ async function fetchCharacterExperienceFromHighscores(
         vocation: characterVocation,
         world,
         highscoreAgeMinutes: null,
-        lookupLog: `TibiaData restriction mode active - cannot query ${preferredVocation} highscores`,
+        lookupLog: `TibiaData restriction mode active - cannot query ${preferredVocation} highscores and no DB snapshot found`,
       };
     }
 
