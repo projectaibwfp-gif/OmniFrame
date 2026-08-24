@@ -31,6 +31,12 @@ export async function GET(
 
   try {
     const character = await fetchCharacter(characterName);
+    console.log('[character.get] fetched character:', {
+      name: character.name,
+      vocation: character.vocation,
+      world: character.world,
+      experience: character.experience,
+    });
 
     try {
       await saveCharacterLookup(character, characterName, auth.session.sub);
