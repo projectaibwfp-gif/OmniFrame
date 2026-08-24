@@ -639,3 +639,75 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
     experience,
   };
 }
+
+/**
+ * Fetch highscores for a specific world and vocation
+ * Used by cron to populate database with all characters
+ * Returns count of characters collected
+ */
+export async function fetchHighscoresForWorldAndVocation(
+  world: string,
+  vocation: TibiaHighscoresVocation,
+): Promise<number> {
+  const allSnapshots: Array<{
+    characterName: string;
+    world: string;
+    vocation: string;
+    level: number;
+    rank: number;
+    exactExperience: number;
+  }> = [];
+
+  const firstPage = await fetchHighscoresPage(world, 1, vocation);
+  const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
+  const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
+
+  // Collect from first page
+  if (firstPage.highscore_list) {
+    for (const entry of firstPage.highscore_list) {
+      const name = readString(entry.name);
+      const level = readNumber(entry.level);
+      const rank = readNumber(entry.rank);
+      const value = readNumber(entry.value);
+      const entryVocation = readString(entry.vocation);
+      if (name && level !== null && rank !== null && value !== null && entryVocation) {
+        allSnapshots.push({
+          characterName: name,
+          world,
+          vocation: entryVocation,
+          level,
+          rank,
+          exactExperience: value,
+        });
+      }
+    }
+  }
+
+  // Collect from remaining pages
+  for (let page = 2; page <= totalPages; page += 1) {
+    const currentPage = await fetchHighscoresPage(world, page, vocation);
+    if (currentPage.highscore_list) {
+      for (const entry of currentPage.highscore_list) {
+        const name = readString(entry.name);
+        const level = readNumber(entry.level);
+        const rank = readNumber(entry.rank);
+        const value = readNumber(entry.value);
+        const entryVocation = readString(entry.vocation);
+        if (name && level !== null && rank !== null && value !== null && entryVocation) {
+          allSnapshots.push({
+            characterName: name,
+            world,
+            vocation: entryVocation,
+            level,
+            rank,
+            exactExperience: value,
+          });
+        }
+      }
+    }
+  }
+
+  // Save all collected snapshots
+  await saveHighscoresSnapshots(allSnapshots);
+  return allSnapshots.length;
+}
