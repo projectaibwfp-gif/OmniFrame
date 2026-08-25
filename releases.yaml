@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-25T12:17:13.609Z"
+    commit: "e6048d3b416839ecc9439ac665be41b767080066"
+    frontend:
+      version: "0.7.0"
+      tag: "frontend-v0.7.0"
+      changed: true
+      commits:
+      - hash: "e6048d3b"
+        author: "Bartek"
+        date: "2026-08-25T14:15:56+02:00"
+        message: "feat: update theme to dark mode and enhance highscores snapshots styling"
+    backend:
+      version: "0.4.0"
+      tag: "backend-v0.4.0"
+      changed: false
+      commits: []
   - date: "2026-08-25T12:07:31.331Z"
     commit: "2b4944ca1ecf95470ccb2da98f4b1ab008111d9f"
     frontend:
