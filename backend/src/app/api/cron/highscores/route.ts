@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { errorResponse } from '@/lib/api-response';
 import { ErrorCode } from '@/lib/errors';
 import { logInfo, logError } from '@/lib/logger';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
@@ -14,32 +13,10 @@ interface CronStats {
   duration: number;
 }
 
-/**
- * Validate cron API key from X-API-Key header
- */
-function validateCronAuth(request: NextRequest): boolean {
-  const apiKey = request.headers.get('x-api-key');
-  const expectedKey = process.env.CRON_API_KEY;
-
-  if (!expectedKey) {
-    console.warn('[cron] CRON_API_KEY not configured');
-    return false;
-  }
-
-  if (!apiKey) {
-    return false;
-  }
-
-  return apiKey === expectedKey;
-}
-
-export async function POST(request: NextRequest): Promise<NextResponse> {
+// TODO: Add authorization (e.g., shared secret or IP allowlist) before exposing
+// this endpoint beyond trusted callers. Current implementation is public.
+export async function POST(_request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
-
-  if (!validateCronAuth(request)) {
-    logError('cron', ErrorCode.AUTH_REQUIRED, {}, new Error('Invalid cron API key'));
-    return errorResponse('Unauthorized', 401, ErrorCode.AUTH_REQUIRED);
-  }
 
   const worlds = (process.env.CRON_WORLDS ?? 'Dia,Amera,Antica').split(',').map((w) => w.trim());
   const vocations = ['knights', 'paladins', 'druids', 'sorcerers'] as const;

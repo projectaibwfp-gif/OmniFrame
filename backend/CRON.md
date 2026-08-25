@@ -7,9 +7,6 @@ Automatyczne pobieranie i zapisywanie danych postaci z Tibia highscores.
 ### Zmienne środowiskowe (`.env`)
 
 ```
-# API key do autoryzacji cron endpointu (wymagane)
-CRON_API_KEY=7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o
-
 # Lista światów do skanowania (opcjonalne, domyślnie: Dia,Amera,Antica)
 CRON_WORLDS=Dia,Amera,Antica
 ```
@@ -19,8 +16,7 @@ CRON_WORLDS=Dia,Amera,Antica
 ### POST Request
 
 ```bash
-curl -X POST https://yourdomain/api/cron/highscores \
-  -H "X-API-Key: 7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o"
+curl -X POST https://yourdomain/api/cron/highscores
 ```
 
 ### Odpowiedź (success)
@@ -37,50 +33,41 @@ curl -X POST https://yourdomain/api/cron/highscores \
 }
 ```
 
-### Odpowiedź (error - brak klucza)
-
-```json
-{
-  "error": {
-    "code": "AUTH_REQUIRED",
-    "message": "Unauthorized"
-  }
-}
-```
-
-HTTP Status: 401
-
 ## Harmonogram
 
-**Rekomendacja: uruchamiać co 15 minut**
+**Rekomendacja: uruchamiać co godzinę**
 
-Powód: System zapisuje dane z 15-minutowym bucketing'iem - ta sama postać nie będzie zapisana 2 razy w ciągu 15 minut.
+System zapisuje dane z 15-minutowym bucketing'iem — ta sama postać nie zostanie zapisana dwa razy w tym samym bucket'cie. Cron co godzinę wystarcza do regularnego odświeżania rankingu bez nadmiernego obciążania API TibiaData.
 
 ### GitHub Actions (recommended)
 
-Utwórz `.github/workflows/cron-highscores.yml`:
+Plik `.github/workflows/cron-highscores.yml` już istnieje w repo:
 
 ```yaml
 name: Cron - Highscores Collection
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Co 15 minut
+    - cron: '0 * * * *' # Co godzinę
 
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger highscores collection
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
         run: |
-          curl -X POST ${{ secrets.BACKEND_URL }}/api/cron/highscores \
-            -H "X-API-Key: ${{ secrets.CRON_API_KEY }}"
+          if [ -z "$BACKEND_URL" ]; then
+            echo "Error: BACKEND_URL secret is not set"
+            exit 1
+          fi
+          curl -X POST "${BACKEND_URL}/api/cron/highscores"
 ```
 
-Secrets do ustawienia w GitHub:
+Secret do ustawienia w GitHub:
 
 - `BACKEND_URL` - np. `https://yourdomain.com`
-- `CRON_API_KEY` - `7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o`
 
 ### Vercel Cron (na Vercel)
 
@@ -93,22 +80,17 @@ W `vercel.json` dodaj:
   "crons": [
     {
       "path": "/api/cron/highscores",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }
 ```
 
-Na panelu Vercel ustawić zmienną środowiskową:
-
-- `CRON_API_KEY`: `7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o`
-
 ### Linux crontab / Docker / inne
 
 ```bash
 # /etc/cron.d/tibia-highscores
-*/15 * * * * curl -s -X POST https://yourdomain/api/cron/highscores \
-  -H "X-API-Key: 7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o" >> /var/log/cron-tibia.log 2>&1
+0 * * * * curl -s -X POST https://yourdomain/api/cron/highscores >> /var/log/cron-tibia.log 2>&1
 ```
 
 ## Dane w bazie
@@ -175,19 +157,10 @@ cd backend
 npm run dev
 
 # W innym terminalu, testuj cron
-curl -X POST http://localhost:3000/api/cron/highscores \
-  -H "X-API-Key: 7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o"
+curl -X POST http://localhost:3000/api/cron/highscores
 ```
 
-(Upewnij się że w `backend/.env` masz: `CRON_API_KEY=7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o`)
-
 ## Troubleshooting
-
-### "Unauthorized" (401)
-
-- Sprawdź czy `CRON_API_KEY` w `.env` backendu jest ustawiony
-- Sprawdź czy `X-API-Key` header w requestzie dokładnie odpowiada wartości `CRON_API_KEY`
-- Wielkość liter ma znaczenie (case-sensitive)
 
 ### Timeout
 

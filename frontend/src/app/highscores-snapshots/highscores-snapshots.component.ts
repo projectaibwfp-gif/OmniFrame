@@ -52,7 +52,10 @@ export class HighscoresSnapshotsComponent {
     }
 
     return mappedGroups.sort((a, b) => {
-      return this.getCheckedAtTimestamp(b.latest.checkedAt) - this.getCheckedAtTimestamp(a.latest.checkedAt);
+      return (
+        this.getCheckedAtTimestamp(b.latest.checkedAt) -
+        this.getCheckedAtTimestamp(a.latest.checkedAt)
+      );
     });
   });
   protected readonly hasRecords = computed(() => this.groupedRecords().length > 0);
@@ -194,7 +197,9 @@ export class HighscoresSnapshotsComponent {
     return parsed.toISOString().slice(0, 10);
   }
 
-  private getPreviousDayExperienceIncrease(sortedRecords: HighscoresSnapshotRecordDto[]): number | null {
+  private getPreviousDayExperienceIncrease(
+    sortedRecords: HighscoresSnapshotRecordDto[],
+  ): number | null {
     if (sortedRecords.length < 2) {
       return null;
     }
