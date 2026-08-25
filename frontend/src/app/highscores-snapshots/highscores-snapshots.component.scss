@@ -1,5 +1,7 @@
 @use 'colors' as c;
 
+$control-pill-radius: 10px;
+
 .highscores-snapshots-page {
   display: flex;
   flex-direction: column;
@@ -34,7 +36,7 @@
   &__table-wrapper {
     overflow-x: auto;
     border: 1px solid c.$border-subtle;
-    border-radius: 12px;
+    border-radius: 14px;
     background: c.$surface-card;
   }
 
@@ -65,7 +67,7 @@
     button {
       padding: 8px 12px;
       border: 1px solid c.$border-subtle;
-      border-radius: 8px;
+      border-radius: $control-pill-radius;
       background: c.$surface-card;
       color: c.$text-700;
       font-size: 12px;
@@ -92,18 +94,18 @@
 
     select {
       min-width: 180px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       border: 1px solid c.$border-subtle;
-      border-radius: 8px;
+      border-radius: $control-pill-radius;
       background: c.$surface-card;
       color: c.$text-700;
     }
   }
 
   .action-button {
-    padding: 8px 12px;
+    padding: 10px 14px;
     border: 1px solid c.$border-subtle;
-    border-radius: 8px;
+    border-radius: $control-pill-radius;
     background: c.$surface-card;
     color: c.$text-700;
     font-size: 12px;
@@ -140,6 +142,109 @@
 
     tr:last-child td {
       border-bottom: none;
+    }
+  }
+}
+
+html[data-theme='dark'] {
+  .highscores-snapshots-page {
+    &__header {
+      h1 {
+        color: c.$text-on-dark;
+      }
+
+      p {
+        color: c.$text-dark-muted;
+      }
+    }
+
+    &__summary {
+      color: c.$text-dark-muted;
+    }
+
+    &__table-wrapper {
+      border-color: c.$border-dark-subtle;
+      background: c.$surface-dark-tint;
+      box-shadow: 0 12px 24px c.$shadow-soft;
+    }
+
+    &__message {
+      color: c.$text-on-dark;
+      background: c.$surface-dark-card;
+      border-color: c.$border-dark-subtle;
+    }
+
+    &__message--error {
+      color: c.$danger-fg-soft;
+      border-color: c.$danger-strong-border;
+      background: c.$danger-strong-bg;
+    }
+
+    &__pagination {
+      span {
+        color: c.$text-dark-muted;
+      }
+
+      button {
+        background: c.$surface-dark-card;
+        border-color: c.$border-dark-subtle;
+        color: c.$text-on-dark;
+      }
+    }
+
+    .control-group {
+      span {
+        color: c.$text-dark-muted;
+      }
+
+      select {
+        background: c.$surface-dark-card;
+        border-color: c.$border-dark-subtle;
+        color: c.$text-on-dark;
+      }
+    }
+
+    .action-button {
+      background: c.$surface-dark-card;
+      border-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+
+    .records-table {
+      th,
+      td {
+        border-bottom-color: c.$border-dark-subtle;
+      }
+
+      th {
+        color: c.$text-dark-muted;
+        background: c.$surface-dark-tint;
+      }
+
+      td {
+        color: c.$text-on-dark;
+      }
+
+      tbody tr {
+        background: c.$surface-dark-tint;
+      }
+
+      tbody tr:nth-child(even) {
+        background: c.$surface-dark-card;
+      }
+
+      tbody tr:hover {
+        background: c.$surface-dark-card-alt;
+      }
+
+      tbody td:first-child {
+        color: c.$text-dark-muted;
+      }
+
+      tbody td:nth-child(7) {
+        color: c.$success-strong;
+        font-weight: 700;
+      }
     }
   }
 }

@@ -27,8 +27,8 @@ describe('ThemeService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should initialize with light theme by default', () => {
-    expect(service.getTheme()).toBe('light');
+  it('should initialize with dark theme by default', () => {
+    expect(service.getTheme()).toBe('dark');
   });
 
   it('should set theme to dark', () => {

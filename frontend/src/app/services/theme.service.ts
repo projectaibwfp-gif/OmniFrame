@@ -6,7 +6,7 @@ export type Theme = 'light' | 'dark';
   providedIn: 'root',
 })
 export class ThemeService {
-  readonly currentTheme = signal<Theme>('light');
+  readonly currentTheme = signal<Theme>('dark');
 
   constructor() {
     this.initializeTheme();
@@ -31,8 +31,7 @@ export class ThemeService {
       return;
     }
 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme: Theme = prefersDark ? 'dark' : 'light';
+    const theme: Theme = 'dark';
     this.currentTheme.set(theme);
     this.applyTheme(theme);
   }

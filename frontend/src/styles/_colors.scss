@@ -20,6 +20,7 @@ $text-200: #b0b7c3; // very faint placeholder
 
 $text-on-primary: #ffffff;
 $text-on-dark: #eff5ff;
+$text-dark-muted: #9aa8bb;
 
 // -------- Powierzchnie ------------------------------------------------------
 $surface-page: #f3f2ef;
@@ -31,12 +32,17 @@ $surface-card-overlay: rgba(255, 255, 255, 0.94);
 $surface-card-overlay-strong: rgba(255, 255, 255, 0.96);
 $surface-alt: #f8f9fb;
 $surface-dark: #1f2937;
+$surface-dark-page: #0f1624;
+$surface-dark-card: #151f2e;
+$surface-dark-card-alt: #1b2636;
+$surface-dark-tint: #111a28;
 
 // -------- Krawędzie ---------------------------------------------------------
 $border-subtle: #dce6f1;
 $border-muted: #e6edf5;
 $border-dashed: #dde5ee;
 $border-translucent: rgba(220, 230, 241, 0.95);
+$border-dark-subtle: #2a3749;
 
 // -------- Marka (primary) ---------------------------------------------------
 $brand-primary: #0f4f4d;
