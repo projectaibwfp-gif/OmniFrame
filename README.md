@@ -15,7 +15,9 @@ blokujących port 5432.
 OmniFrame/
 ├── frontend/       # Angular 22 + Vite, dashboard i routing
 ├── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
-└── shared/      # Wspólne DTO/kontrakty API importowane przez frontend i backend
+├── shared/      # Wspólne DTO/kontrakty API importowane przez frontend i backend
+├── package.json # root dev deps: husky, lint-staged, prettier
+└── .husky/      # git hooks
 ```
 
 Wspólny kontrakt API używa camelCase w DTO; snake_case zostaje tylko przy mapowaniu do/z bazy danych.
@@ -94,12 +96,12 @@ ani logów.
 
 Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 
-| Zmienna        | Znaczenie                                                        |
-| -------------- | ---------------------------------------------------------------- |
-| `DATABASE_URL` | connection string Postgres/Neon (host pooler, `sslmode=require`) |
-| `GOOGLE_CLIENT_ID` | client ID Google używany do weryfikacji ID tokena             |
-| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://dev.tibiadata.com/v4`) |
-| `CRON_WORLDS` | lista światów do skanowania przez cron, oddzielone przecinkami (domyślnie `Dia,Amera,Antica`) |
+| Zmienna                   | Znaczenie                                                                                     |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`            | connection string Postgres/Neon (host pooler, `sslmode=require`)                              |
+| `GOOGLE_CLIENT_ID`        | client ID Google używany do weryfikacji ID tokena                                             |
+| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://dev.tibiadata.com/v4`)              |
+| `CRON_WORLDS`             | lista światów do skanowania przez cron, oddzielone przecinkami (domyślnie `Dia,Amera,Antica`) |
 
 Endpointy:
 
@@ -263,19 +265,19 @@ Nie trzeba ręcznie zmieniać wersji ani tworzyć `releases.yaml`.
 
 GitHub Actions wykonuje kolejno:
 
-1. Buduje frontend przez `npm ci` i `npm run build`.
-2. Buduje backend przez `npm ci` i `npm run build`.
-3. Dla obu aplikacji uruchamia też `npm run lint` i `npm run format:check`.
-4. Jeśli wszystkie sprawdzenia przejdą, analizuje osobno frontend i backend.
-5. Dla każdej aplikacji pobiera jej ostatni tag i zbiera commity dotyczące
-   odpowiedniego katalogu.
-6. Wylicza osobne wersje:
+1. Buduje frontend przez `npm ci`, `npm run format`, `npm run lint` i `npm run build`.
+2. Buduje backend przez `npm ci`, `npm run format`, `npm run lint` i `npm run build`.
+3. Jeśli wszystkie sprawdzenia przejdą, analizuje osobno frontend i backend.
 
-   | Commit                         | Zmiana wersji            |
-   | ------------------------------ | ------------------------ |
-   | `feat:`                        | minor, `0.1.0` → `0.2.0` |
-   | pozostałe, np. `fix:`, `docs:` | patch, `0.1.0` → `0.1.1` |
-   | `feat!:` lub `BREAKING CHANGE` | major, `0.1.0` → `1.0.0` |
+`npm run format` jest uruchamiane przed lint/build, więc nawet jeśli ktoś
+wypchnie nieformatowany kod, workflow sam go sformatuje przed release. 5. Dla każdej aplikacji pobiera jej ostatni tag i zbiera commity dotyczące
+odpowiedniego katalogu. 6. Wylicza osobne wersje:
+
+| Commit                         | Zmiana wersji            |
+| ------------------------------ | ------------------------ |
+| `feat:`                        | minor, `0.1.0` → `0.2.0` |
+| pozostałe, np. `fix:`, `docs:` | patch, `0.1.0` → `0.1.1` |
+| `feat!:` lub `BREAKING CHANGE` | major, `0.1.0` → `1.0.0` |
 
 7. Aktualizuje tylko zmienione aplikacje:
 
@@ -364,11 +366,30 @@ Każda aplikacja ma własny config Prettier:
 
 Root `.editorconfig` zawiera podstawowe ustawienia IDE (indent, EOL, charset).
 
+### Git hooks (husky + lint-staged)
+
+W root repo znajduje się `package.json` z `husky` i `lint-staged`. Po
+`npm install` w katalogu głównym, przy każdym commicie pre-commit hook
+sformatuje automatycznie tylko pliki dodane do indeksu.
+
+```bash
+cd /home/filip/Developer/private/OmniFrame
+npm install
+```
+
+Konfiguracja:
+
+- `.husky/pre-commit` — uruchamia `npx lint-staged`
+- `lint-staged` — dla plików `*.{ts,tsx,html,scss,json,md}` uruchamia
+  `prettier --write`
+
+### IDE
+
 - VS Code: włącz rozszerzenie Prettier + `Settings → Editor: Format On Save`
 - IntelliJ / WebStorm: Settings → Languages & Frameworks → JavaScript → Prettier
   → włącz Prettier i "On save"
 
-Komendy do ręcznego formatowania:
+### Komendy do ręcznego formatowania
 
 ```bash
 cd frontend && npm run format      # Prettier z zapisem zmian
@@ -442,6 +463,10 @@ Po instalacji zależności uruchom:
 cd frontend && npm run lint && npm run format:check && npm run build
 cd ../backend && npm run lint && npm run format:check && npm run build
 ```
+
+Nie musisz ręcznie pilnować formatowania przed pushem — husky (pre-commit)
+sformatuje staged pliki lokalnie, a workflow release'u uruchomi `npm run format`
+przed lint/build, więc nawet pominięty hook nie zatrzyma release.
 
 Weryfikacja działania API:
 
