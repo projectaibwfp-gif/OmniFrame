@@ -55,24 +55,6 @@
     color: c.$text-600;
     font-weight: 600;
   }
-
-  .table {
-    color: c.$text-500;
-  }
-
-  thead th {
-    border-bottom-width: 1px;
-    color: c.$text-400;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  tbody td {
-    border-top-color: c.$border-subtle;
-    padding-block: 0.95rem;
-  }
 }
 
 .actions {

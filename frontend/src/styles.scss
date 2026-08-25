@@ -78,85 +78,281 @@ button {
   color: c.$text-700;
 }
 
+:where(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+  border: 1px solid c.$border-subtle;
+  border-radius: 10px;
+  background: c.$surface-card;
+  color: c.$text-700;
+
+  &:focus {
+    outline: none;
+    border-color: c.$brand-primary;
+    box-shadow: 0 0 0 3px c.$brand-primary-tint;
+  }
+}
+
+:where(input, textarea)::placeholder {
+  color: c.$text-300;
+}
+
+.app-table-wrap {
+  overflow-x: auto;
+  border: 1px solid c.$border-subtle;
+  border-radius: 14px;
+  background: c.$surface-card;
+  box-shadow: 0 8px 20px c.$shadow-soft;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  color: c.$text-500;
+  background: transparent;
+
+  thead th {
+    padding: 11px 12px;
+    border-bottom: 1px solid c.$border-subtle;
+    background: c.$surface-page-tint-1;
+    color: c.$text-400;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 11px 12px;
+    border-bottom: 1px solid c.$border-muted;
+    color: c.$text-500;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:nth-child(even) {
+    background: c.$surface-page-tint-2;
+  }
+
+  tbody tr:hover {
+    background: c.$surface-page-tint-3;
+  }
+}
+
+.table.app-table {
+  --mdb-table-bg: transparent;
+  --mdb-table-color: inherit;
+  --mdb-table-striped-bg: transparent;
+  --mdb-table-hover-bg: transparent;
+}
+
+.table.app-table > :not(caption) > * > * {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.highscores-snapshots-page {
+  .records-table tbody td:nth-child(7) {
+    color: c.$success-fg;
+    font-weight: 700;
+  }
+}
+
 /* Dark Mode */
 html[data-theme='dark'] {
   color-scheme: dark;
 
   body {
-    background: #1a1a1a;
-    color: #e0e0e0;
+    background: c.$surface-dark-page;
+    color: c.$text-on-dark;
   }
 
   .card,
   .topbar,
   .mobile-nav,
   .footer,
-  .btn-secondary,
-  .btn-outline-secondary,
-  .btn-light {
-    background: #2a2a2a;
-    border-color: #3a3a3a;
-    color: #e0e0e0;
+  .panel {
+    background: c.$surface-dark-card;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
   }
 
   .topbar {
-    background: rgba(42, 42, 42, 0.95);
-  }
-
-  .nav-item {
-    color: #b0b0b0;
-
-    &:hover,
-    &.active {
-      background: rgba(59, 89, 152, 0.2);
-      color: #64b5f6;
-    }
-  }
-
-  .btn-primary {
-    background: #3b5998;
-    border-color: #3b5998;
-
-    &:hover,
-    &:focus-visible {
-      background: #2d4373;
-      border-color: #2d4373;
-    }
+    background: c.$surface-dark-card-alt;
   }
 
   .workspace-user {
-    color: #e0e0e0;
+    color: c.$text-on-dark;
 
     small {
-      color: #9e9e9e;
+      color: c.$text-dark-muted;
     }
-  }
-
-  .text-700,
-  strong {
-    color: #e0e0e0;
-  }
-
-  .text-500,
-  .text-400 {
-    color: #b0b0b0;
   }
 
   .workspace-avatar {
-    background: rgba(59, 89, 152, 0.3);
-    color: #90caf9;
+    background: c.$surface-dark-card-alt;
+    color: c.$info-accent;
   }
 
-  .brand,
-  a {
-    color: #90caf9;
+  .brand {
+    color: c.$text-on-dark;
+  }
 
-    &:hover {
-      color: #64b5f6;
+  .brand-accent {
+    color: c.$info-accent;
+  }
+
+  .nav-item {
+    color: c.$text-dark-muted;
+
+    &:hover,
+    &.active {
+      background: c.$brand-primary-soft;
+      color: c.$info-accent;
     }
   }
 
-  .border-subtle {
-    border-color: #3a3a3a;
+  .btn-secondary,
+  .btn-outline-secondary,
+  .btn-outline-primary,
+  .btn-light {
+    background: c.$surface-dark-card-alt;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+
+    &:hover,
+    &:focus-visible {
+      background: c.$brand-primary;
+      border-color: c.$brand-primary;
+      color: c.$text-on-primary;
+    }
+  }
+
+  :where(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+    background: c.$surface-dark-card-alt;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+  }
+
+  :where(input, textarea)::placeholder {
+    color: c.$text-dark-muted;
+  }
+
+  .page h1,
+  .page h2,
+  .page h3,
+  .page strong {
+    color: c.$text-on-dark;
+  }
+
+  .page p,
+  .page small,
+  .page label {
+    color: c.$text-dark-muted;
+  }
+
+  .app-table-wrap {
+    background: c.$surface-dark-tint;
+    border-color: c.$border-dark-subtle;
+  }
+
+  .app-table {
+    thead th {
+      background: c.$surface-dark-card-alt;
+      border-bottom-color: c.$border-dark-subtle;
+      color: c.$text-dark-muted;
+    }
+
+    tbody td {
+      border-bottom-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: c.$surface-dark-tint;
+    }
+
+    tbody tr:nth-child(even) {
+      background: c.$surface-dark-card;
+    }
+
+    tbody tr:hover {
+      background: c.$surface-dark-card-alt;
+    }
+  }
+
+  .highscores-snapshots-page {
+    &__header {
+      h1 {
+        color: c.$text-on-dark;
+      }
+
+      p {
+        color: c.$text-dark-muted;
+      }
+    }
+
+    &__summary {
+      color: c.$text-dark-muted;
+    }
+
+    .control-group {
+      span {
+        color: c.$text-dark-muted;
+      }
+
+      select {
+        background: c.$surface-dark-card-alt;
+        border-color: c.$border-dark-subtle;
+        color: c.$text-on-dark;
+      }
+    }
+
+    .action-button,
+    &__pagination button {
+      background: c.$surface-dark-card-alt;
+      border-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+
+    &__pagination span {
+      color: c.$text-dark-muted;
+    }
+
+    &__message {
+      background: c.$surface-dark-card;
+      border-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+  }
+
+  .products-panel {
+    h1 {
+      color: c.$text-on-dark;
+    }
+
+    p {
+      color: c.$text-dark-muted;
+    }
+
+    .products-table .name {
+      color: c.$text-on-dark;
+    }
+  }
+
+  .btn-action {
+    background: c.$surface-dark-card-alt;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+
+    &:hover {
+      background: c.$brand-primary;
+      border-color: c.$brand-primary;
+      color: c.$text-on-primary;
+    }
   }
 }
