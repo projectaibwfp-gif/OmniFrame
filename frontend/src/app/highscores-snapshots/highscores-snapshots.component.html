@@ -46,35 +46,73 @@
   } @else {
     <div class="highscores-snapshots-page__summary">
       Rekordy: <strong>{{ total() }}</strong> | Strona <strong>{{ page() }}</strong> z
-      <strong>{{ totalPages() }}</strong>
+      <strong>{{ totalPages() }}</strong> | Postacie na stronie:
+      <strong>{{ groupedRecords().length }}</strong>
     </div>
 
     <div class="highscores-snapshots-page__table-wrapper app-table-wrap">
       <table class="records-table app-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Postać</th>
-            <th>Świat</th>
-            <th>Profesja</th>
-            <th>Level</th>
-            <th>Rank</th>
-            <th>EXP</th>
-            <th>Checked at</th>
+            <th class="col-character">Postać</th>
+            <th class="col-world">Świat</th>
+            <th class="col-vocation">Profesja</th>
+            <th class="col-level">Level</th>
+            <th class="col-rank">Rank</th>
+            <th class="col-exp">EXP</th>
+            <th class="col-delta">Zmiana EXP</th>
+            <th class="col-date">Data</th>
+            <th class="col-details">Details</th>
           </tr>
         </thead>
         <tbody>
-          @for (record of records(); track record.id) {
+          @for (recordGroup of groupedRecords(); track recordGroup.latest.id) {
             <tr>
-              <td>{{ record.id }}</td>
-              <td>{{ record.characterName }}</td>
-              <td>{{ record.world }}</td>
-              <td>{{ record.vocation }}</td>
-              <td>{{ record.level }}</td>
-              <td>{{ record.rank }}</td>
-              <td>{{ record.exactExperience }}</td>
-              <td>{{ record.checkedAt }}</td>
+              <td class="col-character">{{ recordGroup.latest.characterName }}</td>
+              <td class="col-world">{{ recordGroup.latest.world }}</td>
+              <td class="col-vocation">{{ recordGroup.latest.vocation }}</td>
+              <td class="col-level">{{ recordGroup.latest.level }}</td>
+              <td class="rank-value col-rank">{{ formatRank(recordGroup.latest.rank) }}</td>
+              <td class="exp-value col-exp">{{ formatExperience(recordGroup.latest.exactExperience) }}</td>
+              <td class="delta-value col-delta">
+                @if (recordGroup.previousDayExperienceIncrease !== null) {
+                  {{ formatExperienceDelta(recordGroup.previousDayExperienceIncrease) }}
+                } @else {
+                  <span class="no-delta">-</span>
+                }
+              </td>
+              <td class="date-value col-date">{{ formatCheckedAt(recordGroup.latest.checkedAt) }}</td>
+              <td class="details-cell col-details">
+                @if (recordGroup.older.length > 0) {
+                  <button
+                    class="duplicate-toggle"
+                    type="button"
+                    (click)="toggleCharacterDetails(recordGroup.latest.id)"
+                    [attr.aria-expanded]="isCharacterDetailsExpanded(recordGroup.latest.id)"
+                  >
+                    {{ recordGroup.older.length }}
+                  </button>
+                } @else {
+                  <span class="no-duplicates">-</span>
+                }
+              </td>
             </tr>
+            @if (recordGroup.older.length > 0 && isCharacterDetailsExpanded(recordGroup.latest.id)) {
+              <tr class="duplicate-row">
+                <td colspan="9">
+                  <div class="duplicate-row__panel">
+                    @for (olderRecord of recordGroup.older; track olderRecord.id) {
+                      <div class="duplicate-row__item">
+                        <span>{{ formatCheckedAt(olderRecord.checkedAt) }}</span>
+                        <span>{{ formatRank(olderRecord.rank) }}</span>
+                        <span>Lvl {{ olderRecord.level }}</span>
+                        <span>{{ formatExperience(olderRecord.exactExperience) }} EXP</span>
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>

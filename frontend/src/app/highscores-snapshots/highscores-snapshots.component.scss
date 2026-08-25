@@ -34,10 +34,7 @@ $control-pill-radius: 10px;
   }
 
   &__table-wrapper {
-    overflow-x: auto;
-    border: 1px solid c.$border-subtle;
-    border-radius: 14px;
-    background: c.$surface-card;
+    overflow: visible;
   }
 
   &__message {
@@ -119,7 +116,206 @@ $control-pill-radius: 10px;
   }
 
   .records-table {
-    min-width: 900px;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    font-size: 12px;
+
+    th,
+    td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .col-character {
+      width: 17%;
+    }
+
+    .col-world {
+      width: 7%;
+    }
+
+    .col-vocation {
+      width: 12%;
+    }
+
+    .col-level {
+      width: 6%;
+    }
+
+    .col-rank {
+      width: 7%;
+    }
+
+    .col-exp {
+      width: 14%;
+    }
+
+    .col-delta {
+      width: 13%;
+    }
+
+    .col-date {
+      width: 10%;
+    }
+
+    .col-details {
+      width: 14%;
+    }
+  }
+
+  .delta-value {
+    color: c.$success-fg;
+    font-weight: 700;
+  }
+
+  .no-delta {
+    color: c.$text-300;
+  }
+
+  .duplicate-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid c.$border-muted;
+    border-radius: 999px;
+    background: c.$surface-page-tint-2;
+    color: c.$info-fg;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .duplicate-row td {
+    padding: 0 10px 10px;
+    border-bottom: none;
+    background: c.$surface-page-tint-1;
+  }
+
+  .duplicate-row__panel {
+    display: grid;
+    gap: 8px;
+    padding: 8px 0 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .duplicate-row__item {
+    display: grid;
+    grid-template-columns: 110px 62px 70px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid c.$border-muted;
+    border-radius: 10px;
+    background: c.$surface-page-tint-2;
+    color: c.$text-500;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+
+    span:first-child {
+      color: c.$text-700;
+      font-weight: 700;
+    }
+
+    span:nth-child(2),
+    span:nth-child(3),
+    span:nth-child(4) {
+      white-space: nowrap;
+    }
+  }
+
+  .no-duplicates {
+    color: c.$text-300;
+  }
+}
+
+html[data-theme='dark'] {
+  .highscores-snapshots-page {
+    &__header {
+      h1 {
+        color: c.$text-on-dark;
+      }
+
+      p {
+        color: c.$text-dark-muted;
+      }
+    }
+
+    &__summary,
+    &__pagination span {
+      color: c.$text-dark-muted;
+    }
+
+    .control-group {
+      span {
+        color: c.$text-dark-muted;
+      }
+
+      select {
+        background: c.$surface-dark-card-alt;
+        border-color: c.$border-dark-subtle;
+        color: c.$text-on-dark;
+      }
+    }
+
+    .action-button,
+    &__pagination button {
+      background: c.$surface-dark-card-alt;
+      border-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+
+    &__message {
+      background: c.$surface-dark-card;
+      border-color: c.$border-dark-subtle;
+      color: c.$text-on-dark;
+    }
+
+    .duplicate-toggle {
+      background: c.$surface-dark-card-alt;
+      border-color: c.$border-dark-subtle;
+      color: c.$info-accent;
+    }
+
+    .duplicate-row td {
+      background: c.$surface-dark-tint;
+    }
+
+    .duplicate-row__panel {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .duplicate-row__item {
+      border-color: c.$border-dark-subtle;
+      background: c.$surface-dark-page;
+      color: c.$text-dark-muted;
+      box-shadow: none;
+
+      span:first-child {
+        color: c.$text-on-dark;
+      }
+    }
+
+    .no-duplicates {
+      color: c.$text-dark-muted;
+    }
+
+    .delta-value {
+      color: c.$success-strong;
+    }
+
+    .no-delta {
+      color: c.$text-dark-muted;
+    }
   }
 }
 

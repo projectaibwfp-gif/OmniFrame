@@ -1,19 +1,39 @@
+@use 'colors' as c;
+
 .theme-btn {
-  display: inline-block;
-  width: auto;
-  padding: 0.25rem 0.5rem;
-  border: 2px solid transparent;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid c.$border-subtle;
+  background: c.$surface-card;
+  color: c.$text-700;
   cursor: pointer;
-  border-radius: 0.25rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   line-height: 1;
   text-align: center;
   flex-shrink: 0;
 
   &:hover {
-    transform: scale(1.1) rotate(15deg);
-    opacity: 0.8;
+    border-color: c.$brand-primary;
+    color: c.$brand-primary;
+  }
+}
+
+html[data-theme='dark'] {
+  .theme-btn {
+    background: c.$surface-dark-card;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  }
+
+  .theme-btn:hover {
+    border-color: c.$warning-fg-accent;
+    color: c.$warning-fg-accent;
   }
 }

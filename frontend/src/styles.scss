@@ -111,19 +111,20 @@ button {
   background: transparent;
 
   thead th {
-    padding: 11px 12px;
+    padding: 12px 10px;
     border-bottom: 1px solid c.$border-subtle;
     background: c.$surface-page-tint-1;
     color: c.$text-400;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.2;
   }
 
   tbody td {
-    padding: 11px 12px;
+    padding: 12px 10px;
     border-bottom: 1px solid c.$border-muted;
     color: c.$text-500;
     font-size: 13px;
@@ -156,9 +157,18 @@ button {
 }
 
 .highscores-snapshots-page {
-  .records-table tbody td:nth-child(7) {
+  .records-table .exp-value {
     color: c.$success-fg;
     font-weight: 700;
+  }
+
+  .records-table .rank-value {
+    font-weight: 700;
+  }
+
+  .records-table .date-value {
+    color: c.$text-dark-muted;
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -244,15 +254,17 @@ html[data-theme='dark'] {
 
   .page h1,
   .page h2,
-  .page h3,
-  .page strong {
+  .page h3 {
     color: c.$text-on-dark;
   }
 
-  .page p,
   .page small,
   .page label {
     color: c.$text-dark-muted;
+  }
+
+  .page p {
+    color: c.$text-on-dark;
   }
 
   .app-table-wrap {
@@ -261,6 +273,8 @@ html[data-theme='dark'] {
   }
 
   .app-table {
+    font-size: 12px;
+
     thead th {
       background: c.$surface-dark-card-alt;
       border-bottom-color: c.$border-dark-subtle;
@@ -354,5 +368,145 @@ html[data-theme='dark'] {
       border-color: c.$brand-primary;
       color: c.$text-on-primary;
     }
+  }
+
+  .login-page {
+    background: c.$surface-dark-page;
+  }
+
+  .login-card,
+  .search-card,
+  .character-card,
+  .boss-card,
+  .profile-card,
+  .create-card,
+  .edit-card,
+  .product-card,
+  .user-card,
+  .stat-card,
+  .metric-card,
+  .showcase-card,
+  .stack-card,
+  .insight-item,
+  .leaderboard-item {
+    background: c.$surface-dark-card;
+    border-color: c.$border-dark-subtle;
+    box-shadow: none;
+  }
+
+  .product-meta,
+  .profile-item-card,
+  .boss-item,
+  .achievement-item,
+  .other-character-item,
+  .comment,
+  .experience-box {
+    background: c.$surface-dark-card-alt;
+    border-color: c.$border-dark-subtle;
+  }
+
+  .page-header .btn-back,
+  .btn-edit,
+  .toggle-button {
+    background: c.$surface-dark-card-alt;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+  }
+
+  .page-header .btn-back:hover,
+  .btn-edit:hover,
+  .toggle-button:hover {
+    background: c.$brand-primary;
+    border-color: c.$brand-primary;
+    color: c.$text-on-primary;
+  }
+
+  .table-message,
+  .intro,
+  .subtitle,
+  .eyebrow,
+  .label,
+  .muted,
+  .stat-label,
+  .metric-label,
+  .chart-legend,
+  .view-all,
+  .referral-note,
+  .char-count {
+    color: c.$text-dark-muted;
+  }
+
+  .name,
+  .project-name,
+  .meta-item strong,
+  .profile-item-card strong,
+  .insight-item strong,
+  .leaderboard-item strong,
+  .user-card .value {
+    color: c.$text-on-dark;
+  }
+
+  .grid-line {
+    border-top-color: c.$border-dark-subtle;
+  }
+
+  .table-row {
+    border-top-color: c.$border-dark-subtle;
+    color: c.$text-dark-muted;
+  }
+
+  .role-chip {
+    background: c.$surface-dark-card-alt;
+    color: c.$text-dark-muted;
+  }
+
+  .avatar-placeholder {
+    background: c.$surface-dark-card-alt;
+    color: c.$text-dark-muted;
+  }
+
+  .referral-card code,
+  .lookup-log pre {
+    background: c.$surface-dark-tint;
+    border-color: c.$border-dark-subtle;
+    color: c.$text-on-dark;
+  }
+
+  .form-actions,
+  .product-header,
+  .description-section,
+  .character-grid p,
+  .recent-searches,
+  .lookup-log {
+    border-color: c.$border-dark-subtle;
+  }
+
+  .login-points .badge,
+  .about-page .badge.bg-light,
+  .about-page .badge.bg-dark-subtle,
+  .about-page .badge.bg-primary-subtle,
+  .about-page .badge.bg-info-subtle,
+  .about-page .badge.bg-success-subtle,
+  .login-page .badge.bg-primary-subtle,
+  .login-page .badge.bg-info-subtle,
+  .login-page .badge.bg-success-subtle {
+    background: c.$surface-dark-card-alt !important;
+    border-color: c.$border-dark-subtle !important;
+    color: c.$text-on-dark !important;
+  }
+
+  .text-dark,
+  .text-dark-emphasis {
+    color: c.$text-on-dark !important;
+  }
+
+  .bg-warning.text-dark {
+    color: c.$warning-fg-strong !important;
+  }
+
+  .table-message.error,
+  .alert.alert-error,
+  .error-message {
+    color: c.$danger-fg-soft;
   }
 }
