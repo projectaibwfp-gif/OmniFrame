@@ -1,4 +1,4 @@
-1. Before completing a change, run `npm run format:check`, `npm run lint`, `npm test`, and `npm run build`.
+1. After every file change, run `npm run format:check` in the affected app (`frontend/` or `backend/`). Fix formatting immediately with `npm run format` before proceeding. Before completing a change, also run `npm run lint`, `npm test`, and `npm run build`.
 2. For backend Route Handlers in Next.js, keep production files named `route.ts`, but name test files descriptively instead of repeating generic `route.test.ts`.
 3. Prefer endpoint-focused test names such as `health.get.test.ts`, `google.post.test.ts`, `users.api.test.ts`, or `dashboard.get.test.ts` so test reports are readable without opening the file tree.
 4. Keep API tests close to the route they cover and use the `.test.ts` suffix consistently.

@@ -8,3 +8,4 @@
 **/npm-debug.log*
 **/front/out-tsc
 mysql/mysql_data/
+.husky/_

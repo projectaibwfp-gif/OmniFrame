@@ -73,7 +73,9 @@
               <td class="col-vocation">{{ recordGroup.latest.vocation }}</td>
               <td class="col-level">{{ recordGroup.latest.level }}</td>
               <td class="rank-value col-rank">{{ formatRank(recordGroup.latest.rank) }}</td>
-              <td class="exp-value col-exp">{{ formatExperience(recordGroup.latest.exactExperience) }}</td>
+              <td class="exp-value col-exp">{{
+                formatExperience(recordGroup.latest.exactExperience)
+              }}</td>
               <td class="delta-value col-delta">
                 @if (recordGroup.previousDayExperienceIncrease !== null) {
                   {{ formatExperienceDelta(recordGroup.previousDayExperienceIncrease) }}
@@ -81,7 +83,9 @@
                   <span class="no-delta">-</span>
                 }
               </td>
-              <td class="date-value col-date">{{ formatCheckedAt(recordGroup.latest.checkedAt) }}</td>
+              <td class="date-value col-date">{{
+                formatCheckedAt(recordGroup.latest.checkedAt)
+              }}</td>
               <td class="details-cell col-details">
                 @if (recordGroup.older.length > 0) {
                   <button
@@ -97,7 +101,9 @@
                 }
               </td>
             </tr>
-            @if (recordGroup.older.length > 0 && isCharacterDetailsExpanded(recordGroup.latest.id)) {
+            @if (
+              recordGroup.older.length > 0 && isCharacterDetailsExpanded(recordGroup.latest.id)
+            ) {
               <tr class="duplicate-row">
                 <td colspan="9">
                   <div class="duplicate-row__panel">

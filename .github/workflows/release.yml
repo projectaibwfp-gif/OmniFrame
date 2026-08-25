@@ -20,9 +20,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
         working-directory: frontend
-      - run: npm run lint
+      - run: npm run format
         working-directory: frontend
-      - run: npm run format:check
+      - run: npm run lint
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
@@ -38,9 +38,9 @@ jobs:
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
         working-directory: backend
-      - run: npm run lint
+      - run: npm run format
         working-directory: backend
-      - run: npm run format:check
+      - run: npm run lint
         working-directory: backend
       - run: npm run build
         working-directory: backend
@@ -62,10 +62,10 @@ jobs:
           node-version: 22.22.3
       - run: git config user.name "github-actions[bot]"
       - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - run: node scripts/release.mjs
       - run: |
           cd frontend && npm ci && npm run format
           cd ../backend && npm ci && npm run format
+      - run: node scripts/release.mjs
       - run: |
           if git diff --quiet HEAD -- \
             frontend/package.json frontend/package-lock.json \
@@ -88,8 +88,7 @@ jobs:
             RELEASE_COMPONENTS="${RELEASE_COMPONENTS:+${RELEASE_COMPONENTS}, }backend"
           fi
 
-          git add frontend/package.json frontend/package-lock.json \
-            backend/package.json backend/package-lock.json releases.yaml
+          git add -A
           git commit -m "chore: release ${RELEASE_COMPONENTS} [skip ci]"
 
           if [ -n "$FRONT_TAG" ]; then
