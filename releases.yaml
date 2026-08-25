@@ -1,4 +1,32 @@
 releases:
+  - date: "2026-08-25T13:37:23.326Z"
+    commit: "ecdc95c3b523a9c5c62a35ac4f65d868258fa23d"
+    frontend:
+      version: "0.8.0"
+      tag: "frontend-v0.8.0"
+      changed: true
+      commits:
+      - hash: "ecdc95c3"
+        author: "Filip"
+        date: "2026-08-25T15:36:05+02:00"
+        message: "Work/cron highscores (#1)"
+      - hash: "6feb253a"
+        author: "Bartek"
+        date: "2026-08-25T15:05:53+02:00"
+        message: "feat: enhance highscores snapshots with grouping, sorting, and dark mode styling"
+    backend:
+      version: "0.5.0"
+      tag: "backend-v0.5.0"
+      changed: true
+      commits:
+      - hash: "ecdc95c3"
+        author: "Filip"
+        date: "2026-08-25T15:36:05+02:00"
+        message: "Work/cron highscores (#1)"
+      - hash: "6feb253a"
+        author: "Bartek"
+        date: "2026-08-25T15:05:53+02:00"
+        message: "feat: enhance highscores snapshots with grouping, sorting, and dark mode styling"
   - date: "2026-08-25T12:17:13.609Z"
     commit: "e6048d3b416839ecc9439ac665be41b767080066"
     frontend:
