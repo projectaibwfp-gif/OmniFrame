@@ -1,0 +1,14 @@
+name: Cron - Highscores Collection
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Co godzinę
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger highscores collection
+        run: |
+          curl -X POST ${{ secrets.BACKEND_URL }}/api/cron/highscores \
+            -H "X-API-Key: ${{ secrets.CRON_API_KEY }}"

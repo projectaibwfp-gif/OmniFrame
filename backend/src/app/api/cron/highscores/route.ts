@@ -66,23 +66,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           logInfo('cron.vocation', `Processed ${world}/${vocation}`, { count });
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
-          logError('cron.vocation', ErrorCode.INTERNAL_ERROR, { world, vocation }, new Error(message));
+          logError(
+            'cron.vocation',
+            ErrorCode.INTERNAL_ERROR,
+            { world, vocation },
+            new Error(message),
+          );
         }
       }
       stats.worldsProcessed += 1;
     }
 
     stats.duration = Date.now() - startTime;
-    logInfo('cron.complete', 'Cron highscores collection completed', stats as unknown as Record<string, unknown>);
+    logInfo(
+      'cron.complete',
+      'Cron highscores collection completed',
+      stats as unknown as Record<string, unknown>,
+    );
 
     return NextResponse.json({ success: true, stats });
   } catch (error) {
     stats.duration = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
-    logError('cron.error', ErrorCode.INTERNAL_ERROR, stats as unknown as Record<string, unknown>, new Error(message));
-    return NextResponse.json(
-      { success: false, error: message, stats },
-      { status: 500 },
+    logError(
+      'cron.error',
+      ErrorCode.INTERNAL_ERROR,
+      stats as unknown as Record<string, unknown>,
+      new Error(message),
     );
+    return NextResponse.json({ success: false, error: message, stats }, { status: 500 });
   }
 }

@@ -1,4 +1,9 @@
-export type { AuthCheckResult, GoogleTokenPayload, SessionTokenPayload, UserRole } from './auth-session';
+export type {
+  AuthCheckResult,
+  GoogleTokenPayload,
+  SessionTokenPayload,
+  UserRole,
+} from './auth-session';
 export type { AuthenticatedUser, UpsertUserInput, UpsertUserResult } from './auth-users';
 
 export {

@@ -63,7 +63,11 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   if (birthDate !== null) {
     const date = new Date(birthDate);
     if (isNaN(date.getTime())) {
-      return errorResponse('Birth date must be valid date format', 400, ErrorCode.VALIDATION_FAILED);
+      return errorResponse(
+        'Birth date must be valid date format',
+        400,
+        ErrorCode.VALIDATION_FAILED,
+      );
     }
     const today = new Date();
     if (date > today) {

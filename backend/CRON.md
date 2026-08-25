@@ -65,7 +65,7 @@ name: Cron - Highscores Collection
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Co 15 minut
+    - cron: '*/15 * * * *' # Co 15 minut
 
 jobs:
   cron:
@@ -78,6 +78,7 @@ jobs:
 ```
 
 Secrets do ustawienia w GitHub:
+
 - `BACKEND_URL` - np. `https://yourdomain.com`
 - `CRON_API_KEY` - `7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o`
 
@@ -99,6 +100,7 @@ W `vercel.json` dodaj:
 ```
 
 Na panelu Vercel ustawić zmienną środowiskową:
+
 - `CRON_API_KEY`: `7f8a9b3c2d4e5f6g7h8i9j0k1l2m3n4o`
 
 ### Linux crontab / Docker / inne
@@ -124,6 +126,7 @@ Cron zapisuje wszystkie znalezione postacie do tabel:
 ### 15-minute Bucketing
 
 Timestamp zaokrąglany do nearest 15-minutowego przedziału:
+
 - 10:00 - 10:14:59 → bucket `10:00`
 - 10:15 - 10:29:59 → bucket `10:15`
 - 10:30 - 10:44:59 → bucket `10:30`
@@ -148,19 +151,19 @@ Sprawdzaj logi backendu (scope: `cron`):
 
 ```sql
 -- Ile postaci zostało zapisane w ostatnich 15 minutach
-SELECT COUNT(*) FROM character_highscores_snapshots 
+SELECT COUNT(*) FROM character_highscores_snapshots
 WHERE checked_at > NOW() - INTERVAL '15 minutes';
 
 -- Top 10 postaci po EXP na Dia
-SELECT character_name, vocation, rank, exact_experience, checked_at 
-FROM character_highscores_snapshots 
-WHERE world = 'Dia' 
-ORDER BY exact_experience DESC 
+SELECT character_name, vocation, rank, exact_experience, checked_at
+FROM character_highscores_snapshots
+WHERE world = 'Dia'
+ORDER BY exact_experience DESC
 LIMIT 10;
 
 -- Historia jednej postaci
-SELECT * FROM character_highscores_snapshots 
-WHERE normalized_name = 'barteeek' 
+SELECT * FROM character_highscores_snapshots
+WHERE normalized_name = 'barteeek'
 ORDER BY checked_at DESC;
 ```
 
@@ -195,4 +198,3 @@ curl -X POST http://localhost:3000/api/cron/highscores \
 
 - Sprawdź czy migracje uruchomiły się: `character_highscores_snapshots` i `character_highscores_last_save` powinny istnieć
 - Sprawdzaj logi: `scope: "cron.error"`
-

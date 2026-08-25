@@ -266,7 +266,9 @@ function findCharacterInHighscores(
   return null;
 }
 
-function mapCharacterVocationToHighscoresVocation(vocation: string | null): TibiaHighscoresVocation | null {
+function mapCharacterVocationToHighscoresVocation(
+  vocation: string | null,
+): TibiaHighscoresVocation | null {
   if (!vocation) {
     return null;
   }
@@ -344,7 +346,8 @@ async function fetchHighscoresPage(
     if (response.status === 400) {
       const payload = (await response.json()) as TibiaDataHighscoresResponse;
       const errorCode = readNumber(payload.information?.status?.error);
-      const message = readString(payload.information?.status?.message) ?? 'highscores restriction mode';
+      const message =
+        readString(payload.information?.status?.message) ?? 'highscores restriction mode';
       if (errorCode === RESTRICTION_MODE_ERROR_CODE) {
         throw new TibiaDataRestrictionModeError(message);
       }
@@ -376,7 +379,7 @@ async function findCharacterInHighscoresPages(
     rank: number;
     exactExperience: number;
   }> = [];
-  
+
   const logs: string[] = [];
   logs.push(`Searching: ${characterName} on ${world} (${vocation})`);
 
@@ -539,10 +542,7 @@ let creaturesCache: { data: TibiaCreaturesDto; timestamp: number } | null = null
 
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
   const now = Date.now();
-  if (
-    boostableBossesCache &&
-    now - boostableBossesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS
-  ) {
+  if (boostableBossesCache && now - boostableBossesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
     return boostableBossesCache.data;
   }
 
@@ -586,9 +586,12 @@ export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
 
 export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
   const normalizedName = name.trim();
-  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/character/${encodeURIComponent(normalizedName)}`, {
-    cache: 'no-store',
-  });
+  const response = await fetch(
+    `${TIBIA_DATA_API_BASE_URL}/character/${encodeURIComponent(normalizedName)}`,
+    {
+      cache: 'no-store',
+    },
+  );
 
   if (response.status === 404) {
     throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);

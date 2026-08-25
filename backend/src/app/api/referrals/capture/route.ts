@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { ApiResponse, ReferralCaptureRequestDto, ReferralCaptureResponseDto } from '@shared/api-contract';
+import type {
+  ApiResponse,
+  ReferralCaptureRequestDto,
+  ReferralCaptureResponseDto,
+} from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { getPendingReferral, normalizeReferralCode, setPendingReferral } from '@/lib/referral';
 import { ErrorCode } from '@/lib/errors';

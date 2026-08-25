@@ -1,0 +1,237 @@
+<div class="dashboard-header">
+  <div>
+    <p class="eyebrow">{{ todayLabel }}</p>
+    <h1>Dzień dobry, {{ currentUser()?.fullName }} <span>✦</span></h1>
+    <p class="intro">
+      Dashboard pokazuje dzisiejszą aktywność Google, rejestracje i skuteczność poleceń.
+    </p>
+  </div>
+  <a class="primary-button btn btn-primary" routerLink="/users"
+    ><span>↗</span> Panel użytkowników</a
+  >
+</div>
+
+@if (isLoading()) {
+  <div class="dashboard-loader" aria-busy="true" aria-live="polite">
+    <div class="loader-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="stat-card card border-0">
+          <div class="loader-line loader-line-sm"></div>
+          <div class="loader-line loader-line-lg"></div>
+          <div class="loader-chip"></div>
+        </div>
+      }
+    </div>
+
+    <div class="content-grid">
+      <section class="panel card border-0">
+        <div class="loader-line loader-line-md w-40"></div>
+        <div class="loader-chart">
+          @for (item of [1, 2, 3, 4, 5]; track item) {
+            <span class="loader-bar"></span>
+          }
+        </div>
+      </section>
+
+      <section class="panel card border-0">
+        <div class="loader-line loader-line-md w-30"></div>
+        <div class="loader-stack">
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="loader-row">
+              <span class="loader-avatar"></span>
+              <div>
+                <span class="loader-line loader-line-sm w-70"></span>
+                <span class="loader-line loader-line-xs w-50"></span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+} @else if (apiError()) {
+  <div class="table-message error">Nie udało się pobrać statystyk dashboardu.</div>
+} @else if (dashboard(); as data) {
+  <div class="stats-grid">
+    @for (card of statCards(); track card.label) {
+      <article class="stat-card card border-0">
+        <div class="stat-icon {{ card.iconClass }}">{{ card.icon }}</div>
+        <div class="stat-copy">
+          <span class="stat-label">{{ card.label }}</span>
+          <strong>{{ card.value }}</strong>
+          <span class="stat-change positive">{{ card.note }}</span>
+        </div>
+        <div class="mini-bars {{ card.barClass }}">
+          @for (bar of card.bars; track $index) {
+            <i [style.height.%]="bar"></i>
+          }
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="content-grid">
+    <section class="panel activity-panel card border-0">
+      <div class="panel-heading">
+        <div>
+          <h2>Aktywność z ostatnich 7 dni</h2>
+          <p>Logowania Google i nowe rejestracje na jednej osi czasu.</p>
+        </div>
+        <div class="chart-legend">
+          <span><i class="legend-dot blue"></i>Logowania</span>
+          <span><i class="legend-dot green"></i>Rejestracje</span>
+        </div>
+      </div>
+      <div class="chart">
+        <div class="chart-y-axis">
+          @for (mark of chartYAxis(); track $index) {
+            <span>{{ mark }}</span>
+          }
+        </div>
+        <div class="chart-area">
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <div class="grid-line"></div>
+          <svg viewBox="0 0 700 185" preserveAspectRatio="none" aria-label="Wykres aktywnosci">
+            <defs>
+              <linearGradient id="activity-fill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#b5dff0" stop-opacity=".52" />
+                <stop offset="100%" stop-color="#b5dff0" stop-opacity=".04" />
+              </linearGradient>
+            </defs>
+            <path [attr.d]="loginsAreaPath()" fill="url(#activity-fill)" />
+            <path [attr.d]="loginsLinePath()" fill="none" stroke="#68b8d7" stroke-width="3" />
+            <path
+              [attr.d]="signupsLinePath()"
+              fill="none"
+              stroke="#8bc48d"
+              stroke-width="3"
+              stroke-dasharray="6 6"
+            />
+          </svg>
+          <div class="chart-x-axis">
+            @for (point of activity(); track point.label) {
+              <span [attr.aria-label]="activitySummary(point)">{{ point.label }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel quick-panel card border-0">
+      <div class="panel-heading">
+        <div>
+          <h2>Szybki obraz</h2>
+          <p>Najważniejsze liczby do pilnowania dzisiaj.</p>
+        </div>
+      </div>
+      <div class="insight-list">
+        <article class="insight-item">
+          <span class="action-icon lavender">✓</span>
+          <div>
+            <strong>{{ data.overview.verifiedUsers }} zweryfikowanych kont</strong>
+            <small>{{ data.overview.verifiedShare }}% całej bazy użytkowników</small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon peach">↘</span>
+          <div>
+            <strong>{{ usersWithoutReferral() }} bez polecenia</strong>
+            <small>To konta, ktore weszly bez linku referral.</small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon mint">★</span>
+          <div>
+            <strong>
+              @if (topReferrer(); as topReferrer) {
+                {{ topReferrer.name }}
+              } @else {
+                Brak lidera poleceń
+              }
+            </strong>
+            <small>
+              @if (topReferrer(); as topReferrer) {
+                {{ topReferrer.referrals }} skutecznych polecen
+              } @else {
+                Jeszcze nikt nie zaprosił nowego użytkownika.
+              }
+            </small>
+          </div>
+        </article>
+        <article class="insight-item">
+          <span class="action-icon blue-badge">⏱</span>
+          <div>
+            <strong>
+              @if (latestActiveUser(); as latestActiveUser) {
+                {{ latestActiveUser.name }}
+              } @else {
+                Brak aktywności
+              }
+            </strong>
+            <small>
+              @if (latestActiveUser(); as latestActiveUser) {
+                Ostatnie logowanie: {{ latestActiveUser.lastLoginAt }}
+              } @else {
+                Zaczekaj na pierwsze logowanie.
+              }
+            </small>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom-grid">
+    <section class="panel projects-panel card border-0">
+      <div class="panel-heading">
+        <div>
+          <h2>Ostatnie logowania</h2>
+          <p>Kto był aktywny ostatnio i czy przyszedł z polecenia.</p>
+        </div>
+        <a routerLink="/users" class="view-all">Wszyscy użytkownicy <span>→</span></a>
+      </div>
+      <div class="projects-table">
+        <div class="table-row table-head">
+          <span>Użytkownik</span><span>Rola</span><span>Wejście</span><span>Rejestracja</span
+          ><span>Logowanie</span>
+        </div>
+        @for (user of data.recentUsers; track user.id) {
+          <div class="table-row">
+            <span class="project-name"><span class="project-dot"></span>{{ user.name }}</span>
+            <span class="role-chip" [attr.data-role]="user.role">{{ user.role }}</span>
+            <span class="muted">{{ user.referredByCode ? 'Z polecenia' : 'Organicznie' }}</span>
+            <span class="muted">{{ user.registeredAt }}</span>
+            <span class="muted">{{ user.lastLoginAt }}</span>
+          </div>
+        } @empty {
+          <div class="table-message">Brak logowan do wyswietlenia.</div>
+        }
+      </div>
+    </section>
+
+    <section class="panel quick-panel card border-0">
+      <div class="panel-heading">
+        <div>
+          <h2>Top polecajacy</h2>
+          <p>Najskuteczniejsze linki referral.</p>
+        </div>
+      </div>
+      <div class="leaderboard">
+        @for (referrer of data.topReferrers; track referrer.id) {
+          <article class="leaderboard-item">
+            <div>
+              <strong>{{ referrer.name }}</strong>
+              <small>{{ referrer.email }}</small>
+              <code>{{ referrer.referralCode }}</code>
+            </div>
+            <span class="leaderboard-score">{{ referrer.referrals }}</span>
+          </article>
+        } @empty {
+          <div class="table-message">Brak wykorzystanych polecen.</div>
+        }
+      </div>
+    </section>
+  </div>
+}

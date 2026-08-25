@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-front:
+  build-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,15 +17,15 @@ jobs:
         with:
           node-version: 22.22.3
           cache: npm
-          cache-dependency-path: front/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-        working-directory: front
+        working-directory: frontend
       - run: npm run lint
-        working-directory: front
+        working-directory: frontend
       - run: npm run format:check
-        working-directory: front
+        working-directory: frontend
       - run: npm run build
-        working-directory: front
+        working-directory: frontend
 
   build-backend:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs:
-      - build-front
+      - build-frontend
       - build-backend
     env:
       GITHUB_EVENT_BEFORE: ${{ github.event.before }}
@@ -64,8 +64,11 @@ jobs:
       - run: git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - run: node scripts/release.mjs
       - run: |
+          cd frontend && npm ci && npm run format
+          cd ../backend && npm ci && npm run format
+      - run: |
           if git diff --quiet HEAD -- \
-            front/package.json front/package-lock.json \
+            frontend/package.json frontend/package-lock.json \
             backend/package.json backend/package-lock.json releases.yaml; then
             echo "No application changes require a release."
             exit 0
@@ -75,8 +78,8 @@ jobs:
           BACKEND_TAG=""
           RELEASE_COMPONENTS=""
 
-          if ! git diff --quiet HEAD -- front/package.json front/package-lock.json; then
-            FRONT_TAG="front-v$(node -p "require('./front/package.json').version")"
+          if ! git diff --quiet HEAD -- frontend/package.json frontend/package-lock.json; then
+            FRONT_TAG="frontend-v$(node -p "require('./frontend/package.json').version")"
             RELEASE_COMPONENTS="frontend"
           fi
 
@@ -85,7 +88,7 @@ jobs:
             RELEASE_COMPONENTS="${RELEASE_COMPONENTS:+${RELEASE_COMPONENTS}, }backend"
           fi
 
-          git add front/package.json front/package-lock.json \
+          git add frontend/package.json frontend/package-lock.json \
             backend/package.json backend/package-lock.json releases.yaml
           git commit -m "chore: release ${RELEASE_COMPONENTS} [skip ci]"
 

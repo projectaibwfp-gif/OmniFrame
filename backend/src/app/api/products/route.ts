@@ -15,9 +15,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-   const products = await listProducts();
+    const products = await listProducts();
 
-   return NextResponse.json<ApiResponse<ProductDto[]>>({ data: products });
+    return NextResponse.json<ApiResponse<ProductDto[]>>({ data: products });
   } catch (error) {
     logError('products.list', ErrorCode.DB_QUERY_FAILED, {}, error);
     return errorResponse('Could not load products', 500, ErrorCode.DB_QUERY_FAILED);

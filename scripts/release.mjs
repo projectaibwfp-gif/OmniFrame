@@ -14,11 +14,11 @@ const yamlString = (value) => JSON.stringify(value);
 const components = [
   {
     name: 'frontend',
-    packagePath: 'front/package.json',
-    lockPath: 'front/package-lock.json',
-    sourcePath: 'front',
-    tagPattern: 'front-v*',
-    tagPrefix: 'front-v'
+    packagePath: 'frontend/package.json',
+    lockPath: 'frontend/package-lock.json',
+    sourcePath: 'frontend',
+    tagPattern: 'frontend-v*',
+    tagPrefix: 'frontend-v'
   },
   {
     name: 'backend',

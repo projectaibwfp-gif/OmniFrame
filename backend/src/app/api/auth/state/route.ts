@@ -6,7 +6,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(): Promise<NextResponse> {
   const state = createLoginState();
-  const response = NextResponse.json<ApiResponse<AuthStateDto>>({ data: { state } }, { status: 200 });
+  const response = NextResponse.json<ApiResponse<AuthStateDto>>(
+    { data: { state } },
+    { status: 200 },
+  );
   storeLoginState(response, state);
   return response;
 }

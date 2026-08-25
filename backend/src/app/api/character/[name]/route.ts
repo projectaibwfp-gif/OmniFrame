@@ -40,15 +40,28 @@ export async function GET(
       await saveCharacterLookup(character, characterName, auth.session.sub);
     } catch (error) {
       logError('character.saveLookup', ErrorCode.DB_QUERY_FAILED, { name: characterName }, error);
-      return errorResponse('Could not save character lookup history', 500, ErrorCode.DB_QUERY_FAILED);
+      return errorResponse(
+        'Could not save character lookup history',
+        500,
+        ErrorCode.DB_QUERY_FAILED,
+      );
     }
 
     let history;
     try {
       history = await listCharacterLookupHistory(characterName);
     } catch (error) {
-      logError('character.lookupHistory', ErrorCode.DB_QUERY_FAILED, { name: characterName }, error);
-      return errorResponse('Could not load character lookup history', 500, ErrorCode.DB_QUERY_FAILED);
+      logError(
+        'character.lookupHistory',
+        ErrorCode.DB_QUERY_FAILED,
+        { name: characterName },
+        error,
+      );
+      return errorResponse(
+        'Could not load character lookup history',
+        500,
+        ErrorCode.DB_QUERY_FAILED,
+      );
     }
 
     const data: TibiaCharacterLookupDto = {
@@ -73,7 +86,12 @@ export async function GET(
         return NextResponse.json<ApiResponse<TibiaCharacterLookupDto>>({ data });
       }
     } catch (fallbackError) {
-      logError('character.fallback', ErrorCode.DB_QUERY_FAILED, { name: characterName }, fallbackError);
+      logError(
+        'character.fallback',
+        ErrorCode.DB_QUERY_FAILED,
+        { name: characterName },
+        fallbackError,
+      );
     }
 
     logError('character.get', ErrorCode.INTERNAL_ERROR, { name: characterName }, error);

@@ -1,0 +1,108 @@
+@if (authService.isAuthenticated()) {
+  <div class="shell">
+    <header class="topbar card">
+      <div class="card-body topbar-body">
+        <a class="brand" routerLink="/" (click)="closeMobileNav()">
+          <span>Omni<span class="brand-accent">Frame</span></span>
+        </a>
+
+        <div class="topbar-actions">
+          <app-theme-switcher></app-theme-switcher>
+          <app-language-switcher></app-language-switcher>
+          <div class="workspace-user compact">
+            <span class="workspace-avatar">{{ initials() || 'U' }}</span>
+            <div>
+              <strong>{{ currentUser()?.fullName }}</strong>
+              <small>{{ currentUser()?.email }}</small>
+            </div>
+          </div>
+          <button
+            class="btn btn-light btn-sm icon-button topbar-menu"
+            type="button"
+            aria-label="Otwórz menu"
+            (click)="toggleMobileNav()"
+          >
+            ☰
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm icon-button logout-button"
+            type="button"
+            aria-label="Wyloguj się"
+            (click)="logout()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 12 4-4-4-4m4 4H9"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="workspace-layout">
+      <aside class="side-menu card" aria-label="Nawigacja boczna">
+        <div class="card-body side-menu-body">
+          @for (item of navItems(); track item.path) {
+            <a
+              class="nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              (click)="closeMobileNav()"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </div>
+      </aside>
+
+      <main class="content">
+        @if (navOpen()) {
+          <section class="mobile-nav card">
+            <div class="card-body">
+              @for (item of navItems(); track item.path) {
+                <a
+                  class="nav-item"
+                  [routerLink]="item.path"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: item.exact }"
+                  (click)="closeMobileNav()"
+                >
+                  <span class="nav-icon">{{ item.icon }}</span>
+                  <span>{{ item.label }}</span>
+                </a>
+              }
+              <a
+                class="btn btn-outline-primary w-100"
+                routerLink="/profile"
+                (click)="closeMobileNav()"
+              >
+                {{ currentLocale() === 'pl' ? 'Otwórz profil' : 'Open profile' }}
+              </a>
+            </div>
+          </section>
+        }
+
+        <section class="page">
+          <router-outlet></router-outlet>
+        </section>
+
+        <footer class="footer card">
+          <div class="card-body footer-body">
+            <span>OmniFrame</span>
+            <span>Google OAuth dashboard • Real API</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

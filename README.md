@@ -1,7 +1,7 @@
 # OmniFrame
 
 Starter aplikacji z frontendem Angular 22 + Vite, backendem REST Next.js 16
-oraz Neon Postgres. `front` i `backend` są niezależnymi aplikacjami,
+oraz Neon Postgres. `frontend` i `backend` są niezależnymi aplikacjami,
 uruchamianymi w osobnych terminalach.
 
 Aktualny stan: Angular 22 budowany przez Vite
@@ -13,9 +13,9 @@ blokujących port 5432.
 
 ```text
 OmniFrame/
-├── front/       # Angular 22 + Vite, dashboard i routing
+├── frontend/       # Angular 22 + Vite, dashboard i routing
 ├── backend/     # Next.js 16 App Router, TypeScript REST API + migracje SQL
-└── shared/      # Wspólne DTO/kontrakty API importowane przez front i backend
+└── shared/      # Wspólne DTO/kontrakty API importowane przez frontend i backend
 ```
 
 Wspólny kontrakt API używa camelCase w DTO; snake_case zostaje tylko przy mapowaniu do/z bazy danych.
@@ -23,8 +23,8 @@ Wspólny kontrakt API używa camelCase w DTO; snake_case zostaje tylko przy mapo
 Najważniejsze pliki:
 
 ```text
-front/src/app/                 # layout, routing, dashboard, profil, użytkownicy
-front/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
+frontend/src/app/                 # layout, routing, dashboard, profil, użytkownicy
+frontend/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
 backend/src/app/api/health/    # kontrola API i połączenia z bazą
 backend/src/app/api/dashboard/ # statystyki dashboardu oparte o użytkowników
 backend/src/app/api/products/  # odczyt i tworzenie produktów
@@ -52,7 +52,7 @@ backend/migration/006_referral_codes.sql # stałe hashe referral_code dla users
 
 Projekt korzysta wyłącznie z publicznego rejestru npm:
 
-- `front/.npmrc` - `https://registry.npmjs.org/`,
+- `frontend/.npmrc` - `https://registry.npmjs.org/`,
 - `backend/.npmrc` - `https://registry.npmjs.org/`.
 
 Po zmianie zależności uruchamiaj `npm install` w odpowiednim katalogu,
@@ -157,14 +157,14 @@ ograniczyć ryzyko SQL injection.
 ### 3. Uruchom frontend
 
 ```bash
-cd front
+cd frontend
 cp .env.example .env
 npm install
 npm run dev
 ```
 
 Frontend będzie dostępny pod `http://localhost:4200`. Bazowy adres API jest
-trzymany globalnie w `front/.env` jako `VITE_API_BASE_URL` (domyślnie
+trzymany globalnie w `frontend/.env` jako `VITE_API_BASE_URL` (domyślnie
 `/api`) i wykorzystywany przez komponenty
 dashboardu oraz listy produktów.
 
@@ -205,7 +205,7 @@ Dashboard nie korzysta już z przykładowych liczb - pokazuje:
 ### Frontend
 
 ```bash
-cd front
+cd frontend
 npm run test
 ```
 
@@ -225,7 +225,7 @@ autoryzacji / walidacji, zależnie od route'a).
 
 Repo jest wdrażane jako dwa projekty Vercel:
 
-- **frontend**: Root Directory `front`, framework Vite; `front/vercel.json`
+- **frontend**: Root Directory `frontend`, framework Vite; `frontend/vercel.json`
   ustawia build, output `dist`, rewrite `/api/*` na backend oraz nagłówki
   bezpieczeństwa (CSP, `X-Frame-Options` itd.),
 - **backend**: Root Directory `backend`, framework Next.js; zmienna
@@ -281,7 +281,7 @@ GitHub Actions wykonuje kolejno:
 7. Aktualizuje tylko zmienione aplikacje:
 
    ```text
-   zmiany w front/**   → front/package.json
+   zmiany w frontend/**   → frontend/package.json
    zmiany w backend/** → backend/package.json
    ```
 
@@ -296,7 +296,7 @@ GitHub Actions wykonuje kolejno:
 
 10. Tworzy commit release i wypycha go razem z tagami do `main`.
 
-Zmiana tylko w `front/**` nie podbija wersji backendu. Zmiana tylko w
+Zmiana tylko w `frontend/**` nie podbija wersji backendu. Zmiana tylko w
 `backend/**` nie podbija wersji frontendu. Zmiany w obu katalogach tworzą
 release obu aplikacji. Zmiany wyłącznie w katalogu głównym, np. README, nie
 tworzą nowego release.
@@ -354,12 +354,36 @@ Settings → Actions → General → Workflow permissions
 Token służy wyłącznie do aktualizacji `package.json`, `releases.yaml` i taga
 release. Nie wpisuj tokenów w pliki projektu ani w commity.
 
+## Formatowanie i IDE
+
+Każda aplikacja ma własny config Prettier:
+
+- `frontend/.prettierrc.json` — Angular, HTML, SCSS, TypeScript
+  - `htmlWhitespaceSensitivity: strict` — zachowuje białe znaki w szablonach
+- `backend/.prettierrc.json` — Next.js, React, TSX, TypeScript
+  - `jsxSingleQuote: true` — spójne cudzysłowy w JSX
+
+Root `.editorconfig` zawiera podstawowe ustawienia IDE (indent, EOL, charset).
+
+- VS Code: włącz rozszerzenie Prettier + `Settings → Editor: Format On Save`
+- IntelliJ / WebStorm: Settings → Languages & Frameworks → JavaScript → Prettier
+  → włącz Prettier i "On save"
+
+Komendy do ręcznego formatowania:
+
+```bash
+cd frontend && npm run format      # Prettier z zapisem zmian
+cd frontend && npm run format:check # sprawdzenie formatowania
+cd backend && npm run format
+cd backend && npm run format:check
+```
+
 ## Komendy deweloperskie
 
 Frontend:
 
 ```bash
-cd front
+cd frontend
 npm run dev                       # Vite dev server na porcie 4200
 npm run start                     # alias dla npm run dev
 npm run build                     # typecheck (tsc) + build produkcyjny
@@ -408,7 +432,7 @@ każdą zmianą wpływającą na uruchamianie lub architekturę. W szczególnoś
 4. Po zmianie zasad migracji opisz kolejność uruchamiania i wpływ na
    istniejące dane.
 5. Po zmianie komend npm zaktualizuj sekcję „Komendy deweloperskie".
-6. Artefakty builda frontu (`front/out-tsc/`) są ignorowane w Git i nie
+6. Artefakty builda frontu (`frontend/out-tsc/`) są ignorowane w Git i nie
    powinny być commitowane.
 
 ## Walidacja
@@ -416,7 +440,7 @@ każdą zmianą wpływającą na uruchamianie lub architekturę. W szczególnoś
 Po instalacji zależności uruchom:
 
 ```bash
-cd front && npm run lint && npm run format:check && npm run build
+cd frontend && npm run lint && npm run format:check && npm run build
 cd ../backend && npm run lint && npm run format:check && npm run build
 ```
 
@@ -429,7 +453,7 @@ curl http://localhost:3000/api/products
 
 Ostatnia walidacja:
 
-- `front`: lint, Prettier check i build - OK,
+- `frontend`: lint, Prettier check i build - OK,
 - `backend`: lint, Prettier check, TypeScript check i build - OK,
 - `backend`: `npm run db:migrate` - wymaga bazy i może aplikować migracje,
 - API: `GET /api/health` i `GET /api/products`.

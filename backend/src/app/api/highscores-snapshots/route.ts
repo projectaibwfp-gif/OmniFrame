@@ -59,7 +59,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json<HighscoresSnapshotsListDto>(data);
   } catch (error) {
-    logError('highscores-snapshots.list', ErrorCode.DB_QUERY_FAILED, { page, pageSize, world }, error);
+    logError(
+      'highscores-snapshots.list',
+      ErrorCode.DB_QUERY_FAILED,
+      { page, pageSize, world },
+      error,
+    );
     return errorResponse('Could not load highscores snapshots', 500, ErrorCode.DB_QUERY_FAILED);
   }
 }
