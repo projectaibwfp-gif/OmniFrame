@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-26T11:23:32.907Z"
+    commit: "1c317374d611310e0538fe106eaef1584c7c3703"
+    frontend:
+      version: "0.10.2"
+      tag: "frontend-v0.10.2"
+      changed: true
+      commits:
+      - hash: "1c317374"
+        author: "Filip Podsiadły"
+        date: "2026-08-26T13:21:57+02:00"
+        message: "charm and hunting places details"
+    backend:
+      version: "0.7.0"
+      tag: "backend-v0.7.0"
+      changed: false
+      commits: []
   - date: "2026-08-26T10:16:56.506Z"
     commit: "9cb4a49cd22b7cfe05bf953a2e10361aaa58ff00"
     frontend:
