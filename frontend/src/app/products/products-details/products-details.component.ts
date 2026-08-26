@@ -2,10 +2,12 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { AppDateTimePipe } from '../../core/date-time.pipe';
 import { ProductsService, type Product } from '../products.service';
 
 @Component({
   selector: 'app-products-details',
+  imports: [AppDateTimePipe],
   templateUrl: './products-details.component.html',
   styleUrl: './products-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -62,7 +62,7 @@
                   </span>
                 </td>
                 <td>{{ product.category }}</td>
-                <td>{{ product.updatedAt }}</td>
+                <td>{{ product.updatedAt | appDateTime }}</td>
                 <td class="actions">
                   <a [routerLink]="['/products', product.id]" class="btn-action">👁️</a>
                   <a [routerLink]="['/products', product.id, 'edit']" class="btn-action">✏️</a>

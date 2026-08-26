@@ -110,6 +110,22 @@ projektu).
     `tibia/tibia-map.ts` (`buildTibiaMapUrl`). Tabele etykiet i18n trzymaj w
     osobnym `*.labels.ts`, nie w komponencie.
 
+## Data i godzina
+
+35. Backend zwraca każdy timestamp jako ISO 8601 UTC. **Nigdy nie renderuj
+    surowego stringa z API** (`{{ user.lastLoginAt }}`) - użytkownik zobaczy
+    wtedy godzinę UTC, inną niż lokalna.
+36. Jest **jeden** format wyświetlania, w stałych w `core/date-time.ts`:
+    `DATE_TIME_FORMAT` (`dd.MM.yyyy HH:mm`), `DATE_FORMAT` (`dd.MM.yyyy`),
+    `EMPTY_DATE_PLACEHOLDER`. Nie dodawaj własnych wzorców ani
+    `| date: 'medium'`.
+37. W szablonach używaj pipe'ów z `core/date-time.pipe.ts`: `| appDateTime`
+    (data + godzina) i `| appDate` (sama data). W TypeScripcie - `formatDateTime()`,
+    `formatDateOnly()`, `toLocalDayKey()` z `core/date-time.ts`.
+38. Pipe'y przeliczają czas na strefę przeglądarki. Wartości `YYYY-MM-DD`
+    (kolumny `DATE`, np. data urodzenia) `appDate` traktuje jako datę
+    kalendarzową i nie przesuwa ich strefą.
+
 ## Artefakty
 
-35. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.
+39. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.

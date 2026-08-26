@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
+import { AppDateTimePipe } from '../core/date-time.pipe';
 import { TibiaCharacterService } from './tibia-character.service';
 
 @Component({
   selector: 'app-tibia-character',
-  imports: [FormsModule],
+  imports: [FormsModule, AppDateTimePipe],
   templateUrl: './tibia-character.component.html',
   styleUrl: './tibia-character.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

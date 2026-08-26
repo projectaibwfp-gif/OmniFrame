@@ -199,7 +199,7 @@
             <tbody>
               @for (entry of history(); track entry.id) {
                 <tr>
-                  <td>{{ entry.checkedAt }}</td>
+                  <td>{{ entry.checkedAt | appDateTime }}</td>
                   <td>{{ entry.name }}</td>
                   <td>{{ entry.world ?? 'Brak danych' }}</td>
                   <td>{{ entry.vocation ?? 'Brak danych' }}</td>

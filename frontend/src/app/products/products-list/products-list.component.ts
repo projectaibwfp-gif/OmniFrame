@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { AppDateTimePipe } from '../../core/date-time.pipe';
 import { ProductsService, type Product } from '../products.service';
 
 @Component({
   selector: 'app-products-list',
-  imports: [RouterLink],
+  imports: [RouterLink, AppDateTimePipe],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

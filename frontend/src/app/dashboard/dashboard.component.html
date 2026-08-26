@@ -172,7 +172,7 @@
             </strong>
             <small>
               @if (latestActiveUser(); as latestActiveUser) {
-                Ostatnie logowanie: {{ latestActiveUser.lastLoginAt }}
+                Ostatnie logowanie: {{ latestActiveUser.lastLoginAt | appDateTime }}
               } @else {
                 Zaczekaj na pierwsze logowanie.
               }
@@ -202,8 +202,8 @@
             <span class="project-name"><span class="project-dot"></span>{{ user.name }}</span>
             <span class="role-chip" [attr.data-role]="user.role">{{ user.role }}</span>
             <span class="muted">{{ user.referredByCode ? 'Z polecenia' : 'Organicznie' }}</span>
-            <span class="muted">{{ user.registeredAt }}</span>
-            <span class="muted">{{ user.lastLoginAt }}</span>
+            <span class="muted">{{ user.registeredAt | appDateTime }}</span>
+            <span class="muted">{{ user.lastLoginAt | appDateTime }}</span>
           </div>
         } @empty {
           <div class="table-message">Brak logowan do wyswietlenia.</div>

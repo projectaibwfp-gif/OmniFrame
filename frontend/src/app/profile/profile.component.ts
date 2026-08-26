@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
 import { mapAuthUser } from '../auth/auth-user.mapper';
 import { buildApiUrl } from '../config/api.config';
+import { AppDatePipe } from '../core/date-time.pipe';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 
 const INITIALS_MAX_CHARS = 2;
@@ -13,7 +13,7 @@ const INITIALS_FALLBACK = 'U';
 
 @Component({
   selector: 'app-profile',
-  imports: [DatePipe, FormsModule],
+  imports: [AppDatePipe, FormsModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

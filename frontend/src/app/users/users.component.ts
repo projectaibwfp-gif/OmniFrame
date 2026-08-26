@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
+import { AppDateTimePipe } from '../core/date-time.pipe';
 import { UsersService, type User } from './users.service';
 
 @Component({
   selector: 'app-users',
+  imports: [AppDateTimePipe],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

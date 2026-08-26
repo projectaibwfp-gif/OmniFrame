@@ -84,11 +84,11 @@
               </div>
               <div>
                 <span class="label">Rejestracja</span>
-                <span class="value">{{ user.registeredAt }}</span>
+                <span class="value">{{ user.registeredAt | appDateTime }}</span>
               </div>
               <div>
                 <span class="label">Ostatnie logowanie</span>
-                <span class="value">{{ user.lastLoginAt }}</span>
+                <span class="value">{{ user.lastLoginAt | appDateTime }}</span>
               </div>
             </div>
           </article>

@@ -1,5 +1,6 @@
 import type { DashboardDto, UserRole } from '@shared/api-contract';
 import { getSql } from './db';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 interface OverviewRow {
   totalUsers: number | string;
@@ -23,8 +24,8 @@ interface RecentUserRow {
   name: string | null;
   given_name: string | null;
   family_name: string | null;
-  lastLoginAt: string;
-  registeredAt: string;
+  lastLoginAt: SqlTimestamp;
+  registeredAt: SqlTimestamp;
   referredByCode: string | null;
 }
 
@@ -96,8 +97,8 @@ export async function getDashboardMetrics(): Promise<DashboardDto> {
   const recentUsers = (await sql`
     SELECT users.id, users.email, users.role, users.name, users.given_name, users.family_name,
            users.referred_by_code AS "referredByCode",
-           to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt",
-           to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt"
+           users.last_login_at AS "lastLoginAt",
+           users.created_at AS "registeredAt"
     FROM users
     ORDER BY users.last_login_at DESC
     LIMIT 6
@@ -146,8 +147,8 @@ export async function getDashboardMetrics(): Promise<DashboardDto> {
       name: toDisplayName(user),
       email: user.email,
       role: user.role,
-      lastLoginAt: user.lastLoginAt,
-      registeredAt: user.registeredAt,
+      lastLoginAt: toIsoUtc(user.lastLoginAt),
+      registeredAt: toIsoUtc(user.registeredAt),
       referredByCode: user.referredByCode,
     })),
     topReferrers: topReferrers.map((user) => ({

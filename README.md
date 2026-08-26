@@ -446,6 +446,28 @@ npm run db:migrate                # migracje bazy (migration/*.sql)
 3. Dodaj testy jednostkowe i integracyjne dla endpointów oraz komponentów.
 4. Rozszerz istniejący workflow GitHub Actions o testy i audyt zależności.
 
+## Format czasu w całym systemie
+
+Jeden format zapisu i jeden format wyświetlania - bez wyjątków:
+
+| Warstwa            | Format                                     | Gdzie trzymamy regułę                                        |
+| ------------------ | ------------------------------------------ | ------------------------------------------------------------ |
+| baza               | `TIMESTAMPTZ` (`DEFAULT now()`)            | migracje w `backend/migration/`                              |
+| API (JSON)         | ISO 8601 UTC, np. `2026-08-26T13:36:00.000Z` | `toIsoUtc()` w `backend/src/lib/date-time.ts`               |
+| frontend (widok)   | `dd.MM.yyyy HH:mm` / `dd.MM.yyyy`          | `DATE_TIME_FORMAT` / `DATE_FORMAT` w `frontend/src/app/core/date-time.ts` |
+
+- Backend **nie** formatuje czasu w SQL-u (`to_char`) - zapytania zwracają surową
+  kolumnę, a mapper wiersza na DTO przepuszcza ją przez `toIsoUtc()`.
+- Frontend **nie** renderuje surowego stringa z API - używa pipe'ów
+  `| appDateTime` i `| appDate` z `frontend/src/app/core/date-time.pipe.ts`,
+  które przeliczają czas na strefę przeglądarki. Dzięki temu godzina jest ta sama
+  lokalnie i na Vercelu (serwer chodzi w UTC).
+- Kolumny `DATE` (np. `users.birth_date`) to daty kalendarzowe bez strefy - nie
+  konwertujemy ich do UTC.
+
+Szczegóły: `backend/README.md` (sekcja „Format czasu") i `frontend/README.md`
+(sekcja „Format daty i godziny").
+
 ## Zasady utrzymania
 
 README jest dokumentem roboczym projektu i należy go aktualizować razem z

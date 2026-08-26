@@ -49,6 +49,27 @@ komendy), `backend/CRON.md` (cron highscores), `README.md` (całość projektu).
     (`src/lib/user-row.ts` dla `users`). `snake_case` kończy się na granicy SQL.
 15. Przed odczytem `rows[0]` sprawdzaj długość tablicy.
 
+## Czas i daty
+
+15a. Kolumny czasowe to `TIMESTAMPTZ NOT NULL DEFAULT now()`. API zwraca je w
+jednym formacie - ISO 8601 UTC (`2026-08-26T13:36:00.000Z`).
+
+15b. Konwersję robi wyłącznie `toIsoUtc()` z `src/lib/date-time.ts`, wołane w
+mapperze wiersza na DTO. Typ wiersza deklaruje kolumnę jako `SqlTimestamp`
+(sterownik Neona zwraca `Date` albo tekst Postgresa).
+
+15c. Nie formatuj czasu w SQL-u przez `to_char(...)`. Wzorca nie da się trzymać
+w stałej i wstawić do tagged template (stałby się parametrem bindowanym), więc
+`to_char` zawsze kończy się powtarzaniem formatu w każdym zapytaniu. Zapytania
+selektują surową kolumnę: `created_at AS "createdAt"`.
+
+15d. Kolumn typu `DATE` (np. `users.birth_date`) nie przepuszczaj przez
+`toIsoUtc()` - to data kalendarzowa bez strefy, konwersja przesunęłaby ją o dobę.
+
+15e. W fixture'ach testów podawaj timestampy tak, jak zwraca je Postgres
+(`'2026-08-17 12:00:00+00'`), a asertuj kanoniczne ISO
+(`'2026-08-17T12:00:00.000Z'`).
+
 ## Walidacja i stałe
 
 16. Limity walidacji i dozwolone wartości enumów trzymaj w `src/lib/validation.ts`

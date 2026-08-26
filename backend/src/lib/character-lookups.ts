@@ -1,11 +1,12 @@
 import type { TibiaCharacterDto, TibiaCharacterHistoryEntryDto } from '@shared/api-contract';
 import { getSql } from './db';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 const DEFAULT_LOOKUP_HISTORY_LIMIT = 20;
 
 interface CharacterLookupRow {
   id: number;
-  checkedAt: string;
+  checkedAt: SqlTimestamp;
   name: string;
   world: string | null;
   vocation: string | null;
@@ -26,7 +27,7 @@ function normalizeCharacterName(name: string): string {
 function mapCharacterLookupRow(row: CharacterLookupRow): TibiaCharacterHistoryEntryDto {
   return {
     id: row.id,
-    checkedAt: row.checkedAt,
+    checkedAt: toIsoUtc(row.checkedAt),
     name: row.name,
     world: row.world,
     vocation: row.vocation,
@@ -80,7 +81,7 @@ export async function listCharacterLookupHistory(
   const sql = getSql();
   const rows = (await sql`
     SELECT id,
-           to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt",
+           checked_at AS "checkedAt",
            requested_name AS "name",
            world,
            vocation,

@@ -47,14 +47,30 @@ describe('Products API', () => {
 
   it('returns recent products for authenticated GET /api/products', async () => {
     dbMocks.sql.mockResolvedValue([
-      { id: 1, name: 'CRM', status: 'active', category: 'Sales', updatedAt: '2026-08-17' },
+      {
+        id: 1,
+        name: 'CRM',
+        status: 'active',
+        category: 'Sales',
+        createdAt: '2026-08-17 08:00:00+00',
+        updatedAt: '2026-08-17 09:30:00+00',
+      },
     ]);
 
     const response = await GET(createRequest('http://localhost/api/products'));
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      data: [{ id: 1, name: 'CRM', status: 'active', category: 'Sales', updatedAt: '2026-08-17' }],
+      data: [
+        {
+          id: 1,
+          name: 'CRM',
+          status: 'active',
+          category: 'Sales',
+          createdAt: '2026-08-17T08:00:00.000Z',
+          updatedAt: '2026-08-17T09:30:00.000Z',
+        },
+      ],
     });
   });
 
@@ -84,8 +100,8 @@ describe('Products API', () => {
         description: null,
         createdById: 7,
         createdByName: 'Anna Nowak',
-        createdAt: '2026-08-20',
-        updatedAt: '2026-08-20',
+        createdAt: '2026-08-20 07:05:00+00',
+        updatedAt: '2026-08-20 07:05:00+00',
       },
     ]);
 

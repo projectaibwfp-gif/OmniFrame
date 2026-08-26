@@ -4,6 +4,7 @@ import type {
   ProductUpdateRequestDto,
 } from '@shared/api-contract';
 import { getSql } from './db';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 const DEFAULT_PRODUCTS_LIMIT = 20;
 
@@ -15,8 +16,8 @@ interface ProductRow {
   description: string | null;
   createdById: number;
   createdByName: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: SqlTimestamp;
+  updatedAt: SqlTimestamp;
 }
 
 interface CreateProductInput {
@@ -34,8 +35,8 @@ function mapProductRow(row: ProductRow): ProductDto {
     description: row.description,
     createdById: row.createdById,
     createdByName: row.createdByName,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
+    createdAt: toIsoUtc(row.createdAt),
+    updatedAt: toIsoUtc(row.updatedAt),
   };
 }
 
@@ -44,8 +45,8 @@ export async function listProducts(limit = DEFAULT_PRODUCTS_LIMIT): Promise<Prod
   const rows = (await sql`
     SELECT id, name, status, category, description,
          created_by_id AS "createdById", created_by_name AS "createdByName",
-         to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-         to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
+         created_at AS "createdAt",
+         updated_at AS "updatedAt"
     FROM products
     ORDER BY updated_at DESC
     LIMIT ${limit}
@@ -59,8 +60,8 @@ export async function getProductById(id: number): Promise<ProductDto | null> {
   const rows = (await sql`
     SELECT id, name, status, category, description,
            created_by_id AS "createdById", created_by_name AS "createdByName",
-           to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-           to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
+           created_at AS "createdAt",
+           updated_at AS "updatedAt"
     FROM products
     WHERE id = ${id}
     LIMIT 1
@@ -82,8 +83,8 @@ export async function createProduct(input: CreateProductInput): Promise<ProductD
     RETURNING id, name, status, category, description,
               created_by_id AS "createdById",
               created_by_name AS "createdByName",
-              to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-              to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
+              created_at AS "createdAt",
+              updated_at AS "updatedAt"
   `) as ProductRow[];
 
   return mapProductRow(rows[0]);
@@ -105,8 +106,8 @@ export async function updateProduct(
     RETURNING id, name, status, category, description,
               created_by_id AS "createdById",
               created_by_name AS "createdByName",
-              to_char(created_at, 'YYYY-MM-DD') AS "createdAt",
-              to_char(updated_at, 'YYYY-MM-DD') AS "updatedAt"
+              created_at AS "createdAt",
+              updated_at AS "updatedAt"
   `) as ProductRow[];
 
   return rows.length > 0 ? mapProductRow(rows[0]) : null;

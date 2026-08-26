@@ -56,6 +56,25 @@ Walidacja:
 - `status` dozwolone: `active` lub `draft`,
 - `category` domyślnie: `General`.
 
+## Format czasu
+
+W całym systemie obowiązuje **jeden** format czasu:
+
+- w bazie: kolumny `TIMESTAMPTZ NOT NULL DEFAULT now()` (czyli instant z offsetem).
+  Wyjątkiem jest `users.birth_date` - to `DATE`, data kalendarzowa bez strefy;
+- w odpowiedziach API: ISO 8601 w UTC (`2026-08-26T13:36:00.000Z`).
+
+Konwersję robi **wyłącznie** `toIsoUtc()` z `src/lib/date-time.ts` - używaj go w
+każdym mapperze wiersza bazy na DTO (`user-row.ts`, `products.ts`, `users.ts`,
+`dashboard.ts`, `highscores-snapshots.ts`, `character-lookups.ts`). Nie formatuj
+czasu w SQL-u przez `to_char(...)`: format musiałby być wpisany literalnie w
+każdym zapytaniu, bo string interpolowany do tagged template Neona staje się
+parametrem bindowanym. Zapytania zwracają surową kolumnę
+(`created_at AS "createdAt"`), a typ wiersza deklaruje ją jako `SqlTimestamp`.
+
+Kolumn `DATE` nie przepuszczaj przez `toIsoUtc()` - konwersja strefy przesunęłaby
+datę o dobę.
+
 ## Komendy
 
 ```bash

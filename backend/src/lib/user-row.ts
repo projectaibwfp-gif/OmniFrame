@@ -1,4 +1,5 @@
 import type { AuthCurrentUserDto } from '@shared/api-contract';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 export interface UserRow {
   id: number;
@@ -12,13 +13,14 @@ export interface UserRow {
   picture: string | null;
   locale: string | null;
   phone: string | null;
+  /** Kolumna DATE - data kalendarzowa bez strefy, nie przechodzi przez `toIsoUtc`. */
   birth_date: string | null;
   description: string | null;
   referral_code: string;
   referred_by_code: string | null;
-  last_login_at: string;
-  created_at: string;
-  updated_at: string;
+  last_login_at: SqlTimestamp;
+  created_at: SqlTimestamp;
+  updated_at: SqlTimestamp;
 }
 
 export function mapUserRow(row: UserRow): AuthCurrentUserDto {
@@ -38,8 +40,8 @@ export function mapUserRow(row: UserRow): AuthCurrentUserDto {
     description: row.description,
     referralCode: row.referral_code,
     referredByCode: row.referred_by_code,
-    registeredAt: row.created_at,
-    lastLoginAt: row.last_login_at,
-    updatedAt: row.updated_at,
+    registeredAt: toIsoUtc(row.created_at),
+    lastLoginAt: toIsoUtc(row.last_login_at),
+    updatedAt: toIsoUtc(row.updated_at),
   };
 }

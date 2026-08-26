@@ -90,6 +90,19 @@ OmniFrame/
 - Typy używane wyłącznie w pozycjach typowych importuj przez `import type`
   albo inline `type` (`import { NextResponse, type NextRequest } from ...`).
 
+## Format czasu - jeden w całym systemie
+
+- Baza: kolumny `TIMESTAMPTZ` (`DEFAULT now()`). Kolumny `DATE` (np.
+  `users.birth_date`) to daty kalendarzowe bez strefy - nie konwertujemy ich.
+- API: ISO 8601 w UTC (`2026-08-26T13:36:00.000Z`). Konwersja wyłącznie przez
+  `toIsoUtc()` z `backend/src/lib/date-time.ts`, w mapperze wiersza na DTO.
+  Bez `to_char(...)` w SQL-u.
+- Frontend: jeden format wyświetlania ze stałych w
+  `frontend/src/app/core/date-time.ts`, nakładany pipe'ami `| appDateTime` /
+  `| appDate`. Surowego stringa z API nie renderujemy.
+
+Szczegóły w `README.md` (sekcja „Format czasu w całym systemie").
+
 ## Kontrakty API
 
 - `shared/api-contract.ts` jest źródłem prawdy dla DTO współdzielonych między

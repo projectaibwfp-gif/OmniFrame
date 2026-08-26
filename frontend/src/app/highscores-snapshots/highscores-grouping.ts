@@ -1,9 +1,7 @@
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
+import { formatDateTime, toLocalDayKey } from '../core/date-time';
 
 export const PAGE_SIZE = 50;
-
-const ISO_DAY_PREFIX = /^\d{4}-\d{2}-\d{2}/;
-const ISO_DAY_LENGTH = 10;
 
 export interface GroupedSnapshotRecord {
   latest: HighscoresSnapshotRecordDto;
@@ -20,17 +18,10 @@ function getCheckedAtTimestamp(checkedAt: string): number {
   return parsed;
 }
 
+// Dzień liczymy w strefie przeglądarki, bo tak samo pokazujemy go użytkownikowi -
+// klucz z UTC rozjeżdżałby przyrost EXP dla snapshotów tuż po lokalnej północy.
 function getCheckedAtDay(checkedAt: string): string {
-  if (ISO_DAY_PREFIX.test(checkedAt)) {
-    return checkedAt.slice(0, ISO_DAY_LENGTH);
-  }
-
-  const parsed = new Date(checkedAt);
-  if (Number.isNaN(parsed.getTime())) {
-    return checkedAt;
-  }
-
-  return parsed.toISOString().slice(0, ISO_DAY_LENGTH);
+  return toLocalDayKey(checkedAt) || checkedAt;
 }
 
 function getPreviousDayExperienceIncrease(
@@ -56,7 +47,7 @@ function getPreviousDayExperienceIncrease(
 }
 
 export function formatCheckedAt(checkedAt: string): string {
-  return getCheckedAtDay(checkedAt);
+  return formatDateTime(checkedAt);
 }
 
 export function groupSnapshotRecords(

@@ -42,13 +42,13 @@
           @if (prod.createdAt) {
             <div class="meta-item">
               <span class="label">Utworzono</span>
-              <strong>{{ prod.createdAt }}</strong>
+              <strong>{{ prod.createdAt | appDateTime }}</strong>
             </div>
           }
           @if (prod.updatedAt) {
             <div class="meta-item">
               <span class="label">Zaktualizowano</span>
-              <strong>{{ prod.updatedAt }}</strong>
+              <strong>{{ prod.updatedAt | appDateTime }}</strong>
             </div>
           }
           @if (prod.createdByName) {

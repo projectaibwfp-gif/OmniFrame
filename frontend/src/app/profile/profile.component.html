@@ -63,7 +63,7 @@
           @if (currentUser()?.birthDate) {
             <article class="profile-item-card">
               <span class="label">Data urodzenia</span>
-              <strong>{{ currentUser()?.birthDate | date: 'dd.MM.yyyy' }}</strong>
+              <strong>{{ currentUser()?.birthDate | appDate }}</strong>
             </article>
           }
 

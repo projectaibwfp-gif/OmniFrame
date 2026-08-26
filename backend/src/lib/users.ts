@@ -1,5 +1,6 @@
 import type { UserRole, UsersListItemDto } from '@shared/api-contract';
 import { getSql } from './db';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 const DEFAULT_USERS_LIMIT = 50;
 
@@ -17,8 +18,8 @@ interface UserRow {
   referralCode: string;
   referredByCode: string | null;
   referredByName: string | null;
-  registeredAt: string;
-  lastLoginAt: string;
+  registeredAt: SqlTimestamp;
+  lastLoginAt: SqlTimestamp;
 }
 
 function mapUserRow(row: UserRow): UsersListItemDto {
@@ -36,8 +37,8 @@ function mapUserRow(row: UserRow): UsersListItemDto {
     referralCode: row.referralCode,
     referredByCode: row.referredByCode,
     referredByName: row.referredByName,
-    registeredAt: row.registeredAt,
-    lastLoginAt: row.lastLoginAt,
+    registeredAt: toIsoUtc(row.registeredAt),
+    lastLoginAt: toIsoUtc(row.lastLoginAt),
   };
 }
 
@@ -49,8 +50,8 @@ export async function listUsers(limit = DEFAULT_USERS_LIMIT): Promise<UsersListI
            users.referral_code AS "referralCode",
            users.referred_by_code AS "referredByCode",
            COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
-           to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-           to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
+           users.created_at AS "registeredAt",
+           users.last_login_at AS "lastLoginAt"
     FROM users
     LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
     ORDER BY users.created_at DESC
@@ -68,8 +69,8 @@ export async function getUserByGoogleId(googleId: string): Promise<UsersListItem
            users.referral_code AS "referralCode",
            users.referred_by_code AS "referredByCode",
            COALESCE(NULLIF(trim(concat(referrer.given_name, ' ', referrer.family_name)), ''), referrer.name, referrer.email) AS "referredByName",
-           to_char(users.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "registeredAt",
-           to_char(users.last_login_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS "lastLoginAt"
+           users.created_at AS "registeredAt",
+           users.last_login_at AS "lastLoginAt"
     FROM users
     LEFT JOIN users AS referrer ON referrer.referral_code = users.referred_by_code
     WHERE users.google_id = ${googleId}

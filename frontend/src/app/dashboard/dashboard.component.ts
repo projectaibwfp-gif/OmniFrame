@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { AppDateTimePipe } from '../core/date-time.pipe';
 import {
   DashboardService,
   type DashboardActivityPoint,
@@ -21,7 +22,7 @@ interface DashboardStatCard {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, AppDateTimePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

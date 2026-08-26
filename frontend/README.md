@@ -54,6 +54,32 @@ przesyła je przy wywołaniach cross-origin z credentialed request.
 > przekazuje wiarygodnie `Set-Cookie` z external rewrite, co łamie logowanie
 > (błąd `Invalid login state`).
 
+## Format daty i godziny
+
+Backend zwraca każdy timestamp w jednym formacie - ISO 8601 w UTC
+(`2026-08-26T13:36:00.000Z`). Frontend ma **jeden** format wyświetlania, trzymany
+w stałych w `src/app/core/date-time.ts`:
+
+- `DATE_TIME_FORMAT = 'dd.MM.yyyy HH:mm'` - data z godziną,
+- `DATE_FORMAT = 'dd.MM.yyyy'` - sama data,
+- `EMPTY_DATE_PLACEHOLDER = '-'` - brak wartości.
+
+**Zawsze używaj pipe'ów** z `src/app/core/date-time.pipe.ts`, nigdy nie renderuj
+surowego stringa z API ani nie wywołuj `| date: '...'` z własnym wzorcem:
+
+```html
+<span>{{ user.lastLoginAt | appDateTime }}</span>
+<span>{{ currentUser()?.birthDate | appDate }}</span>
+```
+
+W kodzie TypeScript (poza szablonem) korzystaj z `formatDateTime()`,
+`formatDateOnly()` i `toLocalDayKey()` z tego samego modułu.
+
+Pipe'y przeliczają czas na **strefę przeglądarki**, dlatego godzina jest ta sama
+lokalnie i po wdrożeniu na Vercela (serwer chodzi w UTC). `appDate` traktuje
+wartości typu `YYYY-MM-DD` (kolumny `DATE`, np. data urodzenia) jako datę
+kalendarzową i nie przesuwa ich strefą.
+
 ## Routing
 
 - `/` - dashboard,

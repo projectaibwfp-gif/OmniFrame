@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../components/pagination/pagination.component';
+import { AppDatePipe, AppDateTimePipe } from '../core/date-time.pipe';
 import { createPagedList } from '../core/paged-list';
 import { createSort } from '../core/sort';
 import { LocalizationService } from '../services/localization.service';
@@ -30,7 +30,7 @@ function matchesFilters(news: TibiaNewsDto, filters: NewsFilters): boolean {
 
 @Component({
   selector: 'app-news',
-  imports: [FormsModule, DatePipe, PaginationComponent],
+  imports: [FormsModule, AppDatePipe, AppDateTimePipe, PaginationComponent],
   templateUrl: './news.component.html',
   styleUrl: './news.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

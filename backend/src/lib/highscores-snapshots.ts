@@ -1,5 +1,6 @@
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { getSql } from './db';
+import { toIsoUtc, type SqlTimestamp } from './date-time';
 import { ErrorCode } from './errors';
 import { logError, logWarn } from './logger';
 
@@ -19,6 +20,10 @@ export interface LatestHighscoresSnapshot {
   checkedAt: string;
 }
 
+interface LatestHighscoresSnapshotRow extends Omit<LatestHighscoresSnapshot, 'checkedAt'> {
+  checkedAt: SqlTimestamp;
+}
+
 interface HighscoresSnapshotListRow {
   id: number;
   characterName: string;
@@ -27,7 +32,7 @@ interface HighscoresSnapshotListRow {
   level: number;
   rank: number;
   exactExperience: number;
-  checkedAt: string;
+  checkedAt: SqlTimestamp;
 }
 
 const SAVE_BUCKET_MS = 15 * 60 * 1000;
@@ -144,19 +149,19 @@ export async function getLatestHighscoresSnapshot(
     SELECT exact_experience AS "exactExperience",
            rank,
            vocation,
-           to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+           checked_at AS "checkedAt"
     FROM character_highscores_snapshots
     WHERE normalized_name = ${characterName.toLowerCase()}
       AND world = ${world}
     ORDER BY checked_at DESC
     LIMIT 1
-  `) as LatestHighscoresSnapshot[];
+  `) as LatestHighscoresSnapshotRow[];
 
   if (!rows.length) {
     return null;
   }
 
-  return rows[0];
+  return { ...rows[0], checkedAt: toIsoUtc(rows[0].checkedAt) };
 }
 
 export async function listHighscoresSnapshots(
@@ -182,7 +187,7 @@ export async function listHighscoresSnapshots(
                level,
                rank,
                exact_experience AS "exactExperience",
-               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+               checked_at AS "checkedAt"
         FROM character_highscores_snapshots
         WHERE world = ${normalizedWorld}
         ORDER BY level ASC, checked_at DESC
@@ -198,7 +203,7 @@ export async function listHighscoresSnapshots(
                level,
                rank,
                exact_experience AS "exactExperience",
-               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+               checked_at AS "checkedAt"
         FROM character_highscores_snapshots
         WHERE world = ${normalizedWorld}
         ORDER BY level DESC, checked_at DESC
@@ -222,7 +227,7 @@ export async function listHighscoresSnapshots(
                level,
                rank,
                exact_experience AS "exactExperience",
-               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+               checked_at AS "checkedAt"
         FROM character_highscores_snapshots
         ORDER BY level ASC, checked_at DESC
         LIMIT ${pageSize}
@@ -237,7 +242,7 @@ export async function listHighscoresSnapshots(
                level,
                rank,
                exact_experience AS "exactExperience",
-               to_char(checked_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS "checkedAt"
+               checked_at AS "checkedAt"
         FROM character_highscores_snapshots
         ORDER BY level DESC, checked_at DESC
         LIMIT ${pageSize}
@@ -269,7 +274,7 @@ export async function listHighscoresSnapshots(
       level: row.level,
       rank: row.rank,
       exactExperience: row.exactExperience,
-      checkedAt: row.checkedAt,
+      checkedAt: toIsoUtc(row.checkedAt),
     })),
     total,
     worlds: worldRows.map((row) => row.world),
