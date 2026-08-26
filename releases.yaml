@@ -1,4 +1,28 @@
 releases:
+  - date: "2026-08-26T14:05:59.445Z"
+    commit: "9defabbd243d47b401a3917d7a03812cf95cf8b7"
+    frontend:
+      version: "0.12.3"
+      tag: "frontend-v0.12.3"
+      changed: true
+      commits:
+      - hash: "9defabbd"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T16:04:05+02:00"
+        message: "docs: update AGENTS.md and README.md to clarify time format usage across the system"
+      - hash: "ad9fa581"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T16:03:42+02:00"
+        message: "docs: update AGENTS.md and README.md to clarify time format usage across the system"
+    backend:
+      version: "0.8.2"
+      tag: "backend-v0.8.2"
+      changed: true
+      commits:
+      - hash: "ad9fa581"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T16:03:42+02:00"
+        message: "docs: update AGENTS.md and README.md to clarify time format usage across the system"
   - date: "2026-08-26T13:37:34.636Z"
     commit: "c004916053bcfb11251ea9827aaa927f154b4982"
     frontend:
