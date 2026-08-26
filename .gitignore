@@ -6,6 +6,6 @@
 **/.env
 **/.env.local
 **/npm-debug.log*
-**/front/out-tsc
+**/frontend/out-tsc
 mysql/mysql_data/
 .husky/_

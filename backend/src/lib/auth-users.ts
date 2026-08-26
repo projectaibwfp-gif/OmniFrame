@@ -1,31 +1,13 @@
 import { createHash } from 'node:crypto';
 import type { AuthCurrentUserDto } from '@shared/api-contract';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
 import { getSql } from './db';
 import { isAuthDenied, requireAuth, type UserRole } from './auth-session';
+import { mapUserRow, type UserRow } from './user-row';
+
+const REFERRAL_CODE_HASH_ALGORITHM = 'md5';
 
 export type AuthenticatedUser = AuthCurrentUserDto;
-
-interface UserRow {
-  id: number;
-  google_id: string;
-  email: string;
-  email_verified: boolean;
-  role: UserRole;
-  name: string | null;
-  given_name: string | null;
-  family_name: string | null;
-  picture: string | null;
-  locale: string | null;
-  phone: string | null;
-  birth_date: string | null;
-  description: string | null;
-  referral_code: string;
-  referred_by_code: string | null;
-  last_login_at: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export interface UpsertUserInput {
   google_id: string;
@@ -49,31 +31,8 @@ export interface UpsertUserResult {
   wasCreated: boolean;
 }
 
-function mapUserRow(row: UserRow): AuthenticatedUser {
-  return {
-    id: row.id,
-    googleId: row.google_id,
-    email: row.email,
-    emailVerified: row.email_verified,
-    role: row.role,
-    name: row.name,
-    givenName: row.given_name,
-    familyName: row.family_name,
-    picture: row.picture,
-    locale: row.locale,
-    phone: row.phone,
-    birthDate: row.birth_date,
-    description: row.description,
-    referralCode: row.referral_code,
-    referredByCode: row.referred_by_code,
-    registeredAt: row.created_at,
-    lastLoginAt: row.last_login_at,
-    updatedAt: row.updated_at,
-  };
-}
-
 function generateReferralCode(googleId: string): string {
-  return createHash('md5').update(googleId).digest('hex');
+  return createHash(REFERRAL_CODE_HASH_ALGORITHM).update(googleId).digest('hex');
 }
 
 export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResult> {
@@ -157,9 +116,11 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
     FROM updated
   `) as UpsertUserRow[];
 
+  const row = rows[0];
+
   return {
-    user: mapUserRow(rows[0]),
-    wasCreated: rows[0].was_created,
+    user: mapUserRow(row),
+    wasCreated: row.was_created,
   };
 }
 
@@ -228,7 +189,7 @@ export async function loadCurrentUser(
     phone: null,
     birthDate: null,
     description: null,
-    referralCode: createHash('md5').update(auth.session.sub).digest('hex'),
+    referralCode: generateReferralCode(auth.session.sub),
     referredByCode: null,
     registeredAt: '',
     lastLoginAt: '',

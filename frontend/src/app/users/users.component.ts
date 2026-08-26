@@ -4,15 +4,14 @@ import { UsersService, type User } from './users.service';
 
 @Component({
   selector: 'app-users',
-  standalone: true,
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent {
-  readonly users = signal<User[]>([]);
-  readonly isLoading = signal(true);
-  readonly apiError = signal(false);
+  protected readonly users = signal<User[]>([]);
+  protected readonly isLoading = signal(true);
+  protected readonly apiError = signal(false);
 
   private readonly usersService = inject(UsersService);
 
@@ -20,7 +19,7 @@ export class UsersComponent {
     this.loadUsers();
   }
 
-  loadUsers(): void {
+  protected loadUsers(): void {
     this.isLoading.set(true);
     this.apiError.set(false);
     this.usersService
@@ -32,12 +31,12 @@ export class UsersComponent {
       });
   }
 
-  fullName(user: User): string {
+  protected fullName(user: User): string {
     const parts = [user.givenName, user.familyName].filter(Boolean);
     return parts.length ? parts.join(' ') : (user.name ?? '—');
   }
 
-  referralLabel(user: User): string {
+  protected referralLabel(user: User): string {
     if (!user.referredByCode) {
       return '—';
     }

@@ -1,12 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { ErrorCode } from '@/lib/errors';
 import { logInfo, logError } from '@/lib/logger';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
 
-export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // 5 minutes timeout
+const DEFAULT_CRON_WORLDS = 'Dia,Amera,Antica';
+const CRON_VOCATIONS = ['knights', 'paladins', 'druids', 'sorcerers'] as const;
 
-interface CronStats {
+export const dynamic = 'force-dynamic';
+// Next.js only accepts statically analysable literals for segment config exports,
+// so this 5 minute budget cannot be extracted into a named constant.
+export const maxDuration = 300;
+
+interface CronStats extends Record<string, unknown> {
   worldsProcessed: number;
   vocationsProcessed: number;
   charactersCollected: number;
@@ -18,10 +23,10 @@ interface CronStats {
 export async function POST(_request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
 
-  const worlds = (process.env.CRON_WORLDS ?? 'Dia,Amera,Antica').split(',').map((w) => w.trim());
-  const vocations = ['knights', 'paladins', 'druids', 'sorcerers'] as const;
+  const worlds = (process.env.CRON_WORLDS ?? DEFAULT_CRON_WORLDS).split(',').map((w) => w.trim());
+  const vocations = CRON_VOCATIONS;
 
-  let stats: CronStats = {
+  const stats: CronStats = {
     worldsProcessed: 0,
     vocationsProcessed: 0,
     charactersCollected: 0,
@@ -55,22 +60,13 @@ export async function POST(_request: NextRequest): Promise<NextResponse> {
     }
 
     stats.duration = Date.now() - startTime;
-    logInfo(
-      'cron.complete',
-      'Cron highscores collection completed',
-      stats as unknown as Record<string, unknown>,
-    );
+    logInfo('cron.complete', 'Cron highscores collection completed', stats);
 
     return NextResponse.json({ success: true, stats });
   } catch (error) {
     stats.duration = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
-    logError(
-      'cron.error',
-      ErrorCode.INTERNAL_ERROR,
-      stats as unknown as Record<string, unknown>,
-      new Error(message),
-    );
+    logError('cron.error', ErrorCode.INTERNAL_ERROR, stats, new Error(message));
     return NextResponse.json({ success: false, error: message, stats }, { status: 500 });
   }
 }

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type {
   ApiResponse,
   AuthGoogleRequestDto,
@@ -14,6 +14,7 @@ import {
   upsertGoogleUser,
   verifyGoogleToken,
 } from '@/lib/auth';
+import type { GoogleTokenPayload } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return denied;
   }
 
-  let googleToken;
+  let googleToken: GoogleTokenPayload;
   try {
     googleToken = await verifyGoogleToken(credential);
   } catch (error) {

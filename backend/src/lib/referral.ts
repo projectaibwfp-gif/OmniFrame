@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
+import { cookieSameSite, cookieSecure } from './cookie-config';
 
 const REFERRAL_COOKIE_NAME = 'omniframe.referral';
 const REFERRAL_COOKIE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const REFERRAL_CODE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$/;
-
-const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
-const cookieSameSite: 'none' | 'lax' = isProd ? 'none' : 'lax';
-const cookieSecure = isProd;
 
 export interface PendingReferral {
   code: string;

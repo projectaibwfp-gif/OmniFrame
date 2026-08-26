@@ -1,2 +1,2 @@
-export * from './api-contract';
-export * from './runtime-config';
+export * from "./api-contract";
+export * from "./runtime-config";

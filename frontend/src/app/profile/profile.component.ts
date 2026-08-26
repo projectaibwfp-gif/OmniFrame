@@ -1,49 +1,61 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
 import { type AuthUser } from '../auth/auth-session';
 import { buildApiUrl } from '../config/api.config';
 
+const INITIALS_MAX_CHARS = 2;
+const INITIALS_FALLBACK = 'U';
+const PHONE_MIN_DIGITS = 9;
+const MIN_AGE_YEARS = 13;
+const DESCRIPTION_MAX_LENGTH = 500;
+const PHONE_ALLOWED_CHARACTERS = /^[\d\s+\-()]+$/;
+
+interface ProfileEditForm {
+  phone: string;
+  birthDate: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [DatePipe, FormsModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent {
-  readonly currentUser = inject(AuthService).user;
-  readonly copyState = signal<'idle' | 'success' | 'error'>('idle');
-  readonly editMode = signal(false);
-  readonly isSaving = signal(false);
-  readonly saveError = signal<string | null>(null);
-  readonly validationErrors = signal<Record<string, string>>({});
+  protected readonly currentUser = inject(AuthService).user;
+  protected readonly copyState = signal<'idle' | 'success' | 'error'>('idle');
+  protected readonly editMode = signal(false);
+  protected readonly isSaving = signal(false);
+  protected readonly saveError = signal<string | null>(null);
+  protected readonly validationErrors = signal<Record<string, string>>({});
 
-  readonly editForm = signal({
+  protected readonly editForm = signal<ProfileEditForm>({
     phone: '',
     birthDate: '',
     description: '',
   });
 
-  readonly initials = computed(() => {
+  protected readonly initials = computed(() => {
     const user = this.currentUser();
     if (!user) {
-      return 'U';
+      return INITIALS_FALLBACK;
     }
     const parts = user.fullName.split(/\s+/).filter(Boolean);
     return (
       parts
-        .slice(0, 2)
+        .slice(0, INITIALS_MAX_CHARS)
         .map((value) => value.charAt(0).toUpperCase())
-        .join('') || 'U'
+        .join('') || INITIALS_FALLBACK
     );
   });
 
-  readonly referralLink = computed(() => {
+  protected readonly referralLink = computed(() => {
     const user = this.currentUser();
     if (!user) {
       return '';
@@ -56,7 +68,7 @@ export class ProfileComponent {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
 
-  toggleEditMode(): void {
+  protected toggleEditMode(): void {
     if (!this.editMode()) {
       const user = this.currentUser();
       if (user) {
@@ -69,45 +81,10 @@ export class ProfileComponent {
       this.validationErrors.set({});
       this.saveError.set(null);
     }
-    this.editMode.update((v) => !v);
+    this.editMode.update((value) => !value);
   }
 
-  validateForm(): boolean {
-    const errors: Record<string, string> = {};
-    const form = this.editForm();
-
-    if (form.phone) {
-      if (!/^[\d\s+\-()]+$/.test(form.phone)) {
-        errors['phone'] = 'Numer telefonu zawiera niedozwolone znaki';
-      } else if (form.phone.replace(/\D/g, '').length < 9) {
-        errors['phone'] = 'Numer telefonu musi mieć co najmniej 9 cyfr';
-      }
-    }
-
-    if (form.birthDate) {
-      const date = new Date(form.birthDate);
-      const today = new Date();
-      if (isNaN(date.getTime())) {
-        errors['birthDate'] = 'Nieprawidłowa data';
-      } else if (date > today) {
-        errors['birthDate'] = 'Data nie może być w przyszłości';
-      } else {
-        const age = today.getFullYear() - date.getFullYear();
-        if (age < 13) {
-          errors['birthDate'] = 'Musisz mieć co najmniej 13 lat';
-        }
-      }
-    }
-
-    if (form.description && form.description.length > 500) {
-      errors['description'] = 'Opis nie może być dłuższy niż 500 znaków';
-    }
-
-    this.validationErrors.set(errors);
-    return Object.keys(errors).length === 0;
-  }
-
-  saveProfile(): void {
+  protected saveProfile(): void {
     if (!this.validateForm()) {
       return;
     }
@@ -138,13 +115,13 @@ export class ProfileComponent {
       });
   }
 
-  cancelEdit(): void {
+  protected cancelEdit(): void {
     this.editMode.set(false);
     this.validationErrors.set({});
     this.saveError.set(null);
   }
 
-  async copyReferralLink(): Promise<void> {
+  protected async copyReferralLink(): Promise<void> {
     const link = this.referralLink();
     if (!link || !navigator.clipboard) {
       this.copyState.set('error');
@@ -157,6 +134,38 @@ export class ProfileComponent {
     } catch {
       this.copyState.set('error');
     }
+  }
+
+  private validateForm(): boolean {
+    const errors: Record<string, string> = {};
+    const form = this.editForm();
+
+    if (form.phone) {
+      if (!PHONE_ALLOWED_CHARACTERS.test(form.phone)) {
+        errors['phone'] = 'Numer telefonu zawiera niedozwolone znaki';
+      } else if (form.phone.replace(/\D/g, '').length < PHONE_MIN_DIGITS) {
+        errors['phone'] = `Numer telefonu musi mieć co najmniej ${PHONE_MIN_DIGITS} cyfr`;
+      }
+    }
+
+    if (form.birthDate) {
+      const date = new Date(form.birthDate);
+      const today = new Date();
+      if (Number.isNaN(date.getTime())) {
+        errors['birthDate'] = 'Nieprawidłowa data';
+      } else if (date > today) {
+        errors['birthDate'] = 'Data nie może być w przyszłości';
+      } else if (today.getFullYear() - date.getFullYear() < MIN_AGE_YEARS) {
+        errors['birthDate'] = `Musisz mieć co najmniej ${MIN_AGE_YEARS} lat`;
+      }
+    }
+
+    if (form.description && form.description.length > DESCRIPTION_MAX_LENGTH) {
+      errors['description'] = `Opis nie może być dłuższy niż ${DESCRIPTION_MAX_LENGTH} znaków`;
+    }
+
+    this.validationErrors.set(errors);
+    return Object.keys(errors).length === 0;
   }
 
   private mapUser(user: AuthCurrentUserResponseDto['user']): AuthUser {

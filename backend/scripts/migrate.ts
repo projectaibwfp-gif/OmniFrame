@@ -43,7 +43,9 @@ async function main(): Promise<void> {
     applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`;
 
-  const applied = new Set((await sql`SELECT name FROM _migrations`).map((row) => row.name));
+  const applied = new Set(
+    ((await sql`SELECT name FROM _migrations`) as Array<{ name: string }>).map((row) => row.name),
+  );
 
   const files = fs
     .readdirSync(migrationDir)
@@ -61,18 +63,18 @@ async function main(): Promise<void> {
       await sql.query(statement);
     }
     await sql`INSERT INTO _migrations (name) VALUES (${file})`;
-    console.log(`applied: ${file}`);
+    process.stdout.write(`applied: ${file}\n`);
     appliedCount++;
   }
 
-  console.log(
+  process.stdout.write(
     appliedCount > 0
-      ? `done, ${appliedCount} migration(s) applied`
-      : 'nothing to apply, database up to date',
+      ? `done, ${appliedCount} migration(s) applied\n`
+      : 'nothing to apply, database up to date\n',
   );
 }
 
-main().catch((err: unknown) => {
+void main().catch((err: unknown) => {
   console.error(err);
   process.exit(1);
 });

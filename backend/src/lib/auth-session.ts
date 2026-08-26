@@ -1,8 +1,9 @@
 import { SignJWT, createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest, NextResponse } from 'next/server';
 import type { UserRole as SharedUserRole } from '@shared/api-contract';
 import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { errorResponse } from './api-response';
+import { cookieSameSite, cookieSecure } from './cookie-config';
 import { ErrorCode } from './errors';
 import { logInfo, logWarn } from './logger';
 
@@ -42,10 +43,6 @@ const DEFAULT_SESSION_SECRET = 'omniframe-dev-session-secret-change-me';
 const DEFAULT_REFRESH_SECRET = 'omniframe-dev-refresh-secret-change-me';
 const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
 
-const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
-const cookieSameSite: 'none' | 'lax' = isProd ? 'none' : 'lax';
-const cookieSecure = isProd;
-
 function getGoogleClientId(): string {
   return (
     process.env.GOOGLE_CLIENT_ID?.trim() ||
@@ -64,64 +61,43 @@ function getRefreshSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export function setAccessCookie(response: NextResponse, token: string): void {
-  response.cookies.set(ACCESS_COOKIE_NAME, token, {
+function writeCookie(
+  response: NextResponse,
+  name: string,
+  value: string,
+  options: { maxAge?: number; expires?: Date },
+): void {
+  response.cookies.set(name, value, {
     httpOnly: true,
     secure: cookieSecure,
     sameSite: cookieSameSite,
     path: '/',
-    maxAge: ACCESS_TOKEN_TTL_SECONDS,
+    ...options,
   });
+}
+
+export function setAccessCookie(response: NextResponse, token: string): void {
+  writeCookie(response, ACCESS_COOKIE_NAME, token, { maxAge: ACCESS_TOKEN_TTL_SECONDS });
 }
 
 export function setRefreshCookie(response: NextResponse, token: string): void {
-  response.cookies.set(REFRESH_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
-    path: '/',
-    maxAge: REFRESH_TOKEN_TTL_SECONDS,
-  });
+  writeCookie(response, REFRESH_COOKIE_NAME, token, { maxAge: REFRESH_TOKEN_TTL_SECONDS });
 }
 
 function clearAccessCookie(response: NextResponse): void {
-  response.cookies.set(ACCESS_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
-    path: '/',
-    expires: new Date(0),
-  });
+  writeCookie(response, ACCESS_COOKIE_NAME, '', { expires: new Date(0) });
 }
 
 function clearRefreshCookie(response: NextResponse): void {
-  response.cookies.set(REFRESH_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
-    path: '/',
-    expires: new Date(0),
-  });
+  writeCookie(response, REFRESH_COOKIE_NAME, '', { expires: new Date(0) });
 }
 
 function setOAuthStateCookie(response: NextResponse, state: string): void {
-  response.cookies.set(OAUTH_STATE_COOKIE_NAME, state, {
-    httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
-    path: '/',
-    maxAge: OAUTH_STATE_TTL_SECONDS,
-  });
+  writeCookie(response, OAUTH_STATE_COOKIE_NAME, state, { maxAge: OAUTH_STATE_TTL_SECONDS });
 }
 
 function clearOAuthStateCookie(response: NextResponse): void {
-  response.cookies.set(OAUTH_STATE_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: cookieSecure,
-    sameSite: cookieSameSite,
-    path: '/',
-    expires: new Date(0),
-  });
+  writeCookie(response, OAUTH_STATE_COOKIE_NAME, '', { expires: new Date(0) });
 }
 
 export function toSessionPayload(

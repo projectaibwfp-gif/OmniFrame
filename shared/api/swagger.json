@@ -1,7 +1,5 @@
 {
-  "schemes": [
-    "https"
-  ],
+  "schemes": ["https"],
   "swagger": "2.0",
   "info": {
     "description": "This is the API documentation for the TibiaData API.\nThe documentation contains version 3 and above.",
@@ -24,15 +22,9 @@
     "/v3/boostablebosses": {
       "get": {
         "description": "Show all boostable bosses listed",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "boostable bosses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["boostable bosses"],
         "summary": "List of boostable bosses",
         "deprecated": true,
         "responses": {
@@ -48,15 +40,9 @@
     "/v3/character/{name}": {
       "get": {
         "description": "Show all information about one character available",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "characters"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["characters"],
         "summary": "Show one character",
         "deprecated": true,
         "parameters": [
@@ -82,15 +68,9 @@
     "/v3/creature/{race}": {
       "get": {
         "description": "Show all information about one creature",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "creatures"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["creatures"],
         "summary": "Show one creature",
         "deprecated": true,
         "parameters": [
@@ -116,15 +96,9 @@
     "/v3/creatures": {
       "get": {
         "description": "Show all creatures listed",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "creatures"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["creatures"],
         "summary": "List of creatures",
         "deprecated": true,
         "responses": {
@@ -140,15 +114,9 @@
     "/v3/fansites": {
       "get": {
         "description": "List of all promoted and supported fansites",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "fansites"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["fansites"],
         "summary": "Promoted and supported fansites",
         "deprecated": true,
         "responses": {
@@ -164,15 +132,9 @@
     "/v3/guild/{name}": {
       "get": {
         "description": "Show all information about one guild",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "guilds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guilds"],
         "summary": "Show one guild",
         "deprecated": true,
         "parameters": [
@@ -198,15 +160,9 @@
     "/v3/guilds/{world}": {
       "get": {
         "description": "Show all guilds on a certain world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "guilds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guilds"],
         "summary": "List all guilds from a world",
         "deprecated": true,
         "parameters": [
@@ -232,15 +188,9 @@
     "/v3/highscores/{world}/{category}/{vocation}/{page}": {
       "get": {
         "description": "Show all highscores of tibia",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "highscores"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["highscores"],
         "summary": "Highscores of tibia",
         "deprecated": true,
         "parameters": [
@@ -320,15 +270,9 @@
     "/v3/house/{world}/{house_id}": {
       "get": {
         "description": "Show all information about one house",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "houses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["houses"],
         "summary": "House view",
         "deprecated": true,
         "parameters": [
@@ -362,15 +306,9 @@
     "/v3/houses/{world}/{town}": {
       "get": {
         "description": "Show all houses filtered on world and town",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "houses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["houses"],
         "summary": "List of houses",
         "deprecated": true,
         "parameters": [
@@ -404,15 +342,9 @@
     "/v3/killstatistics/{world}": {
       "get": {
         "description": "Show all killstatistics filtered on world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "killstatistics"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["killstatistics"],
         "summary": "The killstatistics",
         "deprecated": true,
         "parameters": [
@@ -438,15 +370,9 @@
     "/v3/news/archive": {
       "get": {
         "description": "Show news archive with a filtering on 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news archive (90 days)",
         "deprecated": true,
         "responses": {
@@ -462,15 +388,9 @@
     "/v3/news/archive/{days}": {
       "get": {
         "description": "Show news archive with a filtering option on days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news archive (with days filter)",
         "deprecated": true,
         "parameters": [
@@ -498,15 +418,9 @@
     "/v3/news/id/{news_id}": {
       "get": {
         "description": "Show one news entry",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show one news entry",
         "deprecated": true,
         "parameters": [
@@ -532,15 +446,9 @@
     "/v3/news/latest": {
       "get": {
         "description": "Show newslist with filtering on articles and news of last 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show newslist (90 days)",
         "deprecated": true,
         "responses": {
@@ -556,15 +464,9 @@
     "/v3/news/newsticker": {
       "get": {
         "description": "Show news of type news tickers of last 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news tickers (90 days)",
         "deprecated": true,
         "responses": {
@@ -580,15 +482,9 @@
     "/v3/spell/{spell_id}": {
       "get": {
         "description": "Show all information about one spell",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "spells"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["spells"],
         "summary": "Show one spell",
         "deprecated": true,
         "parameters": [
@@ -614,15 +510,9 @@
     "/v3/spells": {
       "get": {
         "description": "Show all spells",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "spells"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["spells"],
         "summary": "List all spells",
         "deprecated": true,
         "responses": {
@@ -638,15 +528,9 @@
     "/v3/world/{name}": {
       "get": {
         "description": "Show all information about one world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "worlds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["worlds"],
         "summary": "Show one world",
         "deprecated": true,
         "parameters": [
@@ -672,15 +556,9 @@
     "/v3/worlds": {
       "get": {
         "description": "Show all worlds of Tibia",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "worlds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["worlds"],
         "summary": "List of all worlds",
         "deprecated": true,
         "responses": {
@@ -696,15 +574,9 @@
     "/v4/boostablebosses": {
       "get": {
         "description": "Show all boostable bosses listed",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "boostable bosses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["boostable bosses"],
         "summary": "List of boostable bosses",
         "responses": {
           "200": {
@@ -737,15 +609,9 @@
     "/v4/character/{name}": {
       "get": {
         "description": "Show all information about one character available",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "characters"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["characters"],
         "summary": "Show one character",
         "parameters": [
           {
@@ -788,15 +654,9 @@
     "/v4/creature/{race}": {
       "get": {
         "description": "Show all information about one creature",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "creatures"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["creatures"],
         "summary": "Show one creature",
         "parameters": [
           {
@@ -839,15 +699,9 @@
     "/v4/creatures": {
       "get": {
         "description": "Show all creatures listed",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "creatures"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["creatures"],
         "summary": "List of creatures",
         "responses": {
           "200": {
@@ -880,15 +734,9 @@
     "/v4/fansites": {
       "get": {
         "description": "List of all promoted and supported fansites",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "fansites"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["fansites"],
         "summary": "Promoted and supported fansites",
         "responses": {
           "200": {
@@ -921,15 +769,9 @@
     "/v4/guild/{name}": {
       "get": {
         "description": "Show all information about one guild",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "guilds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guilds"],
         "summary": "Show one guild",
         "parameters": [
           {
@@ -972,15 +814,9 @@
     "/v4/guilds/{world}": {
       "get": {
         "description": "Show all guilds on a certain world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "guilds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["guilds"],
         "summary": "List all guilds from a world",
         "parameters": [
           {
@@ -1023,15 +859,9 @@
     "/v4/highscores/{world}/{category}/{vocation}/{page}": {
       "get": {
         "description": "Show all highscores of tibia\nIn restriction mode, the valid vocation option is all.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "highscores"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["highscores"],
         "summary": "Highscores of tibia",
         "parameters": [
           {
@@ -1130,15 +960,9 @@
     "/v4/house/{world}/{house_id}": {
       "get": {
         "description": "Show all information about one house",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "houses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["houses"],
         "summary": "House view",
         "parameters": [
           {
@@ -1189,15 +1013,9 @@
     "/v4/houses/{world}/{town}": {
       "get": {
         "description": "Show all houses filtered on world and town",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "houses"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["houses"],
         "summary": "List of houses",
         "parameters": [
           {
@@ -1248,15 +1066,9 @@
     "/v4/killstatistics/{world}": {
       "get": {
         "description": "Show all killstatistics filtered on world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "killstatistics"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["killstatistics"],
         "summary": "The killstatistics",
         "parameters": [
           {
@@ -1299,15 +1111,9 @@
     "/v4/news/archive": {
       "get": {
         "description": "Show news archive with a filtering on 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news archive (90 days)",
         "responses": {
           "200": {
@@ -1340,15 +1146,9 @@
     "/v4/news/archive/{days}": {
       "get": {
         "description": "Show news archive with a filtering option on days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news archive (with days filter)",
         "parameters": [
           {
@@ -1393,15 +1193,9 @@
     "/v4/news/id/{news_id}": {
       "get": {
         "description": "Show one news entry",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show one news entry",
         "parameters": [
           {
@@ -1444,15 +1238,9 @@
     "/v4/news/latest": {
       "get": {
         "description": "Show newslist with filtering on articles and news of last 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show newslist (90 days)",
         "responses": {
           "200": {
@@ -1485,15 +1273,9 @@
     "/v4/news/newsticker": {
       "get": {
         "description": "Show news of type news tickers of last 90 days",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "news"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["news"],
         "summary": "Show news tickers (90 days)",
         "responses": {
           "200": {
@@ -1526,15 +1308,9 @@
     "/v4/spell/{spell_id}": {
       "get": {
         "description": "Show all information about one spell",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "spells"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["spells"],
         "summary": "Show one spell",
         "parameters": [
           {
@@ -1577,15 +1353,9 @@
     "/v4/spells": {
       "get": {
         "description": "Show all spells",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "spells"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["spells"],
         "summary": "List all spells",
         "responses": {
           "200": {
@@ -1618,15 +1388,9 @@
     "/v4/world/{name}": {
       "get": {
         "description": "Show all information about one world",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "worlds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["worlds"],
         "summary": "Show one world",
         "parameters": [
           {
@@ -1669,15 +1433,9 @@
     "/v4/worlds": {
       "get": {
         "description": "Show all worlds of Tibia",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "worlds"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["worlds"],
         "summary": "List of all worlds",
         "responses": {
           "200": {

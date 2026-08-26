@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type {
   ApiResponse,
   UserRole,
@@ -10,6 +10,11 @@ import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { getUserByGoogleId, listUsers } from '@/lib/users';
+import { DEFAULT_USER_ROLE, USER_ROLES } from '@/lib/validation';
+
+const DEFAULT_USERS_LIMIT = 50;
+const MAX_USERS_LIMIT = 200;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const dynamic = 'force-dynamic';
 
@@ -55,7 +60,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 
   const limitParam = request.nextUrl.searchParams.get('limit');
-  const limit = Math.min(Math.max(parseInt(limitParam ?? '50', 10) || 50, 1), 200);
+  const limit = Math.min(
+    Math.max(parseInt(limitParam ?? String(DEFAULT_USERS_LIMIT), 10) || DEFAULT_USERS_LIMIT, 1),
+    MAX_USERS_LIMIT,
+  );
 
   try {
     const rows = await listUsers(limit);
@@ -88,17 +96,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const { googleId, email, emailVerified, name, givenName, familyName, picture, locale } = payload;
-  const role = payload.role ?? 'user';
+  const role = payload.role ?? DEFAULT_USER_ROLE;
 
   if (!googleId?.trim()) {
     return errorResponse('googleId is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
-  if (!email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email?.trim() || !EMAIL_PATTERN.test(email)) {
     return errorResponse('A valid email is required', 400, ErrorCode.VALIDATION_FAILED);
   }
 
-  if (!['admin', 'user', 'moderator'].includes(role)) {
+  if (!USER_ROLES.includes(role)) {
     return errorResponse(
       'role must be admin, user, or moderator',
       400,

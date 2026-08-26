@@ -33,7 +33,6 @@ function categoryClass(category: Quest['category']): string {
 
 @Component({
   selector: 'app-quest-detail',
-  standalone: true,
   imports: [RouterLink],
   templateUrl: './quest-detail.component.html',
   styleUrl: './quest-detail.component.scss',

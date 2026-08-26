@@ -1,21 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ProductsService, type Product } from '../products.service';
 
 @Component({
   selector: 'app-products-list',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterLink],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent {
-  readonly products = signal<Product[]>([]);
-  readonly isLoading = signal(true);
-  readonly apiError = signal(false);
+  protected readonly products = signal<Product[]>([]);
+  protected readonly isLoading = signal(true);
+  protected readonly apiError = signal(false);
 
   private readonly productsService = inject(ProductsService);
 
@@ -23,7 +21,7 @@ export class ProductsListComponent {
     this.loadProducts();
   }
 
-  loadProducts(): void {
+  protected loadProducts(): void {
     this.isLoading.set(true);
     this.apiError.set(false);
     this.productsService

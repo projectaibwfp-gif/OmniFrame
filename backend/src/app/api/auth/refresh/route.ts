@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { errorResponse } from '@/lib/api-response';
 import { clearSessionCookie, refreshSessionCookie } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';

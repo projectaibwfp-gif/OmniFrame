@@ -1,20 +1,15 @@
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
-import { getSql } from '@/lib/db';
+import { getSql } from './db';
+import { ErrorCode } from './errors';
+import { logError, logWarn } from './logger';
 
-interface HighscoresSnapshot {
+export interface HighscoresSnapshot {
   characterName: string;
   world: string;
   vocation: string;
   level: number;
   rank: number;
   exactExperience: number;
-}
-
-interface LatestHighscoresSnapshotRow {
-  exactExperience: number;
-  rank: number;
-  vocation: string;
-  checkedAt: string;
 }
 
 export interface LatestHighscoresSnapshot {
@@ -35,6 +30,8 @@ interface HighscoresSnapshotListRow {
   checkedAt: string;
 }
 
+const SAVE_BUCKET_MS = 15 * 60 * 1000;
+
 export interface HighscoresSnapshotsListResult {
   data: HighscoresSnapshotRecordDto[];
   total: number;
@@ -47,8 +44,7 @@ export interface HighscoresSnapshotsListResult {
  */
 function roundTo15MinBucket(timestamp: Date): Date {
   const ms = timestamp.getTime();
-  const bucketMs = 15 * 60 * 1000; // 15 minutes in ms
-  const rounded = Math.floor(ms / bucketMs) * bucketMs;
+  const rounded = Math.floor(ms / SAVE_BUCKET_MS) * SAVE_BUCKET_MS;
   return new Date(rounded);
 }
 
@@ -58,20 +54,25 @@ function roundTo15MinBucket(timestamp: Date): Date {
 async function shouldSaveCharacter(normalizedName: string, world: string): Promise<boolean> {
   try {
     const sql = getSql();
-    const result = await sql`
+    const result = (await sql`
       SELECT last_save_bucket FROM character_highscores_last_save 
       WHERE normalized_name = ${normalizedName.toLowerCase()} AND world = ${world}
-    `;
+    `) as Array<{ last_save_bucket: string }>;
 
     if (!result.length) {
       return true; // Not saved before
     }
 
-    const lastBucket = new Date(result[0].last_save_bucket as string);
+    const lastBucket = new Date(result[0].last_save_bucket);
     const currentBucket = roundTo15MinBucket(new Date());
     return lastBucket.getTime() !== currentBucket.getTime();
   } catch (error) {
-    console.error('[highscores.saveSnapshots] Error checking last save:', error);
+    logWarn(
+      'highscores.saveSnapshots',
+      ErrorCode.DB_QUERY_FAILED,
+      { reason: 'Error checking last save' },
+      error,
+    );
     return true;
   }
 }
@@ -124,7 +125,12 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
       `;
     }
   } catch (error) {
-    console.error('[highscores.saveSnapshots] Error saving snapshots:', error);
+    logError(
+      'highscores.saveSnapshots',
+      ErrorCode.DB_QUERY_FAILED,
+      { reason: 'Error saving snapshots' },
+      error,
+    );
     throw error;
   }
 }
@@ -144,7 +150,7 @@ export async function getLatestHighscoresSnapshot(
       AND world = ${world}
     ORDER BY checked_at DESC
     LIMIT 1
-  `) as LatestHighscoresSnapshotRow[];
+  `) as LatestHighscoresSnapshot[];
 
   if (!rows.length) {
     return null;

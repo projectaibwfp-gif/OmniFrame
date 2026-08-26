@@ -1,31 +1,25 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ProductsService, type Product } from '../products.service';
+import { EMPTY_PRODUCT_FORM, type ProductFormValue, validateProductForm } from '../product-form';
 
 @Component({
   selector: 'app-products-edit',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './products-edit.component.html',
   styleUrl: './products-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsEditComponent {
-  readonly product = signal<Product | null>(null);
-  readonly isLoading = signal(true);
-  readonly isSaving = signal(false);
-  readonly apiError = signal<string | null>(null);
-  readonly validationErrors = signal<Record<string, string>>({});
-
-  readonly editForm = signal({
-    name: '',
-    status: 'draft' as 'active' | 'draft',
-    category: 'General',
-    description: '',
-  });
+  protected readonly product = signal<Product | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly isSaving = signal(false);
+  protected readonly apiError = signal<string | null>(null);
+  protected readonly validationErrors = signal<Record<string, string>>({});
+  protected readonly editForm = signal<ProductFormValue>({ ...EMPTY_PRODUCT_FORM });
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -35,7 +29,7 @@ export class ProductsEditComponent {
     this.loadProduct();
   }
 
-  saveProduct(): void {
+  protected saveProduct(): void {
     if (!this.validateForm()) {
       return;
     }
@@ -60,7 +54,7 @@ export class ProductsEditComponent {
         next: (updated) => {
           this.product.set(updated);
           this.isSaving.set(false);
-          this.router.navigate(['/products', product.id]);
+          void this.router.navigate(['/products', product.id]);
         },
         error: (error) => {
           console.error('Failed to update product:', error);
@@ -72,37 +66,13 @@ export class ProductsEditComponent {
       });
   }
 
-  cancel(): void {
+  protected cancel(): void {
     const product = this.product();
-    if (product) {
-      this.router.navigate(['/products', product.id]);
-    } else {
-      this.router.navigate(['/products']);
-    }
+    void this.router.navigate(product ? ['/products', product.id] : ['/products']);
   }
 
   private validateForm(): boolean {
-    const errors: Record<string, string> = {};
-    const form = this.editForm();
-
-    const name = form.name.trim();
-    if (!name || name.length > 120) {
-      errors['name'] = 'Nazwa jest wymagana i nie może być dłuższa niż 120 znaków';
-    }
-
-    if (!['active', 'draft'].includes(form.status)) {
-      errors['status'] = 'Nieprawidłowy status';
-    }
-
-    const category = form.category.trim();
-    if (!category || category.length > 80) {
-      errors['category'] = 'Kategoria jest wymagana i nie może być dłuższa niż 80 znaków';
-    }
-
-    if (form.description && form.description.length > 500) {
-      errors['description'] = 'Opis nie może być dłuższy niż 500 znaków';
-    }
-
+    const errors = validateProductForm(this.editForm());
     this.validationErrors.set(errors);
     return Object.keys(errors).length === 0;
   }
@@ -111,9 +81,9 @@ export class ProductsEditComponent {
     this.isLoading.set(true);
     this.apiError.set(null);
 
-    this.route.params.subscribe((params) => {
-      const id = parseInt(params['id'], 10);
-      if (isNaN(id)) {
+    this.route.params.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const id = Number.parseInt(params['id'], 10);
+      if (Number.isNaN(id)) {
         this.apiError.set('Invalid product ID');
         this.isLoading.set(false);
         return;

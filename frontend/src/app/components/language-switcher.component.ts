@@ -3,16 +3,16 @@ import { LocalizationService, type Locale } from '../services/localization.servi
 
 @Component({
   selector: 'app-language-switcher',
-  standalone: true,
   templateUrl: './language-switcher.component.html',
   styleUrl: './language-switcher.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LanguageSwitcherComponent {
-  readonly localizationService = inject(LocalizationService);
   readonly localeChanged = output<Locale>();
 
-  setLocale(locale: Locale): void {
+  protected readonly localizationService = inject(LocalizationService);
+
+  protected setLocale(locale: Locale): void {
     this.localizationService.setLocale(locale);
     this.localeChanged.emit(locale);
   }

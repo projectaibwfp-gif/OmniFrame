@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { ReactElement } from 'react';
 import { SwaggerUi } from './swagger-ui';
 
 export const metadata: Metadata = {
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Swagger UI for OmniFrame backend REST endpoints',
 };
 
-export default function SwaggerPage() {
+export default function SwaggerPage(): ReactElement {
   return (
     <main>
       <SwaggerUi />

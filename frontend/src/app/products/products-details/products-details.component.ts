@@ -1,21 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ProductsService, type Product } from '../products.service';
 
 @Component({
   selector: 'app-products-details',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
   templateUrl: './products-details.component.html',
   styleUrl: './products-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsDetailsComponent {
-  readonly product = signal<Product | null>(null);
-  readonly isLoading = signal(true);
-  readonly apiError = signal<string | null>(null);
+  protected readonly product = signal<Product | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly apiError = signal<string | null>(null);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -25,14 +23,14 @@ export class ProductsDetailsComponent {
     this.loadProduct();
   }
 
-  goBack(): void {
-    this.router.navigate(['/products']);
+  protected goBack(): void {
+    void this.router.navigate(['/products']);
   }
 
-  goEdit(): void {
+  protected goEdit(): void {
     const product = this.product();
     if (product) {
-      this.router.navigate(['/products', product.id, 'edit']);
+      void this.router.navigate(['/products', product.id, 'edit']);
     }
   }
 
@@ -40,9 +38,9 @@ export class ProductsDetailsComponent {
     this.isLoading.set(true);
     this.apiError.set(null);
 
-    this.route.params.subscribe((params) => {
-      const id = parseInt(params['id'], 10);
-      if (isNaN(id)) {
+    this.route.params.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const id = Number.parseInt(params['id'], 10);
+      if (Number.isNaN(id)) {
         this.apiError.set('Invalid product ID');
         this.isLoading.set(false);
         return;

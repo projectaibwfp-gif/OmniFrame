@@ -10,6 +10,10 @@ import {
 
 const CHART_WIDTH = 700;
 const CHART_HEIGHT = 185;
+const CHART_TOP_PADDING = 24;
+const BAR_MIN_HEIGHT_PERCENT = 18;
+const BAR_MAX_HEIGHT_PERCENT = 100;
+const Y_AXIS_TICK_COUNT = 3;
 
 interface DashboardStatCard {
   label: string;
@@ -23,47 +27,46 @@ interface DashboardStatCard {
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   imports: [RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  readonly dashboard = signal<DashboardData | null>(null);
-  readonly isLoading = signal(true);
-  readonly apiError = signal(false);
-  readonly currentUser = inject(AuthService).user;
-  readonly todayLabel = this.formatTodayLabel();
-  readonly activity = computed(() => this.dashboard()?.activity ?? []);
-  readonly chartMax = computed(() => {
+  protected readonly dashboard = signal<DashboardData | null>(null);
+  protected readonly isLoading = signal(true);
+  protected readonly apiError = signal(false);
+  protected readonly currentUser = inject(AuthService).user;
+  protected readonly todayLabel = this.formatTodayLabel();
+  protected readonly activity = computed(() => this.dashboard()?.activity ?? []);
+  protected readonly chartMax = computed(() => {
     const points = this.activity();
     const values = points.flatMap((point) => [point.logins, point.signups]);
     return Math.max(1, ...values);
   });
-  readonly chartYAxis = computed(() => {
+  protected readonly chartYAxis = computed(() => {
     const max = this.chartMax();
-    return [max, Math.ceil((max * 2) / 3), Math.ceil(max / 3), 0];
+    return [max, Math.ceil((max * 2) / Y_AXIS_TICK_COUNT), Math.ceil(max / Y_AXIS_TICK_COUNT), 0];
   });
-  readonly loginsLinePath = computed(() =>
+  protected readonly loginsLinePath = computed(() =>
     this.buildLinePath(
       this.activity().map((point) => point.logins),
       this.chartMax(),
     ),
   );
-  readonly loginsAreaPath = computed(() =>
+  protected readonly loginsAreaPath = computed(() =>
     this.buildAreaPath(
       this.activity().map((point) => point.logins),
       this.chartMax(),
     ),
   );
-  readonly signupsLinePath = computed(() =>
+  protected readonly signupsLinePath = computed(() =>
     this.buildLinePath(
       this.activity().map((point) => point.signups),
       this.chartMax(),
     ),
   );
-  readonly statCards = computed<DashboardStatCard[]>(() => {
+  protected readonly statCards = computed<DashboardStatCard[]>(() => {
     const dashboard = this.dashboard();
     if (!dashboard) {
       return [];
@@ -120,9 +123,9 @@ export class DashboardComponent {
       },
     ];
   });
-  readonly topReferrer = computed(() => this.dashboard()?.topReferrers[0] ?? null);
-  readonly latestActiveUser = computed(() => this.dashboard()?.recentUsers[0] ?? null);
-  readonly usersWithoutReferral = computed(() => {
+  protected readonly topReferrer = computed(() => this.dashboard()?.topReferrers[0] ?? null);
+  protected readonly latestActiveUser = computed(() => this.dashboard()?.recentUsers[0] ?? null);
+  protected readonly usersWithoutReferral = computed(() => {
     const dashboard = this.dashboard();
     if (!dashboard) {
       return 0;
@@ -137,7 +140,7 @@ export class DashboardComponent {
     this.loadDashboard();
   }
 
-  loadDashboard(): void {
+  protected loadDashboard(): void {
     this.isLoading.set(true);
     this.apiError.set(false);
     this.dashboardService
@@ -149,7 +152,7 @@ export class DashboardComponent {
       });
   }
 
-  activitySummary(point: DashboardActivityPoint): string {
+  protected activitySummary(point: DashboardActivityPoint): string {
     return `${point.logins} logowan / ${point.signups} rejestracji`;
   }
 
@@ -180,7 +183,9 @@ export class DashboardComponent {
 
   private toBarHeights(values: number[]): number[] {
     const max = Math.max(1, ...values);
-    return values.map((value) => Math.max(18, Math.round((value / max) * 100)));
+    return values.map((value) =>
+      Math.max(BAR_MIN_HEIGHT_PERCENT, Math.round((value / max) * BAR_MAX_HEIGHT_PERCENT)),
+    );
   }
 
   private buildLinePath(values: number[], max: number): string {
@@ -192,7 +197,7 @@ export class DashboardComponent {
       .map((value, index) => {
         const x =
           values.length === 1 ? CHART_WIDTH / 2 : (index / (values.length - 1)) * CHART_WIDTH;
-        const y = CHART_HEIGHT - (value / max) * (CHART_HEIGHT - 24);
+        const y = CHART_HEIGHT - (value / max) * (CHART_HEIGHT - CHART_TOP_PADDING);
         return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
       })
       .join(' ');

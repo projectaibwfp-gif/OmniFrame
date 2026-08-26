@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { getCurrentUserProfile, updateCurrentUserProfile } from '@/lib/profile';
+import { DESCRIPTION_MAX_LENGTH, MIN_USER_AGE_YEARS, PHONE_MIN_DIGITS } from '@/lib/validation';
+
+const PHONE_PATTERN = /^[\d\s+\-()]{9,}$/;
 
 interface UpdateProfilePayload {
   phone?: string | null;
@@ -52,9 +55,9 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   const birthDate = payload.birthDate || null;
   const description = payload.description?.trim() || null;
 
-  if (phone !== null && !/^[\d\s+\-()]{9,}$/.test(phone)) {
+  if (phone !== null && !PHONE_PATTERN.test(phone)) {
     return errorResponse(
-      'Phone must be valid format with at least 9 digits',
+      `Phone must be valid format with at least ${PHONE_MIN_DIGITS} digits`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );
@@ -74,14 +77,18 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       return errorResponse('Birth date cannot be in the future', 400, ErrorCode.VALIDATION_FAILED);
     }
     const age = today.getFullYear() - date.getFullYear();
-    if (age < 13) {
-      return errorResponse('User must be at least 13 years old', 400, ErrorCode.VALIDATION_FAILED);
+    if (age < MIN_USER_AGE_YEARS) {
+      return errorResponse(
+        `User must be at least ${MIN_USER_AGE_YEARS} years old`,
+        400,
+        ErrorCode.VALIDATION_FAILED,
+      );
     }
   }
 
-  if (description !== null && description.length > 500) {
+  if (description !== null && description.length > DESCRIPTION_MAX_LENGTH) {
     return errorResponse(
-      'Description must be no longer than 500 characters',
+      `Description must be no longer than ${DESCRIPTION_MAX_LENGTH} characters`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );

@@ -1,6 +1,8 @@
 import type { TibiaCharacterDto, TibiaCharacterHistoryEntryDto } from '@shared/api-contract';
 import { getSql } from './db';
 
+const DEFAULT_LOOKUP_HISTORY_LIMIT = 20;
+
 interface CharacterLookupRow {
   id: number;
   checkedAt: string;
@@ -73,7 +75,7 @@ export async function saveCharacterLookup(
 
 export async function listCharacterLookupHistory(
   characterName: string,
-  limit = 20,
+  limit = DEFAULT_LOOKUP_HISTORY_LIMIT,
 ): Promise<TibiaCharacterHistoryEntryDto[]> {
   const sql = getSql();
   const rows = (await sql`

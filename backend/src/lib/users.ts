@@ -1,6 +1,8 @@
 import type { UserRole, UsersListItemDto } from '@shared/api-contract';
 import { getSql } from './db';
 
+const DEFAULT_USERS_LIMIT = 50;
+
 interface UserRow {
   id: number;
   google_id: string;
@@ -39,7 +41,7 @@ function mapUserRow(row: UserRow): UsersListItemDto {
   };
 }
 
-export async function listUsers(limit = 50): Promise<UsersListItemDto[]> {
+export async function listUsers(limit = DEFAULT_USERS_LIMIT): Promise<UsersListItemDto[]> {
   const sql = getSql();
   const rows = (await sql`
     SELECT users.id, users.google_id, users.email, users.email_verified, users.role, users.name,

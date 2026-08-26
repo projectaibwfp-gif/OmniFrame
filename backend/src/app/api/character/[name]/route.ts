@@ -1,5 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import type { ApiResponse, TibiaCharacterLookupDto } from '@shared/api-contract';
+import { NextResponse, type NextRequest } from 'next/server';
+import type {
+  ApiResponse,
+  TibiaCharacterHistoryEntryDto,
+  TibiaCharacterLookupDto,
+} from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import {
@@ -47,7 +51,7 @@ export async function GET(
       );
     }
 
-    let history;
+    let history: TibiaCharacterHistoryEntryDto[];
     try {
       history = await listCharacterLookupHistory(characterName);
     } catch (error) {

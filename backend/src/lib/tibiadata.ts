@@ -11,6 +11,7 @@ import type {
   TibiaNewsListDto,
 } from '@shared/api-contract';
 import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
+import type { HighscoresSnapshot } from './highscores-snapshots';
 
 const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://dev.tibiadata.com/v4';
 
@@ -133,8 +134,11 @@ interface TibiaDataHighscoresResponse {
 type JsonRecord = Record<string, unknown>;
 const MAX_HIGHSCORE_PAGES = 20;
 const RESTRICTION_MODE_ERROR_CODE = 9002;
+const MS_PER_MINUTE = 60_000;
+const HTTP_BAD_REQUEST = 400;
+const HTTP_NOT_FOUND = 404;
 
-type TibiaHighscoresVocation = 'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers';
+export type TibiaHighscoresVocation = 'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers';
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {
@@ -268,6 +272,29 @@ function findCharacterInHighscores(
   return null;
 }
 
+function toHighscoresSnapshot(
+  entry: TibiaDataHighscoreEntry,
+  world: string,
+): HighscoresSnapshot | null {
+  const name = readString(entry.name);
+  const level = readNumber(entry.level);
+  const rank = readNumber(entry.rank);
+  const value = readNumber(entry.value);
+  const entryVocation = readString(entry.vocation);
+  if (!name || level === null || rank === null || value === null || !entryVocation) {
+    return null;
+  }
+
+  return {
+    characterName: name,
+    world,
+    vocation: entryVocation,
+    level,
+    rank,
+    exactExperience: value,
+  };
+}
+
 function mapCharacterVocationToHighscoresVocation(
   vocation: string | null,
 ): TibiaHighscoresVocation | null {
@@ -293,7 +320,7 @@ function mapCharacterVocationToHighscoresVocation(
 }
 
 // In-memory cache for highscores pages (15 minutes TTL)
-const HIGHSCORES_CACHE_TTL_MS = 15 * 60 * 1000;
+const TIBIA_DATA_CACHE_TTL_MS = 15 * 60 * 1000;
 interface CacheEntry {
   data: TibiaDataHighscoresPayload;
   timestamp: number;
@@ -311,7 +338,7 @@ function getFromCache(cacheKey: string): TibiaDataHighscoresPayload | null {
   }
 
   const now = Date.now();
-  if (now - entry.timestamp > HIGHSCORES_CACHE_TTL_MS) {
+  if (now - entry.timestamp > TIBIA_DATA_CACHE_TTL_MS) {
     highscoresPageCache.delete(cacheKey);
     return null;
   }
@@ -345,7 +372,7 @@ async function fetchHighscoresPage(
   );
 
   if (!response.ok) {
-    if (response.status === 400) {
+    if (response.status === HTTP_BAD_REQUEST) {
       const payload = (await response.json()) as TibiaDataHighscoresResponse;
       const errorCode = readNumber(payload.information?.status?.error);
       const message =
@@ -373,14 +400,7 @@ async function findCharacterInHighscoresPages(
   world: string,
   vocation: TibiaHighscoresVocation,
 ): Promise<TibiaCharacterExperienceDto & { lookupLog: string }> {
-  const allSnapshots: Array<{
-    characterName: string;
-    world: string;
-    vocation: string;
-    level: number;
-    rank: number;
-    exactExperience: number;
-  }> = [];
+  const allSnapshots: HighscoresSnapshot[] = [];
 
   const logs: string[] = [];
   logs.push(`Searching: ${characterName} on ${world} (${vocation})`);
@@ -393,20 +413,9 @@ async function findCharacterInHighscoresPages(
   // Collect all characters from first page
   if (firstPage.highscore_list) {
     for (const entry of firstPage.highscore_list) {
-      const name = readString(entry.name);
-      const level = readNumber(entry.level);
-      const rank = readNumber(entry.rank);
-      const value = readNumber(entry.value);
-      const entryVocation = readString(entry.vocation);
-      if (name && level !== null && rank !== null && value !== null && entryVocation) {
-        allSnapshots.push({
-          characterName: name,
-          world,
-          vocation: entryVocation,
-          level,
-          rank,
-          exactExperience: value,
-        });
+      const snapshot = toHighscoresSnapshot(entry, world);
+      if (snapshot) {
+        allSnapshots.push(snapshot);
       }
     }
   }
@@ -426,20 +435,9 @@ async function findCharacterInHighscoresPages(
     // Collect all characters from current page
     if (currentPage.highscore_list) {
       for (const entry of currentPage.highscore_list) {
-        const name = readString(entry.name);
-        const level = readNumber(entry.level);
-        const rank = readNumber(entry.rank);
-        const value = readNumber(entry.value);
-        const entryVocation = readString(entry.vocation);
-        if (name && level !== null && rank !== null && value !== null && entryVocation) {
-          allSnapshots.push({
-            characterName: name,
-            world,
-            vocation: entryVocation,
-            level,
-            rank,
-            exactExperience: value,
-          });
+        const snapshot = toHighscoresSnapshot(entry, world);
+        if (snapshot) {
+          allSnapshots.push(snapshot);
         }
       }
     }
@@ -511,7 +509,7 @@ async function fetchCharacterExperienceFromHighscores(
         const checkedAtMs = Date.parse(latestSnapshot.checkedAt);
         const highscoreAgeMinutes = Number.isNaN(checkedAtMs)
           ? null
-          : Math.max(0, Math.floor((Date.now() - checkedAtMs) / 60000));
+          : Math.max(0, Math.floor((Date.now() - checkedAtMs) / MS_PER_MINUTE));
 
         return {
           status: 'found',
@@ -583,7 +581,7 @@ function mapNewsItem(item: TibiaDataNewsItem): TibiaNewsDto | null {
 
 export async function fetchNews(): Promise<TibiaNewsListDto> {
   const now = Date.now();
-  if (newsCache && now - newsCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
+  if (newsCache && now - newsCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
     return newsCache.data;
   }
 
@@ -607,7 +605,7 @@ export async function fetchNews(): Promise<TibiaNewsListDto> {
 
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
   const now = Date.now();
-  if (boostableBossesCache && now - boostableBossesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
+  if (boostableBossesCache && now - boostableBossesCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
     return boostableBossesCache.data;
   }
 
@@ -629,7 +627,7 @@ export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
 
 export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
   const now = Date.now();
-  if (creaturesCache && now - creaturesCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
+  if (creaturesCache && now - creaturesCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
     return creaturesCache.data;
   }
 
@@ -658,7 +656,7 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
     },
   );
 
-  if (response.status === 404) {
+  if (response.status === HTTP_NOT_FOUND) {
     throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
   }
 
@@ -668,7 +666,7 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
 
   const payload = (await response.json()) as TibiaDataCharacterResponse;
   const payloadStatusCode = payload.information?.status?.http_code;
-  if (payloadStatusCode === 404) {
+  if (payloadStatusCode === HTTP_NOT_FOUND) {
     throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
   }
 
@@ -710,6 +708,27 @@ export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
     }
   }
 
+  return mapCharacterDto({
+    characterName,
+    characterInfo,
+    characterRoot,
+    guild,
+    accountInformation,
+    experience,
+  });
+}
+
+function mapCharacterDto(input: {
+  characterName: string;
+  characterInfo: JsonRecord;
+  characterRoot: JsonRecord | null;
+  guild: JsonRecord | null;
+  accountInformation: JsonRecord | null;
+  experience: TibiaCharacterExperienceDto | null;
+}): TibiaCharacterDto {
+  const { characterName, characterInfo, characterRoot, guild, accountInformation, experience } =
+    input;
+
   return {
     name: characterName,
     sex: readString(characterInfo['sex']),
@@ -747,14 +766,7 @@ export async function fetchHighscoresForWorldAndVocation(
   world: string,
   vocation: TibiaHighscoresVocation,
 ): Promise<number> {
-  const allSnapshots: Array<{
-    characterName: string;
-    world: string;
-    vocation: string;
-    level: number;
-    rank: number;
-    exactExperience: number;
-  }> = [];
+  const allSnapshots: HighscoresSnapshot[] = [];
 
   const firstPage = await fetchHighscoresPage(world, 1, vocation);
   const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
@@ -763,20 +775,9 @@ export async function fetchHighscoresForWorldAndVocation(
   // Collect from first page
   if (firstPage.highscore_list) {
     for (const entry of firstPage.highscore_list) {
-      const name = readString(entry.name);
-      const level = readNumber(entry.level);
-      const rank = readNumber(entry.rank);
-      const value = readNumber(entry.value);
-      const entryVocation = readString(entry.vocation);
-      if (name && level !== null && rank !== null && value !== null && entryVocation) {
-        allSnapshots.push({
-          characterName: name,
-          world,
-          vocation: entryVocation,
-          level,
-          rank,
-          exactExperience: value,
-        });
+      const snapshot = toHighscoresSnapshot(entry, world);
+      if (snapshot) {
+        allSnapshots.push(snapshot);
       }
     }
   }
@@ -786,20 +787,9 @@ export async function fetchHighscoresForWorldAndVocation(
     const currentPage = await fetchHighscoresPage(world, page, vocation);
     if (currentPage.highscore_list) {
       for (const entry of currentPage.highscore_list) {
-        const name = readString(entry.name);
-        const level = readNumber(entry.level);
-        const rank = readNumber(entry.rank);
-        const value = readNumber(entry.value);
-        const entryVocation = readString(entry.vocation);
-        if (name && level !== null && rank !== null && value !== null && entryVocation) {
-          allSnapshots.push({
-            characterName: name,
-            world,
-            vocation: entryVocation,
-            level,
-            rank,
-            exactExperience: value,
-          });
+        const snapshot = toHighscoresSnapshot(entry, world);
+        if (snapshot) {
+          allSnapshots.push(snapshot);
         }
       }
     }

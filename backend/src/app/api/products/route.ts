@@ -1,10 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type { ApiResponse, ProductCreateRequestDto, ProductDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, loadCurrentUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { createProduct, listProducts } from '@/lib/products';
+import {
+  DEFAULT_PRODUCT_CATEGORY,
+  DESCRIPTION_MAX_LENGTH,
+  PRODUCT_NAME_MAX_LENGTH,
+  PRODUCT_STATUSES,
+} from '@/lib/validation';
+
+const FALLBACK_CREATED_BY_NAME = 'SYSTEM';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,26 +53,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const name = payload.name?.trim();
-  const category = payload.category?.trim() || 'General';
+  const category = payload.category?.trim() || DEFAULT_PRODUCT_CATEGORY;
   const status = payload.status ?? 'draft';
   const description = payload.description?.trim() || null;
-  const createdByName = user.name || user.email || 'SYSTEM';
+  const createdByName = user.name || user.email || FALLBACK_CREATED_BY_NAME;
 
-  if (!name || name.length > 120) {
+  if (!name || name.length > PRODUCT_NAME_MAX_LENGTH) {
     return errorResponse(
-      'Name is required and must be no longer than 120 characters',
+      `Name is required and must be no longer than ${PRODUCT_NAME_MAX_LENGTH} characters`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );
   }
 
-  if (!['active', 'draft'].includes(status)) {
+  if (!PRODUCT_STATUSES.includes(status)) {
     return errorResponse('Status must be active or draft', 400, ErrorCode.VALIDATION_FAILED);
   }
 
-  if (description !== null && description.length > 500) {
+  if (description !== null && description.length > DESCRIPTION_MAX_LENGTH) {
     return errorResponse(
-      'Description must be no longer than 500 characters',
+      `Description must be no longer than ${DESCRIPTION_MAX_LENGTH} characters`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );

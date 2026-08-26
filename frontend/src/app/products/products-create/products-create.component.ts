@@ -1,33 +1,26 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProductsService } from '../products.service';
+import { EMPTY_PRODUCT_FORM, type ProductFormValue, validateProductForm } from '../product-form';
 
 @Component({
   selector: 'app-products-create',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './products-create.component.html',
   styleUrl: './products-create.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsCreateComponent {
-  readonly isSaving = signal(false);
-  readonly apiError = signal<string | null>(null);
-  readonly validationErrors = signal<Record<string, string>>({});
-
-  readonly createForm = signal({
-    name: '',
-    status: 'draft' as 'active' | 'draft',
-    category: 'General',
-    description: '',
-  });
+  protected readonly isSaving = signal(false);
+  protected readonly apiError = signal<string | null>(null);
+  protected readonly validationErrors = signal<Record<string, string>>({});
+  protected readonly createForm = signal<ProductFormValue>({ ...EMPTY_PRODUCT_FORM });
 
   private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
 
-  createProduct(): void {
+  protected createProduct(): void {
     if (!this.validateForm()) {
       return;
     }
@@ -46,7 +39,7 @@ export class ProductsCreateComponent {
       .subscribe({
         next: (product) => {
           this.isSaving.set(false);
-          this.router.navigate(['/products', product.id]);
+          void this.router.navigate(['/products', product.id]);
         },
         error: (error) => {
           console.error('Failed to create product:', error);
@@ -58,32 +51,12 @@ export class ProductsCreateComponent {
       });
   }
 
-  cancel(): void {
-    this.router.navigate(['/products']);
+  protected cancel(): void {
+    void this.router.navigate(['/products']);
   }
 
   private validateForm(): boolean {
-    const errors: Record<string, string> = {};
-    const form = this.createForm();
-
-    const name = form.name.trim();
-    if (!name || name.length > 120) {
-      errors['name'] = 'Nazwa jest wymagana i nie może być dłuższa niż 120 znaków';
-    }
-
-    if (!['active', 'draft'].includes(form.status)) {
-      errors['status'] = 'Nieprawidłowy status';
-    }
-
-    const category = form.category.trim();
-    if (!category || category.length > 80) {
-      errors['category'] = 'Kategoria jest wymagana i nie może być dłuższa niż 80 znaków';
-    }
-
-    if (form.description && form.description.length > 500) {
-      errors['description'] = 'Opis nie może być dłuższy niż 500 znaków';
-    }
-
+    const errors = validateProductForm(this.createForm());
     this.validationErrors.set(errors);
     return Object.keys(errors).length === 0;
   }

@@ -1,4 +1,6 @@
-export default function HomePage() {
+import type { ReactElement } from 'react';
+
+export default function HomePage(): ReactElement {
   return (
     <main style={{ fontFamily: 'system-ui', padding: '3rem' }}>
       <h1>Project AI API</h1>

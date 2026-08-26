@@ -1,15 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import type { ApiResponse, ProductDto, ProductUpdateRequestDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
 import { deleteProduct, getProductById, updateProduct } from '@/lib/products';
+import {
+  DESCRIPTION_MAX_LENGTH,
+  PRODUCT_NAME_MAX_LENGTH,
+  PRODUCT_STATUSES,
+} from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 
 interface RouteParams {
   id: string;
+}
+
+async function resolveProductId(props: {
+  params: Promise<RouteParams>;
+}): Promise<number | NextResponse> {
+  const params = await props.params;
+  const id = Number.parseInt(params.id, 10);
+
+  if (Number.isNaN(id)) {
+    return errorResponse('Invalid product ID', 400, ErrorCode.VALIDATION_FAILED);
+  }
+
+  return id;
 }
 
 export async function GET(
@@ -21,11 +39,9 @@ export async function GET(
     return auth.response;
   }
 
-  const params = await props.params;
-  const id = parseInt(params.id, 10);
-
-  if (isNaN(id)) {
-    return errorResponse('Invalid product ID', 400, ErrorCode.VALIDATION_FAILED);
+  const id = await resolveProductId(props);
+  if (id instanceof NextResponse) {
+    return id;
   }
 
   try {
@@ -50,11 +66,9 @@ export async function PATCH(
     return auth.response;
   }
 
-  const params = await props.params;
-  const id = parseInt(params.id, 10);
-
-  if (isNaN(id)) {
-    return errorResponse('Invalid product ID', 400, ErrorCode.VALIDATION_FAILED);
+  const id = await resolveProductId(props);
+  if (id instanceof NextResponse) {
+    return id;
   }
 
   let payload: ProductUpdateRequestDto;
@@ -71,21 +85,21 @@ export async function PATCH(
   const status = payload.status;
   const description = payload.description?.trim();
 
-  if (name !== undefined && (!name || name.length > 120)) {
+  if (name !== undefined && (!name || name.length > PRODUCT_NAME_MAX_LENGTH)) {
     return errorResponse(
-      'Name must not be empty and must be no longer than 120 characters',
+      `Name must not be empty and must be no longer than ${PRODUCT_NAME_MAX_LENGTH} characters`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );
   }
 
-  if (status !== undefined && !['active', 'draft'].includes(status)) {
+  if (status !== undefined && !PRODUCT_STATUSES.includes(status)) {
     return errorResponse('Status must be active or draft', 400, ErrorCode.VALIDATION_FAILED);
   }
 
-  if (description !== undefined && description.length > 500) {
+  if (description !== undefined && description.length > DESCRIPTION_MAX_LENGTH) {
     return errorResponse(
-      'Description must be no longer than 500 characters',
+      `Description must be no longer than ${DESCRIPTION_MAX_LENGTH} characters`,
       400,
       ErrorCode.VALIDATION_FAILED,
     );
@@ -119,11 +133,9 @@ export async function DELETE(
     return auth.response;
   }
 
-  const params = await props.params;
-  const id = parseInt(params.id, 10);
-
-  if (isNaN(id)) {
-    return errorResponse('Invalid product ID', 400, ErrorCode.VALIDATION_FAILED);
+  const id = await resolveProductId(props);
+  if (id instanceof NextResponse) {
+    return id;
   }
 
   try {

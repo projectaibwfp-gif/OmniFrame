@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
 import { CHARM_PLACES, type CharmPlace, type Vocation } from './charm-places.data';
 
+const DEFAULT_MAP_ZOOM = 3;
+
 interface DetailLabels {
   back: string;
   notFound: string;
@@ -19,7 +21,6 @@ interface DetailLabels {
 
 @Component({
   selector: 'app-charm-places-detail',
-  standalone: true,
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -85,7 +86,7 @@ export class CharmPlacesDetailComponent {
     if (!place) {
       return '';
     }
-    const zoom = place.mapZoom ?? 3;
+    const zoom = place.mapZoom ?? DEFAULT_MAP_ZOOM;
     const url = `https://tibiamaps.io/map/embed/#${place.coordinates.x},${place.coordinates.y},${place.coordinates.z}:${zoom}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   });

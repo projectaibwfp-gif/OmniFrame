@@ -5,6 +5,8 @@ import type {
 } from '@shared/api-contract';
 import { getSql } from './db';
 
+const DEFAULT_PRODUCTS_LIMIT = 20;
+
 interface ProductRow {
   id: number;
   name: string;
@@ -37,7 +39,7 @@ function mapProductRow(row: ProductRow): ProductDto {
   };
 }
 
-export async function listProducts(limit = 20): Promise<ProductDto[]> {
+export async function listProducts(limit = DEFAULT_PRODUCTS_LIMIT): Promise<ProductDto[]> {
   const sql = getSql();
   const rows = (await sql`
     SELECT id, name, status, category, description,

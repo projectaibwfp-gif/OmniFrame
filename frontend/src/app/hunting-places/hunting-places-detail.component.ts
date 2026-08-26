@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
 import { HUNTING_PLACES, type HuntingPlace, type Vocation } from './hunting-places.data';
 
+const DEFAULT_MAP_ZOOM = 3;
+
 interface DetailLabels {
   back: string;
   notFound: string;
@@ -26,7 +28,6 @@ interface DetailLabels {
 
 @Component({
   selector: 'app-hunting-places-detail',
-  standalone: true,
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -119,7 +120,7 @@ export class HuntingPlacesDetailComponent {
     if (!place) {
       return '';
     }
-    const zoom = place.mapZoom ?? 3;
+    const zoom = place.mapZoom ?? DEFAULT_MAP_ZOOM;
     const url = `https://tibiamaps.io/map/embed/#${place.coordinates.x},${place.coordinates.y},${place.coordinates.z}:${zoom}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   });
