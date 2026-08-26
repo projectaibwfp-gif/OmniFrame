@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-26T11:41:45.002Z"
+    commit: "43f1c02ef957c11149fecd75bc434bdd580942be"
+    frontend:
+      version: "0.11.0"
+      tag: "frontend-v0.11.0"
+      changed: true
+      commits:
+      - hash: "43f1c02e"
+        author: "Filip Podsiadły"
+        date: "2026-08-26T13:40:02+02:00"
+        message: "feat: add quest detail and quests overview components with styling and localization"
+    backend:
+      version: "0.7.0"
+      tag: "backend-v0.7.0"
+      changed: false
+      commits: []
   - date: "2026-08-26T11:23:32.907Z"
     commit: "1c317374d611310e0538fe106eaef1584c7c3703"
     frontend:
