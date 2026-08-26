@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-26T13:37:34.636Z"
+    commit: "c004916053bcfb11251ea9827aaa927f154b4982"
+    frontend:
+      version: "0.12.2"
+      tag: "frontend-v0.12.2"
+      changed: true
+      commits:
+      - hash: "c0049160"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T15:35:57+02:00"
+        message: "refactor: update styles for various components and improve color usage"
+      - hash: "4f8aabf3"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T15:30:41+02:00"
+        message: "refactor: update styles for various components and improve color usage"
+    backend:
+      version: "0.8.1"
+      tag: "backend-v0.8.1"
+      changed: false
+      commits: []
   - date: "2026-08-26T12:31:39.679Z"
     commit: "067903e9fdc116442893b0752dc94c9b9a3868f1"
     frontend:
