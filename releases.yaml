@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-26T10:16:56.506Z"
+    commit: "9cb4a49cd22b7cfe05bf953a2e10361aaa58ff00"
+    frontend:
+      version: "0.10.1"
+      tag: "frontend-v0.10.1"
+      changed: true
+      commits:
+      - hash: "9cb4a49c"
+        author: "Filip Podsiadły"
+        date: "2026-08-26T12:13:29+02:00"
+        message: "refactor: remove 'Mage' vocation from charm and hunting places components"
+    backend:
+      version: "0.7.0"
+      tag: "backend-v0.7.0"
+      changed: false
+      commits: []
   - date: "2026-08-26T10:08:59.899Z"
     commit: "518c29903777ff88e9b83f83e6c2e63a8f785b80"
     frontend:
