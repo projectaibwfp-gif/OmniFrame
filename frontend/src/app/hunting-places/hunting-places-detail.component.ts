@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DomSanitizer, type SafeResourceUrl } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
 import { HUNTING_PLACES, type HuntingPlace, type Vocation } from './hunting-places.data';
@@ -104,209 +105,7 @@ interface DetailLabels {
       }
     </div>
   `,
-  styles: `
-    :host {
-      display: block;
-    }
-
-    .hunting-place-detail-page {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .detail-header {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-
-      h1 {
-        margin: 0;
-        color: var(--text-700);
-        font-size: clamp(24px, 3vw, 30px);
-      }
-    }
-
-    .back-link {
-      align-self: flex-start;
-      color: var(--brand-primary);
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .detail-city {
-      width: fit-content;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: var(--info-bg);
-      color: var(--info-fg);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 380px) 1fr;
-      gap: 20px;
-      align-items: start;
-
-      @media (max-width: 900px) {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      padding: 20px;
-      background: var(--surface-card-overlay);
-      border: 1px solid var(--border-translucent);
-      border-radius: 16px;
-      box-shadow: 0 12px 24px var(--shadow-medium);
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border-subtle);
-
-      &:last-of-type {
-        border-bottom: none;
-      }
-    }
-
-    .info-label {
-      color: var(--text-400);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .info-value {
-      color: var(--text-700);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .profit-high,
-    .exp-high {
-      color: var(--success-fg);
-    }
-
-    .profit-medium,
-    .exp-medium {
-      color: var(--warning-fg);
-    }
-
-    .profit-low,
-    .exp-low {
-      color: var(--text-500);
-    }
-
-    .info-section {
-      margin-top: 20px;
-
-      h3 {
-        margin: 0 0 10px;
-        color: var(--text-700);
-        font-size: 14px;
-      }
-
-      p {
-        margin: 0;
-        color: var(--text-500);
-        font-size: 14px;
-        line-height: 1.5;
-      }
-    }
-
-    .vocations-list,
-    .creatures-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .creatures-list li {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--surface-card);
-      color: var(--text-600);
-      font-size: 12px;
-    }
-
-    .vocation-chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-
-      &.vocation-knight {
-        background: #fde9ea;
-        color: #9c1c1c;
-      }
-
-      &.vocation-paladin {
-        background: #e8f5ee;
-        color: #057642;
-      }
-
-      &.vocation-druid {
-        background: #eef4fb;
-        color: #4b81c8;
-      }
-
-      &.vocation-sorcerer {
-        background: #fdeceb;
-        color: #b24c3b;
-      }
-
-      &.vocation-monk {
-        background: #fff5e8;
-        color: #b7791f;
-      }
-    }
-
-    .detail-map {
-      iframe {
-        width: 100%;
-        height: 480px;
-        border: 0;
-        border-radius: 12px;
-        background: #1a1a1a;
-      }
-
-      h3 {
-        margin: 0 0 12px;
-        color: var(--text-700);
-        font-size: 14px;
-      }
-    }
-
-    .not-found {
-      text-align: center;
-      padding: 40px;
-
-      h2 {
-        margin: 0 0 16px;
-        color: var(--text-700);
-      }
-
-      a {
-        color: var(--brand-primary);
-        font-weight: 600;
-      }
-    }
-  `,
+  styleUrl: './hunting-places-detail.component.scss',
 })
 export class HuntingPlacesDetailComponent {
   readonly id = input.required<string>();
@@ -315,13 +114,14 @@ export class HuntingPlacesDetailComponent {
     HUNTING_PLACES.find((p) => p.id === this.id()),
   );
 
-  protected readonly mapUrl = computed(() => {
+  protected readonly mapUrl = computed<SafeResourceUrl>(() => {
     const place = this.place();
     if (!place) {
       return '';
     }
     const zoom = place.mapZoom ?? 3;
-    return `https://tibiamaps.io/map/embed/#${place.coordinates.x},${place.coordinates.y},${place.coordinates.z}:${zoom}`;
+    const url = `https://tibiamaps.io/map/embed/#${place.coordinates.x},${place.coordinates.y},${place.coordinates.z}:${zoom}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   });
 
   // eslint-disable-next-line complexity
@@ -348,6 +148,7 @@ export class HuntingPlacesDetailComponent {
     };
   });
 
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly localization = inject(LocalizationService);
 
   protected getVocationClass(vocation: Vocation): string {

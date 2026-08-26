@@ -34,6 +34,7 @@ export class AppComponent {
       { path: '/character', label: translations.character, icon: '🧙', exact: false },
       { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺️', exact: false },
       { path: '/charm-places', label: translations.charmPlaces, icon: '✨', exact: false },
+      { path: '/quests', label: translations.quests, icon: '📜', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/products', label: translations.products, icon: '▤', exact: false },
@@ -82,6 +83,7 @@ export class AppComponent {
     character: string;
     huntingPlaces: string;
     charmPlaces: string;
+    quests: string;
     snapshots: string;
     users: string;
     profile: string;
@@ -95,6 +97,7 @@ export class AppComponent {
         character: 'Character lookup',
         huntingPlaces: 'Hunting places',
         charmPlaces: 'Charm places',
+        quests: 'Quests',
         snapshots: 'Highscores DB',
         users: 'Users',
         profile: 'Profile',
@@ -107,6 +110,7 @@ export class AppComponent {
         character: 'Wyszukaj postać',
         huntingPlaces: 'Miejsca polowań',
         charmPlaces: 'Charm places',
+        quests: 'Questy',
         snapshots: 'Highscores DB',
         users: 'Użytkownicy',
         profile: 'Profil',

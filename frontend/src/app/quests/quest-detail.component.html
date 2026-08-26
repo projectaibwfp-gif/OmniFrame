@@ -1,0 +1,61 @@
+<div class="quest-detail-page">
+  @if (quest(); as quest) {
+    <div class="detail-header">
+      <a class="back-link" routerLink="/quests">{{ labels().back }}</a>
+      <h1>{{ quest.name }}</h1>
+      <div class="detail-badges">
+        <span class="detail-city">{{ quest.city }}</span>
+        <span class="category-badge {{ getCategoryClass(quest.category) }}">
+          {{ getCategoryLabel(quest.category) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-info card">
+        <div class="info-row">
+          <span class="info-label">{{ labels().minLevel }}</span>
+          <span class="info-value">{{ quest.minLevel }}+</span>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().description }}</h3>
+          <p>{{ quest.description }}</p>
+        </div>
+
+        @if (quest.rewards && quest.rewards.length > 0) {
+          <div class="info-section">
+            <h3>{{ labels().rewards }}</h3>
+            <ul class="rewards-list">
+              @for (reward of quest.rewards; track reward) {
+                <li>{{ reward }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+
+      <div class="detail-spoiler card">
+        <div class="spoiler-header">
+          <h3>{{ labels().spoiler }}</h3>
+          <button class="spoiler-toggle" type="button" (click)="toggleSpoiler()">
+            {{ spoilerVisible() ? labels().hideSpoiler : labels().showSpoiler }}
+          </button>
+        </div>
+
+        @if (spoilerVisible()) {
+          <div class="spoiler-content">
+            <p>{{ quest.spoiler }}</p>
+          </div>
+        } @else {
+          <p class="spoiler-hint">{{ labels().showSpoiler }}</p>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="not-found">
+      <h2>{{ labels().notFound }}</h2>
+      <a routerLink="/quests">{{ labels().notFoundAction }}</a>
+    </div>
+  }
+</div>

@@ -1,0 +1,91 @@
+@use '../places/places-detail-shared' as shared;
+@use '../../styles/colors' as c;
+
+:host {
+  display: block;
+}
+
+.charm-place-detail-page {
+  @include shared.detail-page;
+}
+
+.detail-header {
+  @include shared.detail-header;
+}
+
+.back-link {
+  @include shared.back-link;
+}
+
+.detail-place {
+  color: c.$text-500;
+  font-size: 14px;
+}
+
+.detail-grid {
+  @include shared.detail-grid;
+}
+
+.card {
+  @include shared.detail-card;
+}
+
+.info-row {
+  @include shared.info-row;
+}
+
+.info-label {
+  @include shared.info-label;
+}
+
+.info-value {
+  @include shared.info-value;
+}
+
+.info-section {
+  @include shared.info-section;
+}
+
+.vocations-list {
+  @include shared.vocations-list;
+}
+
+.vocation-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &.vocation-knight {
+    background: #fde9ea;
+    color: #9c1c1c;
+  }
+
+  &.vocation-paladin {
+    background: #e8f5ee;
+    color: #057642;
+  }
+
+  &.vocation-druid {
+    background: #eef4fb;
+    color: #4b81c8;
+  }
+
+  &.vocation-sorcerer {
+    background: #fdeceb;
+    color: #b24c3b;
+  }
+
+  &.vocation-monk {
+    background: #fff5e8;
+    color: #b7791f;
+  }
+}
+
+.detail-map {
+  @include shared.detail-map;
+}
+
+.not-found {
+  @include shared.not-found;
+}

@@ -188,6 +188,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
 - `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać"; kafelek przenosi do `/hunting-places/:id` ze szczegółami i mapą Tibii,
 - `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań"; kafelek przenosi do `/charm-places/:id` ze szczegółami i mapą Tibii,
+- `/quests` - przeglądarka questów z filtrami (miasto, kategoria), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Charm places"; kafelek przenosi do `/quests/:id` z opisem i ukrytym spoilerem wykonania,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.

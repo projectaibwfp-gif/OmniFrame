@@ -127,5 +127,19 @@ export const routes: Routes = [
         ({ CharmPlacesDetailComponent }) => CharmPlacesDetailComponent,
       ),
   },
+  {
+    path: 'quests',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./quests/quests.component').then(({ QuestsComponent }) => QuestsComponent),
+  },
+  {
+    path: 'quests/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./quests/quest-detail.component').then(
+        ({ QuestDetailComponent }) => QuestDetailComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];
