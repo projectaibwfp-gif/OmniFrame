@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-26T12:31:39.679Z"
+    commit: "067903e9fdc116442893b0752dc94c9b9a3868f1"
+    frontend:
+      version: "0.12.1"
+      tag: "frontend-v0.12.1"
+      changed: true
+      commits:
+      - hash: "067903e9"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T14:29:47+02:00"
+        message: "refactor: update imports and improve code structure across multiple files"
+    backend:
+      version: "0.8.1"
+      tag: "backend-v0.8.1"
+      changed: true
+      commits:
+      - hash: "067903e9"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-26T14:29:47+02:00"
+        message: "refactor: update imports and improve code structure across multiple files"
   - date: "2026-08-26T12:10:48.330Z"
     commit: "19b7edb5c05120d52d11fc8577a44007f7cc35fd"
     frontend:
