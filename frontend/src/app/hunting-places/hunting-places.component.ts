@@ -257,7 +257,6 @@ export class HuntingPlacesComponent {
     const map: Record<Vocation, string> = {
       Knight: 'vocation-knight',
       Paladin: 'vocation-paladin',
-      Mage: 'vocation-mage',
       Druid: 'vocation-druid',
       Sorcerer: 'vocation-sorcerer',
       Monk: 'vocation-monk',

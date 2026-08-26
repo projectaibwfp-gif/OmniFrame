@@ -1,4 +1,4 @@
-export type Vocation = 'Knight' | 'Paladin' | 'Mage' | 'Druid' | 'Sorcerer' | 'Monk';
+export type Vocation = 'Knight' | 'Paladin' | 'Druid' | 'Sorcerer' | 'Monk';
 
 export interface CharmPlace {
   id: string;
@@ -17,7 +17,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Ankrahmun Tombs',
     city: 'Ankrahmun',
     minLevel: 40,
-    recommendedVocations: ['Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
     description: 'Klasyczne miejsce na charm z Ancient Scarab pod Ankrahmun.',
   },
   {
@@ -26,7 +26,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Drefia Hydras',
     city: 'Darashia',
     minLevel: 70,
-    recommendedVocations: ['Knight', 'Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
     description: 'Hydry w Drefii — dobry charm dla wszystkich profesji.',
   },
   {
@@ -35,7 +35,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Sea Serpent Area',
     city: 'Svargrond',
     minLevel: 80,
-    recommendedVocations: ['Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
     description: 'Morskie węże na północy. Popularny charm dla strzelców i magów.',
   },
   {
@@ -44,7 +44,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Yalahar Nightmares',
     city: 'Yalahar',
     minLevel: 80,
-    recommendedVocations: ['Knight', 'Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
     description: 'Koszmarne wyspy w Yalahar. Dużo Nightmare i Hellspawn.',
   },
   {
@@ -53,7 +53,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Wyrm Cave',
     city: 'Liberty Bay',
     minLevel: 90,
-    recommendedVocations: ['Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
     description: 'Wyrmy koło Liberty Bay. Szybki charm dla strzelców i magów.',
   },
   {
@@ -62,7 +62,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Yalahar Grim Reapers',
     city: 'Yalahar',
     minLevel: 120,
-    recommendedVocations: ['Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
     description: 'Grim Reapery w Yalahar. Wysoki poziom, ale szybki charm.',
   },
   {
@@ -71,7 +71,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Buried Cathedral',
     city: 'Feyrist',
     minLevel: 160,
-    recommendedVocations: ['Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Druid', 'Sorcerer'],
     description: 'Spectre w Buried Cathedral. Najlepsze dla magów z area damage.',
   },
   {
@@ -89,7 +89,7 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Netherworld',
     city: 'Roshamuul',
     minLevel: 200,
-    recommendedVocations: ['Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Druid', 'Sorcerer'],
     description: 'Lost Soule w Netherworld. Endgame charm dla magów.',
   },
   {
@@ -98,11 +98,11 @@ export const CHARM_PLACES: CharmPlace[] = [
     placeName: 'Marapur Nagas',
     city: 'Marapur',
     minLevel: 200,
-    recommendedVocations: ['Knight', 'Paladin', 'Mage', 'Druid', 'Sorcerer'],
+    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
     description: 'Nagi w Marapur. Charm dla wszystkich profesji na wysokim poziomie.',
   },
 ];
 
-export const VOCATIONS: Vocation[] = ['Knight', 'Paladin', 'Mage', 'Druid', 'Sorcerer', 'Monk'];
+export const VOCATIONS: Vocation[] = ['Knight', 'Paladin', 'Druid', 'Sorcerer', 'Monk'];
 
 export const CITIES = [...new Set(CHARM_PLACES.map((place) => place.city))].sort();
