@@ -120,6 +120,7 @@ Endpointy:
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca wszystkie rekordy snapshots highscores z paginacją, sortowaniem po `level` i filtrem po świecie,
 - `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchamiany co 12 godzin,
+- `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
@@ -189,6 +190,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać"; kafelek przenosi do `/hunting-places/:id` ze szczegółami i mapą Tibii,
 - `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań"; kafelek przenosi do `/charm-places/:id` ze szczegółami i mapą Tibii,
 - `/quests` - przeglądarka questów z filtrami (miasto, kategoria), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Charm places"; kafelek przenosi do `/quests/:id` z opisem i ukrytym spoilerem wykonania,
+- `/news` - aktualności z oficjalnej strony Tibia pobierane przez `GET /api/news` z cache 15 minut; filtry (kategoria, typ), sortowanie (data, tytuł, kategoria) i stronicowanie; dostępna jako pierwszy przycisk w bocznej nawigacji,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.

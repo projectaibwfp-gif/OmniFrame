@@ -2,8 +2,8 @@ export type ApiResponse<T> = {
   data: T;
 };
 
-export type UserRole = 'admin' | 'user' | 'moderator';
-export type ProductStatus = 'active' | 'draft';
+export type UserRole = "admin" | "user" | "moderator";
+export type ProductStatus = "active" | "draft";
 
 export interface AuthStateDto {
   state: string;
@@ -189,7 +189,8 @@ export interface TibiaCharacterOtherCharacterDto {
   traded: boolean;
 }
 
-export type TibiaCharacterExperienceStatus = 'found' | 'outside_top1000' | 'unavailable';
+export type TibiaCharacterExperienceStatus =
+  "found" | "outside_top1000" | "unavailable";
 
 export interface TibiaCharacterExperienceDto {
   status: TibiaCharacterExperienceStatus;
@@ -259,8 +260,23 @@ export interface HighscoresSnapshotsListDto {
   page: number;
   pageSize: number;
   totalPages: number;
-  sortBy: 'level';
-  sortDir: 'asc' | 'desc';
+  sortBy: "level";
+  sortDir: "asc" | "desc";
   world: string | null;
   worlds: string[];
+}
+
+export interface TibiaNewsDto {
+  id: number;
+  date: string;
+  category: string;
+  type: string;
+  title: string;
+  url: string;
+  urlApi: string;
+}
+
+export interface TibiaNewsListDto {
+  news: TibiaNewsDto[];
+  cachedAt: string;
 }

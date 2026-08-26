@@ -67,6 +67,11 @@ export const routes: Routes = [
       import('./users/users.component').then(({ UsersComponent }) => UsersComponent),
   },
   {
+    path: 'news',
+    canActivate: [authGuard],
+    loadComponent: () => import('./news/news.component').then(({ NewsComponent }) => NewsComponent),
+  },
+  {
     path: 'boosted',
     canActivate: [authGuard],
     loadComponent: () =>

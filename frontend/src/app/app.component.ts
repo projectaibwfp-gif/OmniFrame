@@ -30,6 +30,7 @@ export class AppComponent {
     const locale = this.currentLocale();
     const translations = this.getNavTranslations(locale);
     return [
+      { path: '/news', label: translations.news, icon: '📰', exact: false },
       { path: '/boosted', label: translations.boostedData, icon: '⚔', exact: false },
       { path: '/character', label: translations.character, icon: '🧙', exact: false },
       { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺️', exact: false },
@@ -79,6 +80,7 @@ export class AppComponent {
   private getNavTranslations(locale: Locale): {
     dashboard: string;
     products: string;
+    news: string;
     boostedData: string;
     character: string;
     huntingPlaces: string;
@@ -93,6 +95,7 @@ export class AppComponent {
       en: {
         dashboard: 'Dashboard',
         products: 'Products',
+        news: 'News',
         boostedData: 'Boosted data',
         character: 'Character lookup',
         huntingPlaces: 'Hunting places',
@@ -106,6 +109,7 @@ export class AppComponent {
       pl: {
         dashboard: 'Pulpit',
         products: 'Produkty',
+        news: 'Aktualności',
         boostedData: 'Boosted dane',
         character: 'Wyszukaj postać',
         huntingPlaces: 'Miejsca polowań',

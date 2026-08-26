@@ -1,0 +1,163 @@
+<div class="news-page">
+  <header class="news-page__header">
+    <p class="news-page__eyebrow">{{ labels().eyebrow }}</p>
+    <h1>{{ labels().title }}</h1>
+    <p class="news-page__intro">{{ labels().intro }}</p>
+  </header>
+
+  @if (cachedAt()) {
+    <div class="cache-info">
+      <span>{{ labels().cachedAt }}: {{ cachedAt() | date: 'medium' }}</span>
+    </div>
+  }
+
+  <section class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label for="news-search">{{ labels().title }}</label>
+        <input
+          id="news-search"
+          type="text"
+          class="filter-input"
+          [ngModel]="search()"
+          (ngModelChange)="setSearch($event)"
+          [placeholder]="labels().searchPlaceholder"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="news-category">{{ labels().categoryLabel }}</label>
+        <select
+          id="news-category"
+          class="filter-select"
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="setCategory($event)"
+        >
+          <option value="">{{ labels().allCategories }}</option>
+          @for (category of categories(); track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="news-type">{{ labels().typeLabel }}</label>
+        <select
+          id="news-type"
+          class="filter-select"
+          [ngModel]="selectedType()"
+          (ngModelChange)="setType($event)"
+        >
+          <option value="">{{ labels().allTypes }}</option>
+          @for (type of types(); track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field filter-field--actions">
+        <span class="filter-label">&nbsp;</span>
+        <button class="btn btn-outline-secondary w-100" type="button" (click)="clearFilters()">
+          {{ labels().clearFilters }}
+        </button>
+      </div>
+    </div>
+
+    <div class="sort-bar">
+      <span class="sort-label">{{ labels().sortBy }}:</span>
+      <button class="sort-button" type="button" (click)="setSortField('date')">
+        {{ labels().sortDate }} {{ getSortIndicator('date') }}
+      </button>
+      <button class="sort-button" type="button" (click)="setSortField('title')">
+        {{ labels().sortTitle }} {{ getSortIndicator('title') }}
+      </button>
+      <button class="sort-button" type="button" (click)="setSortField('category')">
+        {{ labels().sortCategory }} {{ getSortIndicator('category') }}
+      </button>
+    </div>
+  </section>
+
+  <section class="results-bar">
+    <span class="results-count"
+      >{{ labels().found }}: <strong>{{ filteredNews().length }}</strong></span
+    >
+    <div class="page-size">
+      <label class="filter-label" for="page-size">{{ labels().perPage }}:</label>
+      <select
+        id="page-size"
+        class="filter-select"
+        [ngModel]="pageSize()"
+        (ngModelChange)="setPageSize(+$event)"
+      >
+        @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline-primary" type="button" (click)="loadNews()">
+        {{ labels().retry }}
+      </button>
+    </div>
+  } @else if (paginatedNews().length > 0) {
+    <section class="news-grid">
+      @for (item of paginatedNews(); track item.id) {
+        <article class="news-card">
+          <div class="news-card__header">
+            <span class="news-card__category">{{ item.category }}</span>
+            <span class="news-card__date">{{ item.date | date: 'mediumDate' }}</span>
+          </div>
+          <h3 class="news-card__title">{{ item.title }}</h3>
+          <div class="news-card__meta">
+            <span class="news-card__type">{{ item.type }}</span>
+          </div>
+          <a class="news-card__link" [href]="item.url" target="_blank" rel="noopener noreferrer">
+            {{ labels().readMore }} →
+          </a>
+        </article>
+      }
+    </section>
+
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Stronicowanie newsów">
+        <button
+          class="pagination-button"
+          type="button"
+          [disabled]="page() === 1"
+          (click)="setPage(page() - 1)"
+        >
+          ← {{ labels().previous }}
+        </button>
+
+        <span class="pagination-info"
+          >{{ startIndex() }} - {{ endIndex() }} / {{ sortedNews().length }}</span
+        >
+
+        <button
+          class="pagination-button"
+          type="button"
+          [disabled]="page() === totalPages()"
+          (click)="setPage(page() + 1)"
+        >
+          {{ labels().next }} →
+        </button>
+      </nav>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>{{ labels().emptyTitle }}</p>
+      <button class="btn btn-outline-primary" type="button" (click)="clearFilters()">
+        {{ labels().emptyAction }}
+      </button>
+    </div>
+  }
+</div>

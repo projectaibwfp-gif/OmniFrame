@@ -7,6 +7,8 @@ import type {
   TibiaCreatureDto,
   TibiaCreaturesDto,
   TibiaCharacterOtherCharacterDto,
+  TibiaNewsDto,
+  TibiaNewsListDto,
 } from '@shared/api-contract';
 import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
 
@@ -537,8 +539,71 @@ async function fetchCharacterExperienceFromHighscores(
   }
 }
 
+interface TibiaDataNewsItem {
+  id?: unknown;
+  date?: unknown;
+  category?: unknown;
+  type?: unknown;
+  news?: unknown;
+  url?: unknown;
+  url_api?: unknown;
+}
+
+interface TibiaDataNewsResponse {
+  news?: TibiaDataNewsItem[];
+}
+
 let boostableBossesCache: { data: BoostableBossesDto; timestamp: number } | null = null;
 let creaturesCache: { data: TibiaCreaturesDto; timestamp: number } | null = null;
+let newsCache: { data: TibiaNewsListDto; timestamp: number } | null = null;
+
+function mapNewsItem(item: TibiaDataNewsItem): TibiaNewsDto | null {
+  const id = readNumber(item.id);
+  const date = readString(item.date);
+  const category = readString(item.category);
+  const type = readString(item.type);
+  const title = readString(item.news);
+  const url = readString(item.url);
+  const urlApi = readString(item.url_api);
+
+  if (!id || !date || !category || !type || !title || !url) {
+    return null;
+  }
+
+  return {
+    id,
+    date,
+    category,
+    type,
+    title,
+    url,
+    urlApi: urlApi ?? '',
+  };
+}
+
+export async function fetchNews(): Promise<TibiaNewsListDto> {
+  const now = Date.now();
+  if (newsCache && now - newsCache.timestamp <= HIGHSCORES_CACHE_TTL_MS) {
+    return newsCache.data;
+  }
+
+  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/news/latest`, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`TibiaData news request failed with status ${response.status}`);
+  }
+
+  const payload = (await response.json()) as TibiaDataNewsResponse;
+  const news = (payload.news ?? [])
+    .map((item) => mapNewsItem(item))
+    .filter((item): item is TibiaNewsDto => item !== null);
+
+  const data: TibiaNewsListDto = {
+    news,
+    cachedAt: new Date().toISOString(),
+  };
+  newsCache = { data, timestamp: now };
+  return data;
+}
 
 export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
   const now = Date.now();
