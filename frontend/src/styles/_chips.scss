@@ -1,0 +1,58 @@
+// =============================================================================
+// Kolory chipów kategoryzujących (profesje Tibii, kategorie questów).
+// Te same pary tło/tekst były wcześniej powielone w sześciu plikach jako
+// surowe hexy - stąd nie reagowały na motyw. Kolory bierzemy z tokenów, więc
+// chipy przełączają się razem z motywem.
+// Mixin nakłada się na już zbudowany chip (padding, promień, typografia
+// zostają w komponencie, bo różnią się między listą a widokiem szczegółów).
+// =============================================================================
+@use 'colors' as c;
+
+@mixin vocation-colors {
+  &.vocation-knight {
+    background: c.$danger-strong-bg;
+    color: c.$danger-strong-fg;
+  }
+
+  &.vocation-paladin {
+    background: c.$success-bg;
+    color: c.$success-fg;
+  }
+
+  &.vocation-druid {
+    background: c.$info-bg;
+    color: c.$info-fg;
+  }
+
+  &.vocation-sorcerer {
+    background: c.$danger-bg;
+    color: c.$danger-fg;
+  }
+
+  &.vocation-monk {
+    background: c.$warning-bg;
+    color: c.$warning-fg;
+  }
+}
+
+@mixin quest-category-colors {
+  &.category-main {
+    background: c.$danger-strong-bg;
+    color: c.$danger-strong-fg;
+  }
+
+  &.category-side {
+    background: c.$success-bg;
+    color: c.$success-fg;
+  }
+
+  &.category-daily {
+    background: c.$info-bg;
+    color: c.$info-fg;
+  }
+
+  &.category-access {
+    background: c.$warning-bg;
+    color: c.$warning-fg;
+  }
+}

@@ -1,0 +1,36 @@
+@use 'colors' as c;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  border: 1px solid c.$brand-primary;
+  border-radius: 8px;
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pagination-info {
+  color: c.$text-500;
+  font-size: 13px;
+}
+
+// Style encapsulation stops the pages' dark-mode blocks from reaching this
+// component, so the dark variant has to live here.
+html[data-theme='dark'] .pagination-info {
+  color: c.$text-dark-muted;
+}

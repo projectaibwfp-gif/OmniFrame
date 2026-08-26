@@ -1,0 +1,23 @@
+@if (hasMultiplePages()) {
+  <nav class="pagination" [attr.aria-label]="ariaLabel()">
+    <button
+      class="pagination-button"
+      type="button"
+      [disabled]="isFirstPage()"
+      (click)="goToPreviousPage()"
+    >
+      ← {{ previousLabel() }}
+    </button>
+
+    <span class="pagination-info">{{ startIndex() }} - {{ endIndex() }} / {{ total() }}</span>
+
+    <button
+      class="pagination-button"
+      type="button"
+      [disabled]="isLastPage()"
+      (click)="goToNextPage()"
+    >
+      {{ nextLabel() }} →
+    </button>
+  </nav>
+}

@@ -1,0 +1,74 @@
+<div class="hunting-place-detail-page">
+  @if (place(); as place) {
+    <div class="detail-header">
+      <a class="back-link" routerLink="/hunting-places">{{ labels().back }}</a>
+      <h1>{{ place.name }}</h1>
+      <span class="detail-city">{{ place.city }}</span>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-info card">
+        <div class="info-row">
+          <span class="info-label">{{ labels().level }}</span>
+          <span class="info-value">{{ place.minLevel }} - {{ place.maxLevel }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{ labels().access }}</span>
+          <span class="info-value">
+            {{ place.premium ? labels().premium : labels().free }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{ labels().profit }}</span>
+          <span class="info-value profit-{{ place.profit }}">
+            {{ labels()[place.profit] }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{ labels().experience }}</span>
+          <span class="info-value exp-{{ place.experience }}">
+            {{ labels()[place.experience] }}
+          </span>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().vocations }}</h3>
+          <div class="vocations-list">
+            @for (vocation of place.recommendedVocations; track vocation) {
+              <span class="vocation-chip {{ vocationClass(vocation) }}">{{ vocation }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().creatures }}</h3>
+          <ul class="creatures-list">
+            @for (creature of place.creatures; track creature) {
+              <li>{{ creature }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().description }}</h3>
+          <p>{{ place.description }}</p>
+        </div>
+      </div>
+
+      <div class="detail-map card">
+        <h3>{{ labels().map }}</h3>
+        <iframe
+          [src]="mapUrl()"
+          title="Tibia Map"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+    </div>
+  } @else {
+    <div class="not-found">
+      <h2>{{ labels().notFound }}</h2>
+      <a routerLink="/hunting-places">{{ labels().notFoundAction }}</a>
+    </div>
+  }
+</div>

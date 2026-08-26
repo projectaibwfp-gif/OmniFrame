@@ -1,0 +1,47 @@
+<div class="charm-place-detail-page">
+  @if (place(); as place) {
+    <div class="detail-header">
+      <a class="back-link" routerLink="/charm-places">{{ labels().back }}</a>
+      <h1>{{ place.creatureName }}</h1>
+      <span class="detail-place">{{ place.placeName }} · {{ place.city }}</span>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-info card">
+        <div class="info-row">
+          <span class="info-label">{{ labels().minLevel }}</span>
+          <span class="info-value">{{ place.minLevel }}+</span>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().vocations }}</h3>
+          <div class="vocations-list">
+            @for (vocation of place.recommendedVocations; track vocation) {
+              <span class="vocation-chip {{ vocationClass(vocation) }}">{{ vocation }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>{{ labels().description }}</h3>
+          <p>{{ place.description }}</p>
+        </div>
+      </div>
+
+      <div class="detail-map card">
+        <h3>{{ labels().map }}</h3>
+        <iframe
+          [src]="mapUrl()"
+          title="Tibia Map"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+    </div>
+  } @else {
+    <div class="not-found">
+      <h2>{{ labels().notFound }}</h2>
+      <a routerLink="/charm-places">{{ labels().notFoundAction }}</a>
+    </div>
+  }
+</div>
