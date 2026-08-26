@@ -95,5 +95,21 @@ export const routes: Routes = [
         ({ HighscoresSnapshotsComponent }) => HighscoresSnapshotsComponent,
       ),
   },
+  {
+    path: 'hunting-places',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./hunting-places/hunting-places.component').then(
+        ({ HuntingPlacesComponent }) => HuntingPlacesComponent,
+      ),
+  },
+  {
+    path: 'charm-places',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./charm-places/charm-places.component').then(
+        ({ CharmPlacesComponent }) => CharmPlacesComponent,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

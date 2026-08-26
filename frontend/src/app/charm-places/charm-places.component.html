@@ -1,0 +1,162 @@
+<div class="charm-places-page">
+  <header class="charm-places-page__header">
+    <p class="charm-places-page__eyebrow">{{ labels().eyebrow }}</p>
+    <h1>{{ labels().title }}</h1>
+    <p class="charm-places-page__intro">{{ labels().intro }}</p>
+  </header>
+
+  <section class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label for="charm-search">{{ labels().title }}</label>
+        <input
+          id="charm-search"
+          type="text"
+          class="filter-input"
+          [ngModel]="searchName()"
+          (ngModelChange)="setSearchName($event)"
+          [placeholder]="labels().searchPlaceholder"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="charm-city">{{ labels().cityLabel }}</label>
+        <select
+          id="charm-city"
+          class="filter-select"
+          [ngModel]="selectedCity()"
+          (ngModelChange)="setCity($event)"
+        >
+          <option value="">{{ labels().allCities }}</option>
+          @for (city of cities; track city) {
+            <option [value]="city">{{ city }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="charm-vocation">{{ labels().vocationLabel }}</label>
+        <select
+          id="charm-vocation"
+          class="filter-select"
+          [ngModel]="selectedVocation()"
+          (ngModelChange)="setVocation($event)"
+        >
+          <option value="">{{ labels().allVocations }}</option>
+          @for (vocation of vocations; track vocation) {
+            <option [value]="vocation">{{ vocation }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field filter-field--actions">
+        <span class="filter-label">&nbsp;</span>
+        <button class="btn btn-outline-secondary w-100" type="button" (click)="clearFilters()">
+          {{ labels().clearFilters }}
+        </button>
+      </div>
+    </div>
+
+    <div class="sort-bar">
+      <span class="sort-label">{{ labels().sortBy }}:</span>
+      <button class="sort-button" type="button" (click)="setSortField('creatureName')">
+        {{ labels().sortCreature }} {{ getSortIndicator('creatureName') }}
+      </button>
+      <button class="sort-button" type="button" (click)="setSortField('placeName')">
+        {{ labels().sortPlace }} {{ getSortIndicator('placeName') }}
+      </button>
+      <button class="sort-button" type="button" (click)="setSortField('city')">
+        {{ labels().sortCity }} {{ getSortIndicator('city') }}
+      </button>
+      <button class="sort-button" type="button" (click)="setSortField('minLevel')">
+        {{ labels().sortLevel }} {{ getSortIndicator('minLevel') }}
+      </button>
+    </div>
+  </section>
+
+  <section class="results-bar">
+    <span class="results-count"
+      >{{ labels().found }}: <strong>{{ filteredPlaces().length }}</strong></span
+    >
+    <div class="page-size">
+      <label class="filter-label" for="page-size">{{ labels().perPage }}:</label>
+      <select
+        id="page-size"
+        class="filter-select"
+        [ngModel]="pageSize()"
+        (ngModelChange)="setPageSize(+$event)"
+      >
+        @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+  </section>
+
+  @if (paginatedPlaces().length > 0) {
+    <section class="places-grid">
+      @for (place of paginatedPlaces(); track place.id) {
+        <article class="place-card">
+          <div class="place-card__header">
+            <h3>{{ place.creatureName }}</h3>
+            <span class="place-card__city">{{ place.city }}</span>
+          </div>
+
+          <div class="place-card__level">
+            <span class="level-badge">{{ place.minLevel }}+</span>
+          </div>
+
+          <div class="place-card__row">
+            <span class="place-card__label">{{ labels().place }}:</span>
+            <span class="place-card__value">{{ place.placeName }}</span>
+          </div>
+
+          <p class="place-card__description">{{ place.description }}</p>
+
+          <div class="place-card__vocations">
+            <span class="vocations-label">{{ labels().professions }}:</span>
+            <div class="vocations-list">
+              @for (vocation of place.recommendedVocations; track vocation) {
+                <span class="vocation-chip {{ getVocationClass(vocation) }}">{{ vocation }}</span>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Stronicowanie charm places">
+        <button
+          class="pagination-button"
+          type="button"
+          [disabled]="page() === 1"
+          (click)="setPage(page() - 1)"
+        >
+          ← {{ labels().previous }}
+        </button>
+
+        <span class="pagination-info"
+          >{{ startIndex() }} - {{ endIndex() }} / {{ sortedPlaces().length }}</span
+        >
+
+        <button
+          class="pagination-button"
+          type="button"
+          [disabled]="page() === totalPages()"
+          (click)="setPage(page() + 1)"
+        >
+          {{ labels().next }} →
+        </button>
+      </nav>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>{{ labels().emptyTitle }}</p>
+      <button class="btn btn-outline-primary" type="button" (click)="clearFilters()">
+        {{ labels().emptyAction }}
+      </button>
+    </div>
+  }
+</div>

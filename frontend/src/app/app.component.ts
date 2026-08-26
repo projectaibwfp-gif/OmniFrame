@@ -32,6 +32,8 @@ export class AppComponent {
     return [
       { path: '/boosted', label: translations.boostedData, icon: '⚔', exact: false },
       { path: '/character', label: translations.character, icon: '🧙', exact: false },
+      { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺️', exact: false },
+      { path: '/charm-places', label: translations.charmPlaces, icon: '✨', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/products', label: translations.products, icon: '▤', exact: false },
@@ -78,6 +80,8 @@ export class AppComponent {
     products: string;
     boostedData: string;
     character: string;
+    huntingPlaces: string;
+    charmPlaces: string;
     snapshots: string;
     users: string;
     profile: string;
@@ -89,6 +93,8 @@ export class AppComponent {
         products: 'Products',
         boostedData: 'Boosted data',
         character: 'Character lookup',
+        huntingPlaces: 'Hunting places',
+        charmPlaces: 'Charm places',
         snapshots: 'Highscores DB',
         users: 'Users',
         profile: 'Profile',
@@ -99,6 +105,8 @@ export class AppComponent {
         products: 'Produkty',
         boostedData: 'Boosted dane',
         character: 'Wyszukaj postać',
+        huntingPlaces: 'Miejsca polowań',
+        charmPlaces: 'Charm places',
         snapshots: 'Highscores DB',
         users: 'Użytkownicy',
         profile: 'Profil',

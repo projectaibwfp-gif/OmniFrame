@@ -35,9 +35,9 @@ curl -X POST https://yourdomain/api/cron/highscores
 
 ## Harmonogram
 
-**Rekomendacja: uruchamiać co godzinę**
+**Rekomendacja: uruchamiać co 12 godzin**
 
-System zapisuje dane z 15-minutowym bucketing'iem — ta sama postać nie zostanie zapisana dwa razy w tym samym bucket'cie. Cron co godzinę wystarcza do regularnego odświeżania rankingu bez nadmiernego obciążania API TibiaData.
+System zapisuje dane z 15-minutowym bucketing'iem — ta sama postać nie zostanie zapisana dwa razy w tym samym bucket'cie. Cron co 12 godzin wystarcza do regularnego odświeżania rankingu bez nadmiernego obciążania API TibiaData.
 
 ### GitHub Actions (recommended)
 
@@ -48,7 +48,7 @@ name: Cron - Highscores Collection
 
 on:
   schedule:
-    - cron: '0 * * * *' # Co godzinę
+    - cron: '0 */12 * * *' # Co 12 godzin
 
 jobs:
   cron:
@@ -80,7 +80,7 @@ W `vercel.json` dodaj:
   "crons": [
     {
       "path": "/api/cron/highscores",
-      "schedule": "0 * * * *"
+      "schedule": "0 */12 * * *"
     }
   ]
 }
@@ -90,7 +90,7 @@ W `vercel.json` dodaj:
 
 ```bash
 # /etc/cron.d/tibia-highscores
-0 * * * * curl -s -X POST https://yourdomain/api/cron/highscores >> /var/log/cron-tibia.log 2>&1
+0 */12 * * * curl -s -X POST https://yourdomain/api/cron/highscores >> /var/log/cron-tibia.log 2>&1
 ```
 
 ## Dane w bazie

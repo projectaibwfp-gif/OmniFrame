@@ -119,7 +119,7 @@ Endpointy:
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca wszystkie rekordy snapshots highscores z paginacją, sortowaniem po `level` i filtrem po świecie,
-- `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchomić co godzinę,
+- `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchamiany co 12 godzin,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
@@ -186,6 +186,8 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/products` - podstrona z listą produktów pobieraną z API,
 - `/boosted` - podstrona z aktualnie boostowanym bossem i potworem, plus dwie domyślnie zwinięte listy (bossów i creature),
 - `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
+- `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać",
+- `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań",
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.
