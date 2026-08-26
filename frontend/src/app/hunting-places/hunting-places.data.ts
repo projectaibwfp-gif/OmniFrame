@@ -1,5 +1,11 @@
 export type Vocation = 'Knight' | 'Paladin' | 'Druid' | 'Sorcerer' | 'Monk';
 
+export interface Coordinates {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface HuntingPlace {
   id: string;
   name: string;
@@ -12,6 +18,8 @@ export interface HuntingPlace {
   premium: boolean;
   profit: 'low' | 'medium' | 'high';
   experience: 'low' | 'medium' | 'high';
+  coordinates: Coordinates;
+  mapZoom?: number;
 }
 
 export const HUNTING_PLACES: HuntingPlace[] = [
@@ -28,6 +36,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: false,
     profit: 'low',
     experience: 'low',
+    coordinates: { x: 32227, y: 31815, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'cyclops-mt-sternum',
@@ -41,6 +51,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: false,
     profit: 'low',
     experience: 'medium',
+    coordinates: { x: 32415, y: 32155, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'cyclopolis',
@@ -54,6 +66,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'medium',
     experience: 'medium',
+    coordinates: { x: 33272, y: 31802, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'mintwallin',
@@ -67,6 +81,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: false,
     profit: 'medium',
     experience: 'medium',
+    coordinates: { x: 32469, y: 32105, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'dragon-lair-thais',
@@ -80,6 +96,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: false,
     profit: 'medium',
     experience: 'medium',
+    coordinates: { x: 32263, y: 32332, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'ancient-scarab',
@@ -93,6 +111,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'medium',
     experience: 'high',
+    coordinates: { x: 33138, y: 32842, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'darashia-dragon',
@@ -106,6 +126,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'medium',
     experience: 'high',
+    coordinates: { x: 33294, y: 32412, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'hellgate',
@@ -119,6 +141,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: false,
     profit: 'medium',
     experience: 'medium',
+    coordinates: { x: 32757, y: 31603, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'hydras-drefia',
@@ -132,6 +156,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33046, y: 32429, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'sea-serpents',
@@ -145,6 +171,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 32212, y: 31088, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'yalahar-nightmares',
@@ -158,6 +186,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 32745, y: 31215, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'zao-raza',
@@ -171,6 +201,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33046, y: 31406, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'glooth-bandits',
@@ -184,6 +216,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33608, y: 31830, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'roshamuul-prison',
@@ -197,6 +231,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33520, y: 32365, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'asura-palace',
@@ -210,6 +246,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 32644, y: 32743, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'cobra-bastion',
@@ -223,6 +261,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33936, y: 31503, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'winter-court',
@@ -236,6 +276,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33542, y: 32308, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'summer-court',
@@ -249,6 +291,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33580, y: 32372, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'library',
@@ -262,6 +306,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33904, y: 31496, z: 7 },
+    mapZoom: 3,
   },
   {
     id: 'soul-war',
@@ -275,6 +321,8 @@ export const HUNTING_PLACES: HuntingPlace[] = [
     premium: true,
     profit: 'high',
     experience: 'high',
+    coordinates: { x: 33862, y: 32790, z: 7 },
+    mapZoom: 3,
   },
 ];
 

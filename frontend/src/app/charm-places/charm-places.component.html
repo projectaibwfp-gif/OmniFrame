@@ -97,7 +97,7 @@
   @if (paginatedPlaces().length > 0) {
     <section class="places-grid">
       @for (place of paginatedPlaces(); track place.id) {
-        <article class="place-card">
+        <article class="place-card" [routerLink]="['/charm-places', place.id]">
           <div class="place-card__header">
             <h3>{{ place.creatureName }}</h3>
             <span class="place-card__city">{{ place.city }}</span>

@@ -186,8 +186,8 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 - `/products` - podstrona z listą produktów pobieraną z API,
 - `/boosted` - podstrona z aktualnie boostowanym bossem i potworem, plus dwie domyślnie zwinięte listy (bossów i creature),
 - `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
-- `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać",
-- `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań",
+- `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać"; kafelek przenosi do `/hunting-places/:id` ze szczegółami i mapą Tibii,
+- `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań"; kafelek przenosi do `/charm-places/:id` ze szczegółami i mapą Tibii,
 - `/users` - lista użytkowników z oznaczeniem kont z polecenia,
 - `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
 - `/about` - opis warstw aplikacji.

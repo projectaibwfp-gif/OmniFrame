@@ -160,6 +160,15 @@
   border: 1px solid c.$border-translucent;
   border-radius: 16px;
   box-shadow: 0 12px 24px c.$shadow-medium;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: c.$brand-primary;
+    box-shadow: 0 16px 32px c.$shadow-medium;
+  }
 
   &__header {
     display: flex;

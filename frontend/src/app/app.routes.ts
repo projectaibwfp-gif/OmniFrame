@@ -104,11 +104,27 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'hunting-places/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./hunting-places/hunting-places-detail.component').then(
+        ({ HuntingPlacesDetailComponent }) => HuntingPlacesDetailComponent,
+      ),
+  },
+  {
     path: 'charm-places',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./charm-places/charm-places.component').then(
         ({ CharmPlacesComponent }) => CharmPlacesComponent,
+      ),
+  },
+  {
+    path: 'charm-places/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./charm-places/charm-places-detail.component').then(
+        ({ CharmPlacesDetailComponent }) => CharmPlacesDetailComponent,
       ),
   },
   { path: '**', redirectTo: '' },
