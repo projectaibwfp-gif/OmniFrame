@@ -120,7 +120,7 @@
 
   &:hover {
     border-color: c.$brand-primary;
-    color: c.$brand-primary;
+    color: c.$brand-on-surface;
   }
 }
 
@@ -214,7 +214,7 @@
 
   &__link {
     margin-top: auto;
-    color: c.$brand-primary;
+    color: c.$brand-on-surface;
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
@@ -242,114 +242,6 @@
     margin: 0;
     color: c.$text-500;
     font-size: 14px;
-  }
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px;
-}
-
-.pagination-button {
-  padding: 8px 16px;
-  border: 1px solid c.$brand-primary;
-  border-radius: 8px;
-  background: c.$brand-primary;
-  color: c.$text-on-primary;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.pagination-info {
-  color: c.$text-500;
-  font-size: 13px;
-}
-
-html[data-theme='dark'] {
-  .news-page {
-    &__header {
-      h1 {
-        color: c.$text-on-dark;
-      }
-    }
-
-    &__eyebrow,
-    &__intro {
-      color: c.$text-dark-muted;
-    }
-  }
-
-  .cache-info {
-    background: c.$surface-dark-card;
-    color: c.$text-dark-muted;
-  }
-
-  .filters-card,
-  .results-bar,
-  .news-card,
-  .loading-state,
-  .error-state,
-  .empty-state {
-    background: c.$surface-dark-card;
-    border-color: c.$border-dark-subtle;
-    box-shadow: none;
-  }
-
-  .filter-field label,
-  .filter-field .filter-label,
-  .sort-label {
-    color: c.$text-dark-muted;
-  }
-
-  .filter-input,
-  .filter-select {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  .sort-button {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-
-    &:hover {
-      border-color: c.$info-accent;
-      color: c.$info-accent;
-    }
-  }
-
-  .news-card {
-    &__title {
-      color: c.$text-on-dark;
-    }
-
-    &__type {
-      background: c.$surface-dark-card-alt;
-      color: c.$text-dark-muted;
-    }
-  }
-
-  .results-count,
-  .page-size,
-  .pagination-info,
-  .loading-state p,
-  .error-state p,
-  .empty-state p {
-    color: c.$text-dark-muted;
-  }
-
-  .results-count strong {
-    color: c.$text-on-dark;
   }
 }
 

@@ -2,34 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import { RouterLink } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
 import { QUESTS, type Quest } from './quests.data';
-
-interface DetailLabels {
-  back: string;
-  notFound: string;
-  notFoundAction: string;
-  city: string;
-  minLevel: string;
-  category: string;
-  description: string;
-  spoiler: string;
-  showSpoiler: string;
-  hideSpoiler: string;
-  rewards: string;
-  main: string;
-  side: string;
-  daily: string;
-  access: string;
-}
-
-function categoryClass(category: Quest['category']): string {
-  const map: Record<Quest['category'], string> = {
-    main: 'category-main',
-    side: 'category-side',
-    daily: 'category-daily',
-    access: 'category-access',
-  };
-  return map[category];
-}
+import { questCategoryClass, type QuestCategory } from './quest-category';
+import { buildQuestDetailLabels } from './quest-detail.labels';
 
 @Component({
   selector: 'app-quest-detail',
@@ -46,37 +20,16 @@ export class QuestDetailComponent {
   );
 
   protected readonly spoilerVisible = signal(false);
+  protected readonly categoryClass = questCategoryClass;
 
-  // eslint-disable-next-line complexity
-  protected readonly labels = computed<DetailLabels>(() => {
-    const isPl = this.localizationService.currentLocale() === 'pl';
-    return {
-      back: isPl ? '← Wróć do listy' : '← Back to list',
-      notFound: isPl ? 'Nie znaleziono questa' : 'Quest not found',
-      notFoundAction: isPl ? 'Wróć do listy' : 'Back to list',
-      city: isPl ? 'Miasto' : 'City',
-      minLevel: isPl ? 'Min. poziom' : 'Min level',
-      category: isPl ? 'Kategoria' : 'Category',
-      description: isPl ? 'Opis' : 'Description',
-      spoiler: isPl ? 'Spoiler' : 'Spoiler',
-      showSpoiler: isPl ? 'Pokaż spoiler' : 'Show spoiler',
-      hideSpoiler: isPl ? 'Ukryj spoiler' : 'Hide spoiler',
-      rewards: isPl ? 'Nagrody' : 'Rewards',
-      main: isPl ? 'Główny' : 'Main',
-      side: isPl ? 'Poboczny' : 'Side',
-      daily: isPl ? 'Dzienny' : 'Daily',
-      access: isPl ? 'Dostęp' : 'Access',
-    };
-  });
+  protected readonly labels = computed(() =>
+    buildQuestDetailLabels(this.localizationService.currentLocale() === 'pl'),
+  );
 
   private readonly localizationService = inject(LocalizationService);
 
-  protected getCategoryLabel(category: Quest['category']): string {
+  protected getCategoryLabel(category: QuestCategory): string {
     return this.labels()[category];
-  }
-
-  protected getCategoryClass(category: Quest['category']): string {
-    return categoryClass(category);
   }
 
   protected toggleSpoiler(): void {

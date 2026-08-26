@@ -20,20 +20,12 @@
 
   &:hover {
     border-color: c.$brand-primary;
-    color: c.$brand-primary;
+    color: c.$brand-on-surface;
   }
 }
 
-html[data-theme='dark'] {
-  .theme-btn {
-    background: c.$surface-dark-card;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-  }
-
-  .theme-btn:hover {
-    border-color: c.$warning-fg-accent;
-    color: c.$warning-fg-accent;
-  }
+// Barwa i tło idą z tokenów. Zostaje tylko dekoracja sensowna wyłącznie na
+// ciemnym tle: delikatny rozbłysk krawędzi wewnątrz przycisku.
+html[data-theme='dark'] .theme-btn {
+  box-shadow: 0 0 0 1px c.$overlay-highlight inset;
 }

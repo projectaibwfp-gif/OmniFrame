@@ -52,43 +52,64 @@ projektu).
     Import na górze pliku: `@use 'colors' as c;`, użycie: `c.$text-700` itd.
     Żaden komponent nie hardkoduje `#hex` ani `rgb()` - gdy potrzebny jest nowy
     odcień, dodaj token do palety i dopiero go referencuj.
-18. Poza kolorami: pozostałe zmienne SCSS (spacing, breakpointy) na górze pliku
+    Tokeny zależne od motywu wskazują na custom property `--c-*`, więc nie da się
+    na nich wołać funkcji Sassa (`rgba()`, `darken()`, `mix()`). Potrzebny wariant
+    z alfą dodaj jako osobny token.
+18. Kolory chipów profesji i kategorii questów bierz z mixinów
+    `frontend/src/styles/_chips.scss` (`@use 'chips' as chips;`), nie powielaj par
+    tło/tekst w komponencie.
+19. Poza kolorami: pozostałe zmienne SCSS (spacing, breakpointy) na górze pliku
     pod importami.
-19. Selektory potomne zagnieżdżaj pod rootem komponentu (nesting), zamiast
+20. Selektory potomne zagnieżdżaj pod rootem komponentu (nesting), zamiast
     płaskich `.a .b`.
-20. **Wszystkie** style mobilne w **jednym** `@media (max-width: c.$bp-mobile)`
+21. **Wszystkie** style mobilne w **jednym** `@media (max-width: c.$bp-mobile)`
     (575.98px, zgodne z Bootstrap `sm`) na końcu pliku.
-21. Nie używaj gołych selektorów typu `h1`, `p` na poziomie pliku - zawsze
+22. Nie używaj gołych selektorów typu `h1`, `p` na poziomie pliku - zawsze
     scope'uj je pod komponent.
 
 ## i18n
 
-22. Frontend wspiera angielski (`en`) i polski (`pl`). Tłumaczenia dodawaj w
+23. Frontend wspiera angielski (`en`) i polski (`pl`). Tłumaczenia dodawaj w
     `src/i18n/messages.{en,pl}.xlf`.
-23. Aktualny locale i przełączanie języka obsługuje `LocalizationService`.
+24. Aktualny locale i przełączanie języka obsługuje `LocalizationService`.
     Language switcher jest w topbarze. Etykiety nawigacji i teksty statyczne
     muszą reagować na sygnał locale. Szczegóły: `frontend/I18N_QUICKSTART.md`.
 
 ## Dark mode
 
-24. Motywem zarządza `ThemeService` - wykrywa preferencję systemową
-    (`prefers-color-scheme`), zapisuje wybór w `localStorage` i aplikuje motyw
-    przez selektor `html[data-theme="dark"]`.
-25. Style dark mode trzymaj w `src/styles.scss` w sekcji `/* Dark Mode */`.
+25. Motywem zarządza `ThemeService` - domyślnie `dark`, zapisuje wybór w
+    `localStorage` i ustawia atrybut `data-theme="dark"` na `<html>`.
+26. **Komponent nie pisze własnych reguł `html[data-theme='dark']`.** Motyw
+    przełącza wartości tokenów (`light-tokens` / `dark-tokens` z `_colors.scss`
+    wypuszczane raz w `src/styles.scss`), więc styl oparty na tokenach flipuje
+    sam. Własna reguła dark to sygnał, że gdzieś ominięto token.
+27. Wyjątek to komponenty MDBootstrapa - czytają wyłącznie swoje zmienne
+    `--mdb-*`. Ich mapowanie na nasze tokeny siedzi w bloku dark w
+    `src/styles.scss`; nowe klasy MDB dopisuj tam, nie w komponencie.
+28. Nie używaj tokenów `text-on-dark`, `text-dark-muted`, `surface-dark*` ani
+    `border-dark-subtle` do zwykłego tekstu i tła - są statyczne (te same w obu
+    motywach) i służą wyłącznie powierzchniom ciemnym z założenia (blok kodu,
+    tło mapy). Do tekstu używaj `text-*`, do tła `surface-*`.
 
 ## Dane stron Tibia
 
-26. `/boosted` korzysta z `GET /api/boostable-bosses` i DTO `BoostableBossDto` /
+29. `/boosted` korzysta z `GET /api/boostable-bosses` i DTO `BoostableBossDto` /
     `BoostableBossesDto` z `shared/api-contract.ts`.
-27. Lista creature i boostowany potwór: `GET /api/creatures`, DTO
+30. Lista creature i boostowany potwór: `GET /api/creatures`, DTO
     `TibiaCreatureDto` / `TibiaCreaturesDto`.
-28. `/character` renderuje dane postaci, blok dokładnego EXP z highscores oraz
+31. `/character` renderuje dane postaci, blok dokładnego EXP z highscores oraz
     tabelę historii sprawdzeń zwracaną przez backend.
-29. `/news` pobiera dane przez `GET /api/news` (cache 15 minut po stronie backendu).
-30. Statyczne zbiory danych stron Tibia (`hunting-places.data.ts`,
+32. `/news` pobiera dane przez `GET /api/news` (cache 15 minut po stronie backendu).
+33. Statyczne zbiory danych stron Tibia (`hunting-places.data.ts`,
     `charm-places.data.ts`, `quests.data.ts`) trzymaj obok komponentu feature'a,
     a filtrowanie/sortowanie/paginację buduj na `computed()`.
+34. Nie pisz od nowa listowania - użyj gotowych klocków:
+    `core/paged-list.ts` (`createPagedList(signal)`), `core/sort.ts`
+    (`createSort(field, dir)`), `components/pagination/` (`<app-pagination>`),
+    `tibia/vocation.ts` (`Vocation`, `VOCATIONS`, `vocationClass`),
+    `tibia/tibia-map.ts` (`buildTibiaMapUrl`). Tabele etykiet i18n trzymaj w
+    osobnym `*.labels.ts`, nie w komponencie.
 
 ## Artefakty
 
-31. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.
+35. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.

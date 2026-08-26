@@ -7,13 +7,7 @@ import {
   type DashboardActivityPoint,
   type DashboardData,
 } from './dashboard.service';
-
-const CHART_WIDTH = 700;
-const CHART_HEIGHT = 185;
-const CHART_TOP_PADDING = 24;
-const BAR_MIN_HEIGHT_PERCENT = 18;
-const BAR_MAX_HEIGHT_PERCENT = 100;
-const Y_AXIS_TICK_COUNT = 3;
+import { buildAreaPath, buildLinePath, buildYAxisTicks, toBarHeights } from './dashboard-chart';
 
 interface DashboardStatCard {
   label: string;
@@ -44,24 +38,21 @@ export class DashboardComponent {
     const values = points.flatMap((point) => [point.logins, point.signups]);
     return Math.max(1, ...values);
   });
-  protected readonly chartYAxis = computed(() => {
-    const max = this.chartMax();
-    return [max, Math.ceil((max * 2) / Y_AXIS_TICK_COUNT), Math.ceil(max / Y_AXIS_TICK_COUNT), 0];
-  });
+  protected readonly chartYAxis = computed(() => buildYAxisTicks(this.chartMax()));
   protected readonly loginsLinePath = computed(() =>
-    this.buildLinePath(
+    buildLinePath(
       this.activity().map((point) => point.logins),
       this.chartMax(),
     ),
   );
   protected readonly loginsAreaPath = computed(() =>
-    this.buildAreaPath(
+    buildAreaPath(
       this.activity().map((point) => point.logins),
       this.chartMax(),
     ),
   );
   protected readonly signupsLinePath = computed(() =>
-    this.buildLinePath(
+    buildLinePath(
       this.activity().map((point) => point.signups),
       this.chartMax(),
     ),
@@ -84,7 +75,7 @@ export class DashboardComponent {
         icon: 'G',
         iconClass: 'purple',
         barClass: 'purple-bars',
-        bars: this.toBarHeights(activity.map((point) => point.signups)),
+        bars: toBarHeights(activity.map((point) => point.signups)),
       },
       {
         label: 'Logowania dzisiaj',
@@ -97,7 +88,7 @@ export class DashboardComponent {
         icon: '◉',
         iconClass: 'green',
         barClass: 'green-bars',
-        bars: this.toBarHeights(activity.map((point) => point.logins)),
+        bars: toBarHeights(activity.map((point) => point.logins)),
       },
       {
         label: 'Nowi dzisiaj',
@@ -110,7 +101,7 @@ export class DashboardComponent {
         icon: '+',
         iconClass: 'orange',
         barClass: 'orange-bars',
-        bars: this.toBarHeights(activity.map((point) => point.signups)),
+        bars: toBarHeights(activity.map((point) => point.signups)),
       },
       {
         label: 'Konta z polecenia',
@@ -119,7 +110,7 @@ export class DashboardComponent {
         icon: '↗',
         iconClass: 'blue',
         barClass: 'blue-bars',
-        bars: this.toBarHeights(activity.map((point) => point.referredSignups)),
+        bars: toBarHeights(activity.map((point) => point.referredSignups)),
       },
     ];
   });
@@ -179,36 +170,5 @@ export class DashboardComponent {
 
     const sign = delta > 0 ? '+' : '';
     return `${sign}${delta} ${suffix}`;
-  }
-
-  private toBarHeights(values: number[]): number[] {
-    const max = Math.max(1, ...values);
-    return values.map((value) =>
-      Math.max(BAR_MIN_HEIGHT_PERCENT, Math.round((value / max) * BAR_MAX_HEIGHT_PERCENT)),
-    );
-  }
-
-  private buildLinePath(values: number[], max: number): string {
-    if (values.length === 0) {
-      return '';
-    }
-
-    return values
-      .map((value, index) => {
-        const x =
-          values.length === 1 ? CHART_WIDTH / 2 : (index / (values.length - 1)) * CHART_WIDTH;
-        const y = CHART_HEIGHT - (value / max) * (CHART_HEIGHT - CHART_TOP_PADDING);
-        return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
-      })
-      .join(' ');
-  }
-
-  private buildAreaPath(values: number[], max: number): string {
-    if (values.length === 0) {
-      return '';
-    }
-
-    const line = this.buildLinePath(values, max);
-    return `${line} L ${CHART_WIDTH},${CHART_HEIGHT} L 0,${CHART_HEIGHT} Z`;
   }
 }

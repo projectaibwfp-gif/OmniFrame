@@ -4,21 +4,12 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
-import { type AuthUser } from '../auth/auth-session';
+import { mapAuthUser } from '../auth/auth-user.mapper';
 import { buildApiUrl } from '../config/api.config';
+import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 
 const INITIALS_MAX_CHARS = 2;
 const INITIALS_FALLBACK = 'U';
-const PHONE_MIN_DIGITS = 9;
-const MIN_AGE_YEARS = 13;
-const DESCRIPTION_MAX_LENGTH = 500;
-const PHONE_ALLOWED_CHARACTERS = /^[\d\s+\-()]+$/;
-
-interface ProfileEditForm {
-  phone: string;
-  birthDate: string;
-  description: string;
-}
 
 @Component({
   selector: 'app-profile',
@@ -35,11 +26,7 @@ export class ProfileComponent {
   protected readonly saveError = signal<string | null>(null);
   protected readonly validationErrors = signal<Record<string, string>>({});
 
-  protected readonly editForm = signal<ProfileEditForm>({
-    phone: '',
-    birthDate: '',
-    description: '',
-  });
+  protected readonly editForm = signal<ProfileEditForm>({ ...EMPTY_PROFILE_FORM });
 
   protected readonly initials = computed(() => {
     const user = this.currentUser();
@@ -101,7 +88,7 @@ export class ProfileComponent {
       })
       .subscribe({
         next: (response) => {
-          this.authService.user.set(this.mapUser(response.data.user));
+          this.authService.user.set(mapAuthUser(response.data.user));
           this.editMode.set(false);
           this.isSaving.set(false);
         },
@@ -137,63 +124,8 @@ export class ProfileComponent {
   }
 
   private validateForm(): boolean {
-    const errors: Record<string, string> = {};
-    const form = this.editForm();
-
-    if (form.phone) {
-      if (!PHONE_ALLOWED_CHARACTERS.test(form.phone)) {
-        errors['phone'] = 'Numer telefonu zawiera niedozwolone znaki';
-      } else if (form.phone.replace(/\D/g, '').length < PHONE_MIN_DIGITS) {
-        errors['phone'] = `Numer telefonu musi mieć co najmniej ${PHONE_MIN_DIGITS} cyfr`;
-      }
-    }
-
-    if (form.birthDate) {
-      const date = new Date(form.birthDate);
-      const today = new Date();
-      if (Number.isNaN(date.getTime())) {
-        errors['birthDate'] = 'Nieprawidłowa data';
-      } else if (date > today) {
-        errors['birthDate'] = 'Data nie może być w przyszłości';
-      } else if (today.getFullYear() - date.getFullYear() < MIN_AGE_YEARS) {
-        errors['birthDate'] = `Musisz mieć co najmniej ${MIN_AGE_YEARS} lat`;
-      }
-    }
-
-    if (form.description && form.description.length > DESCRIPTION_MAX_LENGTH) {
-      errors['description'] = `Opis nie może być dłuższy niż ${DESCRIPTION_MAX_LENGTH} znaków`;
-    }
-
+    const errors = validateProfileForm(this.editForm());
     this.validationErrors.set(errors);
     return Object.keys(errors).length === 0;
-  }
-
-  private mapUser(user: AuthCurrentUserResponseDto['user']): AuthUser {
-    return {
-      givenName: user.givenName?.trim() || '',
-      familyName: user.familyName?.trim() || '',
-      fullName: this.buildFullName(user),
-      email: user.email,
-      picture: user.picture,
-      role: user.role,
-      phone: user.phone,
-      birthDate: user.birthDate,
-      description: user.description,
-      referralCode: user.referralCode,
-      referredByCode: user.referredByCode,
-      registeredAt: user.registeredAt || '',
-      lastLoginAt: user.lastLoginAt || '',
-      updatedAt: user.updatedAt || '',
-    };
-  }
-
-  private buildFullName(user: AuthCurrentUserResponseDto['user']): string {
-    const fullNameFromClaim = user.name?.trim() || '';
-    if (fullNameFromClaim) {
-      return fullNameFromClaim;
-    }
-
-    const fallbackName = `${user.givenName ?? ''} ${user.familyName ?? ''}`.trim();
-    return fallbackName || 'Użytkownik Google';
   }
 }

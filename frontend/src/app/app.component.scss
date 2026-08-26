@@ -17,7 +17,7 @@
 .footer {
   border: 1px solid c.$border-subtle;
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px c.$shadow-medium;
 }
 
 .topbar {
@@ -48,7 +48,7 @@
 }
 
 .brand-accent {
-  color: c.$brand-primary;
+  color: c.$brand-on-surface;
 }
 
 .workspace-layout {
@@ -84,7 +84,7 @@
   &:hover,
   &.active {
     background: c.$brand-primary-soft-lite;
-    color: c.$brand-primary;
+    color: c.$brand-on-surface;
   }
 }
 
@@ -115,7 +115,7 @@
   border-color: c.$brand-primary;
   background: c.$surface-card;
   color: c.$text-700;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px c.$shadow-soft;
 
   &:hover,
   &:focus-visible {
@@ -142,7 +142,7 @@
   place-items: center;
   border-radius: 50%;
   background: c.$brand-primary-tint;
-  color: c.$brand-primary-strong;
+  color: c.$brand-on-surface;
   font-weight: 800;
 }
 
@@ -196,52 +196,6 @@
 
 .footer {
   background: c.$surface-card;
-}
-
-html[data-theme='dark'] {
-  .topbar {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-  }
-
-  .brand {
-    color: c.$text-on-dark;
-  }
-
-  .brand-accent {
-    color: c.$info-accent;
-  }
-
-  .workspace-user strong {
-    color: c.$text-on-dark;
-  }
-
-  .workspace-user small {
-    color: c.$text-on-dark;
-    opacity: 0.85;
-  }
-
-  .workspace-avatar {
-    background: c.$surface-dark-card;
-    color: c.$info-accent;
-    border: 1px solid c.$border-dark-subtle;
-  }
-
-  .logout-button,
-  .topbar-menu {
-    background: c.$surface-dark-card;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  .logout-button:hover,
-  .logout-button:focus-visible,
-  .topbar-menu:hover,
-  .topbar-menu:focus-visible {
-    background: c.$brand-primary;
-    border-color: c.$brand-primary;
-    color: c.$text-on-primary;
-  }
 }
 
 .footer-body {

@@ -60,17 +60,17 @@
 
     <div class="sort-bar">
       <span class="sort-label">{{ labels().sortBy }}:</span>
-      <button class="sort-button" type="button" (click)="setSortField('creatureName')">
-        {{ labels().sortCreature }} {{ getSortIndicator('creatureName') }}
+      <button class="sort-button" type="button" (click)="sort.toggle('creatureName')">
+        {{ labels().sortCreature }} {{ sort.indicator('creatureName') }}
       </button>
-      <button class="sort-button" type="button" (click)="setSortField('placeName')">
-        {{ labels().sortPlace }} {{ getSortIndicator('placeName') }}
+      <button class="sort-button" type="button" (click)="sort.toggle('placeName')">
+        {{ labels().sortPlace }} {{ sort.indicator('placeName') }}
       </button>
-      <button class="sort-button" type="button" (click)="setSortField('city')">
-        {{ labels().sortCity }} {{ getSortIndicator('city') }}
+      <button class="sort-button" type="button" (click)="sort.toggle('city')">
+        {{ labels().sortCity }} {{ sort.indicator('city') }}
       </button>
-      <button class="sort-button" type="button" (click)="setSortField('minLevel')">
-        {{ labels().sortLevel }} {{ getSortIndicator('minLevel') }}
+      <button class="sort-button" type="button" (click)="sort.toggle('minLevel')">
+        {{ labels().sortLevel }} {{ sort.indicator('minLevel') }}
       </button>
     </div>
   </section>
@@ -84,19 +84,19 @@
       <select
         id="page-size"
         class="filter-select"
-        [ngModel]="pageSize()"
-        (ngModelChange)="setPageSize(+$event)"
+        [ngModel]="paged.pageSize()"
+        (ngModelChange)="paged.setPageSize(+$event)"
       >
-        @for (size of pageSizeOptions; track size) {
+        @for (size of paged.pageSizeOptions; track size) {
           <option [value]="size">{{ size }}</option>
         }
       </select>
     </div>
   </section>
 
-  @if (paginatedPlaces().length > 0) {
+  @if (paged.items().length > 0) {
     <section class="places-grid">
-      @for (place of paginatedPlaces(); track place.id) {
+      @for (place of paged.items(); track place.id) {
         <article class="place-card" [routerLink]="['/charm-places', place.id]">
           <div class="place-card__header">
             <h3>{{ place.creatureName }}</h3>
@@ -118,7 +118,7 @@
             <span class="vocations-label">{{ labels().professions }}:</span>
             <div class="vocations-list">
               @for (vocation of place.recommendedVocations; track vocation) {
-                <span class="vocation-chip {{ getVocationClass(vocation) }}">{{ vocation }}</span>
+                <span class="vocation-chip {{ vocationClass(vocation) }}">{{ vocation }}</span>
               }
             </div>
           </div>
@@ -126,31 +126,17 @@
       }
     </section>
 
-    @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Stronicowanie charm places">
-        <button
-          class="pagination-button"
-          type="button"
-          [disabled]="page() === 1"
-          (click)="setPage(page() - 1)"
-        >
-          ← {{ labels().previous }}
-        </button>
-
-        <span class="pagination-info"
-          >{{ startIndex() }} - {{ endIndex() }} / {{ sortedPlaces().length }}</span
-        >
-
-        <button
-          class="pagination-button"
-          type="button"
-          [disabled]="page() === totalPages()"
-          (click)="setPage(page() + 1)"
-        >
-          {{ labels().next }} →
-        </button>
-      </nav>
-    }
+    <app-pagination
+      [page]="paged.page()"
+      [totalPages]="paged.totalPages()"
+      [startIndex]="paged.startIndex()"
+      [endIndex]="paged.endIndex()"
+      [total]="paged.total()"
+      [previousLabel]="labels().previous"
+      [nextLabel]="labels().next"
+      ariaLabel="Stronicowanie charm places"
+      (pageChange)="paged.setPage($event)"
+    />
   } @else {
     <div class="empty-state">
       <p>{{ labels().emptyTitle }}</p>

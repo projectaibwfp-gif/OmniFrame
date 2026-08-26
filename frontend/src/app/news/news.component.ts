@@ -1,42 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { PaginationComponent } from '../components/pagination/pagination.component';
+import { createPagedList } from '../core/paged-list';
+import { createSort } from '../core/sort';
 import { LocalizationService } from '../services/localization.service';
 import { NewsService } from './news.service';
+import { buildNewsLabels } from './news.labels';
 import type { TibiaNewsDto } from '@shared/api-contract';
-
-interface NewsLabels {
-  eyebrow: string;
-  title: string;
-  intro: string;
-  searchPlaceholder: string;
-  categoryLabel: string;
-  allCategories: string;
-  allTypes: string;
-  typeLabel: string;
-  clearFilters: string;
-  sortBy: string;
-  sortDate: string;
-  sortTitle: string;
-  sortCategory: string;
-  found: string;
-  perPage: string;
-  previous: string;
-  next: string;
-  emptyTitle: string;
-  emptyAction: string;
-  readMore: string;
-  cachedAt: string;
-  error: string;
-  retry: string;
-}
 
 interface NewsFilters {
   search: string;
   category: string;
   type: string;
 }
+
+type SortField = 'date' | 'title' | 'category';
 
 function matchesFilters(news: TibiaNewsDto, filters: NewsFilters): boolean {
   const matchesSearch =
@@ -49,43 +28,9 @@ function matchesFilters(news: TibiaNewsDto, filters: NewsFilters): boolean {
   return matchesSearch && matchesCategory && matchesType;
 }
 
-// eslint-disable-next-line complexity
-function buildNewsLabels(isPl: boolean): NewsLabels {
-  return {
-    eyebrow: 'Tibia',
-    title: isPl ? 'Aktualności' : 'News',
-    intro: isPl
-      ? 'Najnowsze newsy i aktualności z oficjalnej strony Tibia.'
-      : 'Latest news and updates from the official Tibia website.',
-    searchPlaceholder: isPl ? 'Szukaj newsa...' : 'Search news...',
-    categoryLabel: isPl ? 'Kategoria' : 'Category',
-    allCategories: isPl ? 'Wszystkie' : 'All',
-    allTypes: isPl ? 'Wszystkie' : 'All',
-    typeLabel: isPl ? 'Typ' : 'Type',
-    clearFilters: isPl ? 'Wyczyść filtry' : 'Clear filters',
-    sortBy: isPl ? 'Sortuj' : 'Sort',
-    sortDate: isPl ? 'Data' : 'Date',
-    sortTitle: isPl ? 'Tytuł' : 'Title',
-    sortCategory: isPl ? 'Kategoria' : 'Category',
-    found: isPl ? 'Znaleziono' : 'Found',
-    perPage: isPl ? 'Na stronę' : 'Per page',
-    previous: isPl ? 'Poprzednia' : 'Previous',
-    next: isPl ? 'Następna' : 'Next',
-    emptyTitle: isPl ? 'Nie znaleziono newsów.' : 'No news found.',
-    emptyAction: isPl ? 'Wyczyść filtry' : 'Clear filters',
-    readMore: isPl ? 'Czytaj więcej' : 'Read more',
-    cachedAt: isPl ? 'Cache z' : 'Cached at',
-    error: isPl ? 'Nie udało się załadować newsów.' : 'Could not load news.',
-    retry: isPl ? 'Spróbuj ponownie' : 'Try again',
-  };
-}
-
-type SortField = 'date' | 'title' | 'category';
-type SortDir = 'asc' | 'desc';
-
 @Component({
   selector: 'app-news',
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [FormsModule, DatePipe, PaginationComponent],
   templateUrl: './news.component.html',
   styleUrl: './news.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,18 +49,13 @@ export class NewsComponent {
   protected readonly selectedCategory = signal<string>('');
   protected readonly selectedType = signal<string>('');
 
-  protected readonly sortField = signal<SortField>('date');
-  protected readonly sortDir = signal<SortDir>('desc');
-  protected readonly page = signal(1);
-  protected readonly pageSize = signal(12);
+  protected readonly sort = createSort<SortField>('date', 'desc');
 
   protected readonly categories = computed(() => [
     ...new Set(this.newsList().map((item) => item.category)),
   ]);
 
   protected readonly types = computed(() => [...new Set(this.newsList().map((item) => item.type))]);
-
-  protected readonly pageSizeOptions = [6, 12, 24];
 
   protected readonly filteredNews = computed(() => {
     const filters: NewsFilters = {
@@ -127,8 +67,8 @@ export class NewsComponent {
   });
 
   protected readonly sortedNews = computed(() => {
-    const field = this.sortField();
-    const dir = this.sortDir();
+    const field = this.sort.field();
+    const multiplier = this.sort.multiplier();
     return [...this.filteredNews()].sort((a, b) => {
       let comparison = 0;
       if (field === 'date') {
@@ -138,26 +78,11 @@ export class NewsComponent {
       } else if (field === 'category') {
         comparison = a.category.localeCompare(b.category);
       }
-      return dir === 'asc' ? comparison : -comparison;
+      return comparison * multiplier;
     });
   });
 
-  protected readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.sortedNews().length / this.pageSize())),
-  );
-
-  protected readonly paginatedNews = computed(() => {
-    const start = (this.page() - 1) * this.pageSize();
-    return this.sortedNews().slice(start, start + this.pageSize());
-  });
-
-  protected readonly startIndex = computed(() =>
-    this.sortedNews().length === 0 ? 0 : (this.page() - 1) * this.pageSize() + 1,
-  );
-
-  protected readonly endIndex = computed(() =>
-    Math.min(this.page() * this.pageSize(), this.sortedNews().length),
-  );
+  protected readonly paged = createPagedList(this.sortedNews);
 
   private readonly newsService = inject(NewsService);
   private readonly localizationService = inject(LocalizationService);
@@ -184,51 +109,29 @@ export class NewsComponent {
 
   protected setSearch(value: string): void {
     this.search.set(value);
-    this.page.set(1);
+    this.paged.resetPage();
   }
 
   protected setCategory(value: string): void {
     this.selectedCategory.set(value);
-    this.page.set(1);
+    this.paged.resetPage();
   }
 
   protected setType(value: string): void {
     this.selectedType.set(value);
-    this.page.set(1);
+    this.paged.resetPage();
   }
 
-  protected setSortField(field: SortField): void {
-    if (this.sortField() === field) {
-      this.sortDir.update((dir) => (dir === 'asc' ? 'desc' : 'asc'));
-    } else {
-      this.sortField.set(field);
-      this.sortDir.set('desc');
-    }
-    this.page.set(1);
-  }
-
-  protected getSortIndicator(field: SortField): string {
-    if (this.sortField() !== field) {
-      return '';
-    }
-    return this.sortDir() === 'asc' ? '↑' : '↓';
-  }
-
-  protected setPageSize(size: number): void {
-    this.pageSize.set(size);
-    this.page.set(1);
-  }
-
-  protected setPage(value: number): void {
-    this.page.set(value);
+  protected toggleSort(field: SortField): void {
+    this.sort.toggle(field);
+    this.paged.resetPage();
   }
 
   protected clearFilters(): void {
     this.search.set('');
     this.selectedCategory.set('');
     this.selectedType.set('');
-    this.sortField.set('date');
-    this.sortDir.set('desc');
-    this.page.set(1);
+    this.sort.reset();
+    this.paged.resetPage();
   }
 }

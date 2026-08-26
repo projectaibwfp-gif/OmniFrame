@@ -103,7 +103,7 @@
     border-color: c.$danger-fg;
 
     &:focus {
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+      box-shadow: 0 0 0 3px c.$danger-ring;
     }
   }
 }

@@ -2,14 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { finalize } from 'rxjs';
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { HighscoresSnapshotsService } from './highscores-snapshots.service';
+import { PAGE_SIZE, formatCheckedAt, groupSnapshotRecords } from './highscores-grouping';
 
-const PAGE_SIZE = 50;
-
-type GroupedSnapshotRecord = {
-  latest: HighscoresSnapshotRecordDto;
-  older: HighscoresSnapshotRecordDto[];
-  previousDayExperienceIncrease: number | null;
-};
+const DUPLICATE_SINGULAR_LABEL = '1 starszy wpis';
 
 @Component({
   selector: 'app-highscores-snapshots',
@@ -29,36 +24,9 @@ export class HighscoresSnapshotsComponent {
   protected readonly apiError = signal(false);
   protected readonly expandedCharacterId = signal<number | null>(null);
   protected readonly pageSize = PAGE_SIZE;
-  protected readonly groupedRecords = computed<GroupedSnapshotRecord[]>(() => {
-    const groups = new Map<string, HighscoresSnapshotRecordDto[]>();
-
-    for (const record of this.records()) {
-      const key = record.characterName.trim().toLowerCase();
-      const current = groups.get(key) ?? [];
-      current.push(record);
-      groups.set(key, current);
-    }
-
-    const mappedGroups: GroupedSnapshotRecord[] = [];
-    for (const groupRecords of groups.values()) {
-      const sorted = [...groupRecords].sort((a, b) => {
-        return this.getCheckedAtTimestamp(b.checkedAt) - this.getCheckedAtTimestamp(a.checkedAt);
-      });
-      mappedGroups.push({
-        latest: sorted[0],
-        older: sorted.slice(1),
-        previousDayExperienceIncrease: this.getPreviousDayExperienceIncrease(sorted),
-      });
-    }
-
-    return mappedGroups.sort((a, b) => {
-      return (
-        this.getCheckedAtTimestamp(b.latest.checkedAt) -
-        this.getCheckedAtTimestamp(a.latest.checkedAt)
-      );
-    });
-  });
+  protected readonly groupedRecords = computed(() => groupSnapshotRecords(this.records()));
   protected readonly hasRecords = computed(() => this.groupedRecords().length > 0);
+  protected readonly formatCheckedAt = formatCheckedAt;
 
   private readonly highscoresSnapshotsService = inject(HighscoresSnapshotsService);
 
@@ -121,22 +89,9 @@ export class HighscoresSnapshotsComponent {
     return `#${rank.toLocaleString('en-US')}`;
   }
 
-  protected formatCheckedAt(checkedAt: string): string {
-    if (/^\d{4}-\d{2}-\d{2}/.test(checkedAt)) {
-      return checkedAt.slice(0, 10);
-    }
-
-    const parsed = new Date(checkedAt);
-    if (Number.isNaN(parsed.getTime())) {
-      return checkedAt;
-    }
-
-    return parsed.toISOString().slice(0, 10);
-  }
-
   protected formatDuplicateLabel(duplicatesCount: number): string {
     if (duplicatesCount === 1) {
-      return '1 starszy wpis';
+      return DUPLICATE_SINGULAR_LABEL;
     }
 
     return `${duplicatesCount} starsze wpisy`;
@@ -173,49 +128,5 @@ export class HighscoresSnapshotsComponent {
         },
         error: () => this.apiError.set(true),
       });
-  }
-
-  private getCheckedAtTimestamp(checkedAt: string): number {
-    const parsed = Date.parse(checkedAt);
-    if (Number.isNaN(parsed)) {
-      return 0;
-    }
-
-    return parsed;
-  }
-
-  private getCheckedAtDay(checkedAt: string): string {
-    if (/^\d{4}-\d{2}-\d{2}/.test(checkedAt)) {
-      return checkedAt.slice(0, 10);
-    }
-
-    const parsed = new Date(checkedAt);
-    if (Number.isNaN(parsed.getTime())) {
-      return checkedAt;
-    }
-
-    return parsed.toISOString().slice(0, 10);
-  }
-
-  private getPreviousDayExperienceIncrease(
-    sortedRecords: HighscoresSnapshotRecordDto[],
-  ): number | null {
-    if (sortedRecords.length < 2) {
-      return null;
-    }
-
-    const latest = sortedRecords[0];
-    const latestDay = this.getCheckedAtDay(latest.checkedAt);
-    for (let index = 1; index < sortedRecords.length; index += 1) {
-      const olderRecord = sortedRecords[index];
-      const olderDay = this.getCheckedAtDay(olderRecord.checkedAt);
-      if (olderDay === latestDay) {
-        continue;
-      }
-
-      return latest.exactExperience - olderRecord.exactExperience;
-    }
-
-    return null;
   }
 }

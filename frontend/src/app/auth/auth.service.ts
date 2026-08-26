@@ -5,7 +5,6 @@ import type {
   ApiResponse,
   AuthCurrentUserResponseDto,
   AuthGoogleResponseDto,
-  AuthGoogleUserDto,
   AuthStateDto,
   ReferralCaptureResponseDto,
 } from '@shared/api-contract';
@@ -13,6 +12,7 @@ import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { buildApiUrl } from '../config/api.config';
 import { withSkippedAuthInterceptor } from './auth-http-context';
 import { type AuthUser } from './auth-session';
+import { mapAuthUser } from './auth-user.mapper';
 
 type GoogleCredentialResponse = {
   credential?: string;
@@ -78,7 +78,7 @@ export class AuthService {
       const response = await firstValueFrom(
         this.http.get<CurrentUserResponse>(buildApiUrl('/auth/me')),
       );
-      this.user.set(this.mapUser(response.data.user));
+      this.user.set(mapAuthUser(response.data.user));
       this.loginError.set(null);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status !== 401) {
@@ -250,7 +250,7 @@ export class AuthService {
           state: this.loginState,
         }),
       );
-      this.user.set(this.mapUser(result.data.user));
+      this.user.set(mapAuthUser(result.data.user));
       this.loginError.set(null);
       this.loginState = '';
     } catch (error) {
@@ -271,7 +271,7 @@ export class AuthService {
           context: withSkippedAuthInterceptor(),
         }),
       );
-      this.user.set(this.mapUser(response.data.user));
+      this.user.set(mapAuthUser(response.data.user));
       return true;
     } catch {
       this.user.set(null);
@@ -279,42 +279,6 @@ export class AuthService {
     } finally {
       this.refreshPromise = null;
     }
-  }
-
-  private mapUser(user: AuthGoogleUserDto): AuthUser {
-    const givenName = this.normalizeNamePart(user.givenName);
-    const familyName = this.normalizeNamePart(user.familyName);
-
-    return {
-      givenName,
-      familyName,
-      fullName: this.resolveFullName(user, givenName, familyName),
-      email: user.email,
-      picture: user.picture,
-      role: user.role,
-      phone: user.phone,
-      birthDate: user.birthDate,
-      description: user.description,
-      referralCode: user.referralCode,
-      referredByCode: user.referredByCode,
-      registeredAt: user.registeredAt || '',
-      lastLoginAt: user.lastLoginAt || '',
-      updatedAt: user.updatedAt || '',
-    };
-  }
-
-  private normalizeNamePart(value: string | null | undefined): string {
-    return value?.trim() || '';
-  }
-
-  private resolveFullName(user: AuthGoogleUserDto, givenName: string, familyName: string): string {
-    const fullNameFromClaim = user.name?.trim() || '';
-    if (fullNameFromClaim) {
-      return fullNameFromClaim;
-    }
-
-    const fallbackName = `${givenName} ${familyName}`.trim();
-    return fallbackName || 'Użytkownik Google';
   }
 
   private setLoginIssue(reason: string): void {

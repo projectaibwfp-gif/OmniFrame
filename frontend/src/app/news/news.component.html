@@ -66,14 +66,14 @@
 
     <div class="sort-bar">
       <span class="sort-label">{{ labels().sortBy }}:</span>
-      <button class="sort-button" type="button" (click)="setSortField('date')">
-        {{ labels().sortDate }} {{ getSortIndicator('date') }}
+      <button class="sort-button" type="button" (click)="toggleSort('date')">
+        {{ labels().sortDate }} {{ sort.indicator('date') }}
       </button>
-      <button class="sort-button" type="button" (click)="setSortField('title')">
-        {{ labels().sortTitle }} {{ getSortIndicator('title') }}
+      <button class="sort-button" type="button" (click)="toggleSort('title')">
+        {{ labels().sortTitle }} {{ sort.indicator('title') }}
       </button>
-      <button class="sort-button" type="button" (click)="setSortField('category')">
-        {{ labels().sortCategory }} {{ getSortIndicator('category') }}
+      <button class="sort-button" type="button" (click)="toggleSort('category')">
+        {{ labels().sortCategory }} {{ sort.indicator('category') }}
       </button>
     </div>
   </section>
@@ -87,10 +87,10 @@
       <select
         id="page-size"
         class="filter-select"
-        [ngModel]="pageSize()"
-        (ngModelChange)="setPageSize(+$event)"
+        [ngModel]="paged.pageSize()"
+        (ngModelChange)="paged.setPageSize(+$event)"
       >
-        @for (size of pageSizeOptions; track size) {
+        @for (size of paged.pageSizeOptions; track size) {
           <option [value]="size">{{ size }}</option>
         }
       </select>
@@ -108,9 +108,9 @@
         {{ labels().retry }}
       </button>
     </div>
-  } @else if (paginatedNews().length > 0) {
+  } @else if (paged.items().length > 0) {
     <section class="news-grid">
-      @for (item of paginatedNews(); track item.id) {
+      @for (item of paged.items(); track item.id) {
         <article class="news-card">
           <div class="news-card__header">
             <span class="news-card__category">{{ item.category }}</span>
@@ -127,31 +127,17 @@
       }
     </section>
 
-    @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Stronicowanie newsów">
-        <button
-          class="pagination-button"
-          type="button"
-          [disabled]="page() === 1"
-          (click)="setPage(page() - 1)"
-        >
-          ← {{ labels().previous }}
-        </button>
-
-        <span class="pagination-info"
-          >{{ startIndex() }} - {{ endIndex() }} / {{ sortedNews().length }}</span
-        >
-
-        <button
-          class="pagination-button"
-          type="button"
-          [disabled]="page() === totalPages()"
-          (click)="setPage(page() + 1)"
-        >
-          {{ labels().next }} →
-        </button>
-      </nav>
-    }
+    <app-pagination
+      [page]="paged.page()"
+      [totalPages]="paged.totalPages()"
+      [startIndex]="paged.startIndex()"
+      [endIndex]="paged.endIndex()"
+      [total]="paged.total()"
+      [previousLabel]="labels().previous"
+      [nextLabel]="labels().next"
+      ariaLabel="Stronicowanie newsów"
+      (pageChange)="paged.setPage($event)"
+    />
   } @else {
     <div class="empty-state">
       <p>{{ labels().emptyTitle }}</p>

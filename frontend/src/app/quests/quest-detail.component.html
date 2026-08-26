@@ -5,7 +5,7 @@
       <h1>{{ quest.name }}</h1>
       <div class="detail-badges">
         <span class="detail-city">{{ quest.city }}</span>
-        <span class="category-badge {{ getCategoryClass(quest.category) }}">
+        <span class="category-badge {{ categoryClass(quest.category) }}">
           {{ getCategoryLabel(quest.category) }}
         </span>
       </div>

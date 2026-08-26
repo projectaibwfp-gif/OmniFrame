@@ -20,7 +20,7 @@
 
 @mixin back-link {
   align-self: flex-start;
-  color: c.$brand-primary;
+  color: c.$brand-on-surface;
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
@@ -117,7 +117,7 @@
     height: 480px;
     border: 0;
     border-radius: 12px;
-    background: #1a1a1a;
+    background: c.$surface-dark-page;
   }
 
   h3 {
@@ -137,7 +137,7 @@
   }
 
   a {
-    color: c.$brand-primary;
+    color: c.$brand-on-surface;
     font-weight: 600;
   }
 }

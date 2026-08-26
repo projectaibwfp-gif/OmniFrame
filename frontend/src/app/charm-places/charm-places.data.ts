@@ -1,10 +1,5 @@
-export type Vocation = 'Knight' | 'Paladin' | 'Druid' | 'Sorcerer' | 'Monk';
-
-export interface Coordinates {
-  x: number;
-  y: number;
-  z: number;
-}
+import type { Coordinates } from '../tibia/tibia-map';
+import type { Vocation } from '../tibia/vocation';
 
 export interface CharmPlace {
   id: string;
@@ -130,7 +125,5 @@ export const CHARM_PLACES: CharmPlace[] = [
     mapZoom: 3,
   },
 ];
-
-export const VOCATIONS: Vocation[] = ['Knight', 'Paladin', 'Druid', 'Sorcerer', 'Monk'];
 
 export const CITIES = [...new Set(CHARM_PLACES.map((place) => place.city))].sort();

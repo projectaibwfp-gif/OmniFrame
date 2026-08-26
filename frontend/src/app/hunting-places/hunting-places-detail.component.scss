@@ -1,4 +1,5 @@
 @use '../places/places-detail-shared' as shared;
+@use '../../styles/chips' as chips;
 @use '../../styles/colors' as c;
 
 :host {
@@ -79,30 +80,7 @@
   font-size: 12px;
   font-weight: 700;
 
-  &.vocation-knight {
-    background: #fde9ea;
-    color: #9c1c1c;
-  }
-
-  &.vocation-paladin {
-    background: #e8f5ee;
-    color: #057642;
-  }
-
-  &.vocation-druid {
-    background: #eef4fb;
-    color: #4b81c8;
-  }
-
-  &.vocation-sorcerer {
-    background: #fdeceb;
-    color: #b24c3b;
-  }
-
-  &.vocation-monk {
-    background: #fff5e8;
-    color: #b7791f;
-  }
+  @include chips.vocation-colors;
 }
 
 .detail-map {

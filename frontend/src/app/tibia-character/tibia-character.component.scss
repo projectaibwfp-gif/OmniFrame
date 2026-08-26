@@ -117,7 +117,7 @@
 
         &:hover {
           border-color: c.$brand-primary;
-          color: c.$brand-primary;
+          color: c.$brand-on-surface;
         }
       }
     }
@@ -263,130 +263,6 @@
   .history-table {
     width: 100%;
     min-width: 760px;
-  }
-}
-
-html[data-theme='dark'] {
-  .tibia-character-page {
-    &__header {
-      h1 {
-        color: c.$text-on-dark;
-      }
-    }
-
-    &__eyebrow,
-    &__intro {
-      color: c.$text-dark-muted;
-    }
-
-    &__message {
-      background: c.$surface-dark-card;
-      border-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-
-    .search-card,
-    .character-card {
-      background: c.$surface-dark-card;
-      border-color: c.$border-dark-subtle;
-      box-shadow: none;
-    }
-
-    .search-form {
-      label {
-        color: c.$text-dark-muted;
-      }
-
-      &__input {
-        background: c.$surface-dark-card-alt;
-        border-color: c.$border-dark-subtle;
-        color: c.$text-on-dark;
-      }
-
-      &__button {
-        background: c.$brand-primary;
-        border-color: c.$brand-primary;
-        color: c.$text-on-primary;
-      }
-
-      .recent-searches {
-        border-top-color: c.$border-dark-subtle;
-
-        &__label {
-          color: c.$text-dark-muted;
-        }
-
-        &__chip {
-          background: c.$surface-dark-card-alt;
-          border-color: c.$border-dark-subtle;
-          color: c.$text-on-dark;
-
-          &:hover {
-            border-color: c.$info-accent;
-            color: c.$info-accent;
-          }
-        }
-      }
-    }
-
-    .character-card {
-      h2,
-      h3 {
-        color: c.$text-on-dark;
-      }
-
-      p {
-        color: c.$text-on-dark;
-      }
-    }
-
-    .character-grid {
-      p {
-        border-bottom-color: c.$border-dark-subtle;
-
-        strong {
-          color: c.$text-dark-muted;
-        }
-      }
-    }
-
-    .experience-box {
-      background: c.$surface-dark-tint;
-      border-color: c.$border-dark-subtle;
-    }
-
-    .lookup-log {
-      border-top-color: c.$border-dark-subtle;
-
-      pre {
-        background: c.$surface-dark-card-alt;
-        border-color: c.$border-dark-subtle;
-        color: c.$text-on-dark;
-      }
-    }
-
-    .comment {
-      background: c.$surface-dark-card-alt;
-      border-color: c.$border-dark-subtle;
-    }
-
-    .achievement-item,
-    .other-character-item {
-      background: c.$surface-dark-card-alt;
-      border-color: c.$border-dark-subtle;
-
-      strong {
-        color: c.$text-on-dark;
-      }
-
-      small {
-        color: c.$text-dark-muted;
-      }
-    }
-
-    .empty-data {
-      color: c.$text-dark-muted;
-    }
   }
 }
 

@@ -236,86 +236,17 @@ $control-pill-radius: 10px;
   }
 }
 
-html[data-theme='dark'] {
-  .highscores-snapshots-page {
-    &__header {
-      h1 {
-        color: c.$text-on-dark;
-      }
+// Kolory idą z tokenów. Zostaje sam zabieg strukturalny: panel duplikatów na
+// ciemnym tle gubi obramowanie i cień, żeby nie dublować ramki wiersza tabeli.
+html[data-theme='dark'] .highscores-snapshots-page {
+  .duplicate-row__panel {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
 
-      p {
-        color: c.$text-dark-muted;
-      }
-    }
-
-    &__summary,
-    &__pagination span {
-      color: c.$text-dark-muted;
-    }
-
-    .control-group {
-      span {
-        color: c.$text-dark-muted;
-      }
-
-      select {
-        background: c.$surface-dark-card-alt;
-        border-color: c.$border-dark-subtle;
-        color: c.$text-on-dark;
-      }
-    }
-
-    .action-button,
-    &__pagination button {
-      background: c.$surface-dark-card-alt;
-      border-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-
-    &__message {
-      background: c.$surface-dark-card;
-      border-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-
-    .duplicate-toggle {
-      background: c.$surface-dark-card-alt;
-      border-color: c.$border-dark-subtle;
-      color: c.$info-accent;
-    }
-
-    .duplicate-row td {
-      background: c.$surface-dark-tint;
-    }
-
-    .duplicate-row__panel {
-      border: none;
-      background: transparent;
-      box-shadow: none;
-    }
-
-    .duplicate-row__item {
-      border-color: c.$border-dark-subtle;
-      background: c.$surface-dark-page;
-      color: c.$text-dark-muted;
-      box-shadow: none;
-
-      span:first-child {
-        color: c.$text-on-dark;
-      }
-    }
-
-    .no-duplicates {
-      color: c.$text-dark-muted;
-    }
-
-    .delta-value {
-      color: c.$success-strong;
-    }
-
-    .no-delta {
-      color: c.$text-dark-muted;
-    }
+  .duplicate-row__item {
+    box-shadow: none;
   }
 }
 

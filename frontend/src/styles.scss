@@ -1,6 +1,10 @@
 @use 'mdb-angular-ui-kit/assets/scss/mdb.scss' as *;
 @use 'colors' as c;
 
+:root {
+  @include c.light-tokens;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -167,201 +171,90 @@ button {
   }
 
   .records-table .date-value {
-    color: c.$text-dark-muted;
+    color: c.$text-400;
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* Dark Mode */
+// =============================================================================
+// Dark Mode
+// Motyw przełącza wyłącznie wartości tokenów z `_colors.scss`. Komponent, który
+// używa tokenów, nie potrzebuje własnego bloku `html[data-theme='dark']`.
+// Poniżej zostają tylko przypadki, których token nie pokrywa: klasy
+// MDBootstrapa z własnymi zmiennymi oraz akcenty właściwe dla ciemnego motywu.
+// =============================================================================
 html[data-theme='dark'] {
+  @include c.dark-tokens;
+
   color-scheme: dark;
 
-  body {
-    background: c.$surface-dark-page;
-    color: c.$text-on-dark;
-  }
+  // MDBootstrap czyta wyłącznie własne zmienne `--mdb-*`, więc bez tego
+  // .card, .form-control, .badge i .table zostają jasne mimo ciemnych tokenów.
+  // `--mdb-body-bg` jest tłem pól formularza; tło strony ustawiamy jawnie na
+  // `body` niżej, więc można je tu wskazać na powierzchnię pola.
+  --mdb-body-bg: #{c.$surface-alt};
+  --mdb-body-color: #{c.$text-700};
+  --mdb-surface-bg: #{c.$surface-card};
+  --mdb-surface-color: #{c.$text-700};
+  --mdb-emphasis-color: #{c.$text-800};
+  --mdb-secondary-color: #{c.$text-400};
+  --mdb-secondary-bg: #{c.$surface-alt};
+  --mdb-tertiary-color: #{c.$text-300};
+  --mdb-tertiary-bg: #{c.$surface-page-tint-2};
+  --mdb-highlight-color: #{c.$text-700};
+  --mdb-border-color: #{c.$border-subtle};
+  --mdb-border-color-translucent: #{c.$border-translucent};
+  --mdb-link-color: #{c.$brand-on-surface};
+  --mdb-link-hover-color: #{c.$brand-on-surface};
+  --mdb-primary-bg-subtle: #{c.$brand-primary-tint};
+  --mdb-primary-text-emphasis: #{c.$brand-on-surface};
+  --mdb-primary-border-subtle: #{c.$border-subtle};
+  --mdb-secondary-bg-subtle: #{c.$surface-alt};
+  --mdb-secondary-text-emphasis: #{c.$text-500};
+  --mdb-secondary-border-subtle: #{c.$border-subtle};
+  --mdb-success-bg-subtle: #{c.$success-bg};
+  --mdb-success-text-emphasis: #{c.$success-fg};
+  --mdb-success-border-subtle: #{c.$border-subtle};
+  --mdb-info-bg-subtle: #{c.$info-bg};
+  --mdb-info-text-emphasis: #{c.$info-fg};
+  --mdb-info-border-subtle: #{c.$border-subtle};
+  --mdb-warning-bg-subtle: #{c.$warning-bg};
+  --mdb-warning-text-emphasis: #{c.$warning-fg};
+  --mdb-warning-border-subtle: #{c.$border-subtle};
+  --mdb-danger-bg-subtle: #{c.$danger-bg};
+  --mdb-danger-text-emphasis: #{c.$danger-fg};
+  --mdb-danger-border-subtle: #{c.$border-subtle};
+  --mdb-light-bg-subtle: #{c.$surface-alt};
+  --mdb-light-text-emphasis: #{c.$text-700};
+  --mdb-light-border-subtle: #{c.$border-subtle};
+  --mdb-dark-bg-subtle: #{c.$surface-page-tint-3};
+  --mdb-dark-text-emphasis: #{c.$text-700};
+  --mdb-dark-border-subtle: #{c.$border-subtle};
 
   .card,
-  .topbar,
   .mobile-nav,
   .footer,
   .panel {
-    background: c.$surface-dark-card;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  .topbar {
-    background: c.$surface-dark-card-alt;
-  }
-
-  .workspace-user {
-    color: c.$text-on-dark;
-
-    small {
-      color: c.$text-dark-muted;
-    }
-  }
-
-  .workspace-avatar {
-    background: c.$surface-dark-card-alt;
-    color: c.$info-accent;
-  }
-
-  .brand {
-    color: c.$text-on-dark;
-  }
-
-  .brand-accent {
-    color: c.$info-accent;
+    background: c.$surface-card;
+    border-color: c.$border-subtle;
+    color: c.$text-700;
   }
 
   .nav-item {
-    color: c.$text-dark-muted;
+    color: c.$text-400;
 
     &:hover,
     &.active {
       background: c.$brand-primary-soft;
-      color: c.$info-accent;
+      color: c.$brand-on-surface;
     }
   }
 
-  .btn-secondary,
-  .btn-outline-secondary,
-  .btn-outline-primary,
-  .btn-light {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-
-    &:hover,
-    &:focus-visible {
-      background: c.$brand-primary;
-      border-color: c.$brand-primary;
-      color: c.$text-on-primary;
-    }
-  }
-
-  :where(input:not([type='checkbox']):not([type='radio']), select, textarea) {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  :where(input, textarea)::placeholder {
-    color: c.$text-dark-muted;
-  }
-
-  .page h1,
-  .page h2,
-  .page h3 {
-    color: c.$text-on-dark;
-  }
-
-  .page small,
-  .page label {
-    color: c.$text-dark-muted;
-  }
-
-  .page p {
-    color: c.$text-on-dark;
-  }
-
-  .app-table-wrap {
-    background: c.$surface-dark-tint;
-    border-color: c.$border-dark-subtle;
-  }
-
-  .app-table {
-    font-size: 12px;
-
-    thead th {
-      background: c.$surface-dark-card-alt;
-      border-bottom-color: c.$border-dark-subtle;
-      color: c.$text-dark-muted;
-    }
-
-    tbody td {
-      border-bottom-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-
-    tbody tr:nth-child(odd) {
-      background: c.$surface-dark-tint;
-    }
-
-    tbody tr:nth-child(even) {
-      background: c.$surface-dark-card;
-    }
-
-    tbody tr:hover {
-      background: c.$surface-dark-card-alt;
-    }
-  }
-
-  .highscores-snapshots-page {
-    &__header {
-      h1 {
-        color: c.$text-on-dark;
-      }
-
-      p {
-        color: c.$text-dark-muted;
-      }
-    }
-
-    &__summary {
-      color: c.$text-dark-muted;
-    }
-
-    .control-group {
-      span {
-        color: c.$text-dark-muted;
-      }
-
-      select {
-        background: c.$surface-dark-card-alt;
-        border-color: c.$border-dark-subtle;
-        color: c.$text-on-dark;
-      }
-    }
-
-    .action-button,
-    &__pagination button {
-      background: c.$surface-dark-card-alt;
-      border-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-
-    &__pagination span {
-      color: c.$text-dark-muted;
-    }
-
-    &__message {
-      background: c.$surface-dark-card;
-      border-color: c.$border-dark-subtle;
-      color: c.$text-on-dark;
-    }
-  }
-
-  .products-panel {
-    h1 {
-      color: c.$text-on-dark;
-    }
-
-    p {
-      color: c.$text-dark-muted;
-    }
-
-    .products-table .name {
-      color: c.$text-on-dark;
-    }
-  }
-
-  .btn-action {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
+  .btn-action,
+  .btn-edit {
+    background: c.$surface-alt;
+    border-color: c.$border-subtle;
+    color: c.$text-700;
 
     &:hover {
       background: c.$brand-primary;
@@ -370,143 +263,19 @@ html[data-theme='dark'] {
     }
   }
 
-  .login-page {
-    background: c.$surface-dark-page;
+  // `.bg-light` i `.text-dark` liczą kolor z `--mdb-light-rgb` / `--mdb-dark-rgb`
+  // (trójki RGB), których nie da się złożyć z naszych tokenów hex - dlatego te
+  // dwie utility klasy nadpisujemy wprost.
+  .badge.bg-light {
+    background: c.$surface-alt !important;
+    border-color: c.$border-subtle !important;
   }
 
-  .login-card,
-  .search-card,
-  .character-card,
-  .boss-card,
-  .profile-card,
-  .create-card,
-  .edit-card,
-  .product-card,
-  .user-card,
-  .stat-card,
-  .metric-card,
-  .showcase-card,
-  .stack-card,
-  .insight-item,
-  .leaderboard-item {
-    background: c.$surface-dark-card;
-    border-color: c.$border-dark-subtle;
-    box-shadow: none;
-  }
-
-  .product-meta,
-  .profile-item-card,
-  .boss-item,
-  .achievement-item,
-  .other-character-item,
-  .comment,
-  .experience-box {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-  }
-
-  .page-header .btn-back,
-  .btn-edit,
-  .toggle-button {
-    background: c.$surface-dark-card-alt;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  .page-header .btn-back:hover,
-  .btn-edit:hover,
-  .toggle-button:hover {
-    background: c.$brand-primary;
-    border-color: c.$brand-primary;
-    color: c.$text-on-primary;
-  }
-
-  .table-message,
-  .intro,
-  .subtitle,
-  .eyebrow,
-  .label,
-  .muted,
-  .stat-label,
-  .metric-label,
-  .chart-legend,
-  .view-all,
-  .referral-note,
-  .char-count {
-    color: c.$text-dark-muted;
-  }
-
-  .name,
-  .project-name,
-  .meta-item strong,
-  .profile-item-card strong,
-  .insight-item strong,
-  .leaderboard-item strong,
-  .user-card .value {
-    color: c.$text-on-dark;
-  }
-
-  .grid-line {
-    border-top-color: c.$border-dark-subtle;
-  }
-
-  .table-row {
-    border-top-color: c.$border-dark-subtle;
-    color: c.$text-dark-muted;
-  }
-
-  .role-chip {
-    background: c.$surface-dark-card-alt;
-    color: c.$text-dark-muted;
-  }
-
-  .avatar-placeholder {
-    background: c.$surface-dark-card-alt;
-    color: c.$text-dark-muted;
-  }
-
-  .referral-card code,
-  .lookup-log pre {
-    background: c.$surface-dark-tint;
-    border-color: c.$border-dark-subtle;
-    color: c.$text-on-dark;
-  }
-
-  .form-actions,
-  .product-header,
-  .description-section,
-  .character-grid p,
-  .recent-searches,
-  .lookup-log {
-    border-color: c.$border-dark-subtle;
-  }
-
-  .login-points .badge,
-  .about-page .badge.bg-light,
-  .about-page .badge.bg-dark-subtle,
-  .about-page .badge.bg-primary-subtle,
-  .about-page .badge.bg-info-subtle,
-  .about-page .badge.bg-success-subtle,
-  .login-page .badge.bg-primary-subtle,
-  .login-page .badge.bg-info-subtle,
-  .login-page .badge.bg-success-subtle {
-    background: c.$surface-dark-card-alt !important;
-    border-color: c.$border-dark-subtle !important;
-    color: c.$text-on-dark !important;
-  }
-
-  .text-dark,
-  .text-dark-emphasis {
-    color: c.$text-on-dark !important;
+  .text-dark {
+    color: c.$text-700 !important;
   }
 
   .bg-warning.text-dark {
     color: c.$warning-fg-strong !important;
-  }
-
-  .table-message.error,
-  .alert.alert-error,
-  .error-message {
-    color: c.$danger-fg-soft;
   }
 }

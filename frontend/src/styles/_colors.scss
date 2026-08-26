@@ -5,32 +5,182 @@
 //     wartości stąd: `@use 'colors' as colors;` (skonfigurowane w vite.config.ts).
 //   - Nowe kolory dokładamy TYLKO tutaj, po sprawdzeniu, czy istniejący token
 //     nie pasuje wizualnie.
+//   - Tokeny zależne od motywu wskazują na custom property `--c-*`. Wartości
+//     jasne i ciemne siedzą w mixinach `light-tokens` / `dark-tokens`, które
+//     `styles.scss` wypuszcza raz na `:root` i na `html[data-theme='dark']`.
+//     Dzięki temu komponent nie potrzebuje własnego bloku dark - wystarczy, że
+//     używa tokenów.
+//   - Token statyczny (ten sam w obu motywach) trzymamy jako zwykłą wartość.
+//   - Przy dodawaniu tokenu zależnego od motywu trzeba dopisać go w trzech
+//     miejscach: `light-tokens`, `dark-tokens` i jako `$nazwa: var(--c-nazwa)`.
 // =============================================================================
 
-// -------- Tekst -------------------------------------------------------------
-$text-body: #191919; // body foreground
-$text-900: #1f2937; // dark surface text
-$text-800: #243b53; // hero heading
-$text-700: #2f3b52; // główne nagłówki (h1/h2)
-$text-600: #44546f; // pod-nagłówki
-$text-500: #5f6f82; // body strong
-$text-400: #66758a; // body / subtitle
-$text-300: #8f98a8; // faint / meta / labels
-$text-200: #b0b7c3; // very faint placeholder
+// -------- Wartości motywu jasnego -------------------------------------------
+@mixin light-tokens {
+  --c-text-body: #191919;
+  --c-text-800: #243b53;
+  --c-text-700: #2f3b52;
+  --c-text-600: #44546f;
+  --c-text-500: #5f6f82;
+  --c-text-400: #66758a;
+  --c-text-300: #8f98a8;
+  --c-text-200: #b0b7c3;
 
+  --c-surface-page: #f3f2ef;
+  --c-surface-page-tint-1: #f3f2ef;
+  --c-surface-page-tint-2: #f8f9fa;
+  --c-surface-page-tint-3: #eef2f7;
+  --c-surface-card: #ffffff;
+  --c-surface-card-overlay: rgba(255, 255, 255, 0.94);
+  --c-surface-card-overlay-strong: rgba(255, 255, 255, 0.96);
+  --c-surface-alt: #f8f9fb;
+
+  --c-border-subtle: #dce6f1;
+  --c-border-muted: #e6edf5;
+  --c-border-dashed: #dde5ee;
+  --c-border-translucent: rgba(220, 230, 241, 0.95);
+
+  --c-brand-primary: #0f4f4d;
+  --c-brand-primary-strong: #083534;
+  --c-brand-primary-tint: #d9e7e6;
+  --c-brand-primary-tint-strong: #c4d8d6;
+  --c-brand-primary-soft: rgba(15, 79, 77, 0.12);
+  --c-brand-primary-soft-lite: rgba(15, 79, 77, 0.08);
+  --c-brand-secondary: #2f6f6c;
+  --c-brand-on-surface: #0f4f4d;
+
+  --c-success-fg: #057642;
+  --c-success-fg-soft: #4f8f63;
+  --c-success-strong: #7abf8c;
+  --c-success-bg: #e8f5ee;
+
+  --c-info-fg: #4b81c8;
+  --c-info-fg-soft: #5f7191;
+  --c-info-bg: #eef4fb;
+  --c-info-bg-alt: #f2f6fb;
+  --c-info-badge-bg: #eef2f8;
+  --c-info-tint: #deebf7;
+
+  --c-warning-fg: #b7791f;
+  --c-warning-fg-strong: #8a5b12;
+  --c-warning-bg: #fff5e8;
+  --c-warning-bg-alt: #fff7ea;
+
+  --c-danger-fg: #b24c3b;
+  --c-danger-fg-soft: #c26e5f;
+  --c-danger-bg: #fdeceb;
+  --c-danger-strong-fg: #9c1c1c;
+  --c-danger-strong-bg: #fde9ea;
+  --c-danger-strong-border: #f1c2c5;
+  --c-danger-ring: rgba(220, 38, 38, 0.1);
+
+  --c-accent-purple-fg: #5f6f9c;
+  --c-accent-purple-bg: #edf2ff;
+
+  --c-shadow-soft: rgba(31, 41, 55, 0.04);
+  --c-shadow-medium: rgba(31, 41, 55, 0.06);
+  --c-shadow-strong: rgba(31, 41, 55, 0.08);
+  --c-shadow-brand: rgba(10, 102, 194, 0.18);
+  --c-shadow-brand-strong: rgba(10, 102, 194, 0.24);
+}
+
+// -------- Wartości motywu ciemnego ------------------------------------------
+// Kontrast tekstu liczony względem `--c-surface-page` i `--c-surface-card`.
+@mixin dark-tokens {
+  --c-text-body: #e7eef8;
+  --c-text-800: #f2f7ff;
+  --c-text-700: #eaf1fb;
+  --c-text-600: #dbe5f2;
+  --c-text-500: #ccd8e8;
+  --c-text-400: #b9c7da;
+  --c-text-300: #9fb0c6;
+  --c-text-200: #8b9ab0;
+
+  --c-surface-page: #0f1624;
+  --c-surface-page-tint-1: #16202f;
+  --c-surface-page-tint-2: #151f2e;
+  --c-surface-page-tint-3: #1b2636;
+  --c-surface-card: #151f2e;
+  --c-surface-card-overlay: rgba(21, 31, 46, 0.94);
+  --c-surface-card-overlay-strong: rgba(21, 31, 46, 0.96);
+  --c-surface-alt: #1b2636;
+
+  --c-border-subtle: #2a3749;
+  --c-border-muted: #253242;
+  --c-border-dashed: #2f3d51;
+  --c-border-translucent: rgba(42, 55, 73, 0.95);
+
+  --c-brand-primary: #1d6a67;
+  --c-brand-primary-strong: #14514e;
+  --c-brand-primary-tint: #16403e;
+  --c-brand-primary-tint-strong: #1d514e;
+  --c-brand-primary-soft: rgba(110, 211, 205, 0.16);
+  --c-brand-primary-soft-lite: rgba(110, 211, 205, 0.1);
+  --c-brand-secondary: #4fb3ad;
+  --c-brand-on-surface: #6fd3cd;
+
+  --c-success-fg: #57d98c;
+  --c-success-fg-soft: #86c9a2;
+  --c-success-strong: #9ad9ae;
+  --c-success-bg: #122c1f;
+
+  --c-info-fg: #7fb2f0;
+  --c-info-fg-soft: #a3b6d2;
+  --c-info-bg: #142033;
+  --c-info-bg-alt: #16223a;
+  --c-info-badge-bg: #1a2436;
+  --c-info-tint: #1b2c3f;
+
+  --c-warning-fg: #edb95c;
+  --c-warning-fg-strong: #d9a24a;
+  --c-warning-bg: #33260f;
+  --c-warning-bg-alt: #2e2210;
+
+  --c-danger-fg: #f08c7a;
+  --c-danger-fg-soft: #e79c8f;
+  --c-danger-bg: #35191a;
+  --c-danger-strong-fg: #f28b8b;
+  --c-danger-strong-bg: #3a1a1d;
+  --c-danger-strong-border: #5c2a2e;
+  --c-danger-ring: rgba(240, 140, 122, 0.18);
+
+  --c-accent-purple-fg: #a9b8e6;
+  --c-accent-purple-bg: #1c2440;
+
+  --c-shadow-soft: rgba(0, 0, 0, 0.35);
+  --c-shadow-medium: rgba(0, 0, 0, 0.45);
+  --c-shadow-strong: rgba(0, 0, 0, 0.55);
+  --c-shadow-brand: rgba(0, 0, 0, 0.5);
+  --c-shadow-brand-strong: rgba(0, 0, 0, 0.55);
+}
+
+// -------- Tekst -------------------------------------------------------------
+$text-body: var(--c-text-body); // body foreground
+$text-800: var(--c-text-800); // hero heading
+$text-700: var(--c-text-700); // główne nagłówki (h1/h2)
+$text-600: var(--c-text-600); // pod-nagłówki
+$text-500: var(--c-text-500); // body strong
+$text-400: var(--c-text-400); // body / subtitle
+$text-300: var(--c-text-300); // faint / meta / labels
+$text-200: var(--c-text-200); // very faint placeholder
+
+// Statyczne: zawsze na wypełnieniu marki lub na powierzchni ciemnej.
+$text-900: #1f2937; // tekst na jasnym akcencie (np. $accent-lime)
 $text-on-primary: #ffffff;
 $text-on-dark: #eff5ff;
 $text-dark-muted: #eff5ff;
 
 // -------- Powierzchnie ------------------------------------------------------
-$surface-page: #f3f2ef;
-$surface-page-tint-1: #f3f2ef;
-$surface-page-tint-2: #f8f9fa;
-$surface-page-tint-3: #eef2f7;
-$surface-card: #ffffff;
-$surface-card-overlay: rgba(255, 255, 255, 0.94);
-$surface-card-overlay-strong: rgba(255, 255, 255, 0.96);
-$surface-alt: #f8f9fb;
+$surface-page: var(--c-surface-page);
+$surface-page-tint-1: var(--c-surface-page-tint-1);
+$surface-page-tint-2: var(--c-surface-page-tint-2);
+$surface-page-tint-3: var(--c-surface-page-tint-3);
+$surface-card: var(--c-surface-card);
+$surface-card-overlay: var(--c-surface-card-overlay);
+$surface-card-overlay-strong: var(--c-surface-card-overlay-strong);
+$surface-alt: var(--c-surface-alt);
+
+// Statyczne: powierzchnie z założenia ciemne w obu motywach.
 $surface-dark: #1f2937;
 $surface-dark-page: #0f1624;
 $surface-dark-card: #151f2e;
@@ -38,65 +188,70 @@ $surface-dark-card-alt: #1b2636;
 $surface-dark-tint: #111a28;
 
 // -------- Krawędzie ---------------------------------------------------------
-$border-subtle: #dce6f1;
-$border-muted: #e6edf5;
-$border-dashed: #dde5ee;
-$border-translucent: rgba(220, 230, 241, 0.95);
+$border-subtle: var(--c-border-subtle);
+$border-muted: var(--c-border-muted);
+$border-dashed: var(--c-border-dashed);
+$border-translucent: var(--c-border-translucent);
 $border-dark-subtle: #2a3749;
 
 // -------- Marka (primary) ---------------------------------------------------
-$brand-primary: #0f4f4d;
-$brand-primary-strong: #083534;
-$brand-primary-tint: #d9e7e6;
-$brand-primary-tint-strong: #c4d8d6;
-$brand-primary-soft: rgba(15, 79, 77, 0.12);
-$brand-primary-soft-lite: rgba(15, 79, 77, 0.08);
-$brand-secondary: #2f6f6c;
+$brand-primary: var(--c-brand-primary); // wypełnienia i obramowania
+$brand-primary-strong: var(--c-brand-primary-strong);
+$brand-primary-tint: var(--c-brand-primary-tint);
+$brand-primary-tint-strong: var(--c-brand-primary-tint-strong);
+$brand-primary-soft: var(--c-brand-primary-soft);
+$brand-primary-soft-lite: var(--c-brand-primary-soft-lite);
+$brand-secondary: var(--c-brand-secondary);
+// Kolor tekstu/ikony w barwie marki - w dark musi być rozjaśniony, inaczej
+// ginie na ciemnym tle. Nie używać do wypełnień.
+$brand-on-surface: var(--c-brand-on-surface);
 
 // -------- Statusy: success --------------------------------------------------
-$success-fg: #057642;
-$success-fg-soft: #4f8f63;
-$success-strong: #7abf8c;
-$success-bg: #e8f5ee;
+$success-fg: var(--c-success-fg);
+$success-fg-soft: var(--c-success-fg-soft);
+$success-strong: var(--c-success-strong);
+$success-bg: var(--c-success-bg);
 
 // -------- Statusy: info -----------------------------------------------------
-$info-fg: #4b81c8;
-$info-fg-soft: #5f7191;
-$info-bg: #eef4fb;
-$info-bg-alt: #f2f6fb;
-$info-badge-bg: #eef2f8;
+$info-fg: var(--c-info-fg);
+$info-fg-soft: var(--c-info-fg-soft);
+$info-bg: var(--c-info-bg);
+$info-bg-alt: var(--c-info-bg-alt);
+$info-badge-bg: var(--c-info-badge-bg);
+$info-tint: var(--c-info-tint);
 $info-accent: #7aaed1;
 $info-accent-soft: #8cb7d5;
 $info-accent-strong: #9fc7e0;
-$info-tint: #deebf7;
 
 // -------- Statusy: warning --------------------------------------------------
-$warning-fg: #b7791f;
-$warning-fg-strong: #8a5b12;
+$warning-fg: var(--c-warning-fg);
+$warning-fg-strong: var(--c-warning-fg-strong);
+$warning-bg: var(--c-warning-bg);
+$warning-bg-alt: var(--c-warning-bg-alt);
 $warning-fg-accent: #e6a96a;
-$warning-bg: #fff5e8;
-$warning-bg-alt: #fff7ea;
 
 // -------- Statusy: danger ---------------------------------------------------
-$danger-fg: #b24c3b;
-$danger-fg-soft: #c26e5f;
-$danger-bg: #fdeceb;
-$danger-strong-fg: #9c1c1c;
-$danger-strong-bg: #fde9ea;
-$danger-strong-border: #f1c2c5;
+$danger-fg: var(--c-danger-fg);
+$danger-fg-soft: var(--c-danger-fg-soft);
+$danger-bg: var(--c-danger-bg);
+$danger-strong-fg: var(--c-danger-strong-fg);
+$danger-strong-bg: var(--c-danger-strong-bg);
+$danger-strong-border: var(--c-danger-strong-border);
+$danger-ring: var(--c-danger-ring); // pierścień focusa pola z błędem
 
 // -------- Akcenty -----------------------------------------------------------
-$accent-purple-fg: #5f6f9c;
-$accent-purple-bg: #edf2ff;
+$accent-purple-fg: var(--c-accent-purple-fg);
+$accent-purple-bg: var(--c-accent-purple-bg);
 $accent-purple-strong: #bac8ea;
 $accent-lime: #d8e9c8;
+$overlay-highlight: rgba(255, 255, 255, 0.03); // wewnętrzny rozbłysk na ciemnym
 
 // -------- Cienie ------------------------------------------------------------
-$shadow-soft: rgba(31, 41, 55, 0.04);
-$shadow-medium: rgba(31, 41, 55, 0.06);
-$shadow-strong: rgba(31, 41, 55, 0.08);
-$shadow-brand: rgba(10, 102, 194, 0.18);
-$shadow-brand-strong: rgba(10, 102, 194, 0.24);
+$shadow-soft: var(--c-shadow-soft);
+$shadow-medium: var(--c-shadow-medium);
+$shadow-strong: var(--c-shadow-strong);
+$shadow-brand: var(--c-shadow-brand);
+$shadow-brand-strong: var(--c-shadow-brand-strong);
 $shadow-card-hex: #35416112; // 8-cyfrowy hex ze slajdem alpha (login card)
 
 // -------- Breakpointy -------------------------------------------------------
