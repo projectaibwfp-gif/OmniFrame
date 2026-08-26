@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-26T10:08:59.899Z"
+    commit: "518c29903777ff88e9b83f83e6c2e63a8f785b80"
+    frontend:
+      version: "0.10.0"
+      tag: "frontend-v0.10.0"
+      changed: true
+      commits:
+      - hash: "518c2990"
+        author: "Filip Podsiadły"
+        date: "2026-08-26T12:07:11+02:00"
+        message: "feat: implement hunting places component with filtering and sorting functionality"
+    backend:
+      version: "0.7.0"
+      tag: "backend-v0.7.0"
+      changed: true
+      commits:
+      - hash: "518c2990"
+        author: "Filip Podsiadły"
+        date: "2026-08-26T12:07:11+02:00"
+        message: "feat: implement hunting places component with filtering and sorting functionality"
   - date: "2026-08-26T05:42:34.902Z"
     commit: "8d789aceddc19b3ecf42e2f8d775dc8b00009929"
     frontend:
