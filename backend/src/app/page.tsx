@@ -5,6 +5,10 @@ export default function HomePage() {
       <p>
         REST API działa. Sprawdź <code>/api/health</code> lub <code>/api/products</code>.
       </p>
+      <p>
+        Dokumentacja Swagger jest dostępna pod <code>/swagger</code>, a specyfikacja JSON pod{' '}
+        <code>/api/openapi</code>.
+      </p>
     </main>
   );
 }

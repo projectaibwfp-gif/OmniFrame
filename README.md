@@ -106,6 +106,7 @@ Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
 Endpointy:
 
 - `GET /api/health` - sprawdza API i połączenie z bazą,
+- `GET /api/openapi` - zwraca specyfikację OpenAPI (JSON),
 - `GET /api/dashboard` - metryki dashboardu: konta Google, logowania dziś, rejestracje, polecenia, top referrerzy,
 - `GET /api/auth/state` - tworzy i zapisuje stan logowania Google,
 - `POST /api/auth/google` - loguje przez Google, ustawia cookie sesji i refresh,
@@ -122,6 +123,8 @@ Endpointy:
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
 - `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
 - `POST /api/users` - ręczny upsert użytkownika Google.
+
+Swagger UI backendu jest dostępne pod `http://localhost:3000/swagger`.
 
 Dla endpointów TibiaData punktem odniesienia jest lokalna specyfikacja
 `shared/api/swagger.json` (snapshot dokumentacji `https://docs.tibiadata.com/swagger.json`).

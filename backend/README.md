@@ -31,9 +31,12 @@ npm run dev
 
 Domyślnie API działa na `http://localhost:3000`.
 
+Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja OpenAPI pod `http://localhost:3000/api/openapi`.
+
 ## Endpointy
 
 - `GET /api/health` - status API + połączenie z bazą,
+- `GET /api/openapi` - specyfikacja OpenAPI (JSON),
 - `GET /api/products` - lista produktów (`id`, `name`, `status`, `category`, `updatedAt`),
 - `POST /api/products` - tworzenie rekordu.
 
