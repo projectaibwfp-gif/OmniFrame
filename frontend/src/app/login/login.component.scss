@@ -72,6 +72,16 @@ $card-padding-mobile: 20px;
   display: flex;
   justify-content: center;
   padding: 0 $card-padding $card-padding-mobile;
+  width: 100%;
+
+  ::ng-deep button {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  ::ng-deep img {
+    border-radius: 50% !important;
+  }
 }
 
 .login-error {
@@ -113,6 +123,15 @@ $card-padding-mobile: 20px;
 
   .google-button-container {
     padding: 0 $card-padding-mobile $card-padding-mobile;
+
+    ::ng-deep button {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    ::ng-deep img {
+      border-radius: 50% !important;
+    }
   }
 
   .login-error {
