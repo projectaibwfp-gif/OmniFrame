@@ -18,6 +18,7 @@ export class TibiaKillStatisticsComponent {
   protected readonly apiError = signal(false);
 
   protected readonly hasStatistics = computed(() => this.statistics().length > 0);
+  protected readonly selectedWorldLabel = computed(() => this.selectedWorld() ?? '');
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
 
@@ -64,7 +65,7 @@ export class TibiaKillStatisticsComponent {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (response) => {
-          this.statistics.set(response.killstatistics);
+          this.statistics.set(response.entries);
           this.updatedAt.set(response.updatedAt);
         },
         error: () => this.apiError.set(true),

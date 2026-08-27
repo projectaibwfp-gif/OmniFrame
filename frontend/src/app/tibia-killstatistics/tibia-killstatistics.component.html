@@ -3,7 +3,8 @@
     <p class="killstatistics-page__eyebrow">TibiaData v4</p>
     <h1>Killstatistics</h1>
     <p class="killstatistics-page__intro">
-      Wybierz świat, żeby zobaczyć dane z <code>GET /v4/killstatistics/{{ '{' }}world{{ '}' }}</code
+      Wybierz świat, żeby zobaczyć dane z
+      <code>GET /v4/killstatistics/{{ '{' }}world{{ '}' }}</code
       >.
     </p>
   </header>
@@ -38,7 +39,7 @@
     <div class="killstatistics-page__message">Wybierz świat, aby zobaczyć statystyki.</div>
   } @else if (hasStatistics()) {
     <div class="killstatistics-page__summary">
-      Wybrany świat: <strong>{{ selectedWorld() }}</strong>
+      Wybrany świat: <strong>{{ selectedWorldLabel() }}</strong>
       @if (updatedAt()) {
         | Aktualizacja: <strong>{{ updatedAt() }}</strong>
       }

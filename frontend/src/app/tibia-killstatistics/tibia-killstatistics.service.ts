@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, type Observable } from 'rxjs';
 import type { TibiaKillStatisticsWorldDto } from '@shared/api-contract';
@@ -14,9 +14,7 @@ export class TibiaKillStatisticsService {
 
   getKillStatistics(world: string): Observable<TibiaKillStatisticsWorldDto> {
     return this.http
-      .get<KillStatisticsResponse>(
-        buildApiUrl(`/tibia/killstatistics/${encodeURIComponent(world)}`),
-      )
+      .get<KillStatisticsResponse>(buildApiUrl(`/killstatistics/${encodeURIComponent(world)}`))
       .pipe(map((response) => response.data));
   }
 }

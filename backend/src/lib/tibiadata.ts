@@ -9,6 +9,7 @@ import type {
   TibiaCharacterOtherCharacterDto,
   TibiaNewsDto,
   TibiaNewsListDto,
+  TibiaKillStatisticsWorldDto,
 } from '@shared/api-contract';
 import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
 import type { HighscoresSnapshot } from './highscores-snapshots';
@@ -131,12 +132,28 @@ interface TibiaDataHighscoresResponse {
   };
 }
 
+interface TibiaDataKillStatisticsEntry {
+  world?: unknown;
+  name?: unknown;
+  description?: unknown;
+  value?: unknown;
+}
+
+interface TibiaDataKillStatisticsResponse {
+  killstatistics?: {
+    world?: unknown;
+    updated_at?: unknown;
+    entries?: TibiaDataKillStatisticsEntry[];
+  };
+}
+
 type JsonRecord = Record<string, unknown>;
 const MAX_HIGHSCORE_PAGES = 20;
 const RESTRICTION_MODE_ERROR_CODE = 9002;
 const MS_PER_MINUTE = 60_000;
 const HTTP_BAD_REQUEST = 400;
 const HTTP_NOT_FOUND = 404;
+const HTTP_OK = 200;
 
 export type TibiaHighscoresVocation = 'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers';
 
@@ -188,6 +205,34 @@ function mapCreature(creature: TibiaDataCreature | undefined): TibiaCreatureDto 
     race: creature.race,
     imageUrl: creature.image_url,
     featured: creature.featured === true,
+  };
+}
+
+function mapKillStatisticsEntry(
+  entry: TibiaDataKillStatisticsEntry,
+): TibiaKillStatisticsWorldDto['entries'][number] | null {
+  const race = readString(entry.race);
+  const lastDayPlayersKilled = readNumber(entry.last_day_players_killed);
+  const lastDayKilled = readNumber(entry.last_day_killed);
+  const lastWeekPlayersKilled = readNumber(entry.last_week_players_killed);
+  const lastWeekKilled = readNumber(entry.last_week_killed);
+
+  if (
+    !race ||
+    lastDayPlayersKilled === null ||
+    lastDayKilled === null ||
+    lastWeekPlayersKilled === null ||
+    lastWeekKilled === null
+  ) {
+    return null;
+  }
+
+  return {
+    race,
+    lastDayPlayersKilled,
+    lastDayKilled,
+    lastWeekPlayersKilled,
+    lastWeekKilled,
   };
 }
 
@@ -645,6 +690,28 @@ export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
   };
   creaturesCache = { data, timestamp: now };
   return data;
+}
+
+export async function fetchKillStatistics(world: string): Promise<TibiaKillStatisticsWorldDto> {
+  const response = await fetchFromTibiaData(`/killstatistics/${encodeURIComponent(world)}`);
+  const payload = (await response.json()) as TibiaDataKillStatisticsResponse;
+
+  if (response.status === HTTP_NOT_FOUND) {
+    throw new TibiaDataNotFoundError('Kill statistics not found');
+  }
+
+  const container = payload.killstatistics;
+  if (!container) {
+    throw new Error('Invalid kill statistics response');
+  }
+
+  return {
+    world: readString(container.world) ?? world,
+    updatedAt: readString(container.updated_at),
+    entries: (container.entries ?? [])
+      .map((entry) => mapKillStatisticsEntry(entry))
+      .filter((entry): entry is TibiaKillStatisticsWorldDto['entries'][number] => entry !== null),
+  };
 }
 
 export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {

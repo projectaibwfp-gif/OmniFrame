@@ -254,16 +254,17 @@ export interface HighscoresSnapshotsListDto {
 }
 
 export interface TibiaKillStatisticsEntryDto {
-  world: string;
-  name: string;
-  description: string | null;
-  value: number | null;
+  race: string;
+  lastDayPlayersKilled: number;
+  lastDayKilled: number;
+  lastWeekPlayersKilled: number;
+  lastWeekKilled: number;
 }
 
 export interface TibiaKillStatisticsWorldDto {
   world: string;
   updatedAt: string | null;
-  killstatistics: TibiaKillStatisticsEntryDto[];
+  entries: TibiaKillStatisticsEntryDto[];
 }
 
 export interface TibiaNewsDto {

@@ -231,6 +231,24 @@ export const openApiDocument = {
         },
       },
     },
+    '/api/killstatistics/{world}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns kill statistics for a selected world.',
+        parameters: [
+          {
+            name: 'world',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Kill statistics payload' },
+          404: { description: 'Kill statistics not found' },
+        },
+      },
+    },
     '/api/cron/highscores': {
       post: {
         tags: ['Cron'],
