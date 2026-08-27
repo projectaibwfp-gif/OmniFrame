@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-27T04:44:09.472Z"
+    commit: "2fc2b6ba9c11306bea5c60bbdd4304c81c1a71b1"
+    frontend:
+      version: "0.12.4"
+      tag: "frontend-v0.12.4"
+      changed: true
+      commits:
+      - hash: "2fc2b6ba"
+        author: "Bartek"
+        date: "2026-08-27T06:42:08+02:00"
+        message: "refactor: set responsive max-width to 1440px and normalize line endings to LF"
+    backend:
+      version: "0.8.2"
+      tag: "backend-v0.8.2"
+      changed: false
+      commits: []
   - date: "2026-08-26T14:05:59.445Z"
     commit: "9defabbd243d47b401a3917d7a03812cf95cf8b7"
     frontend:
