@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
+import { AuthService } from '../auth/auth.service';
 import { MainCharacterService } from '../services/main-character.service';
 import { TibiaCharacterService } from './tibia-character.service';
 
@@ -16,6 +17,7 @@ const MAIN_CHARACTER_LINK_ERROR = 'Nie udało się powiązać postaci. Spróbuj 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TibiaCharacterComponent {
+  protected readonly currentUser = inject(AuthService).user;
   protected readonly characterName = signal('');
   protected readonly lookup = signal<TibiaCharacterLookupDto | null>(null);
   protected readonly isLoading = signal(false);
@@ -32,8 +34,8 @@ export class TibiaCharacterComponent {
   protected readonly otherCharacters = computed(() => this.character()?.otherCharacters ?? []);
   protected readonly experience = computed(() => this.character()?.experience ?? null);
   protected readonly experienceLookupLog = computed(() => this.experience()?.lookupLog ?? null);
-
-  protected readonly currentMainCharacter = computed(() => this.mainCharacterService.character());
+  protected readonly mainCharacter = computed(() => this.mainCharacterService.character());
+  protected readonly mainCharacterBadge = computed(() => this.mainCharacterService.badge());
   protected readonly isCurrentMain = computed(() =>
     this.mainCharacterService.isCurrentMain(this.character()?.name),
   );

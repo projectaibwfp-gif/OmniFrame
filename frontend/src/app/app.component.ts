@@ -18,6 +18,7 @@ interface NavTranslations {
   charmPlaces: string;
   quests: string;
   snapshots: string;
+  killstatistics: string;
   users: string;
   profile: string;
   about: string;
@@ -33,6 +34,7 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     charmPlaces: 'Charm places',
     quests: 'Quests',
     snapshots: 'Highscores DB',
+    killstatistics: 'Killstatistics',
     users: 'Users',
     profile: 'Profile',
     about: 'About project',
@@ -46,6 +48,7 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     charmPlaces: 'Charm places',
     quests: 'Questy',
     snapshots: 'Highscores DB',
+    killstatistics: 'Killstatistics',
     users: 'Użytkownicy',
     profile: 'Profil',
     about: 'O projekcie',
@@ -81,17 +84,18 @@ export class AppComponent {
   protected readonly navItems = computed(() => {
     const translations = NAV_TRANSLATIONS[this.currentLocale()];
     return [
+      { path: '/', label: translations.dashboard, icon: '▦', exact: true },
+      { path: '/users', label: translations.users, icon: '👤', exact: false },
+      { path: '/profile', label: translations.profile, icon: '◉', exact: false },
+      { path: '/about', label: translations.about, icon: 'ⓘ', exact: false },
       { path: '/news', label: translations.news, icon: '📰', exact: false },
       { path: '/boosted', label: translations.boostedData, icon: '⚔', exact: false },
-      { path: '/character', label: translations.character, icon: '🧙', exact: false },
-      { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺️', exact: false },
+      { path: '/character', label: translations.character, icon: '🧝', exact: false },
+      { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺', exact: false },
       { path: '/charm-places', label: translations.charmPlaces, icon: '✨', exact: false },
       { path: '/quests', label: translations.quests, icon: '📜', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
-      { path: '/', label: translations.dashboard, icon: '▦', exact: true },
-      { path: '/users', label: translations.users, icon: '👤', exact: false },
-      { path: '/profile', label: translations.profile, icon: '◌', exact: false },
-      { path: '/about', label: translations.about, icon: 'ⓘ', exact: false },
+      { path: '/killstatistics', label: translations.killstatistics, icon: '☠', exact: false },
     ] as const;
   });
 

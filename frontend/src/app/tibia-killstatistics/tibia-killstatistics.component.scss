@@ -1,0 +1,139 @@
+@use 'colors' as c;
+
+.killstatistics-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__header {
+    h1 {
+      margin: 0;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: c.$text-300;
+      font-size: 13px;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$text-300;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  &__summary {
+    color: c.$text-400;
+    font-size: 13px;
+  }
+
+  &__message {
+    padding: 14px 16px;
+    color: c.$text-500;
+    background: c.$surface-card;
+    border: 1px solid c.$border-subtle;
+    border-radius: 12px;
+  }
+
+  &__message--error {
+    color: c.$danger-fg-soft;
+    border-color: c.$danger-strong-border;
+    background: c.$danger-strong-bg;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    span {
+      color: c.$text-400;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    select {
+      min-width: 180px;
+      padding: 10px 12px;
+      border: 1px solid c.$border-subtle;
+      border-radius: 10px;
+      background: c.$surface-card;
+      color: c.$text-700;
+    }
+  }
+
+  .action-button {
+    padding: 10px 14px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 10px;
+    background: c.$surface-card;
+    color: c.$text-700;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .killstatistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .killstatistics-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 12px;
+    background: c.$surface-card-overlay;
+
+    &__label {
+      color: c.$text-400;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    &__value {
+      color: c.$text-700;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    &__description {
+      margin: 0;
+      color: c.$text-400;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .killstatistics-page {
+    &__controls {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .control-group {
+      select {
+        min-width: 100%;
+      }
+    }
+  }
+}

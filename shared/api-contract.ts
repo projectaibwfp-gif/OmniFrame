@@ -253,6 +253,19 @@ export interface HighscoresSnapshotsListDto {
   worlds: string[];
 }
 
+export interface TibiaKillStatisticsEntryDto {
+  world: string;
+  name: string;
+  description: string | null;
+  value: number | null;
+}
+
+export interface TibiaKillStatisticsWorldDto {
+  world: string;
+  updatedAt: string | null;
+  killstatistics: TibiaKillStatisticsEntryDto[];
+}
+
 export interface TibiaNewsDto {
   id: number;
   date: string;

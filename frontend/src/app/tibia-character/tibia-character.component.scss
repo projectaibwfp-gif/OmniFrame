@@ -37,29 +37,6 @@ $stat-gap: 12px;
     color: c.$text-400;
     font-size: 14px;
     line-height: 1.55;
-
-    code {
-      padding: 2px 6px;
-      background: c.$surface-alt;
-      border: 1px solid c.$border-subtle;
-      border-radius: 6px;
-      font-size: 12px;
-      color: c.$text-600;
-    }
-  }
-
-  &__message {
-    padding: 14px 16px;
-    color: c.$text-500;
-    background: c.$surface-card;
-    border: 1px solid c.$border-subtle;
-    border-radius: 12px;
-  }
-
-  &__message--error {
-    color: c.$danger-strong-fg;
-    border-color: c.$danger-strong-border;
-    background: c.$danger-strong-bg;
   }
 
   .search-card,
@@ -148,12 +125,6 @@ $stat-gap: 12px;
     }
   }
 
-  .main-character-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .main-character-status {
     display: inline-flex;
     align-items: center;
@@ -164,6 +135,12 @@ $stat-gap: 12px;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.02em;
+  }
+
+  .main-character-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .main-character-message {
@@ -236,40 +213,32 @@ $stat-gap: 12px;
     margin-top: 14px;
     padding-top: 14px;
     border-top: 1px dashed c.$border-subtle;
+  }
 
-    &__label {
-      margin: 0 0 8px;
-      color: c.$text-400;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
+  .recent-searches__label {
+    margin: 0 0 8px;
+    color: c.$text-400;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
-    &__list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  .recent-searches__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-    &__chip {
-      padding: 6px 12px;
-      border: 1px solid c.$border-subtle;
-      border-radius: 999px;
-      background: c.$surface-card;
-      color: c.$text-700;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition:
-        border-color 150ms ease,
-        color 150ms ease;
-
-      &:hover {
-        border-color: c.$brand-primary;
-        color: c.$brand-on-surface;
-      }
-    }
+  .recent-searches__chip {
+    padding: 6px 12px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 999px;
+    background: c.$surface-card;
+    color: c.$text-700;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
   }
 
   .stat-grid {
@@ -314,29 +283,12 @@ $stat-gap: 12px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-
-    h3 {
-      margin: 0;
-      color: c.$text-700;
-      font-size: 15px;
-      font-weight: 600;
-    }
   }
 
   .experience-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 10px;
-
-    > div {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 10px 12px;
-      background: c.$surface-card;
-      border: 1px solid c.$border-subtle;
-      border-radius: 10px;
-    }
   }
 
   .lookup-log {
@@ -402,17 +354,6 @@ $stat-gap: 12px;
     background: c.$surface-card;
     border: 1px solid c.$border-subtle;
     border-radius: 12px;
-
-    strong {
-      color: c.$text-700;
-      font-size: 14px;
-    }
-
-    &__meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
   }
 
   .empty-data {
@@ -433,26 +374,15 @@ $stat-gap: 12px;
     color: inherit;
     text-align: left;
     cursor: pointer;
+  }
 
-    &:focus-visible {
-      outline: 2px solid c.$brand-primary;
-      outline-offset: 4px;
-      border-radius: 4px;
-    }
-
-    &__chevron {
-      flex-shrink: 0;
-      width: 12px;
-      height: 12px;
-      border-right: 2px solid c.$text-400;
-      border-bottom: 2px solid c.$text-400;
-      transform: rotate(45deg);
-      transition: transform 200ms ease;
-
-      &.is-open {
-        transform: rotate(-135deg);
-      }
-    }
+  .section-toggle__chevron {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid c.$text-400;
+    border-bottom: 2px solid c.$text-400;
+    transform: rotate(45deg);
   }
 
   .history-table-wrapper {

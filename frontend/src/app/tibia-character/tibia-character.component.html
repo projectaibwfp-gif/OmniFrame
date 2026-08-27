@@ -3,10 +3,54 @@
     <p class="tibia-character-page__eyebrow">TibiaData v4</p>
     <h1>Wyszukiwarka postaci</h1>
     <p class="tibia-character-page__intro">
-      Podaj nazwę postaci, aby pobrać dane z endpointu
-      <code>GET /v4/character/:name</code>.
+      Możesz wyszukać dowolną postać, a na górze od razu widzisz także zapisane szczegóły Twojej
+      głównej postaci.
     </p>
   </header>
+
+  @if (mainCharacter(); as myCharacter) {
+    <section class="character-card">
+      <div class="character-card__header">
+        <div class="character-card__title">
+          <p class="eyebrow">Twoja postać</p>
+          <h2>{{ myCharacter.name }}</h2>
+          <div class="character-card__chips">
+            @if (myCharacter.vocation) {
+              <span class="chip chip--brand">{{ myCharacter.vocation }}</span>
+            }
+            <span class="chip">lvl {{ myCharacter.level ?? '?' }}</span>
+            @if (myCharacter.world) {
+              <span class="chip">{{ myCharacter.world }}</span>
+            }
+          </div>
+        </div>
+        <span class="main-character-status">Z profilu</span>
+      </div>
+
+      <div class="stat-grid">
+        <article class="stat-card">
+          <span class="stat-card__label">Nazwa</span>
+          <strong class="stat-card__value">{{ myCharacter.name }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Świat</span>
+          <strong class="stat-card__value">{{ myCharacter.world ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Vocation</span>
+          <strong class="stat-card__value">{{ myCharacter.vocation ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Poziom</span>
+          <strong class="stat-card__value">{{ myCharacter.level ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Powiązano</span>
+          <strong class="stat-card__value">{{ myCharacter.linkedAt | appDateTime }}</strong>
+        </article>
+      </div>
+    </section>
+  }
 
   <section class="search-card">
     <form class="search-form" (ngSubmit)="loadCharacter()">
@@ -95,9 +139,9 @@
       @if (linkMainCharacterError(); as message) {
         <p class="main-character-message main-character-message--error">{{ message }}</p>
       } @else if (linkMainCharacterSuccess()) {
-        <p class="main-character-message main-character-message--success"
-          >Postać została ustawiona jako główna.</p
-        >
+        <p class="main-character-message main-character-message--success">
+          Postać została ustawiona jako główna.
+        </p>
       }
 
       <div class="stat-grid">

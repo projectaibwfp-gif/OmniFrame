@@ -1,0 +1,61 @@
+<section class="killstatistics-page">
+  <header class="killstatistics-page__header">
+    <p class="killstatistics-page__eyebrow">TibiaData v4</p>
+    <h1>Killstatistics</h1>
+    <p class="killstatistics-page__intro">
+      Wybierz świat, żeby zobaczyć dane z <code>GET /v4/killstatistics/{{ '{' }}world{{ '}' }}</code
+      >.
+    </p>
+  </header>
+
+  <div class="killstatistics-page__controls">
+    <label class="control-group">
+      <span>Świat</span>
+      <select
+        [value]="selectedWorld() ?? ''"
+        (change)="onWorldChange($event)"
+        [disabled]="isLoading()"
+      >
+        <option value="">Wybierz świat</option>
+        @for (world of worlds(); track world) {
+          <option [value]="world">{{ world }}</option>
+        }
+      </select>
+    </label>
+
+    <button class="action-button" type="button" (click)="refresh()" [disabled]="isLoading()">
+      Odśwież
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="killstatistics-page__message">Ładowanie danych...</div>
+  } @else if (apiError()) {
+    <div class="killstatistics-page__message killstatistics-page__message--error">
+      Nie udało się pobrać danych.
+    </div>
+  } @else if (!selectedWorld()) {
+    <div class="killstatistics-page__message">Wybierz świat, aby zobaczyć statystyki.</div>
+  } @else if (hasStatistics()) {
+    <div class="killstatistics-page__summary">
+      Wybrany świat: <strong>{{ selectedWorld() }}</strong>
+      @if (updatedAt()) {
+        | Aktualizacja: <strong>{{ updatedAt() }}</strong>
+      }
+    </div>
+
+    <div class="killstatistics-grid">
+      @for (entry of statistics(); track entry.name) {
+        <article class="killstatistics-card">
+          <span class="killstatistics-card__label">{{ entry.name }}</span>
+          <strong class="killstatistics-card__value">{{ entry.value ?? '-' }}</strong>
+          @if (entry.description) {
+            <p class="killstatistics-card__description">{{ entry.description }}</p>
+          }
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="killstatistics-page__message">Brak danych dla wybranego świata.</div>
+  }
+</section>

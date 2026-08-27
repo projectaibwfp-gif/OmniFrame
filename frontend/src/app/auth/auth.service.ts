@@ -138,7 +138,6 @@ export class AuthService {
   logout(): void {
     this.user.set(null);
     void firstValueFrom(this.http.post(buildApiUrl('/auth/logout'), {})).catch(() => undefined);
-    window.google?.accounts.id.disableAutoSelect();
   }
 
   handleSessionExpired(): void {

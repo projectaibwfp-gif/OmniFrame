@@ -31,8 +31,13 @@ export class LoginComponent {
     });
 
     afterNextRender(() => {
-      void this.initializeGoogleLogin();
+      void this.syncSessionAndInitializeGoogleLogin();
     });
+  }
+
+  private async syncSessionAndInitializeGoogleLogin(): Promise<void> {
+    await this.authService.restoreSession();
+    await this.initializeGoogleLogin();
   }
 
   private async initializeGoogleLogin(): Promise<void> {

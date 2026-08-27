@@ -69,6 +69,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'killstatistics',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-killstatistics/tibia-killstatistics.component').then(
+        ({ TibiaKillStatisticsComponent }) => TibiaKillStatisticsComponent,
+      ),
+  },
+  {
     path: 'hunting-places',
     canActivate: [authGuard],
     loadComponent: () =>
