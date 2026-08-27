@@ -13,6 +13,14 @@ export interface AuthGoogleRequestDto {
   state: string;
 }
 
+export interface UserMainCharacterDto {
+  name: string;
+  world: string | null;
+  vocation: string | null;
+  level: number | null;
+  linkedAt: string;
+}
+
 export interface AuthGoogleUserDto {
   givenName: string | null;
   familyName: string | null;
@@ -28,6 +36,7 @@ export interface AuthGoogleUserDto {
   registeredAt?: string;
   lastLoginAt?: string;
   updatedAt?: string;
+  mainCharacter?: UserMainCharacterDto | null;
 }
 
 export interface AuthCurrentUserDto extends AuthGoogleUserDto {
@@ -35,6 +44,7 @@ export interface AuthCurrentUserDto extends AuthGoogleUserDto {
   googleId: string;
   emailVerified: boolean;
   locale: string | null;
+  mainCharacter: UserMainCharacterDto | null;
 }
 
 export interface AuthGoogleResponseDto {
@@ -43,6 +53,10 @@ export interface AuthGoogleResponseDto {
 
 export interface AuthCurrentUserResponseDto {
   user: AuthCurrentUserDto;
+}
+
+export interface LinkMainCharacterRequestDto {
+  name: string;
 }
 
 export interface ReferralCaptureRequestDto {

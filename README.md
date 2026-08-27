@@ -123,6 +123,8 @@ Endpointy:
 - `GET /api/auth/state` - tworzy i zapisuje stan logowania Google,
 - `POST /api/auth/google` - loguje przez Google, ustawia cookie sesji i refresh,
 - `GET /api/auth/me` - zwraca aktualną sesję użytkownika,
+- `PUT /api/auth/me/main-character` - łączy postać TibiaData z kontem jako główną (walidacja przez `fetchCharacter`, zapis `name/world/vocation/level` w `users`),
+- `DELETE /api/auth/me/main-character` - odpina główną postać od konta,
 - `POST /api/auth/refresh` - odnawia sesję z refresh cookie,
 - `POST /api/auth/logout` - czyści cookie sesji,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,

@@ -182,6 +182,36 @@ export const openApiDocument = {
         },
       },
     },
+    '/api/auth/me/main-character': {
+      put: {
+        tags: ['Auth'],
+        summary: 'Links a TibiaData character to the current user as their main.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['name'],
+                properties: { name: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Updated current user with linked main character' },
+          400: { description: 'Missing or invalid character name' },
+          404: { description: 'Character not found in TibiaData' },
+        },
+      },
+      delete: {
+        tags: ['Auth'],
+        summary: 'Unlinks the main character from the current user.',
+        responses: {
+          200: { description: 'Updated current user without main character' },
+        },
+      },
+    },
     '/api/highscores-snapshots': {
       get: {
         tags: ['TibiaData'],
