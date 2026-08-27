@@ -25,12 +25,14 @@ const lookupMocks = vi.hoisted(() => ({
   saveCharacterLookup: vi.fn(),
   listCharacterLookupHistory: vi.fn(),
   getLatestCharacterSnapshot: vi.fn(),
+  getFreshCharacterSnapshot: vi.fn(),
 }));
 
 vi.mock('@/lib/character-lookups', () => ({
   saveCharacterLookup: lookupMocks.saveCharacterLookup,
   listCharacterLookupHistory: lookupMocks.listCharacterLookupHistory,
   getLatestCharacterSnapshot: lookupMocks.getLatestCharacterSnapshot,
+  getFreshCharacterSnapshot: lookupMocks.getFreshCharacterSnapshot,
 }));
 
 import { GET } from './route';
@@ -42,6 +44,7 @@ describe('GET /api/character/:name', () => {
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
     lookupMocks.listCharacterLookupHistory.mockResolvedValue([]);
     lookupMocks.getLatestCharacterSnapshot.mockResolvedValue(null);
+    lookupMocks.getFreshCharacterSnapshot.mockResolvedValue(null);
   });
 
   it('denies unauthenticated access', async () => {
@@ -199,5 +202,46 @@ describe('GET /api/character/:name', () => {
       },
     });
     expect(lookupMocks.getLatestCharacterSnapshot).toHaveBeenCalledWith('Trollefar');
+  });
+
+  it('returns fresh snapshot from DB without calling TibiaData when within TTL', async () => {
+    lookupMocks.getFreshCharacterSnapshot.mockResolvedValue({
+      name: 'Trollefar',
+      sex: 'male',
+      title: null,
+      vocation: 'Knight',
+      level: 202,
+      achievementPoints: 379,
+      world: 'Vunira',
+      residence: 'Thais',
+      marriedTo: null,
+      lastLogin: '2026-07-05T00:33:18Z',
+      accountStatus: 'Free Account',
+      unlockedTitles: 9,
+      comment: 'Cached',
+      guild: null,
+      formerNames: [],
+      formerWorlds: [],
+      accountCreated: '2004-08-12T09:28:46Z',
+      loyaltyTitle: null,
+      achievements: [],
+      experience: null,
+      otherCharacters: [],
+    });
+
+    const response = await GET(createRequest('http://localhost/api/character/Trollefar'), {
+      params: Promise.resolve({ name: 'Trollefar' }),
+    });
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        character: expect.objectContaining({ name: 'Trollefar', comment: 'Cached' }),
+        history: [],
+      },
+    });
+    expect(tibiadataMocks.fetchCharacter).not.toHaveBeenCalled();
+    expect(lookupMocks.saveCharacterLookup).not.toHaveBeenCalled();
+    expect(lookupMocks.getFreshCharacterSnapshot).toHaveBeenCalledWith('Trollefar', 15 * 60);
   });
 });

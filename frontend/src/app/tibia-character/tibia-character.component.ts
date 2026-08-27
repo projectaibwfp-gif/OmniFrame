@@ -24,6 +24,7 @@ export class TibiaCharacterComponent {
   protected readonly isLinkingMainCharacter = signal(false);
   protected readonly linkMainCharacterError = signal<string | null>(null);
   protected readonly linkMainCharacterSuccess = signal(false);
+  protected readonly isHistoryExpanded = signal(false);
 
   protected readonly character = computed(() => this.lookup()?.character ?? null);
   protected readonly history = computed(() => this.lookup()?.history ?? []);
@@ -42,6 +43,10 @@ export class TibiaCharacterComponent {
 
   protected setCharacterName(value: string): void {
     this.characterName.set(value);
+  }
+
+  protected toggleHistory(): void {
+    this.isHistoryExpanded.update((value) => !value);
   }
 
   protected getExperienceStatusLabel(experience: TibiaCharacterExperienceDto): string {

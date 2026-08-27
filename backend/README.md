@@ -21,6 +21,10 @@ Wymagana zmienna:
 
 - `DATABASE_URL` - connection string do Postgresa (`sslmode=require`).
 
+Opcjonalne zmienne:
+
+- `CHARACTER_SNAPSHOT_TTL_MINUTES` - TTL cache'u profilu postaci pobieranego z bazy (domyślnie `15`). Jeśli w tabeli `character_lookups` mamy snapshot młodszy niż TTL, endpoint `GET /api/character/:name` zwraca go bez odpytywania TibiaData. Ustaw `0`, aby zawsze pobierać dane na żywo.
+
 ## Uruchomienie lokalne
 
 ```bash

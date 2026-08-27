@@ -7,6 +7,7 @@ import type {
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import {
+  getFreshCharacterSnapshot,
   getLatestCharacterSnapshot,
   listCharacterLookupHistory,
   saveCharacterLookup,
@@ -16,6 +17,21 @@ import { logError } from '@/lib/logger';
 import { fetchCharacter, TibiaDataNotFoundError } from '@/lib/tibiadata';
 
 export const dynamic = 'force-dynamic';
+
+const DEFAULT_SNAPSHOT_TTL_MINUTES = 15;
+const SECONDS_PER_MINUTE = 60;
+
+function getSnapshotTtlSeconds(): number {
+  const raw = process.env.CHARACTER_SNAPSHOT_TTL_MINUTES?.trim();
+  if (!raw) {
+    return DEFAULT_SNAPSHOT_TTL_MINUTES * SECONDS_PER_MINUTE;
+  }
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return DEFAULT_SNAPSHOT_TTL_MINUTES * SECONDS_PER_MINUTE;
+  }
+  return Math.floor(parsed * SECONDS_PER_MINUTE);
+}
 
 interface RouteParams {
   name: string;
@@ -38,6 +54,19 @@ export async function GET(
   }
 
   try {
+    const snapshotTtlSeconds = getSnapshotTtlSeconds();
+    if (snapshotTtlSeconds > 0) {
+      const freshSnapshot = await getFreshCharacterSnapshot(characterName, snapshotTtlSeconds);
+      if (freshSnapshot) {
+        const history = await listCharacterLookupHistory(characterName);
+        const data: TibiaCharacterLookupDto = {
+          character: freshSnapshot,
+          history,
+        };
+        return NextResponse.json<ApiResponse<TibiaCharacterLookupDto>>({ data });
+      }
+    }
+
     const character = await fetchCharacter(characterName);
 
     try {

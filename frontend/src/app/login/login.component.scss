@@ -18,6 +18,9 @@ $card-padding-mobile: 20px;
 }
 
 .login-card {
+  @include c.light-tokens;
+
+  color-scheme: light;
   width: min($card-max-width, 100%);
   border: 1px solid c.$border-subtle;
   border-top: 4px solid c.$brand-primary;

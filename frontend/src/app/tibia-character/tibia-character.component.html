@@ -2,9 +2,10 @@
   <header class="tibia-character-page__header">
     <p class="tibia-character-page__eyebrow">TibiaData v4</p>
     <h1>Wyszukiwarka postaci</h1>
-    <p class="tibia-character-page__intro"
-      >Podaj nazwę postaci, aby pobrać dane z endpointu `GET /v4/character/:name`.</p
-    >
+    <p class="tibia-character-page__intro">
+      Podaj nazwę postaci, aby pobrać dane z endpointu
+      <code>GET /v4/character/:name</code>.
+    </p>
   </header>
 
   <section class="search-card">
@@ -34,7 +35,7 @@
 
     @if (recentCharacterNames().length > 0) {
       <div class="recent-searches">
-        <p class="recent-searches__label">Ostatnio sprawdzane:</p>
+        <p class="recent-searches__label">Ostatnio sprawdzane</p>
         <div class="recent-searches__list">
           @for (name of recentCharacterNames(); track name) {
             <button type="button" class="recent-searches__chip" (click)="repeatLookup(name)">
@@ -55,10 +56,25 @@
   @if (character(); as currentCharacter) {
     <section class="character-card">
       <div class="character-card__header">
-        <h2>{{ currentCharacter.name }}</h2>
+        <div class="character-card__title">
+          <p class="eyebrow">Karta postaci</p>
+          <h2>{{ currentCharacter.name }}</h2>
+          <div class="character-card__chips">
+            @if (currentCharacter.vocation) {
+              <span class="chip chip--brand">{{ currentCharacter.vocation }}</span>
+            }
+            <span class="chip">lvl {{ currentCharacter.level ?? '?' }}</span>
+            @if (currentCharacter.world) {
+              <span class="chip">{{ currentCharacter.world }}</span>
+            }
+            @if (currentCharacter.accountStatus) {
+              <span class="chip chip--muted">{{ currentCharacter.accountStatus }}</span>
+            }
+          </div>
+        </div>
         <div class="main-character-controls">
           @if (isCurrentMain()) {
-            <span class="main-character-status">★ Twoja główna postać</span>
+            <span class="main-character-status">Twoja główna postać</span>
           } @else {
             <button
               type="button"
@@ -75,6 +91,7 @@
           }
         </div>
       </div>
+
       @if (linkMainCharacterError(); as message) {
         <p class="main-character-message main-character-message--error">{{ message }}</p>
       } @else if (linkMainCharacterSuccess()) {
@@ -82,103 +99,150 @@
           >Postać została ustawiona jako główna.</p
         >
       }
-      <div class="character-grid">
-        <p><strong>Poziom:</strong> {{ currentCharacter.level ?? 'Brak danych' }}</p>
-        <p><strong>Vocation:</strong> {{ currentCharacter.vocation ?? 'Brak danych' }}</p>
-        <p><strong>Świat:</strong> {{ currentCharacter.world ?? 'Brak danych' }}</p>
-        <p><strong>Sex:</strong> {{ currentCharacter.sex ?? 'Brak danych' }}</p>
-        <p><strong>Residencja:</strong> {{ currentCharacter.residence ?? 'Brak danych' }}</p>
-        <p><strong>Status konta:</strong> {{ currentCharacter.accountStatus ?? 'Brak danych' }}</p>
-        <p
-          ><strong>Achievement points:</strong>
-          {{ currentCharacter.achievementPoints ?? 'Brak danych' }}</p
-        >
-        <p><strong>Ostatni login:</strong> {{ currentCharacter.lastLogin ?? 'Brak danych' }}</p>
-        <p><strong>Tytuł:</strong> {{ currentCharacter.title ?? 'Brak danych' }}</p>
-        <p><strong>Loyalty title:</strong> {{ currentCharacter.loyaltyTitle ?? 'Brak danych' }}</p>
-        <p
-          ><strong>Utworzone konto:</strong>
-          {{ currentCharacter.accountCreated ?? 'Brak danych' }}</p
-        >
-        <p
-          ><strong>Odblokowane tytuły:</strong>
-          {{ currentCharacter.unlockedTitles ?? 'Brak danych' }}</p
-        >
+
+      <div class="stat-grid">
+        <article class="stat-card">
+          <span class="stat-card__label">Poziom</span>
+          <strong class="stat-card__value">{{ currentCharacter.level ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Vocation</span>
+          <strong class="stat-card__value">{{ currentCharacter.vocation ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Świat</span>
+          <strong class="stat-card__value">{{ currentCharacter.world ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Płeć</span>
+          <strong class="stat-card__value">{{ currentCharacter.sex ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Rezydencja</span>
+          <strong class="stat-card__value">{{ currentCharacter.residence ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Status konta</span>
+          <strong class="stat-card__value">{{ currentCharacter.accountStatus ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Punkty osiągnięć</span>
+          <strong class="stat-card__value">{{ currentCharacter.achievementPoints ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Ostatni login</span>
+          <strong class="stat-card__value">{{
+            currentCharacter.lastLogin ? (currentCharacter.lastLogin | appDateTime) : '-'
+          }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Utworzone konto</span>
+          <strong class="stat-card__value">{{
+            currentCharacter.accountCreated ? (currentCharacter.accountCreated | appDateTime) : '-'
+          }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Tytuł</span>
+          <strong class="stat-card__value">{{ currentCharacter.title ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Loyalty title</span>
+          <strong class="stat-card__value">{{ currentCharacter.loyaltyTitle ?? '-' }}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="stat-card__label">Odblokowane tytuły</span>
+          <strong class="stat-card__value">{{ currentCharacter.unlockedTitles ?? '-' }}</strong>
+        </article>
       </div>
 
       @if (experience(); as characterExperience) {
-        <div class="experience-box">
-          <h3>Experience z highscores</h3>
-          <p>
-            <strong>Status:</strong>
-            {{ getExperienceStatusLabel(characterExperience) }}
-          </p>
-          <p
-            ><strong>Dokładny EXP:</strong>
-            {{ characterExperience.exactExperience ?? 'Brak danych' }}</p
-          >
-          <p><strong>Pozycja rankingu:</strong> {{ characterExperience.rank ?? 'Brak danych' }}</p>
-          <p
-            ><strong>Vocation (ranking):</strong>
-            {{ characterExperience.vocation ?? 'Brak danych' }}</p
-          >
-          <p
-            ><strong>Wiek danych:</strong>
-            {{ characterExperience.highscoreAgeMinutes ?? 'Brak danych' }} min</p
-          >
+        <article class="experience-box">
+          <p class="eyebrow">Experience z highscores</p>
+          <h3>{{ getExperienceStatusLabel(characterExperience) }}</h3>
+          <div class="experience-grid">
+            <div>
+              <span class="stat-card__label">Dokładny EXP</span>
+              <strong class="stat-card__value">{{
+                characterExperience.exactExperience ?? '-'
+              }}</strong>
+            </div>
+            <div>
+              <span class="stat-card__label">Pozycja rankingu</span>
+              <strong class="stat-card__value">{{ characterExperience.rank ?? '-' }}</strong>
+            </div>
+            <div>
+              <span class="stat-card__label">Vocation (ranking)</span>
+              <strong class="stat-card__value">{{ characterExperience.vocation ?? '-' }}</strong>
+            </div>
+            <div>
+              <span class="stat-card__label">Wiek danych</span>
+              <strong class="stat-card__value">
+                {{
+                  characterExperience.highscoreAgeMinutes !== null
+                    ? characterExperience.highscoreAgeMinutes + ' min'
+                    : '-'
+                }}
+              </strong>
+            </div>
+          </div>
           @if (experienceLookupLog(); as lookupLog) {
             <div class="lookup-log">
-              <strong>Log sprawdzenia:</strong>
+              <span class="stat-card__label">Log sprawdzenia</span>
               <pre>{{ lookupLog }}</pre>
             </div>
           }
-        </div>
+        </article>
       }
 
-      @if (currentCharacter.guild; as guild) {
-        <p class="guild"><strong>Guild:</strong> {{ guild.name }} ({{ guild.rank }})</p>
-      }
-
-      @if (currentCharacter.marriedTo) {
-        <p><strong>Małżeństwo:</strong> {{ currentCharacter.marriedTo }}</p>
-      }
-
-      <p
-        ><strong>Dawne nazwy:</strong>
-        {{
-          currentCharacter.formerNames.length
-            ? currentCharacter.formerNames.join(', ')
-            : 'Brak danych'
-        }}</p
-      >
-      <p
-        ><strong>Dawne światy:</strong>
-        {{
-          currentCharacter.formerWorlds.length
-            ? currentCharacter.formerWorlds.join(', ')
-            : 'Brak danych'
-        }}</p
-      >
+      <div class="extra-info">
+        @if (currentCharacter.guild; as guild) {
+          <span class="chip chip--muted"
+            ><strong>Guild:</strong>&nbsp;{{ guild.name }} ({{ guild.rank }})</span
+          >
+        }
+        @if (currentCharacter.marriedTo) {
+          <span class="chip chip--muted"
+            ><strong>Małżeństwo:</strong>&nbsp;{{ currentCharacter.marriedTo }}</span
+          >
+        }
+        @if (currentCharacter.formerNames.length) {
+          <span class="chip chip--muted"
+            ><strong>Dawne nazwy:</strong>&nbsp;{{ currentCharacter.formerNames.join(', ') }}</span
+          >
+        }
+        @if (currentCharacter.formerWorlds.length) {
+          <span class="chip chip--muted"
+            ><strong>Dawne światy:</strong>&nbsp;{{
+              currentCharacter.formerWorlds.join(', ')
+            }}</span
+          >
+        }
+      </div>
 
       @if (currentCharacter.comment) {
-        <div class="comment">
-          <h3>Komentarz</h3>
+        <article class="comment">
+          <p class="eyebrow">Komentarz</p>
           <p>{{ currentCharacter.comment }}</p>
-        </div>
+        </article>
       }
     </section>
 
     <section class="character-card">
-      <h2>Osiągnięcia</h2>
+      <div class="section-heading">
+        <p class="eyebrow">Osiągnięcia</p>
+        <h2>Zdobyte odznaki</h2>
+      </div>
       @if (achievements().length > 0) {
         <div class="achievements-list">
           @for (achievement of achievements(); track $index) {
             <article class="achievement-item">
               <strong>{{ achievement.name }}</strong>
-              <small
-                >Grade: {{ achievement.grade ?? 'n/a' }} • Secret:
-                {{ achievement.secret ? 'tak' : 'nie' }}</small
-              >
+              <div class="achievement-item__meta">
+                <span class="chip">Grade {{ achievement.grade ?? 'n/a' }}</span>
+                @if (achievement.secret) {
+                  <span class="chip chip--brand">Sekret</span>
+                }
+              </div>
             </article>
           }
         </div>
@@ -188,16 +252,19 @@
     </section>
 
     <section class="character-card">
-      <h2>Pozostałe postacie na koncie</h2>
+      <div class="section-heading">
+        <p class="eyebrow">Konto</p>
+        <h2>Pozostałe postacie</h2>
+      </div>
       @if (otherCharacters().length > 0) {
         <div class="other-characters-list">
           @for (otherCharacter of otherCharacters(); track otherCharacter.name) {
             <article class="other-character-item">
               <strong>{{ otherCharacter.name }}</strong>
-              <small>
-                {{ otherCharacter.world ?? 'Brak świata' }} •
-                {{ otherCharacter.status ?? 'Brak statusu' }}
-              </small>
+              <div class="other-character-item__meta">
+                <span class="chip">{{ otherCharacter.world ?? 'Brak świata' }}</span>
+                <span class="chip chip--muted">{{ otherCharacter.status ?? 'Brak statusu' }}</span>
+              </div>
             </article>
           }
         </div>
@@ -207,40 +274,57 @@
     </section>
 
     <section class="character-card">
-      <h2>Historia sprawdzeń</h2>
-      @if (history().length > 0) {
-        <div class="history-table-wrapper app-table-wrap">
-          <table class="history-table app-table">
-            <thead>
-              <tr>
-                <th>Data sprawdzenia</th>
-                <th>Postać</th>
-                <th>Świat</th>
-                <th>Vocation</th>
-                <th>Level</th>
-                <th>EXP</th>
-                <th>Status</th>
-                <th>Rank</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (entry of history(); track entry.id) {
-                <tr>
-                  <td>{{ entry.checkedAt | appDateTime }}</td>
-                  <td>{{ entry.name }}</td>
-                  <td>{{ entry.world ?? 'Brak danych' }}</td>
-                  <td>{{ entry.vocation ?? 'Brak danych' }}</td>
-                  <td>{{ entry.level ?? 'Brak danych' }}</td>
-                  <td>{{ entry.exactExperience ?? 'Brak danych' }}</td>
-                  <td>{{ entry.experienceStatus ?? 'Brak danych' }}</td>
-                  <td>{{ entry.experienceRank ?? 'Brak danych' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+      <button
+        type="button"
+        class="section-toggle"
+        (click)="toggleHistory()"
+        [attr.aria-expanded]="isHistoryExpanded()"
+      >
+        <div class="section-heading">
+          <p class="eyebrow">Historia</p>
+          <h2>Sprawdzenia postaci ({{ history().length }})</h2>
         </div>
-      } @else {
-        <p class="empty-data">Brak historii sprawdzeń dla tej postaci.</p>
+        <span
+          class="section-toggle__chevron"
+          [class.is-open]="isHistoryExpanded()"
+          aria-hidden="true"
+        ></span>
+      </button>
+      @if (isHistoryExpanded()) {
+        @if (history().length > 0) {
+          <div class="history-table-wrapper app-table-wrap">
+            <table class="history-table app-table">
+              <thead>
+                <tr>
+                  <th>Data sprawdzenia</th>
+                  <th>Postać</th>
+                  <th>Świat</th>
+                  <th>Vocation</th>
+                  <th>Level</th>
+                  <th>EXP</th>
+                  <th>Status</th>
+                  <th>Rank</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of history(); track entry.id) {
+                  <tr>
+                    <td>{{ entry.checkedAt | appDateTime }}</td>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.world ?? '-' }}</td>
+                    <td>{{ entry.vocation ?? '-' }}</td>
+                    <td>{{ entry.level ?? '-' }}</td>
+                    <td>{{ entry.exactExperience ?? '-' }}</td>
+                    <td>{{ entry.experienceStatus ?? '-' }}</td>
+                    <td>{{ entry.experienceRank ?? '-' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="empty-data">Brak historii sprawdzeń dla tej postaci.</p>
+        }
       }
     </section>
   }

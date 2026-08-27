@@ -117,3 +117,29 @@ export async function getLatestCharacterSnapshot(
 
   return rows[0].characterSnapshot;
 }
+
+export async function getFreshCharacterSnapshot(
+  characterName: string,
+  maxAgeSeconds: number,
+): Promise<TibiaCharacterDto | null> {
+  if (maxAgeSeconds <= 0) {
+    return null;
+  }
+
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT character_snapshot AS "characterSnapshot"
+    FROM character_lookups
+    WHERE normalized_name = ${normalizeCharacterName(characterName)}
+      AND character_snapshot IS NOT NULL
+      AND checked_at >= now() - (${maxAgeSeconds} * INTERVAL '1 second')
+    ORDER BY checked_at DESC
+    LIMIT 1
+  `) as CharacterSnapshotRow[];
+
+  if (!rows.length) {
+    return null;
+  }
+
+  return rows[0].characterSnapshot;
+}
