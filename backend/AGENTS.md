@@ -73,8 +73,8 @@ selektują surową kolumnę: `created_at AS "createdAt"`.
 ## Walidacja i stałe
 
 16. Limity walidacji i dozwolone wartości enumów trzymaj w `src/lib/validation.ts`
-    (`PRODUCT_NAME_MAX_LENGTH`, `DESCRIPTION_MAX_LENGTH`, `PRODUCT_STATUSES`,
-    `USER_ROLES`, `PHONE_MIN_DIGITS`, `MIN_USER_AGE_YEARS`, ...). Nie powtarzaj
+    (`DESCRIPTION_MAX_LENGTH`, `USER_ROLES`, `PHONE_MIN_DIGITS`,
+    `MIN_USER_AGE_YEARS`, ...). Nie powtarzaj
     liczb ani list wartości w route'ach i w `src/lib/openapi.ts`.
 17. Flagi cookie (`isProd`, `cookieSameSite`, `cookieSecure`) pochodzą z
     `src/lib/cookie-config.ts` - nie deklaruj ich lokalnie.

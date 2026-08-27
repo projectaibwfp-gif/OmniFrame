@@ -29,7 +29,6 @@ frontend/src/app/                 # layout, routing, dashboard, profil, użytkow
 frontend/vite.config.ts           # Vite + plugin Angulara, proxy /api na dev
 backend/src/app/api/health/    # kontrola API i połączenia z bazą
 backend/src/app/api/dashboard/ # statystyki dashboardu oparte o użytkowników
-backend/src/app/api/products/  # odczyt i tworzenie produktów
 backend/src/app/api/users/     # lista użytkowników, rejestracje i role
 backend/src/app/api/auth/      # Google login, sesja, refresh, logout, me
 backend/src/app/api/referrals/ # przechwytywanie linków polecających
@@ -38,7 +37,7 @@ backend/src/lib/auth.ts        # weryfikacja Google, JWT cookie, upsert users
 backend/src/lib/referral.ts    # cookie referral + walidacja kodów
 shared/api/swagger.json        # snapshot specyfikacji TibiaData API (v4)
 backend/scripts/migrate.ts     # TypeScript runner migracji (tabela _migrations)
-backend/migration/001_init.sql # tabela products (wcześniej projects)
+backend/migration/001_init.sql # schemat początkowy (tabela projects, porzucona w 014)
 backend/migration/002_seed.sql # dane przykładowe (idempotentne)
 backend/migration/005_user_referrals.sql # przypisanie poleceń + tabela atrybucji
 backend/migration/006_referral_codes.sql # stałe hashe referral_code dla users
@@ -126,8 +125,6 @@ Endpointy:
 - `GET /api/auth/me` - zwraca aktualną sesję użytkownika,
 - `POST /api/auth/refresh` - odnawia sesję z refresh cookie,
 - `POST /api/auth/logout` - czyści cookie sesji,
-- `GET /api/products` - zwraca ostatnie projekty z bazy,
-- `POST /api/products` - tworzy projekt,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
@@ -142,20 +139,6 @@ Swagger UI backendu jest dostępne pod `http://localhost:3000/swagger`.
 
 Dla endpointów TibiaData punktem odniesienia jest lokalna specyfikacja
 `shared/api/swagger.json` (snapshot dokumentacji `https://docs.tibiadata.com/swagger.json`).
-
-Format danych dla `POST /api/products`:
-
-```json
-{
-  "name": "Nowy projekt",
-  "category": "Operations",
-  "status": "draft"
-}
-```
-
-Pole `name` jest wymagane, `status` może mieć wartość `active` albo `draft`,
-a domyślna kategoria to `General`. Zapytania SQL używają parametrów, aby
-ograniczyć ryzyko SQL injection.
 
 ### Auth + referral flow
 
@@ -196,8 +179,7 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 
 ## Routing frontendu
 
-- `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą projektów,
-- `/products` - podstrona z listą produktów pobieraną z API,
+- `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą użytkowników,
 - `/boosted` - podstrona z aktualnie boostowanym bossem i potworem, plus dwie domyślnie zwinięte listy (bossów i creature),
 - `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
 - `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać"; kafelek przenosi do `/hunting-places/:id` ze szczegółami i mapą Tibii,
@@ -290,8 +272,8 @@ każdym pushu bezpośrednio do `main`.
 Pisz commity w formacie:
 
 ```text
-feat: add product filtering
-fix: handle empty products response
+feat: add highscores filtering
+fix: handle empty snapshots response
 docs: update API documentation
 ```
 
@@ -299,7 +281,7 @@ Następnie wypchnij zmianę:
 
 ```bash
 git add .
-git commit -m "feat: add product filtering"
+git commit -m "feat: add highscores filtering"
 git push origin main
 ```
 
@@ -375,7 +357,7 @@ releases:
         - hash: "a1b2c3d4"
           author: "Filip"
           date: "2026-08-07T11:55:00.000Z"
-          message: "feat: add product filtering"
+          message: "feat: add highscores filtering"
     backend:
       version: "0.1.1"
       tag: "backend-v0.1.1"
@@ -538,7 +520,6 @@ Weryfikacja działania API:
 
 ```bash
 curl http://localhost:3000/api/health
-curl http://localhost:3000/api/products
 ```
 
 Ostatnia walidacja:
@@ -546,4 +527,4 @@ Ostatnia walidacja:
 - `frontend`: lint, Prettier check i build - OK,
 - `backend`: lint, Prettier check, TypeScript check i build - OK,
 - `backend`: `npm run db:migrate` - wymaga bazy i może aplikować migracje,
-- API: `GET /api/health` i `GET /api/products`.
+- API: `GET /api/health`.

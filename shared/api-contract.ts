@@ -3,7 +3,6 @@ export type ApiResponse<T> = {
 };
 
 export type UserRole = "admin" | "user" | "moderator";
-export type ProductStatus = "active" | "draft";
 
 export interface AuthStateDto {
   state: string;
@@ -53,32 +52,6 @@ export interface ReferralCaptureRequestDto {
 export interface ReferralCaptureResponseDto {
   referralCode: string;
   stored: boolean;
-}
-
-export interface ProductDto {
-  id: number;
-  name: string;
-  status: ProductStatus;
-  category: string;
-  description: string | null;
-  createdById: number | null;
-  createdByName: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ProductCreateRequestDto {
-  name: string;
-  status: ProductStatus;
-  category: string;
-  description?: string | null;
-}
-
-export interface ProductUpdateRequestDto {
-  name?: string;
-  status?: ProductStatus;
-  category?: string;
-  description?: string | null;
 }
 
 export interface UsersListItemDto {

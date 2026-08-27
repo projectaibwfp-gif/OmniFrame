@@ -83,7 +83,6 @@ kalendarzową i nie przesuwa ich strefą.
 ## Routing
 
 - `/` - dashboard,
-- `/products` - lista produktów z API,
 - `/about` - informacje o projekcie.
 
 ## Internacjonalizacja (i18n)

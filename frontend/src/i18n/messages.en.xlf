@@ -7,10 +7,6 @@
         <source>Dashboard</source>
         <target>Dashboard</target>
       </trans-unit>
-      <trans-unit id="nav-products" datatype="html">
-        <source>Products</source>
-        <target>Products</target>
-      </trans-unit>
       <trans-unit id="nav-users" datatype="html">
         <source>Users</source>
         <target>Users</target>

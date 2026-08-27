@@ -9,7 +9,6 @@ const INITIALS_MAX_CHARS = 2;
 
 interface NavTranslations {
   dashboard: string;
-  products: string;
   news: string;
   boostedData: string;
   character: string;
@@ -25,7 +24,6 @@ interface NavTranslations {
 const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
   en: {
     dashboard: 'Dashboard',
-    products: 'Products',
     news: 'News',
     boostedData: 'Boosted data',
     character: 'Character lookup',
@@ -39,7 +37,6 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
   },
   pl: {
     dashboard: 'Pulpit',
-    products: 'Produkty',
     news: 'Aktualności',
     boostedData: 'Boosted dane',
     character: 'Wyszukaj postać',
@@ -84,7 +81,6 @@ export class AppComponent {
       { path: '/quests', label: translations.quests, icon: '📜', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
-      { path: '/products', label: translations.products, icon: '▤', exact: false },
       { path: '/users', label: translations.users, icon: '👤', exact: false },
       { path: '/profile', label: translations.profile, icon: '◌', exact: false },
       { path: '/about', label: translations.about, icon: 'ⓘ', exact: false },

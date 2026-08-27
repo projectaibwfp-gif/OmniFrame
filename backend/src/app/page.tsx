@@ -5,7 +5,7 @@ export default function HomePage(): ReactElement {
     <main style={{ fontFamily: 'system-ui', padding: '3rem' }}>
       <h1>Project AI API</h1>
       <p>
-        REST API działa. Sprawdź <code>/api/health</code> lub <code>/api/products</code>.
+        REST API działa. Sprawdź <code>/api/health</code>.
       </p>
       <p>
         Dokumentacja Swagger jest dostępna pod <code>/swagger</code>, a specyfikacja JSON pod{' '}

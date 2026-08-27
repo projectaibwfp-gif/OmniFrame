@@ -3,6 +3,6 @@ import { API_BASE_URL, buildApiUrl } from './api.config';
 
 describe('buildApiUrl', () => {
   it('adds a leading slash to a relative API path', () => {
-    expect(buildApiUrl('products')).toBe(`${API_BASE_URL}/products`);
+    expect(buildApiUrl('users')).toBe(`${API_BASE_URL}/users`);
   });
 });

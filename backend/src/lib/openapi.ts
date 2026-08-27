@@ -9,7 +9,6 @@ export const openApiDocument = {
   tags: [
     { name: 'Health' },
     { name: 'Auth' },
-    { name: 'Products' },
     { name: 'Users' },
     { name: 'Dashboard' },
     { name: 'Referrals' },
@@ -30,23 +29,6 @@ export const openApiDocument = {
         properties: {
           error: { type: 'string' },
           code: { type: 'string' },
-        },
-      },
-      ProductInput: {
-        type: 'object',
-        required: ['name'],
-        properties: {
-          name: { type: 'string', maxLength: 120 },
-          status: { type: 'string', enum: ['active', 'draft'] },
-          category: { type: 'string' },
-        },
-      },
-      ProductPatchInput: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', maxLength: 120 },
-          status: { type: 'string', enum: ['active', 'draft'] },
-          category: { type: 'string' },
         },
       },
     },
@@ -77,89 +59,6 @@ export const openApiDocument = {
         summary: 'Returns dashboard metrics and recent activity.',
         responses: {
           200: { description: 'Dashboard payload' },
-        },
-      },
-    },
-    '/api/products': {
-      get: {
-        tags: ['Products'],
-        summary: 'Returns products list.',
-        responses: {
-          200: { description: 'Products list' },
-        },
-      },
-      post: {
-        tags: ['Products'],
-        summary: 'Creates product entry.',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/ProductInput' },
-            },
-          },
-        },
-        responses: {
-          201: { description: 'Product created' },
-          400: { description: 'Validation error' },
-        },
-      },
-    },
-    '/api/products/{id}': {
-      get: {
-        tags: ['Products'],
-        summary: 'Returns single product by id.',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-          },
-        ],
-        responses: {
-          200: { description: 'Product payload' },
-          404: { description: 'Product not found' },
-        },
-      },
-      patch: {
-        tags: ['Products'],
-        summary: 'Partially updates product by id.',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-          },
-        ],
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: { $ref: '#/components/schemas/ProductPatchInput' },
-            },
-          },
-        },
-        responses: {
-          200: { description: 'Product updated' },
-          404: { description: 'Product not found' },
-        },
-      },
-      delete: {
-        tags: ['Products'],
-        summary: 'Deletes product by id.',
-        parameters: [
-          {
-            name: 'id',
-            in: 'path',
-            required: true,
-            schema: { type: 'integer' },
-          },
-        ],
-        responses: {
-          200: { description: 'Product deleted' },
-          404: { description: 'Product not found' },
         },
       },
     },

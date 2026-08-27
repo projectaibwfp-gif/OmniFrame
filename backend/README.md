@@ -37,24 +37,6 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 
 - `GET /api/health` - status API + połączenie z bazą,
 - `GET /api/openapi` - specyfikacja OpenAPI (JSON),
-- `GET /api/products` - lista produktów (`id`, `name`, `status`, `category`, `updatedAt`),
-- `POST /api/products` - tworzenie rekordu.
-
-Przykład payloadu:
-
-```json
-{
-  "name": "Nowy produkt",
-  "category": "Operations",
-  "status": "draft"
-}
-```
-
-Walidacja:
-
-- `name` jest wymagane, max 120 znaków,
-- `status` dozwolone: `active` lub `draft`,
-- `category` domyślnie: `General`.
 
 ## Format czasu
 
@@ -65,7 +47,7 @@ W całym systemie obowiązuje **jeden** format czasu:
 - w odpowiedziach API: ISO 8601 w UTC (`2026-08-26T13:36:00.000Z`).
 
 Konwersję robi **wyłącznie** `toIsoUtc()` z `src/lib/date-time.ts` - używaj go w
-każdym mapperze wiersza bazy na DTO (`user-row.ts`, `products.ts`, `users.ts`,
+każdym mapperze wiersza bazy na DTO (`user-row.ts`, `users.ts`,
 `dashboard.ts`, `highscores-snapshots.ts`, `character-lookups.ts`). Nie formatuj
 czasu w SQL-u przez `to_char(...)`: format musiałby być wpisany literalnie w
 każdym zapytaniu, bo string interpolowany do tagged template Neona staje się
