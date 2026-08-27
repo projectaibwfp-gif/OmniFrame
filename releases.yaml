@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-27T09:35:57.268Z"
+    commit: "951d04950ca1f65fcd4dddd13c58c0799404f807"
+    frontend:
+      version: "0.13.2"
+      tag: "frontend-v0.13.2"
+      changed: true
+      commits:
+      - hash: "951d0495"
+        author: "Filip Podsiadły"
+        date: "2026-08-27T11:34:03+02:00"
+        message: "refactor: hunting places with weapon type filtering, monsters & quest data, and vocation tabs"
+    backend:
+      version: "0.9.1"
+      tag: "backend-v0.9.1"
+      changed: true
+      commits:
+      - hash: "951d0495"
+        author: "Filip Podsiadły"
+        date: "2026-08-27T11:34:03+02:00"
+        message: "refactor: hunting places with weapon type filtering, monsters & quest data, and vocation tabs"
   - date: "2026-08-27T08:10:06.244Z"
     commit: "624ad7308d6b6effa73e42f9df1649b580ba32f9"
     frontend:
