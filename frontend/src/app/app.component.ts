@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { BoostedService } from './services/boosted.service';
 import { LocalizationService, type Locale } from './services/localization.service';
 import { MainCharacterService } from './services/main-character.service';
 import { LanguageSwitcherComponent } from './components/language-switcher.component';
@@ -68,10 +69,13 @@ export class AppComponent {
   protected readonly authService = inject(AuthService);
   protected readonly localizationService = inject(LocalizationService);
   protected readonly mainCharacterService = inject(MainCharacterService);
+  protected readonly boostedService = inject(BoostedService);
   protected readonly currentUser = this.authService.user;
   protected readonly currentLocale = this.localizationService.currentLocale;
   protected readonly mainCharacter = this.mainCharacterService.character;
   protected readonly mainCharacterBadge = this.mainCharacterService.badge;
+  protected readonly boostedBoss = this.boostedService.boostedBoss;
+  protected readonly boostedCreature = this.boostedService.boostedCreature;
   protected readonly navOpen = signal(false);
 
   protected readonly navItems = computed(() => {

@@ -80,19 +80,23 @@
               <div class="main-character-summary">
                 <span class="main-character-badge">{{ mainCharacterBadge() }}</span>
                 <div class="main-character-info">
-                  <strong>{{ character.name }}</strong>
-                  <span class="main-character-meta">
-                    {{ character.vocation || 'brak vocation' }}
-                    · lvl {{ character.level ?? '?' }}
-                    @if (character.world) {
-                      · {{ character.world }}
+                  <strong class="main-character-name">{{ character.name }}</strong>
+                  <div class="main-character-chips">
+                    @if (character.vocation) {
+                      <span class="main-character-chip">{{ character.vocation }}</span>
                     }
-                  </span>
+                    <span class="main-character-chip main-character-chip--level"
+                      >lvl {{ character.level ?? '?' }}</span
+                    >
+                    @if (character.world) {
+                      <span class="main-character-chip">{{ character.world }}</span>
+                    }
+                  </div>
                 </div>
               </div>
               <div class="main-character-actions">
                 <button
-                  class="btn btn-secondary btn-sm"
+                  class="btn-unlink"
                   type="button"
                   (click)="unlinkMainCharacter()"
                   [disabled]="isMainCharacterSaving()"

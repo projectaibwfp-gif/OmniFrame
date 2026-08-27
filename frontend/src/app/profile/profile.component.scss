@@ -148,44 +148,79 @@
   background: c.$surface-card;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .main-character-summary {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  padding: 4px 0;
 }
 
 .main-character-badge {
   display: grid;
   place-items: center;
-  min-width: 56px;
-  height: 40px;
-  padding: 0 10px;
-  border-radius: 8px;
-  background: c.$brand-primary-tint;
-  color: c.$brand-primary;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  min-width: 68px;
+  height: 56px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, c.$brand-primary 0%, c.$brand-primary-strong 100%);
+  color: c.$text-on-primary;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.03em;
+  box-shadow: 0 8px 18px c.$shadow-medium;
+  flex-shrink: 0;
 }
 
 .main-character-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
+  min-width: 0;
 }
 
-.main-character-meta {
+.main-character-name {
+  display: block;
+  color: c.$text-700;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.main-character-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.main-character-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: c.$surface-alt;
+  border: 1px solid c.$border-subtle;
   color: c.$text-400;
   font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  &--level {
+    background: c.$brand-primary-tint;
+    border-color: transparent;
+    color: c.$brand-primary;
+  }
 }
 
 .main-character-empty {
   margin: 0;
   color: c.$text-400;
   font-size: 13px;
+  line-height: 1.5;
 }
 
 .main-character-form {
@@ -200,8 +235,37 @@
 
 .main-character-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid c.$border-subtle;
+}
+
+.btn-unlink {
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  color: c.$text-400;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border-radius: 6px;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+
+  &:hover:not(:disabled) {
+    color: c.$danger-fg-soft;
+    background: c.$surface-alt;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .referral-note {

@@ -9,6 +9,34 @@
         <div class="topbar-actions">
           <app-theme-switcher></app-theme-switcher>
           <app-language-switcher></app-language-switcher>
+          @if (boostedBoss(); as boss) {
+            <a
+              class="boosted-chip"
+              routerLink="/boosted"
+              [title]="'Boosted boss: ' + boss.name"
+              (click)="closeMobileNav()"
+            >
+              <img class="boosted-chip__icon" [src]="boss.imageUrl" [alt]="boss.name" />
+              <span class="boosted-chip__meta">
+                <span class="boosted-chip__label">Boss</span>
+                <span class="boosted-chip__name">{{ boss.name }}</span>
+              </span>
+            </a>
+          }
+          @if (boostedCreature(); as creature) {
+            <a
+              class="boosted-chip"
+              routerLink="/boosted"
+              [title]="'Boosted creature: ' + creature.name"
+              (click)="closeMobileNav()"
+            >
+              <img class="boosted-chip__icon" [src]="creature.imageUrl" [alt]="creature.name" />
+              <span class="boosted-chip__meta">
+                <span class="boosted-chip__label">Creature</span>
+                <span class="boosted-chip__name">{{ creature.name }}</span>
+              </span>
+            </a>
+          }
           <div class="workspace-user compact">
             <span class="workspace-avatar">{{ initials() || 'U' }}</span>
             <div>
