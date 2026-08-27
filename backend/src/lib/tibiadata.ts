@@ -133,10 +133,11 @@ interface TibiaDataHighscoresResponse {
 }
 
 interface TibiaDataKillStatisticsEntry {
-  world?: unknown;
-  name?: unknown;
-  description?: unknown;
-  value?: unknown;
+  race?: unknown;
+  last_day_players_killed?: unknown;
+  last_day_killed?: unknown;
+  last_week_players_killed?: unknown;
+  last_week_killed?: unknown;
 }
 
 interface TibiaDataKillStatisticsResponse {
@@ -206,6 +207,10 @@ function mapCreature(creature: TibiaDataCreature | undefined): TibiaCreatureDto 
     imageUrl: creature.image_url,
     featured: creature.featured === true,
   };
+}
+
+async function fetchFromTibiaData(path: string): Promise<Response> {
+  return fetch(`${TIBIA_DATA_API_BASE_URL}${path}`, { cache: 'no-store' });
 }
 
 function mapKillStatisticsEntry(
