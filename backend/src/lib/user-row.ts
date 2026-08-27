@@ -1,4 +1,4 @@
-import type { AuthCurrentUserDto } from '@shared/api-contract';
+import type { AuthCurrentUserDto, UserMainCharacterDto } from '@shared/api-contract';
 import { toIsoUtc, type SqlTimestamp } from './date-time';
 
 export interface UserRow {
@@ -18,9 +18,28 @@ export interface UserRow {
   description: string | null;
   referral_code: string;
   referred_by_code: string | null;
+  main_character_name: string | null;
+  main_character_world: string | null;
+  main_character_vocation: string | null;
+  main_character_level: number | null;
+  main_character_linked_at: SqlTimestamp | null;
   last_login_at: SqlTimestamp;
   created_at: SqlTimestamp;
   updated_at: SqlTimestamp;
+}
+
+function mapMainCharacter(row: UserRow): UserMainCharacterDto | null {
+  if (!row.main_character_name || !row.main_character_linked_at) {
+    return null;
+  }
+
+  return {
+    name: row.main_character_name,
+    world: row.main_character_world,
+    vocation: row.main_character_vocation,
+    level: row.main_character_level,
+    linkedAt: toIsoUtc(row.main_character_linked_at),
+  };
 }
 
 export function mapUserRow(row: UserRow): AuthCurrentUserDto {
@@ -40,6 +59,7 @@ export function mapUserRow(row: UserRow): AuthCurrentUserDto {
     description: row.description,
     referralCode: row.referral_code,
     referredByCode: row.referred_by_code,
+    mainCharacter: mapMainCharacter(row),
     registeredAt: toIsoUtc(row.created_at),
     lastLoginAt: toIsoUtc(row.last_login_at),
     updatedAt: toIsoUtc(row.updated_at),

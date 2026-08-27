@@ -165,6 +165,8 @@ export async function loadCurrentUser(
     SELECT id, google_id, email, email_verified, role, name,
            given_name, family_name, picture, locale, phone, birth_date, description,
            referral_code, referred_by_code,
+           main_character_name, main_character_world, main_character_vocation,
+           main_character_level, main_character_linked_at,
            last_login_at, created_at, updated_at
     FROM users
     WHERE google_id = ${auth.session.sub}
@@ -191,6 +193,7 @@ export async function loadCurrentUser(
     description: null,
     referralCode: generateReferralCode(auth.session.sub),
     referredByCode: null,
+    mainCharacter: null,
     registeredAt: '',
     lastLoginAt: '',
     updatedAt: '',
