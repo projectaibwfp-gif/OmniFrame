@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-27T13:44:09.528Z"
+    commit: "20d40e7a7d17315bb93ad808828d68858d3e2c6b"
+    frontend:
+      version: "0.16.0"
+      tag: "frontend-v0.16.0"
+      changed: true
+      commits:
+      - hash: "20d40e7a"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T15:42:21+02:00"
+        message: "feat: add character snapshot caching with configurable TTL and UI enhancements"
+    backend:
+      version: "0.10.0"
+      tag: "backend-v0.10.0"
+      changed: true
+      commits:
+      - hash: "20d40e7a"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T15:42:21+02:00"
+        message: "feat: add character snapshot caching with configurable TTL and UI enhancements"
   - date: "2026-08-27T12:19:01.796Z"
     commit: "693438676f1e6e1849a81814e82adbb5ac3927d4"
     frontend:
