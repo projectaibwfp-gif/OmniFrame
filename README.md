@@ -60,6 +60,19 @@ Projekt korzysta wyłącznie z publicznego rejestru npm:
 Po zmianie zależności uruchamiaj `npm install` w odpowiednim katalogu,
 a następnie zatwierdzaj zaktualizowany `package-lock.json`.
 
+## Line Endings (LF)
+
+Projekt wymusza **LF** (Unix-style line endings) przez `.gitattributes` i `.editorconfig`:
+
+```bash
+# Na Windows skonfiguruj Git
+git config core.autocrlf false
+git config core.safecrlf false
+```
+
+Dzięki temu wszyscy (Windows + Linux) pracują z tymi samymi line endings,
+unikając szumu w diff'ach i konfliktów.
+
 ## Uruchomienie krok po kroku
 
 ### 1. Skonfiguruj bazę i uruchom migracje
@@ -198,6 +211,29 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 Routing używa lazy-loaded standalone components. Dashboard pobiera dane z
 `GET /api/dashboard`, lista użytkowników z `GET /api/users`, a komponent profilu
 pracuje na danych sesji zwracanych przez `GET /api/auth/me`.
+
+## Responsiveness i Layout
+
+Aplikacja jest **mobile-first, responsywna**:
+
+- **Breakpoint mobilny**: poniżej `575.98px` (`.bp-mobile` w `frontend/src/styles/_colors.scss`)
+  - layout kolumnowy
+  - topbar składa się
+  - boczne menu ukryte, dostępne w mobilnym nav
+- **Breakpoint tablet/desktop**: od `576px` wzwyż
+  - grid z bocznym menu (240px) i zawartością
+  - topbar sticky na górze
+- **Max-width kontenera**: **1440px** (QHD standard)
+  - wykorzystuje dostępną szerokość na małych ekranach
+  - na dużych monitorach (4K) automatycznie ustawia bezpieczne marginesy
+  - brak scrollowania horyzontalnego poniżej 576px
+
+Konfiguracja width znajduje się w:
+
+```
+frontend/src/app/app.component.scss      # .shell (max-width: 1440px)
+frontend/src/styles/_colors.scss         # $bp-mobile: 575.98px
+```
 
 Dashboard nie korzysta już z przykładowych liczb - pokazuje:
 

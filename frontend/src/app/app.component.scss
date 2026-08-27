@@ -6,9 +6,10 @@
 }
 
 .shell {
-  width: min(1200px, 100%);
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 20px 16px 48px;
+  padding: 20px 24px 48px;
 }
 
 .topbar,
@@ -188,7 +189,8 @@
 }
 
 .page {
-  width: min(1200px, 100%);
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 0 40px;
   min-width: 0;
@@ -228,6 +230,10 @@
 
   .topbar-actions {
     margin-left: auto;
+  }
+
+  .shell {
+    padding: 20px 16px 48px;
   }
 }
 
