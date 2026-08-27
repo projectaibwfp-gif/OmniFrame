@@ -62,7 +62,9 @@ jobs:
             echo "Error: BACKEND_URL secret is not set"
             exit 1
           fi
-          curl -X POST "${BACKEND_URL}/api/cron/highscores"
+          # -f: fail on non-2xx (endpoint has maxDuration=300s, see backend/CRON.md)
+          curl -sS -f --max-time 310 --retry 2 --retry-delay 10 \
+            -X POST "${BACKEND_URL}/api/cron/highscores"
 ```
 
 Secret do ustawienia w GitHub:
@@ -171,3 +173,10 @@ curl -X POST http://localhost:3000/api/cron/highscores
 
 - Sprawdź czy migracje uruchomiły się: `character_highscores_snapshots` i `character_highscores_last_save` powinny istnieć
 - Sprawdzaj logi: `scope: "cron.error"`
+
+### GitHub Actions run failuje w kilka sekund
+
+To zawsze ten sam guard w workflow: `BACKEND_URL` secret nie jest ustawiony w
+repo (Settings → Secrets and variables → Actions → `BACKEND_URL`). Prawdziwe
+wywołanie `curl` trwa tyle, ile trwa cron (do 5 minut) - jeśli run pada w kilka
+sekund, request nigdy nie wyszedł.

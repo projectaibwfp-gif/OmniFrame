@@ -1,324 +1,57 @@
-import type { Coordinates } from '../tibia/tibia-map';
+import type { Coordinates, TibiaRoute } from '../tibia/tibia-map';
 import type { Vocation } from '../tibia/vocation';
+import huntingPlacesData from './hunting-places.json';
+
+export interface HuntingMonsterResistances {
+  energy: number;
+  earth: number;
+  fire: number;
+  ice: number;
+  holy: number;
+  death: number;
+  physical: number;
+}
+
+export interface HuntingMonster {
+  name: string;
+  slug: string;
+  health: number;
+  experience: number;
+  boss: boolean;
+  charmPoints: number;
+  resistances: HuntingMonsterResistances;
+}
+
+export interface HuntingQuest {
+  name: string;
+  url: string;
+}
+
+export interface HuntingImbuement {
+  name: string;
+  count: number;
+}
 
 export interface HuntingPlace {
   id: string;
   name: string;
-  city: string;
   minLevel: number;
-  maxLevel: number;
-  recommendedVocations: Vocation[];
-  creatures: string[];
-  description: string;
+  rawExp: string;
+  profit: string;
   premium: boolean;
-  profit: 'low' | 'medium' | 'high';
-  experience: 'low' | 'medium' | 'high';
+  recommendedVocations: Vocation[];
+  monsters: HuntingMonster[];
+  quests: HuntingQuest[];
+  imbuements: HuntingImbuement[];
+  trinkets: string[];
+  valuableDrop: string[];
   coordinates: Coordinates;
   mapZoom?: number;
+  route: TibiaRoute;
 }
 
-export const HUNTING_PLACES: HuntingPlace[] = [
-  {
-    id: 'rotworm-carlin',
-    name: 'Rotworm Cave',
-    city: 'Carlin',
-    minLevel: 8,
-    maxLevel: 25,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer', 'Monk'],
-    creatures: ['Rotworm', 'Carrion Worm'],
-    description:
-      'Klasyczna jaskinia rotwormów pod Carlin. Dobre miejsce na start i pierwsze pieniądze.',
-    premium: false,
-    profit: 'low',
-    experience: 'low',
-    coordinates: { x: 32227, y: 31815, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'cyclops-mt-sternum',
-    name: 'Mt. Sternum Cyclops',
-    city: 'Thais',
-    minLevel: 20,
-    maxLevel: 40,
-    recommendedVocations: ['Knight', 'Paladin'],
-    creatures: ['Cyclops', 'Cyclops Drone', 'Cyclops Smith'],
-    description: 'Niskopoziomowe cyklopy z dobrym lootem na start.',
-    premium: false,
-    profit: 'low',
-    experience: 'medium',
-    coordinates: { x: 32415, y: 32155, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'cyclopolis',
-    name: 'Cyclopolis',
-    city: 'Edron',
-    minLevel: 25,
-    maxLevel: 50,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Cyclops', 'Cyclops Drone', 'Cyclops Smith', 'Behemoth'],
-    description: 'Podziemne miasto cyklopów na Edron. Uważaj na Behemoty na głębszych poziomach.',
-    premium: true,
-    profit: 'medium',
-    experience: 'medium',
-    coordinates: { x: 33272, y: 31802, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'mintwallin',
-    name: 'Mintwallin',
-    city: 'Thais',
-    minLevel: 30,
-    maxLevel: 50,
-    recommendedVocations: ['Knight', 'Paladin'],
-    creatures: ['Minotaur', 'Minotaur Guard', 'Minotaur Mage', 'Minotaur Archer'],
-    description: 'Klasyczne miasto minotaurów. Dużo potworów i przyzwoity loot.',
-    premium: false,
-    profit: 'medium',
-    experience: 'medium',
-    coordinates: { x: 32469, y: 32105, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'dragon-lair-thais',
-    name: 'Dragon Lair',
-    city: 'Thais',
-    minLevel: 40,
-    maxLevel: 60,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Dragon', 'Dragon Hatchling'],
-    description: 'Smocza jaskinia na południe od Thais. Dobre doświadczenie i szansa na rare loot.',
-    premium: false,
-    profit: 'medium',
-    experience: 'medium',
-    coordinates: { x: 32263, y: 32332, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'ancient-scarab',
-    name: 'Ankrahmun Tombs',
-    city: 'Ankrahmun',
-    minLevel: 40,
-    maxLevel: 70,
-    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Ancient Scarab', 'Scarab', 'Larva'],
-    description: 'Grobowce pod Ankrahmun. Ancient Scaraby dają solidne doświadczenie.',
-    premium: true,
-    profit: 'medium',
-    experience: 'high',
-    coordinates: { x: 33138, y: 32842, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'darashia-dragon',
-    name: 'Darashia Dragon Hills',
-    city: 'Darashia',
-    minLevel: 45,
-    maxLevel: 70,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Dragon', 'Dragon Lord'],
-    description: 'Wzgórza smoków koło Darashii. Popularne miejsce dla druidów i sorcererów.',
-    premium: true,
-    profit: 'medium',
-    experience: 'high',
-    coordinates: { x: 33294, y: 32412, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'hellgate',
-    name: 'Hellgate',
-    city: 'AbDendriel',
-    minLevel: 50,
-    maxLevel: 80,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Demon Skeleton', 'Ghost', 'Boneworm', 'Vampire'],
-    description: 'Mroczne podziemie pełne nieumarłych. Wymaga klucza lub odpowiedniej misji.',
-    premium: false,
-    profit: 'medium',
-    experience: 'medium',
-    coordinates: { x: 32757, y: 31603, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'hydras-drefia',
-    name: 'Drefia Hydras',
-    city: 'Darashia',
-    minLevel: 70,
-    maxLevel: 100,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Hydra', 'Serpent Spawn'],
-    description: 'Hydry i Serpent Spawn w Drefii. Wysokie doświadczenie i dobry profit.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33046, y: 32429, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'sea-serpents',
-    name: 'Sea Serpent Area',
-    city: 'Svargrond',
-    minLevel: 80,
-    maxLevel: 120,
-    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Sea Serpent', 'Young Sea Serpent'],
-    description: 'Morskie węże na północy. Dobre doświadczenie dla strzelców i magów.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 32212, y: 31088, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'yalahar-nightmares',
-    name: 'Yalahar Nightmares',
-    city: 'Yalahar',
-    minLevel: 80,
-    maxLevel: 130,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Nightmare', 'Nightmare Scion', 'Hellspawn'],
-    description: 'Koszmarne wyspy w Yalahar. Duże doświadczenie i wymagająca lokalizacja.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 32745, y: 31215, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'zao-raza',
-    name: 'Zao Raza Castle',
-    city: 'Farmine',
-    minLevel: 90,
-    maxLevel: 140,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Lizard Chosen', 'Lizard Dragon Priest', 'Lizard Legionnaire'],
-    description: 'Zamek Raza na Zao. Wysoki poziom trudności i świetny profit.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33046, y: 31406, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'glooth-bandits',
-    name: 'Glooth Bandits',
-    city: 'Rathleton',
-    minLevel: 100,
-    maxLevel: 150,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Glooth Bandit', 'Glooth Brigand'],
-    description: 'Bandyci w Oramond. Bardzo popularne miejsce na mid-level.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33608, y: 31830, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'roshamuul-prison',
-    name: 'Roshamuul Prison',
-    city: 'Roshamuul',
-    minLevel: 130,
-    maxLevel: 200,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Frazzlemaw', 'Guzzlemaw', 'Silencer'],
-    description: 'Więzienie na Roshamuul. Jedno z najlepszych miejsc na high level.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33520, y: 32365, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'asura-palace',
-    name: 'Asura Palace',
-    city: 'Port Hope',
-    minLevel: 120,
-    maxLevel: 180,
-    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Asura', 'True Asura', 'Frost Flower Asura'],
-    description: 'Pałac Asur pod Port Hope. Wysoki profit i wyzwanie dla magów.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 32644, y: 32743, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'cobra-bastion',
-    name: 'Cobra Bastion',
-    city: 'Issavi',
-    minLevel: 150,
-    maxLevel: 250,
-    recommendedVocations: ['Knight', 'Paladin'],
-    creatures: ['Cobra Scout', 'Cobra Vizier', 'Cobra Assassin'],
-    description: 'Bastion kobry w Issavi. Wymaga drużyny lub bardzo dobrego ekipowania.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33936, y: 31503, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'winter-court',
-    name: 'Winter Court',
-    city: 'Feyrist',
-    minLevel: 160,
-    maxLevel: 250,
-    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Winter Elf', 'Winter Faun', 'Dark Faun'],
-    description: 'Zimowy dwór w Feyrist. Wysokie doświadczenie i magiczny loot.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33542, y: 32308, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'summer-court',
-    name: 'Summer Court',
-    city: 'Feyrist',
-    minLevel: 170,
-    maxLevel: 260,
-    recommendedVocations: ['Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Summer Elf', 'Summer Faun', 'Pixie'],
-    description: 'Letni dwór w Feyrist. Siostrzana lokalizacja Winter Court.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33580, y: 32372, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'library',
-    name: 'The Library',
-    city: 'Issavi',
-    minLevel: 200,
-    maxLevel: 300,
-    recommendedVocations: ['Druid', 'Sorcerer'],
-    creatures: ['Lokhonn', 'Knowledge Elemental', 'Rage Squid'],
-    description: 'Biblioteka w Issavi. Najlepsza dla magów z dużym area damage.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33904, y: 31496, z: 7 },
-    mapZoom: 3,
-  },
-  {
-    id: 'soul-war',
-    name: 'Soul War',
-    city: 'Marapur',
-    minLevel: 250,
-    maxLevel: 400,
-    recommendedVocations: ['Knight', 'Paladin', 'Druid', 'Sorcerer'],
-    creatures: ['Goshnar', 'Soul Sphere', 'Mean Lost Soul'],
-    description: 'Endgameowa strefa Soul War. Wymaga zakończonej serii questów.',
-    premium: true,
-    profit: 'high',
-    experience: 'high',
-    coordinates: { x: 33862, y: 32790, z: 7 },
-    mapZoom: 3,
-  },
-];
-
-export const CITIES = [...new Set(HUNTING_PLACES.map((place) => place.city))].sort();
+/**
+ * Scraped from tibiaroute.com/pl/hunting-places - dane trzymane w JSON, bo to
+ * statyczny zbiór faktów, nie kod. Ten plik dostarcza tylko typy i eksport.
+ */
+export const HUNTING_PLACES: HuntingPlace[] = huntingPlacesData as HuntingPlace[];

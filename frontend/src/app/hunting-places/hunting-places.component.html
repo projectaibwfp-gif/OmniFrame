@@ -5,6 +5,19 @@
     <p class="hunting-places-page__intro">{{ labels().intro }}</p>
   </header>
 
+  <nav class="vocation-tabs">
+    @for (tab of vocationTabs; track tab) {
+      <button
+        type="button"
+        class="vocation-tab {{ tabClass(tab) }}"
+        [class.vocation-tab--active]="activeTab() === tab"
+        (click)="setActiveTab(tab)"
+      >
+        {{ tab === 'Teamhunts' ? labels().teamhuntsTab : tab }}
+      </button>
+    }
+  </nav>
+
   <section class="filters-card">
     <div class="filters-grid">
       <div class="filter-field">
@@ -20,36 +33,6 @@
         />
       </div>
 
-      <div class="filter-field">
-        <label for="hunting-city">{{ labels().cityLabel }}</label>
-        <select
-          id="hunting-city"
-          class="filter-select"
-          [ngModel]="selectedCity()"
-          (ngModelChange)="setCity($event)"
-        >
-          <option value="">{{ labels().allCities }}</option>
-          @for (city of cities; track city) {
-            <option [value]="city">{{ city }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="filter-field">
-        <label for="hunting-vocation">{{ labels().vocationLabel }}</label>
-        <select
-          id="hunting-vocation"
-          class="filter-select"
-          [ngModel]="selectedVocation()"
-          (ngModelChange)="setVocation($event)"
-        >
-          <option value="">{{ labels().allVocations }}</option>
-          @for (vocation of vocations; track vocation) {
-            <option [value]="vocation">{{ vocation }}</option>
-          }
-        </select>
-      </div>
-
       <div class="filter-field filter-field--range">
         <label for="hunting-level-min">{{ labels().levelLabel }}</label>
         <div class="range-row">
@@ -61,7 +44,7 @@
             (ngModelChange)="setMinLevel($event === null || $event === '' ? null : +$event)"
             [placeholder]="labels().levelFrom"
             min="1"
-            max="1000"
+            max="1200"
           />
           <span class="range-separator">-</span>
           <input
@@ -71,9 +54,24 @@
             (ngModelChange)="setMaxLevel($event === null || $event === '' ? null : +$event)"
             [placeholder]="labels().levelTo"
             min="1"
-            max="1000"
+            max="1200"
           />
         </div>
+      </div>
+
+      <div class="filter-field">
+        <label for="hunting-weapon-type">{{ labels().weaponTypeLabel }}</label>
+        <select
+          id="hunting-weapon-type"
+          class="filter-select"
+          [ngModel]="selectedWeaponType()"
+          (ngModelChange)="setWeaponType($event)"
+        >
+          <option value="">{{ labels().allWeaponTypes }}</option>
+          @for (element of weaponElements; track element) {
+            <option [value]="element">{{ element }}</option>
+          }
+        </select>
       </div>
 
       <div class="filter-field">
@@ -106,12 +104,6 @@
       <button class="sort-button" type="button" (click)="sort.toggle('minLevel')">
         {{ labels().sortMinLevel }} {{ sort.indicator('minLevel') }}
       </button>
-      <button class="sort-button" type="button" (click)="sort.toggle('maxLevel')">
-        {{ labels().sortMaxLevel }} {{ sort.indicator('maxLevel') }}
-      </button>
-      <button class="sort-button" type="button" (click)="sort.toggle('city')">
-        {{ labels().sortCity }} {{ sort.indicator('city') }}
-      </button>
     </div>
   </section>
 
@@ -135,54 +127,40 @@
   </section>
 
   @if (paged.items().length > 0) {
-    <section class="places-grid">
-      @for (place of paged.items(); track place.id) {
-        <article class="place-card" [routerLink]="['/hunting-places', place.id]">
-          <div class="place-card__header">
-            <h3>{{ place.name }}</h3>
-            <span class="place-card__city">{{ place.city }}</span>
-          </div>
-
-          <div class="place-card__level">
-            <span class="level-badge">{{ place.minLevel }} - {{ place.maxLevel }}</span>
-            <span class="access-badge" [class.access-badge--premium]="place.premium">
-              {{ place.premium ? labels().premiumAccess : labels().freeAccess }}
-            </span>
-          </div>
-
-          <p class="place-card__description">{{ place.description }}</p>
-
-          <div class="place-card__creatures">
-            <span class="creatures-label">{{ labels().creatures }}:</span>
-            <div class="creatures-list">
-              @for (creature of place.creatures; track creature) {
-                <span class="creature-chip">{{ creature }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="place-card__vocations">
-            <span class="vocations-label">{{ labels().vocations }}:</span>
-            <div class="vocations-list">
-              @for (vocation of place.recommendedVocations; track vocation) {
-                <span class="vocation-chip {{ vocationClass(vocation) }}">{{ vocation }}</span>
-              }
-            </div>
-          </div>
-
-          <div class="place-card__rates">
-            <div class="rate" [class]="getRateClass(place.experience)">
-              <span class="rate-label">{{ labels().exp }}</span>
-              <span class="rate-value">{{ getRateLabel(place.experience) }}</span>
-            </div>
-            <div class="rate" [class]="getRateClass(place.profit)">
-              <span class="rate-label">{{ labels().profit }}</span>
-              <span class="rate-value">{{ getRateLabel(place.profit) }}</span>
-            </div>
-          </div>
-        </article>
-      }
-    </section>
+    <div class="places-table-wrapper">
+      <table class="places-table">
+        <thead>
+          <tr>
+            <th>{{ labels().sortMinLevel }}</th>
+            <th>{{ labels().placeColumn }}</th>
+            <th>{{ labels().vocations }}</th>
+            <th>{{ labels().exp }}</th>
+            <th>{{ labels().profit }}</th>
+            <th>{{ labels().weaponTypeLabel }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (place of paged.items(); track place.id) {
+            <tr class="place-row" [routerLink]="['/hunting-places', place.id]">
+              <td class="level-cell">{{ place.minLevel }}+</td>
+              <td class="place-cell">{{ place.name }}</td>
+              <td class="vocations-cell">
+                @for (vocation of place.recommendedVocations; track vocation) {
+                  <span class="vocation-chip {{ vocationClass(vocation) }}">{{ vocation }}</span>
+                }
+              </td>
+              <td>{{ place.rawExp }}</td>
+              <td>{{ place.profit }}</td>
+              <td class="weapon-cell">
+                @for (element of weaponTypesForPlace(place); track element) {
+                  <span class="weapon-chip weapon-{{ element }}">{{ element }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
     <app-pagination
       [page]="paged.page()"

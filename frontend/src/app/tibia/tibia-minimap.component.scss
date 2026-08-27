@@ -1,0 +1,48 @@
+@use '../../styles/colors' as c;
+
+.tibia-minimap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: c.$surface-dark-page;
+
+  &__canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  &__route {
+    fill: none;
+    stroke: c.$warning-fg-accent;
+    stroke-width: 3;
+    stroke-dasharray: 6 4;
+  }
+
+  &__marker {
+    &--star {
+      fill: c.$brand-primary;
+      stroke: c.$text-on-dark;
+      stroke-width: 2;
+    }
+
+    &--crossmark line {
+      stroke: c.$danger-fg;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+  }
+}

@@ -3,19 +3,22 @@ export interface DetailLabels {
   notFound: string;
   notFoundAction: string;
   level: string;
-  city: string;
   access: string;
   premium: string;
   free: string;
+  rawExp: string;
   profit: string;
-  experience: string;
-  creatures: string;
   vocations: string;
-  description: string;
+  monsters: string;
+  health: string;
+  charmPoints: string;
+  resistances: string;
+  requirements: string;
+  quests: string;
+  imbuements: string;
+  trinkets: string;
+  valuableDrop: string;
   map: string;
-  low: string;
-  medium: string;
-  high: string;
 }
 
 // eslint-disable-next-line complexity
@@ -25,18 +28,21 @@ export function buildHuntingDetailLabels(isPl: boolean): DetailLabels {
     notFound: isPl ? 'Nie znaleziono miejsca' : 'Place not found',
     notFoundAction: isPl ? 'Wróć do listy' : 'Back to list',
     level: isPl ? 'Poziom' : 'Level',
-    city: isPl ? 'Miasto' : 'City',
     access: isPl ? 'Dostęp' : 'Access',
     premium: isPl ? 'Premium' : 'Premium',
     free: isPl ? 'Darmowy' : 'Free',
+    rawExp: 'Raw EXP',
     profit: isPl ? 'Profit' : 'Profit',
-    experience: isPl ? 'EXP' : 'EXP',
-    creatures: isPl ? 'Potwory' : 'Creatures',
     vocations: isPl ? 'Profesje' : 'Vocations',
-    description: isPl ? 'Opis' : 'Description',
+    monsters: isPl ? 'Potwory' : 'Monsters',
+    health: isPl ? 'HP' : 'HP',
+    charmPoints: isPl ? 'Punkty charmu' : 'Charm points',
+    resistances: isPl ? 'Odporności' : 'Resistances',
+    requirements: isPl ? 'Wymagania trasy' : 'Route requirements',
+    quests: isPl ? 'Questy' : 'Quests',
+    imbuements: isPl ? 'Rekomendowane imbuingi' : 'Recommended imbuements',
+    trinkets: isPl ? 'Trinkety' : 'Trinkets',
+    valuableDrop: isPl ? 'Wartościowy drop' : 'Valuable drop',
     map: isPl ? 'Lokalizacja na mapie' : 'Location on map',
-    low: isPl ? 'Niski' : 'Low',
-    medium: isPl ? 'Średni' : 'Medium',
-    high: isPl ? 'Wysoki' : 'High',
   };
 }

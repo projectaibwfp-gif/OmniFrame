@@ -18,7 +18,7 @@
   @include shared.back-link;
 }
 
-.detail-city {
+.detail-badge {
   @include shared.detail-badge;
 }
 
@@ -42,36 +42,12 @@
   @include shared.info-value;
 }
 
-.profit-high,
-.exp-high {
-  color: c.$success-fg;
-}
-
-.profit-medium,
-.exp-medium {
-  color: c.$warning-fg;
-}
-
-.profit-low,
-.exp-low {
-  color: c.$text-500;
-}
-
 .info-section {
   @include shared.info-section;
 }
 
-.vocations-list,
-.creatures-list {
+.vocations-list {
   @include shared.vocations-list;
-}
-
-.creatures-list li {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: c.$surface-card;
-  color: c.$text-600;
-  font-size: 12px;
 }
 
 .vocation-chip {
@@ -83,8 +59,138 @@
   @include chips.vocation-colors;
 }
 
+.quests-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  a {
+    color: c.$brand-on-surface;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.imbuements-list,
+.item-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.imbuement-chip,
+.item-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  font-size: 12px;
+}
+
+.detail-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .detail-map {
   @include shared.detail-map;
+
+  app-tibia-minimap {
+    display: block;
+  }
+}
+
+.detail-monsters {
+  h3 {
+    margin: 0 0 12px;
+    color: c.$text-700;
+    font-size: 14px;
+  }
+}
+
+.monsters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.monster-card {
+  padding: 12px;
+  border-radius: 12px;
+  background: c.$surface-alt;
+  border: 1px solid c.$border-subtle;
+
+  h4 {
+    margin: 0 0 8px;
+    color: c.$text-700;
+    font-size: 13px;
+  }
+}
+
+.monster-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: c.$text-500;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.monster-resistances {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resist-label {
+  color: c.$text-400;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.resist-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.resist-badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.resist-immune {
+    background: c.$success-bg;
+    color: c.$success-fg;
+  }
+
+  &.resist-strong {
+    background: c.$success-bg;
+    color: c.$success-fg-soft;
+  }
+
+  &.resist-weak {
+    background: c.$danger-bg;
+    color: c.$danger-fg;
+  }
+
+  &.resist-neutral {
+    background: c.$surface-card;
+    color: c.$text-500;
+  }
 }
 
 .not-found {

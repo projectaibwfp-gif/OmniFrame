@@ -3,15 +3,11 @@
     <div class="detail-header">
       <a class="back-link" routerLink="/hunting-places">{{ labels().back }}</a>
       <h1>{{ place.name }}</h1>
-      <span class="detail-city">{{ place.city }}</span>
+      <span class="detail-badge">{{ labels().level }} {{ place.minLevel }}+</span>
     </div>
 
     <div class="detail-grid">
       <div class="detail-info card">
-        <div class="info-row">
-          <span class="info-label">{{ labels().level }}</span>
-          <span class="info-value">{{ place.minLevel }} - {{ place.maxLevel }}</span>
-        </div>
         <div class="info-row">
           <span class="info-label">{{ labels().access }}</span>
           <span class="info-value">
@@ -19,16 +15,12 @@
           </span>
         </div>
         <div class="info-row">
-          <span class="info-label">{{ labels().profit }}</span>
-          <span class="info-value profit-{{ place.profit }}">
-            {{ labels()[place.profit] }}
-          </span>
+          <span class="info-label">{{ labels().rawExp }}</span>
+          <span class="info-value">{{ place.rawExp }}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">{{ labels().experience }}</span>
-          <span class="info-value exp-{{ place.experience }}">
-            {{ labels()[place.experience] }}
-          </span>
+          <span class="info-label">{{ labels().profit }}</span>
+          <span class="info-value">{{ place.profit }}</span>
         </div>
 
         <div class="info-section">
@@ -40,29 +32,97 @@
           </div>
         </div>
 
-        <div class="info-section">
-          <h3>{{ labels().creatures }}</h3>
-          <ul class="creatures-list">
-            @for (creature of place.creatures; track creature) {
-              <li>{{ creature }}</li>
-            }
-          </ul>
-        </div>
+        @if (place.quests.length > 0) {
+          <div class="info-section">
+            <h3>{{ labels().requirements }}</h3>
+            <ul class="quests-list">
+              @for (quest of place.quests; track quest.url) {
+                <li
+                  ><a [href]="quest.url" target="_blank" rel="nofollow noopener">{{
+                    quest.name
+                  }}</a></li
+                >
+              }
+            </ul>
+          </div>
+        }
 
-        <div class="info-section">
-          <h3>{{ labels().description }}</h3>
-          <p>{{ place.description }}</p>
-        </div>
+        @if (place.imbuements.length > 0) {
+          <div class="info-section">
+            <h3>{{ labels().imbuements }}</h3>
+            <div class="imbuements-list">
+              @for (imbuement of place.imbuements; track imbuement.name) {
+                <span class="imbuement-chip">{{ imbuement.name }} x{{ imbuement.count }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (place.trinkets.length > 0) {
+          <div class="info-section">
+            <h3>{{ labels().trinkets }}</h3>
+            <div class="item-chips">
+              @for (trinket of place.trinkets; track trinket) {
+                <span class="item-chip">{{ trinket }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (place.valuableDrop.length > 0) {
+          <div class="info-section">
+            <h3>{{ labels().valuableDrop }}</h3>
+            <div class="item-chips">
+              @for (item of place.valuableDrop; track item) {
+                <span class="item-chip">{{ item }}</span>
+              }
+            </div>
+          </div>
+        }
       </div>
 
-      <div class="detail-map card">
-        <h3>{{ labels().map }}</h3>
-        <iframe
-          [src]="mapUrl()"
-          title="Tibia Map"
-          loading="lazy"
-          referrerpolicy="no-referrer"
-        ></iframe>
+      <div class="detail-side">
+        <div class="detail-map card">
+          <h3>{{ labels().map }}</h3>
+          <app-tibia-minimap
+            [coordinates]="place.coordinates"
+            [zoom]="place.mapZoom ?? defaultMapZoom"
+            [route]="place.route"
+            [size]="480"
+          />
+        </div>
+
+        <div class="detail-monsters card">
+          <h3>{{ labels().monsters }}</h3>
+          <div class="monsters-grid">
+            @for (monster of place.monsters; track monster.slug) {
+              <article class="monster-card">
+                <h4>{{ monster.name }}</h4>
+                <div class="monster-stats">
+                  <span
+                    >{{ labels().health }}: <strong>{{ monster.health }}</strong></span
+                  >
+                  <span
+                    >{{ labels().rawExp }}: <strong>{{ monster.experience }}</strong></span
+                  >
+                  <span
+                    >{{ labels().charmPoints }}: <strong>{{ monster.charmPoints }}</strong></span
+                  >
+                </div>
+                <div class="monster-resistances">
+                  <span class="resist-label">{{ labels().resistances }}</span>
+                  <div class="resist-grid">
+                    @for (entry of resistanceEntries(monster); track entry.label) {
+                      <span class="resist-badge {{ resistanceClass(entry.value) }}">
+                        {{ entry.label }} {{ entry.value > 0 ? '+' : '' }}{{ entry.value }}%
+                      </span>
+                    }
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+        </div>
       </div>
     </div>
   } @else {

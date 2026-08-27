@@ -38,9 +38,34 @@
   box-shadow: 0 12px 24px c.$shadow-medium;
 }
 
+.vocation-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vocation-tab {
+  padding: 8px 16px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 999px;
+  background: c.$surface-card;
+  color: c.$text-600;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  &--active {
+    border-color: transparent;
+    background: c.$brand-primary-soft;
+    color: c.$brand-on-surface;
+
+    @include chips.vocation-colors;
+  }
+}
+
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   align-items: end;
 }
@@ -169,171 +194,112 @@
   }
 }
 
-.places-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.place-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+.places-table-wrapper {
+  overflow-x: auto;
   background: c.$surface-card-overlay;
   border: 1px solid c.$border-translucent;
   border-radius: 16px;
   box-shadow: 0 12px 24px c.$shadow-medium;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+}
 
-  &:hover {
-    border-color: c.$brand-primary;
-    box-shadow: 0 16px 32px c.$shadow-medium;
+.places-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 12px 16px;
+    text-align: left;
+    white-space: nowrap;
   }
 
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-
-    h3 {
-      margin: 0;
-      color: c.$text-700;
-      font-size: 16px;
-    }
-  }
-
-  &__city {
-    flex-shrink: 0;
-    padding: 3px 8px;
-    border-radius: 999px;
-    background: c.$info-bg;
-    color: c.$info-fg;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  &__level {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .level-badge {
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: c.$brand-primary-soft;
-    color: c.$brand-on-surface;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .access-badge {
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: c.$success-bg;
-    color: c.$success-fg;
-    font-size: 11px;
-    font-weight: 700;
-
-    &--premium {
-      background: c.$warning-bg;
-      color: c.$warning-fg-strong;
-    }
-  }
-
-  &__description {
-    margin: 0;
-    color: c.$text-500;
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  &__creatures,
-  &__vocations {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .creatures-label,
-  .vocations-label {
+  th {
     color: c.$text-400;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    border-bottom: 1px solid c.$border-subtle;
   }
 
-  .creatures-list,
-  .vocations-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .creature-chip {
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: c.$surface-alt;
+  td {
     color: c.$text-600;
-    font-size: 11px;
+    font-size: 13px;
   }
+}
 
-  .vocation-chip {
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
+.place-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 
-    @include chips.vocation-colors;
-  }
-
-  &__rates {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px dashed c.$border-subtle;
-  }
-
-  .rate {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 8px;
-    border-radius: 8px;
+  &:hover {
     background: c.$surface-alt;
+  }
 
-    &-label {
-      color: c.$text-400;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
+  &:not(:last-child) td {
+    border-bottom: 1px solid c.$border-subtle;
+  }
+}
 
-    &-value {
-      font-size: 13px;
-      font-weight: 700;
-    }
+.level-cell {
+  color: c.$brand-on-surface;
+  font-weight: 700;
+}
 
-    &.rate-low {
-      color: c.$text-500;
-    }
+.place-cell {
+  color: c.$text-700;
+  font-weight: 600;
+}
 
-    &.rate-medium {
-      color: c.$info-fg;
-    }
+.vocations-cell,
+.weapon-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  white-space: normal;
+}
 
-    &.rate-high {
-      color: c.$success-fg;
-    }
+.vocation-chip {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+
+  @include chips.vocation-colors;
+}
+
+.weapon-chip {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.weapon-fire {
+    background: c.$danger-bg;
+    color: c.$danger-fg;
+  }
+
+  &.weapon-ice {
+    background: c.$info-bg;
+    color: c.$info-fg;
+  }
+
+  &.weapon-energy {
+    background: c.$warning-bg;
+    color: c.$warning-fg;
+  }
+
+  &.weapon-earth {
+    background: c.$success-bg;
+    color: c.$success-fg;
+  }
+
+  &.weapon-death {
+    background: c.$danger-strong-bg;
+    color: c.$danger-strong-fg;
   }
 }
 
@@ -362,10 +328,6 @@
 
   .filter-field--range .range-row {
     flex-direction: row;
-  }
-
-  .places-grid {
-    grid-template-columns: 1fr;
   }
 
   .sort-bar {

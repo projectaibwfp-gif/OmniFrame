@@ -6,6 +6,7 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM"],
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {

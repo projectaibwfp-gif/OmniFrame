@@ -3,10 +3,7 @@ export interface HuntingLabels {
   title: string;
   intro: string;
   searchPlaceholder: string;
-  allCities: string;
-  allVocations: string;
-  cityLabel: string;
-  vocationLabel: string;
+  teamhuntsTab: string;
   levelLabel: string;
   levelFrom: string;
   levelTo: string;
@@ -14,15 +11,15 @@ export interface HuntingLabels {
   allAccess: string;
   premiumAccess: string;
   freeAccess: string;
+  weaponTypeLabel: string;
+  allWeaponTypes: string;
   clearFilters: string;
   sortBy: string;
   sortName: string;
   sortMinLevel: string;
-  sortMaxLevel: string;
-  sortCity: string;
   found: string;
   perPage: string;
-  creatures: string;
+  placeColumn: string;
   vocations: string;
   exp: string;
   profit: string;
@@ -30,9 +27,6 @@ export interface HuntingLabels {
   next: string;
   emptyTitle: string;
   emptyAction: string;
-  low: string;
-  medium: string;
-  high: string;
 }
 
 // eslint-disable-next-line complexity
@@ -44,10 +38,7 @@ export function buildHuntingLabels(isPl: boolean): HuntingLabels {
       ? 'Wyszukaj i przefiltruj miejsca polowań dopasowane do poziomu i profesji.'
       : 'Search and filter hunting places matching your level and vocation.',
     searchPlaceholder: isPl ? 'Szukaj miejsca...' : 'Search place...',
-    allCities: isPl ? 'Wszystkie' : 'All',
-    allVocations: isPl ? 'Wszystkie' : 'All',
-    cityLabel: isPl ? 'Miasto' : 'City',
-    vocationLabel: isPl ? 'Profesja' : 'Vocation',
+    teamhuntsTab: 'Teamhunts',
     levelLabel: isPl ? 'Poziom' : 'Level',
     levelFrom: isPl ? 'Od' : 'From',
     levelTo: isPl ? 'Do' : 'To',
@@ -55,26 +46,23 @@ export function buildHuntingLabels(isPl: boolean): HuntingLabels {
     allAccess: isPl ? 'Wszystkie' : 'All',
     premiumAccess: 'Premium',
     freeAccess: 'Free',
+    weaponTypeLabel: isPl ? 'Typ broni' : 'Weapon type',
+    allWeaponTypes: isPl ? 'Wszystkie' : 'All',
     clearFilters: isPl ? 'Wyczyść filtry' : 'Clear filters',
     sortBy: isPl ? 'Sortuj' : 'Sort',
     sortName: isPl ? 'Nazwa' : 'Name',
-    sortMinLevel: isPl ? 'Poziom min' : 'Min level',
-    sortMaxLevel: isPl ? 'Poziom max' : 'Max level',
-    sortCity: isPl ? 'Miasto' : 'City',
+    sortMinLevel: isPl ? 'Poziom' : 'Level',
     found: isPl ? 'Znaleziono' : 'Found',
     perPage: isPl ? 'Na stronę' : 'Per page',
-    creatures: isPl ? 'Potwory' : 'Creatures',
+    placeColumn: isPl ? 'Miejsce' : 'Place',
     vocations: isPl ? 'Profesje' : 'Vocations',
-    exp: 'EXP',
-    profit: 'Profit',
+    exp: isPl ? 'Raw EXP' : 'Raw EXP',
+    profit: isPl ? 'Profit' : 'Profit',
     previous: isPl ? 'Poprzednia' : 'Previous',
     next: isPl ? 'Następna' : 'Next',
     emptyTitle: isPl
       ? 'Nie znaleziono miejsc polowań pasujących do filtrów.'
       : 'No hunting places match the selected filters.',
     emptyAction: isPl ? 'Wyczyść filtry' : 'Clear filters',
-    low: isPl ? 'Niskie' : 'Low',
-    medium: isPl ? 'Średnie' : 'Medium',
-    high: isPl ? 'Wysokie' : 'High',
   };
 }

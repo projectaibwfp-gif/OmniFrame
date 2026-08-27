@@ -1,0 +1,26 @@
+<div class="tibia-minimap">
+  <canvas #canvas class="tibia-minimap__canvas"></canvas>
+  <svg class="tibia-minimap__overlay" [attr.viewBox]="'0 0 ' + size() + ' ' + size()">
+    @for (path of pathPolylines(); track $index) {
+      <polyline class="tibia-minimap__route" [attr.points]="path.points" />
+    }
+    @for (marker of markerPoints(); track $index) {
+      @if (marker.icon === 'star') {
+        <circle
+          class="tibia-minimap__marker tibia-minimap__marker--star"
+          [attr.cx]="marker.x"
+          [attr.cy]="marker.y"
+          r="6"
+        />
+      } @else {
+        <g
+          class="tibia-minimap__marker tibia-minimap__marker--crossmark"
+          [attr.transform]="'translate(' + marker.x + ',' + marker.y + ')'"
+        >
+          <line x1="-5" y1="-5" x2="5" y2="5" />
+          <line x1="-5" y1="5" x2="5" y2="-5" />
+        </g>
+      }
+    }
+  </svg>
+</div>
