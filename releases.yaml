@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-27T05:01:55.573Z"
+    commit: "9cf47524d8f45708922535ed2957f185d04658b6"
+    frontend:
+      version: "0.13.1"
+      tag: "frontend-v0.13.1"
+      changed: true
+      commits:
+      - hash: "9cf47524"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T07:00:23+02:00"
+        message: "refactor: remove product-related API endpoints, components, and documentation"
+    backend:
+      version: "0.8.3"
+      tag: "backend-v0.8.3"
+      changed: true
+      commits:
+      - hash: "9cf47524"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T07:00:23+02:00"
+        message: "refactor: remove product-related API endpoints, components, and documentation"
   - date: "2026-08-27T04:46:29.610Z"
     commit: "e8df87a8f8c4e4c05b5310d377cc9d7af9f431d5"
     frontend:
