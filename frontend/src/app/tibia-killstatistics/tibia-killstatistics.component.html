@@ -46,13 +46,27 @@
     </div>
 
     <div class="killstatistics-grid">
-      @for (entry of statistics(); track entry.name) {
+      @for (entry of statistics(); track entry.race) {
         <article class="killstatistics-card">
-          <span class="killstatistics-card__label">{{ entry.name }}</span>
-          <strong class="killstatistics-card__value">{{ entry.value ?? '-' }}</strong>
-          @if (entry.description) {
-            <p class="killstatistics-card__description">{{ entry.description }}</p>
-          }
+          <span class="killstatistics-card__label">{{ entry.race }}</span>
+          <div class="killstatistics-card__metrics">
+            <div>
+              <span class="killstatistics-card__metric-label">Players / day</span>
+              <strong>{{ formatTotal(entry.lastDayPlayersKilled) }}</strong>
+            </div>
+            <div>
+              <span class="killstatistics-card__metric-label">Killed / day</span>
+              <strong>{{ formatTotal(entry.lastDayKilled) }}</strong>
+            </div>
+            <div>
+              <span class="killstatistics-card__metric-label">Players / week</span>
+              <strong>{{ formatTotal(entry.lastWeekPlayersKilled) }}</strong>
+            </div>
+            <div>
+              <span class="killstatistics-card__metric-label">Killed / week</span>
+              <strong>{{ formatTotal(entry.lastWeekKilled) }}</strong>
+            </div>
+          </div>
         </article>
       }
     </div>

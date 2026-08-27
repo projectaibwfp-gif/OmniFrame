@@ -71,4 +71,8 @@ export class TibiaKillStatisticsComponent {
         error: () => this.apiError.set(true),
       });
   }
+
+  protected formatTotal(value: number): string {
+    return value.toLocaleString('en-US');
+  }
 }
