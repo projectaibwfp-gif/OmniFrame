@@ -1,4 +1,32 @@
 releases:
+  - date: "2026-08-27T21:11:11.343Z"
+    commit: "9d03b260602c78f54d883fbbf70b5a9616f0983a"
+    frontend:
+      version: "0.18.0"
+      tag: "frontend-v0.18.0"
+      changed: true
+      commits:
+      - hash: "74b5598c"
+        author: "Bartek"
+        date: "2026-08-27T23:08:32+02:00"
+        message: "feat: implement kill statistics API endpoint and update data models"
+      - hash: "74e35fbb"
+        author: "Bartek"
+        date: "2026-08-27T23:04:58+02:00"
+        message: "feat: update API endpoint for kill statistics retrieval"
+    backend:
+      version: "0.11.0"
+      tag: "backend-v0.11.0"
+      changed: true
+      commits:
+      - hash: "9d03b260"
+        author: "Bartek"
+        date: "2026-08-27T23:09:40+02:00"
+        message: "feat: update TibiaDataKillStatisticsEntry interface with new fields and add fetch function"
+      - hash: "74b5598c"
+        author: "Bartek"
+        date: "2026-08-27T23:08:32+02:00"
+        message: "feat: implement kill statistics API endpoint and update data models"
   - date: "2026-08-27T21:04:36.651Z"
     commit: "741e3a0958c7609d6149745cd403705396962531"
     frontend:
