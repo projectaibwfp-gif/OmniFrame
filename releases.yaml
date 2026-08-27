@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-27T12:19:01.796Z"
+    commit: "693438676f1e6e1849a81814e82adbb5ac3927d4"
+    frontend:
+      version: "0.15.0"
+      tag: "frontend-v0.15.0"
+      changed: true
+      commits:
+      - hash: "69343867"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T14:17:01+02:00"
+        message: "feat: add boosted service and UI components for displaying boosted bosses and creatures"
+    backend:
+      version: "0.9.1"
+      tag: "backend-v0.9.1"
+      changed: false
+      commits: []
   - date: "2026-08-27T12:05:05.995Z"
     commit: "b7416551ad8087beaa52f4731dcbe3980f749281"
     frontend:
