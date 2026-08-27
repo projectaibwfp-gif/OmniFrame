@@ -144,6 +144,66 @@
   }
 }
 
+.main-character-card {
+  background: c.$surface-card;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.main-character-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.main-character-badge {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: c.$brand-primary-tint;
+  color: c.$brand-primary;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.main-character-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.main-character-meta {
+  color: c.$text-400;
+  font-size: 12px;
+}
+
+.main-character-empty {
+  margin: 0;
+  color: c.$text-400;
+  font-size: 13px;
+}
+
+.main-character-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .form-control {
+    flex: 1 1 200px;
+  }
+}
+
+.main-character-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .referral-note {
   margin: 0;
   color: c.$text-400;

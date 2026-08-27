@@ -39,5 +39,6 @@ export function mapAuthUser(user: AuthGoogleUserDto): AuthUser {
     registeredAt: user.registeredAt || '',
     lastLoginAt: user.lastLoginAt || '',
     updatedAt: user.updatedAt || '',
+    mainCharacter: user.mainCharacter ?? null,
   };
 }

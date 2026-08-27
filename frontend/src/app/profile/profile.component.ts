@@ -6,10 +6,14 @@ import { AuthService } from '../auth/auth.service';
 import { mapAuthUser } from '../auth/auth-user.mapper';
 import { buildApiUrl } from '../config/api.config';
 import { AppDatePipe } from '../core/date-time.pipe';
+import { formatMainCharacterBadge } from '../core/vocation';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 
 const INITIALS_MAX_CHARS = 2;
 const INITIALS_FALLBACK = 'U';
+const MAIN_CHARACTER_LINK_ERROR =
+  'Nie udało się powiązać postaci. Sprawdź nazwę i spróbuj ponownie.';
+const MAIN_CHARACTER_UNLINK_ERROR = 'Nie udało się odpiąć postaci. Spróbuj ponownie.';
 
 @Component({
   selector: 'app-profile',
@@ -27,6 +31,19 @@ export class ProfileComponent {
   protected readonly validationErrors = signal<Record<string, string>>({});
 
   protected readonly editForm = signal<ProfileEditForm>({ ...EMPTY_PROFILE_FORM });
+
+  protected readonly mainCharacterName = signal('');
+  protected readonly isMainCharacterSaving = signal(false);
+  protected readonly mainCharacterError = signal<string | null>(null);
+
+  protected readonly mainCharacter = computed(() => this.currentUser()?.mainCharacter ?? null);
+  protected readonly mainCharacterBadge = computed(() => {
+    const character = this.mainCharacter();
+    if (!character) {
+      return '';
+    }
+    return formatMainCharacterBadge(character.vocation, character.level);
+  });
 
   protected readonly initials = computed(() => {
     const user = this.currentUser();
@@ -106,6 +123,53 @@ export class ProfileComponent {
     this.editMode.set(false);
     this.validationErrors.set({});
     this.saveError.set(null);
+  }
+
+  protected linkMainCharacter(): void {
+    const name = this.mainCharacterName().trim();
+    if (!name) {
+      this.mainCharacterError.set('Podaj nazwę postaci.');
+      return;
+    }
+
+    this.isMainCharacterSaving.set(true);
+    this.mainCharacterError.set(null);
+
+    this.http
+      .put<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me/main-character'), {
+        name,
+      })
+      .subscribe({
+        next: (response) => {
+          this.authService.user.set(mapAuthUser(response.data.user));
+          this.mainCharacterName.set('');
+          this.isMainCharacterSaving.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to link main character:', error);
+          this.mainCharacterError.set(error?.error?.message || MAIN_CHARACTER_LINK_ERROR);
+          this.isMainCharacterSaving.set(false);
+        },
+      });
+  }
+
+  protected unlinkMainCharacter(): void {
+    this.isMainCharacterSaving.set(true);
+    this.mainCharacterError.set(null);
+
+    this.http
+      .delete<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me/main-character'))
+      .subscribe({
+        next: (response) => {
+          this.authService.user.set(mapAuthUser(response.data.user));
+          this.isMainCharacterSaving.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to unlink main character:', error);
+          this.mainCharacterError.set(error?.error?.message || MAIN_CHARACTER_UNLINK_ERROR);
+          this.isMainCharacterSaving.set(false);
+        },
+      });
   }
 
   protected async copyReferralLink(): Promise<void> {

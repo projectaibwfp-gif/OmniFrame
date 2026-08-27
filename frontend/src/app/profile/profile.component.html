@@ -74,6 +74,66 @@
             </article>
           }
 
+          <article class="profile-item-card main-character-card">
+            <span class="label">Główna postać</span>
+            @if (mainCharacter(); as character) {
+              <div class="main-character-summary">
+                <span class="main-character-badge">{{ mainCharacterBadge() }}</span>
+                <div class="main-character-info">
+                  <strong>{{ character.name }}</strong>
+                  <span class="main-character-meta">
+                    {{ character.vocation || 'brak vocation' }}
+                    · lvl {{ character.level ?? '?' }}
+                    @if (character.world) {
+                      · {{ character.world }}
+                    }
+                  </span>
+                </div>
+              </div>
+              <div class="main-character-actions">
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="unlinkMainCharacter()"
+                  [disabled]="isMainCharacterSaving()"
+                >
+                  Odepnij postać
+                </button>
+              </div>
+            } @else {
+              <p class="main-character-empty">
+                Nie masz jeszcze głównej postaci. Podaj nazwę - zweryfikujemy ją w TibiaData i
+                przypniemy do konta.
+              </p>
+              <div class="main-character-form">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="np. Trollefar"
+                  [ngModel]="mainCharacterName()"
+                  (ngModelChange)="mainCharacterName.set($event)"
+                  name="mainCharacterName"
+                  [disabled]="isMainCharacterSaving()"
+                />
+                <button
+                  class="btn btn-primary btn-sm"
+                  type="button"
+                  (click)="linkMainCharacter()"
+                  [disabled]="isMainCharacterSaving() || !mainCharacterName().trim()"
+                >
+                  @if (isMainCharacterSaving()) {
+                    Wiążę...
+                  } @else {
+                    Powiąż postać
+                  }
+                </button>
+              </div>
+            }
+            @if (mainCharacterError()) {
+              <span class="error-message">{{ mainCharacterError() }}</span>
+            }
+          </article>
+
           <article class="profile-item-card referral-card">
             <span class="label">Link polecający</span>
             <code>{{ referralLink() || '-' }}</code>

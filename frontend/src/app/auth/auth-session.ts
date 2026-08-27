@@ -1,4 +1,4 @@
-import type { UserRole } from '@shared/api-contract';
+import type { UserMainCharacterDto, UserRole } from '@shared/api-contract';
 
 export type AuthRole = UserRole;
 
@@ -17,4 +17,5 @@ export interface AuthUser {
   registeredAt: string;
   lastLoginAt: string;
   updatedAt: string;
+  mainCharacter: UserMainCharacterDto | null;
 }
