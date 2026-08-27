@@ -13,11 +13,10 @@ export class TibiaKillStatisticsService {
   private readonly http = inject(HttpClient);
 
   getKillStatistics(world: string): Observable<TibiaKillStatisticsWorldDto> {
-    const params = new HttpParams().set('world', world);
     return this.http
-      .get<KillStatisticsResponse>(buildApiUrl(`/killstatistics/${encodeURIComponent(world)}`), {
-        params,
-      })
+      .get<KillStatisticsResponse>(
+        buildApiUrl(`/tibia/killstatistics/${encodeURIComponent(world)}`),
+      )
       .pipe(map((response) => response.data));
   }
 }
