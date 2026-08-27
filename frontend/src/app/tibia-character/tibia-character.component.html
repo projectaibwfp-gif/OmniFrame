@@ -54,7 +54,34 @@
 
   @if (character(); as currentCharacter) {
     <section class="character-card">
-      <h2>{{ currentCharacter.name }}</h2>
+      <div class="character-card__header">
+        <h2>{{ currentCharacter.name }}</h2>
+        <div class="main-character-controls">
+          @if (isCurrentMain()) {
+            <span class="main-character-status">★ Twoja główna postać</span>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              (click)="setAsMainCharacter()"
+              [disabled]="isLinkingMainCharacter()"
+            >
+              @if (isLinkingMainCharacter()) {
+                Wiążę...
+              } @else {
+                Ustaw jako moją postać
+              }
+            </button>
+          }
+        </div>
+      </div>
+      @if (linkMainCharacterError(); as message) {
+        <p class="main-character-message main-character-message--error">{{ message }}</p>
+      } @else if (linkMainCharacterSuccess()) {
+        <p class="main-character-message main-character-message--success"
+          >Postać została ustawiona jako główna.</p
+        >
+      }
       <div class="character-grid">
         <p><strong>Poziom:</strong> {{ currentCharacter.level ?? 'Brak danych' }}</p>
         <p><strong>Vocation:</strong> {{ currentCharacter.vocation ?? 'Brak danych' }}</p>

@@ -50,6 +50,51 @@
     box-shadow: 0 12px 24px c.$shadow-medium;
   }
 
+  .character-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  .main-character-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .main-character-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: c.$brand-primary-tint;
+    color: c.$brand-primary;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .main-character-message {
+    margin: 0 0 12px;
+    font-size: 13px;
+
+    &--error {
+      color: c.$danger-fg-soft;
+    }
+
+    &--success {
+      color: c.$success-fg;
+    }
+  }
+
   .search-form {
     display: flex;
     flex-direction: column;

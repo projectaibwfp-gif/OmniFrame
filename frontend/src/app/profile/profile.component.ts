@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { mapAuthUser } from '../auth/auth-user.mapper';
 import { buildApiUrl } from '../config/api.config';
 import { AppDatePipe } from '../core/date-time.pipe';
-import { formatMainCharacterBadge } from '../core/vocation';
+import { MainCharacterService } from '../services/main-character.service';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 
 const INITIALS_MAX_CHARS = 2;
@@ -36,14 +36,8 @@ export class ProfileComponent {
   protected readonly isMainCharacterSaving = signal(false);
   protected readonly mainCharacterError = signal<string | null>(null);
 
-  protected readonly mainCharacter = computed(() => this.currentUser()?.mainCharacter ?? null);
-  protected readonly mainCharacterBadge = computed(() => {
-    const character = this.mainCharacter();
-    if (!character) {
-      return '';
-    }
-    return formatMainCharacterBadge(character.vocation, character.level);
-  });
+  protected readonly mainCharacter = computed(() => this.mainCharacterService.character());
+  protected readonly mainCharacterBadge = computed(() => this.mainCharacterService.badge());
 
   protected readonly initials = computed(() => {
     const user = this.currentUser();
@@ -71,6 +65,7 @@ export class ProfileComponent {
 
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly mainCharacterService = inject(MainCharacterService);
 
   protected toggleEditMode(): void {
     if (!this.editMode()) {
@@ -135,21 +130,21 @@ export class ProfileComponent {
     this.isMainCharacterSaving.set(true);
     this.mainCharacterError.set(null);
 
-    this.http
-      .put<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me/main-character'), {
-        name,
+    this.mainCharacterService
+      .link(name)
+      .then(() => {
+        this.mainCharacterName.set('');
       })
-      .subscribe({
-        next: (response) => {
-          this.authService.user.set(mapAuthUser(response.data.user));
-          this.mainCharacterName.set('');
-          this.isMainCharacterSaving.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to link main character:', error);
-          this.mainCharacterError.set(error?.error?.message || MAIN_CHARACTER_LINK_ERROR);
-          this.isMainCharacterSaving.set(false);
-        },
+      .catch((error: unknown) => {
+        console.error('Failed to link main character:', error);
+        const message =
+          typeof error === 'object' && error !== null && 'error' in error
+            ? (error as { error?: { message?: string } }).error?.message
+            : undefined;
+        this.mainCharacterError.set(message || MAIN_CHARACTER_LINK_ERROR);
+      })
+      .finally(() => {
+        this.isMainCharacterSaving.set(false);
       });
   }
 
@@ -157,18 +152,18 @@ export class ProfileComponent {
     this.isMainCharacterSaving.set(true);
     this.mainCharacterError.set(null);
 
-    this.http
-      .delete<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me/main-character'))
-      .subscribe({
-        next: (response) => {
-          this.authService.user.set(mapAuthUser(response.data.user));
-          this.isMainCharacterSaving.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to unlink main character:', error);
-          this.mainCharacterError.set(error?.error?.message || MAIN_CHARACTER_UNLINK_ERROR);
-          this.isMainCharacterSaving.set(false);
-        },
+    this.mainCharacterService
+      .unlink()
+      .catch((error: unknown) => {
+        console.error('Failed to unlink main character:', error);
+        const message =
+          typeof error === 'object' && error !== null && 'error' in error
+            ? (error as { error?: { message?: string } }).error?.message
+            : undefined;
+        this.mainCharacterError.set(message || MAIN_CHARACTER_UNLINK_ERROR);
+      })
+      .finally(() => {
+        this.isMainCharacterSaving.set(false);
       });
   }
 

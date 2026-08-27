@@ -165,6 +165,50 @@
   white-space: nowrap;
 }
 
+.main-character-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 999px;
+  background: c.$surface-alt;
+  color: c.$text-700;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease;
+
+  &:hover {
+    border-color: c.$brand-primary;
+    background: c.$brand-primary-tint;
+  }
+
+  &__badge {
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: c.$brand-primary;
+    color: c.$text-on-primary;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  &__name {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .topbar-menu {
   display: none;
 }

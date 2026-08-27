@@ -3,7 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
+import { MainCharacterService } from '../services/main-character.service';
 import { TibiaCharacterService } from './tibia-character.service';
+
+const MAIN_CHARACTER_LINK_ERROR = 'Nie udało się powiązać postaci. Spróbuj ponownie.';
 
 @Component({
   selector: 'app-tibia-character',
@@ -18,6 +21,9 @@ export class TibiaCharacterComponent {
   protected readonly isLoading = signal(false);
   protected readonly apiError = signal<string | null>(null);
   protected readonly recentCharacterNames = signal<string[]>([]);
+  protected readonly isLinkingMainCharacter = signal(false);
+  protected readonly linkMainCharacterError = signal<string | null>(null);
+  protected readonly linkMainCharacterSuccess = signal(false);
 
   protected readonly character = computed(() => this.lookup()?.character ?? null);
   protected readonly history = computed(() => this.lookup()?.history ?? []);
@@ -26,7 +32,13 @@ export class TibiaCharacterComponent {
   protected readonly experience = computed(() => this.character()?.experience ?? null);
   protected readonly experienceLookupLog = computed(() => this.experience()?.lookupLog ?? null);
 
+  protected readonly currentMainCharacter = computed(() => this.mainCharacterService.character());
+  protected readonly isCurrentMain = computed(() =>
+    this.mainCharacterService.isCurrentMain(this.character()?.name),
+  );
+
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
+  private readonly mainCharacterService = inject(MainCharacterService);
 
   protected setCharacterName(value: string): void {
     this.characterName.set(value);
@@ -65,10 +77,40 @@ export class TibiaCharacterComponent {
     this.loadCharacterByName(normalizedName);
   }
 
+  protected setAsMainCharacter(): void {
+    const character = this.character();
+    if (!character) {
+      return;
+    }
+
+    this.isLinkingMainCharacter.set(true);
+    this.linkMainCharacterError.set(null);
+    this.linkMainCharacterSuccess.set(false);
+
+    this.mainCharacterService
+      .link(character.name)
+      .then(() => {
+        this.linkMainCharacterSuccess.set(true);
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to link main character:', error);
+        const message =
+          typeof error === 'object' && error !== null && 'error' in error
+            ? (error as { error?: { message?: string } }).error?.message
+            : undefined;
+        this.linkMainCharacterError.set(message || MAIN_CHARACTER_LINK_ERROR);
+      })
+      .finally(() => {
+        this.isLinkingMainCharacter.set(false);
+      });
+  }
+
   private loadCharacterByName(name: string): void {
     this.isLoading.set(true);
     this.lookup.set(null);
     this.apiError.set(null);
+    this.linkMainCharacterError.set(null);
+    this.linkMainCharacterSuccess.set(false);
 
     this.tibiaCharacterService
       .getCharacter(name)

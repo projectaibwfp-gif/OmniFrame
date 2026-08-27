@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { LocalizationService, type Locale } from './services/localization.service';
+import { MainCharacterService } from './services/main-character.service';
 import { LanguageSwitcherComponent } from './components/language-switcher.component';
 import { ThemeSwitcherComponent } from './components/theme-switcher.component';
 
@@ -66,8 +67,11 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
 export class AppComponent {
   protected readonly authService = inject(AuthService);
   protected readonly localizationService = inject(LocalizationService);
+  protected readonly mainCharacterService = inject(MainCharacterService);
   protected readonly currentUser = this.authService.user;
   protected readonly currentLocale = this.localizationService.currentLocale;
+  protected readonly mainCharacter = this.mainCharacterService.character;
+  protected readonly mainCharacterBadge = this.mainCharacterService.badge;
   protected readonly navOpen = signal(false);
 
   protected readonly navItems = computed(() => {

@@ -15,6 +15,19 @@
               <strong>{{ currentUser()?.fullName }}</strong>
               <small>{{ currentUser()?.email }}</small>
             </div>
+            @if (mainCharacter(); as character) {
+              <a
+                class="main-character-chip"
+                routerLink="/profile"
+                [title]="
+                  character.name + ' · ' + (character.vocation ?? '') + ' · lvl ' + character.level
+                "
+                (click)="closeMobileNav()"
+              >
+                <span class="main-character-chip__badge">{{ mainCharacterBadge() }}</span>
+                <span class="main-character-chip__name">{{ character.name }}</span>
+              </a>
+            }
           </div>
           <button
             class="btn btn-light btn-sm icon-button topbar-menu"
