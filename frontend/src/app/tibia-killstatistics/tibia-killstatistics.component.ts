@@ -22,11 +22,7 @@ export class TibiaKillStatisticsComponent {
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
 
   constructor() {
-    this.worlds.set([
-      'Antica',
-      'Secura',
-      'Dia'
-    ]);
+    this.worlds.set(['Antica', 'Secura', 'Dia']);
   }
 
   protected onWorldChange(event: Event): void {

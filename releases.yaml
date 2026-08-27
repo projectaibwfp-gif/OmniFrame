@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-27T21:04:36.651Z"
+    commit: "741e3a0958c7609d6149745cd403705396962531"
+    frontend:
+      version: "0.17.0"
+      tag: "frontend-v0.17.0"
+      changed: true
+      commits:
+      - hash: "741e3a09"
+        author: "Bartek"
+        date: "2026-08-27T23:02:53+02:00"
+        message: "feat: add kill statistics component with UI and service integration"
+    backend:
+      version: "0.10.0"
+      tag: "backend-v0.10.0"
+      changed: false
+      commits: []
   - date: "2026-08-27T13:44:09.528Z"
     commit: "20d40e7a7d17315bb93ad808828d68858d3e2c6b"
     frontend:
