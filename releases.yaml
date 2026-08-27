@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-08-27T12:05:05.995Z"
+    commit: "b7416551ad8087beaa52f4731dcbe3980f749281"
+    frontend:
+      version: "0.14.0"
+      tag: "frontend-v0.14.0"
+      changed: true
+      commits:
+      - hash: "b7416551"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T14:03:14+02:00"
+        message: "feat: implement main character linking feature with UI updates and service integration"
+      - hash: "93a51ce2"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-27T10:36:42+02:00"
+        message: "feat: add main character linking functionality for users with API endpoints and database updates"
+    backend:
+      version: "0.9.1"
+      tag: "backend-v0.9.1"
+      changed: false
+      commits: []
   - date: "2026-08-27T09:35:57.268Z"
     commit: "951d04950ca1f65fcd4dddd13c58c0799404f807"
     frontend:
