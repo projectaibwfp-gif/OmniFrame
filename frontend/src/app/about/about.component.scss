@@ -10,8 +10,7 @@
 }
 
 .hero,
-.showcase-card,
-.stack-card {
+.showcase-card {
   border-radius: 1.25rem;
   box-shadow: 0 18px 45px c.$shadow-strong;
 }
@@ -48,13 +47,6 @@
   line-height: 1.7;
 }
 
-.hero-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 18px;
-}
-
 .hero-aside {
   display: grid;
   gap: 12px;
@@ -62,8 +54,7 @@
 }
 
 .metric-card,
-.showcase-card,
-.stack-card {
+.showcase-card {
   background: c.$surface-card-overlay-strong;
   border: 1px solid c.$border-muted;
 }
@@ -123,19 +114,21 @@
   line-height: 1.7;
 }
 
-.stack-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
+.card-link {
+  display: inline-flex;
+  gap: 0.4rem;
+  margin-top: 16px;
+  color: c.$text-800;
+  font-weight: 700;
+  text-decoration: none;
 
-.stack-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+  &:hover {
+    color: c.$text-300;
+  }
 }
 
 @media (max-width: 992px) {
   .hero-body,
-  .stack-grid,
   .section-grid {
     grid-template-columns: 1fr;
   }
@@ -146,9 +139,7 @@
     padding: 18px;
   }
 
-  .showcase-card .card-body,
-  .stack-card .card-body,
-  .timeline-card .card-body {
+  .showcase-card .card-body {
     padding: 16px;
   }
 }

@@ -139,17 +139,29 @@
           </article>
 
           <article class="profile-item-card referral-card">
-            <span class="label">Link polecający</span>
-            <code>{{ referralLink() || '-' }}</code>
-            <p class="referral-note">Link używa stałego hasha przypisanego do Twojego konta.</p>
-            <div class="referral-actions">
-              <button class="btn btn-primary btn-sm" type="button" (click)="copyReferralLink()">
-                Kopiuj link
+            <div class="referral-heading">
+              <span class="referral-icon" aria-hidden="true">↗</span>
+              <div>
+                <span class="label">Poleć znajomym</span>
+                <h2>Udostępnij swój link</h2>
+              </div>
+            </div>
+            <p class="referral-note">
+              Zaproś znajomych do OmniFrame. Każda osoba, która dołączy z Twojego linku, zostanie
+              przypisana do Twojego konta.
+            </p>
+            <div class="referral-link-row">
+              <code class="referral-link">{{ referralLink() || '-' }}</code>
+              <button class="referral-copy-button" type="button" (click)="copyReferralLink()">
+                <span aria-hidden="true">⧉</span>
+                Kopiuj
               </button>
+            </div>
+            <div class="copy-feedback-container" aria-live="polite">
               @if (copyState() === 'success') {
-                <span class="copy-feedback success">Skopiowano</span>
+                <span class="copy-feedback success">Link skopiowany do schowka</span>
               } @else if (copyState() === 'error') {
-                <span class="copy-feedback error">Nie udało się skopiować</span>
+                <span class="copy-feedback error">Nie udało się skopiować linku</span>
               }
             </div>
           </article>

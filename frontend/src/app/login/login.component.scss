@@ -1,8 +1,8 @@
 @use 'colors' as c;
 
-$card-max-width: 420px;
-$card-padding: 32px;
-$card-padding-mobile: 20px;
+$card-max-width: 860px;
+$card-padding: 42px;
+$card-padding-mobile: 22px;
 
 :host {
   display: block;
@@ -10,23 +10,73 @@ $card-padding-mobile: 20px;
 }
 
 .login-page {
+  position: relative;
+  overflow: hidden;
   display: grid;
   min-height: 100vh;
   place-items: center;
   padding: 24px;
   background: c.$surface-page;
+
+  &::before,
+  &::after {
+    position: absolute;
+    border: 1px solid c.$brand-primary-soft;
+    border-radius: 50%;
+    content: '';
+    pointer-events: none;
+  }
+
+  &::before {
+    top: -180px;
+    left: -120px;
+    width: 430px;
+    height: 430px;
+    box-shadow: 0 0 0 26px c.$brand-primary-soft-lite;
+  }
+
+  &::after {
+    right: -170px;
+    bottom: -220px;
+    width: 520px;
+    height: 520px;
+  }
 }
 
 .login-card {
   @include c.light-tokens;
 
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  overflow: hidden;
   color-scheme: light;
   width: min($card-max-width, 100%);
   border: 1px solid c.$border-subtle;
-  border-top: 4px solid c.$brand-primary;
-  border-radius: 18px;
-  box-shadow: 0 1px 2px c.$shadow-medium;
+  border-radius: 24px;
+  box-shadow: 0 24px 70px c.$shadow-strong;
   background: c.$surface-card;
+}
+
+.login-intro {
+  padding: $card-padding;
+  background:
+    linear-gradient(145deg, c.$brand-primary 0%, c.$brand-primary-strong 100%), c.$brand-primary;
+  color: c.$text-on-primary;
+
+  .eyebrow {
+    color: c.$text-on-primary;
+    opacity: 0.72;
+  }
+
+  h1 {
+    margin: 0;
+    color: c.$text-on-primary;
+    font-size: clamp(2.3rem, 5vw, 3.7rem);
+    letter-spacing: -0.06em;
+    line-height: 1;
+  }
 
   .card-body {
     padding: $card-padding;
@@ -50,31 +100,109 @@ $card-padding-mobile: 20px;
 }
 
 .subtitle {
-  margin: 10px 0 28px;
+  max-width: 460px;
+  margin: 16px 0 30px;
   color: c.$text-400;
   font-size: 14px;
   line-height: 1.6;
 }
 
-.login-points {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+.login-intro .subtitle {
+  color: c.$text-on-primary;
+  opacity: 0.78;
+}
 
-  .badge {
-    padding: 0.55rem 0.8rem;
-    background: c.$surface-alt !important;
-    color: c.$text-600 !important;
-    border: 1px solid c.$border-subtle;
-    font-weight: 700;
+.brand-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 28px;
+  place-items: center;
+  border: 1px solid c.$brand-primary-tint;
+  border-radius: 14px;
+  background: c.$brand-primary-soft;
+  color: c.$text-on-primary;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.login-features {
+  display: grid;
+  gap: 14px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  strong,
+  span {
+    display: block;
   }
+
+  strong {
+    color: c.$text-on-primary;
+    font-size: 13px;
+  }
+
+  div span {
+    margin-top: 3px;
+    color: c.$text-on-primary;
+    font-size: 12px;
+    opacity: 0.65;
+  }
+}
+
+.feature-icon {
+  display: grid;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid c.$brand-primary-tint;
+  border-radius: 10px;
+  background: c.$brand-primary-soft;
+  color: c.$text-on-primary;
+  font-size: 17px;
+}
+
+.login-action {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: $card-padding;
+  background: c.$surface-card;
+
+  h2 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 24px;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+  }
+}
+
+.action-eyebrow {
+  margin: 0 0 8px;
+  color: c.$brand-on-surface;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.action-note {
+  margin: 12px 0 24px;
+  color: c.$text-400;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .google-button-container {
   display: flex;
   justify-content: center;
-  padding: 0 $card-padding $card-padding-mobile;
   width: 100%;
 
   ::ng-deep button {
@@ -88,7 +216,7 @@ $card-padding-mobile: 20px;
 }
 
 .login-error {
-  margin: 0 $card-padding 16px;
+  margin: 0 0 16px;
   padding: 10px 12px;
   color: c.$danger-strong-fg;
   background: c.$danger-strong-bg;
@@ -104,41 +232,24 @@ $card-padding-mobile: 20px;
   }
 
   .login-card {
+    grid-template-columns: 1fr;
     border-radius: 10px;
-
-    .card-body {
-      padding: $card-padding-mobile;
-    }
-
-    h1 {
-      font-size: 24px;
-    }
   }
 
-  .subtitle {
-    margin: 8px 0 20px;
-    font-size: 13px;
+  .login-intro,
+  .login-action {
+    padding: $card-padding-mobile;
   }
 
-  .login-points {
-    margin-bottom: 0.75rem;
+  .login-intro h1 {
+    font-size: 2.3rem;
   }
 
-  .google-button-container {
-    padding: 0 $card-padding-mobile $card-padding-mobile;
-
-    ::ng-deep button {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    ::ng-deep img {
-      border-radius: 50% !important;
-    }
+  .brand-mark {
+    margin-bottom: 22px;
   }
 
-  .login-error {
-    margin: 0 $card-padding-mobile 12px;
-    font-size: 12px;
+  .login-action h2 {
+    font-size: 21px;
   }
 }

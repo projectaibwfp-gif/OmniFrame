@@ -130,25 +130,132 @@
 }
 
 .referral-card {
-  background: c.$surface-card;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, c.$surface-card 0%, c.$surface-alt 100%);
 
-  code {
-    display: block;
-    padding: 10px 12px;
-    overflow-wrap: anywhere;
-    border-radius: 8px;
-    background: c.$surface-dark;
-    color: c.$text-on-dark;
-    font-size: 13px;
-    font-weight: 500;
+  &::after {
+    position: absolute;
+    top: -46px;
+    right: -34px;
+    width: 150px;
+    height: 150px;
+    border: 1px solid c.$brand-primary-soft;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 20px c.$brand-primary-soft-lite,
+      0 0 0 42px c.$brand-primary-soft-lite;
+    content: '';
+    pointer-events: none;
   }
 }
 
+.referral-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+.referral-icon {
+  display: grid;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.referral-card .label {
+  margin-bottom: 3px;
+}
+
+.referral-note {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 14px 0 16px;
+  color: c.$text-400;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.referral-link-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+
+  .referral-link {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: 11px 13px;
+    overflow-wrap: anywhere;
+    border: 1px solid c.$border-subtle;
+    border-radius: 10px;
+    background: c.$surface-alt;
+    color: c.$text-700;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+}
+
+.referral-copy-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 100px;
+  padding: 10px 14px;
+  border: 1px solid c.$brand-primary;
+  border-radius: 10px;
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+
+  &:hover {
+    background: c.$brand-primary-strong;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.copy-feedback-container {
+  position: relative;
+  z-index: 1;
+  min-height: 18px;
+  margin-top: 8px;
+}
+
 .main-character-card {
-  background: c.$surface-card;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: c.$surface-card;
 }
 
 .main-character-summary {
@@ -269,19 +376,6 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
-}
-
-.referral-note {
-  margin: 0;
-  color: c.$text-400;
-  font-size: 12px;
-}
-
-.referral-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .copy-feedback {

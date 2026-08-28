@@ -1,21 +1,46 @@
 <main class="login-page">
   <section class="login-card card border-0">
-    <div class="card-body">
-      <p class="eyebrow">OmniFrame</p>
-      <h1>Zaloguj się</h1>
+    <div class="login-intro">
+      <div class="brand-mark" aria-hidden="true">OF</div>
+      <p class="eyebrow">Portal dla graczy Tibii</p>
+      <h1>Witaj w OmniFrame</h1>
       <p class="subtitle">
-        Użyj konta Google, aby wejść do dashboardu, profilu, list użytkowników i danych w czasie
-        rzeczywistym.
+        Odkrywaj świat Tibii, sprawdzaj postacie i planuj kolejne przygody w jednym miejscu.
       </p>
-      <div class="login-points">
-        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">Real API</span>
-        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">JWT cookies</span>
-        <span class="badge rounded-pill bg-info-subtle text-info-emphasis">Referral flow</span>
+
+      <div class="login-features">
+        <div class="feature">
+          <span class="feature-icon" aria-hidden="true">⌕</span>
+          <div>
+            <strong>Sprawdzaj postacie</strong>
+            <span>Poziom, profesja, świat i EXP</span>
+          </div>
+        </div>
+        <div class="feature">
+          <span class="feature-icon" aria-hidden="true">◆</span>
+          <div>
+            <strong>Znajduj swoje miejsce</strong>
+            <span>Hunting places, questy i charm places</span>
+          </div>
+        </div>
+        <div class="feature">
+          <span class="feature-icon" aria-hidden="true">✦</span>
+          <div>
+            <strong>Bądź na bieżąco</strong>
+            <span>Boosty i najnowsze wiadomości z Tibii</span>
+          </div>
+        </div>
       </div>
     </div>
-    @if (authService.loginError(); as loginError) {
-      <p class="login-error" role="alert">{{ loginError }}</p>
-    }
-    <div #googleButton class="google-button-container"></div>
+
+    <div class="login-action">
+      <p class="action-eyebrow">Zacznij swoją przygodę</p>
+      <h2>Zaloguj się, aby wejść do portalu</h2>
+      <p class="action-note">Korzystaj z konta Google. To szybkie i bezpieczne.</p>
+      @if (authService.loginError(); as loginError) {
+        <p class="login-error" role="alert">{{ loginError }}</p>
+      }
+      <div #googleButton class="google-button-container"></div>
+    </div>
   </section>
 </main>

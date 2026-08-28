@@ -2,36 +2,29 @@
   <section class="hero card border-0">
     <div class="card-body hero-body">
       <div class="hero-copy">
-        <p class="eyebrow">Portfolio / Project overview</p>
-        <h1>project.ai</h1>
+        <p class="eyebrow">Portal Tibia</p>
+        <h1>OmniFrame</h1>
         <p class="lead">
-          Operacyjny panel z portfolio-style prezentacją: realne dane, responsywny UI i spójny
-          zestaw ekranów dla dashboardu, użytkowników, profilu i logowania.
+          Wszystko, czego potrzebujesz do codziennej gry w Tibii — informacje o postaciach,
+          miejscach polowań, questach, newsach i aktualnych boostach.
         </p>
-
-        <div class="hero-badges">
-          <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">Angular 22</span>
-          <span class="badge rounded-pill bg-info-subtle text-info-emphasis">MDBootstrap</span>
-          <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Real API</span>
-          <span class="badge rounded-pill bg-dark-subtle text-dark-emphasis">JWT sessions</span>
-        </div>
       </div>
 
       <div class="hero-aside">
         <article class="metric-card">
-          <span class="metric-label">Front</span>
-          <strong>Standalone UI</strong>
-          <p>Angular + Vite + responsywny shell.</p>
+          <span class="metric-label">Postacie</span>
+          <strong>Sprawdzaj swoich bohaterów</strong>
+          <p>Poziom, profesja, świat, osiągnięcia i historia sprawdzeń.</p>
         </article>
         <article class="metric-card">
-          <span class="metric-label">Backend</span>
-          <strong>Next.js API</strong>
-          <p>Auth, users, dashboard i referrals.</p>
+          <span class="metric-label">Poradniki</span>
+          <strong>Znajdź dobre miejsce</strong>
+          <p>Przeglądaj hunting places, charm places i questy.</p>
         </article>
         <article class="metric-card">
-          <span class="metric-label">Dane</span>
-          <strong>PostgreSQL</strong>
-          <p>Bez mocków i bez placeholderów.</p>
+          <span class="metric-label">Na bieżąco</span>
+          <strong>Boosty i newsy</strong>
+          <p>Śledź najnowsze informacje ze świata Tibii.</p>
         </article>
       </div>
     </div>
@@ -40,51 +33,31 @@
   <section class="section-grid">
     <article class="showcase-card card border-0">
       <div class="card-body">
-        <p class="eyebrow">What it ships</p>
-        <h2>Co jest w środku</h2>
-        <p>
-          Dashboard z metrykami, lista użytkowników, profil z linkiem polecającym i logowanie Google
-          oparte o cookie session.
-        </p>
+        <p class="eyebrow">Odkrywaj</p>
+        <h2>Wyszukiwarka postaci</h2>
+        <p> Sprawdzaj dane postaci, EXP, highscores oraz historię wcześniejszych wyszukiwań. </p>
+        <a class="card-link" routerLink="/character">Sprawdź postać <span>→</span></a>
       </div>
     </article>
 
     <article class="showcase-card card border-0">
       <div class="card-body">
-        <p class="eyebrow">UX focus</p>
-        <h2>Wygląd i czytelność</h2>
+        <p class="eyebrow">Planuj grę</p>
+        <h2>Miejsca i questy</h2>
         <p>
-          Minimalny, jasny layout, karty zamiast surowych tabel tam, gdzie lepiej wyglądają na
-          mobile.
+          Dobieraj miejscówki według poziomu, profesji, miasta i dostępności. Odkrywaj questy bez
+          spoilerów.
         </p>
+        <a class="card-link" routerLink="/hunting-places">Znajdź miejscówkę <span>→</span></a>
       </div>
     </article>
 
     <article class="showcase-card card border-0">
       <div class="card-body">
-        <p class="eyebrow">Architecture</p>
-        <h2>Jasny podział warstw</h2>
-        <p>
-          Front korzysta z API, backend waliduje sesję i dane, a ekran profilu i users pokazują
-          rzeczywiste rekordy.
-        </p>
-      </div>
-    </article>
-  </section>
-
-  <section class="section-grid stack-grid">
-    <article class="stack-card card border-0">
-      <div class="card-body">
-        <p class="eyebrow">Frontend stack</p>
-        <h2>Komponenty i flow</h2>
-        <div class="stack-badges">
-          <span class="badge rounded-pill bg-light text-dark border">Angular standalone</span>
-          <span class="badge rounded-pill bg-light text-dark border">Signals</span>
-          <span class="badge rounded-pill bg-light text-dark border">Routing</span>
-          <span class="badge rounded-pill bg-light text-dark border">MDBootstrap</span>
-          <span class="badge rounded-pill bg-light text-dark border">Vite</span>
-          <span class="badge rounded-pill bg-light text-dark border">Responsive UI</span>
-        </div>
+        <p class="eyebrow">Bądź na bieżąco</p>
+        <h2>Boosty i newsy</h2>
+        <p> Zobacz aktualnie boostowane bossy i creature oraz najnowsze wiadomości z Tibii. </p>
+        <a class="card-link" routerLink="/news">Przejdź do newsów <span>→</span></a>
       </div>
     </article>
   </section>
