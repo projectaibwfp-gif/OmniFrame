@@ -77,17 +77,6 @@ $card-padding-mobile: 22px;
     letter-spacing: -0.06em;
     line-height: 1;
   }
-
-  .card-body {
-    padding: $card-padding;
-  }
-
-  h1 {
-    margin: 0;
-    color: c.$text-700;
-    font-size: 30px;
-    letter-spacing: -0.04em;
-  }
 }
 
 .eyebrow {
@@ -137,8 +126,7 @@ $card-padding-mobile: 22px;
   align-items: center;
   gap: 12px;
 
-  strong,
-  span {
+  strong {
     display: block;
   }
 
@@ -148,6 +136,7 @@ $card-padding-mobile: 22px;
   }
 
   div span {
+    display: block;
     margin-top: 3px;
     color: c.$text-on-primary;
     font-size: 12px;
@@ -166,6 +155,8 @@ $card-padding-mobile: 22px;
   background: c.$brand-primary-soft;
   color: c.$text-on-primary;
   font-size: 17px;
+  line-height: 1;
+  text-align: center;
 }
 
 .login-action {
