@@ -26,9 +26,26 @@ export const openApiDocument = {
     schemas: {
       ErrorResponse: {
         type: 'object',
+        required: ['error'],
         properties: {
-          error: { type: 'string' },
-          code: { type: 'string' },
+          error: {
+            type: 'object',
+            required: ['code', 'message'],
+            properties: {
+              code: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      ApiError: {
+        description: 'API error',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ErrorResponse' },
+          },
         },
       },
     },
@@ -65,9 +82,10 @@ export const openApiDocument = {
     '/api/users': {
       get: {
         tags: ['Users'],
-        summary: 'Returns users list or user filtered by google_id query param.',
+        summary: 'Returns paginated user list.',
         responses: {
           200: { description: 'Users payload' },
+          401: { $ref: '#/components/responses/ApiError' },
         },
       },
       post: {
@@ -75,6 +93,28 @@ export const openApiDocument = {
         summary: 'Manual Google user upsert.',
         responses: {
           200: { description: 'User upserted' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/users/{googleId}': {
+      get: {
+        tags: ['Users'],
+        summary: 'Returns one user by Google ID.',
+        parameters: [
+          {
+            name: 'googleId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'User payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
         },
       },
     },

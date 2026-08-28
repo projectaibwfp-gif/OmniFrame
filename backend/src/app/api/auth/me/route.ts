@@ -7,8 +7,6 @@ import { logError } from '@/lib/logger';
 import { getCurrentUserProfile, updateCurrentUserProfile } from '@/lib/profile';
 import { DESCRIPTION_MAX_LENGTH, MIN_USER_AGE_YEARS, PHONE_MIN_DIGITS } from '@/lib/validation';
 
-const PHONE_PATTERN = /^[\d\s+\-()]{9,}$/;
-
 interface UpdateProfilePayload {
   phone?: string | null;
   birthDate?: string | null;
@@ -55,7 +53,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   const birthDate = payload.birthDate || null;
   const description = payload.description?.trim() || null;
 
-  if (phone !== null && !PHONE_PATTERN.test(phone)) {
+  if (phone !== null && phone.replace(/\D/g, '').length < PHONE_MIN_DIGITS) {
     return errorResponse(
       `Phone must be valid format with at least ${PHONE_MIN_DIGITS} digits`,
       400,
@@ -76,8 +74,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     if (date > today) {
       return errorResponse('Birth date cannot be in the future', 400, ErrorCode.VALIDATION_FAILED);
     }
-    const age = today.getFullYear() - date.getFullYear();
-    if (age < MIN_USER_AGE_YEARS) {
+    const latestAllowedBirthDate = new Date(
+      today.getFullYear() - MIN_USER_AGE_YEARS,
+      today.getMonth(),
+      today.getDate(),
+    );
+    if (date > latestAllowedBirthDate) {
       return errorResponse(
         `User must be at least ${MIN_USER_AGE_YEARS} years old`,
         400,

@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
@@ -66,6 +74,7 @@ export class ProfileComponent {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly mainCharacterService = inject(MainCharacterService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected toggleEditMode(): void {
     if (!this.editMode()) {
@@ -98,6 +107,7 @@ export class ProfileComponent {
         birthDate: form.birthDate || null,
         description: form.description || null,
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           this.authService.user.set(mapAuthUser(response.data.user));

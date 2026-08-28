@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
@@ -42,6 +50,7 @@ export class TibiaCharacterComponent {
 
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
   private readonly mainCharacterService = inject(MainCharacterService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected setCharacterName(value: string): void {
     this.characterName.set(value);
@@ -121,7 +130,10 @@ export class TibiaCharacterComponent {
 
     this.tibiaCharacterService
       .getCharacter(name)
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => {
           this.pushRecentCharacterName(name);

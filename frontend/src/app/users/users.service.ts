@@ -16,4 +16,10 @@ export class UsersService {
       .get<UsersResponse>(buildApiUrl('/users'))
       .pipe(map((response) => response.data));
   }
+
+  getUserByGoogleId(googleId: string): Observable<User> {
+    return this.http
+      .get<{ data: User }>(buildApiUrl(`/users/${encodeURIComponent(googleId)}`))
+      .pipe(map((response) => response.data));
+  }
 }

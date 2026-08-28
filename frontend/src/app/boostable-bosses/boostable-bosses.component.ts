@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { BoostableBossesDto, TibiaCreaturesDto } from '@shared/api-contract';
 import { BoostableBossesService } from './boostable-bosses.service';
@@ -22,6 +30,7 @@ export class BoostableBossesComponent {
   protected readonly availableCreatures = computed(() => this.creaturesData()?.creatureList ?? []);
 
   private readonly boostableBossesService = inject(BoostableBossesService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadBoostableBosses();
@@ -33,7 +42,10 @@ export class BoostableBossesComponent {
     this.bossApiError.set(false);
     this.boostableBossesService
       .getBoostableBosses()
-      .pipe(finalize(() => this.isLoadingBosses.set(false)))
+      .pipe(
+        finalize(() => this.isLoadingBosses.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => this.bossesData.set(response),
         error: () => this.bossApiError.set(true),
@@ -45,7 +57,10 @@ export class BoostableBossesComponent {
     this.creatureApiError.set(false);
     this.boostableBossesService
       .getCreatures()
-      .pipe(finalize(() => this.isLoadingCreatures.set(false)))
+      .pipe(
+        finalize(() => this.isLoadingCreatures.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => this.creaturesData.set(response),
         error: () => this.creatureApiError.set(true),

@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../components/pagination/pagination.component';
 import { AppDatePipe, AppDateTimePipe } from '../core/date-time.pipe';
@@ -86,6 +94,7 @@ export class NewsComponent {
 
   private readonly newsService = inject(NewsService);
   private readonly localizationService = inject(LocalizationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadNews();
@@ -94,17 +103,20 @@ export class NewsComponent {
   protected loadNews(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.newsService.getNews().subscribe({
-      next: (response) => {
-        this.newsList.set(response.news);
-        this.cachedAt.set(response.cachedAt);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set(this.labels().error);
-        this.loading.set(false);
-      },
-    });
+    this.newsService
+      .getNews()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.newsList.set(response.news);
+          this.cachedAt.set(response.cachedAt);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set(this.labels().error);
+          this.loading.set(false);
+        },
+      });
   }
 
   protected setSearch(value: string): void {

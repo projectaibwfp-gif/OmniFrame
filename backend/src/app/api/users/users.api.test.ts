@@ -40,38 +40,6 @@ describe('Users API', () => {
     expect(response.status).toBe(401);
   });
 
-  it('returns a single user when google_id filter is provided', async () => {
-    dbMocks.sql.mockResolvedValue([
-      {
-        id: 1,
-        google_id: 'google-1',
-        email: 'anna@example.com',
-        email_verified: true,
-        role: 'user',
-        name: 'Anna',
-        given_name: 'Anna',
-        family_name: 'Nowak',
-        picture: null,
-        locale: 'pl',
-        referralCode: 'abc',
-        referredByCode: null,
-        referredByName: null,
-        registeredAt: '2026-08-17 10:00',
-        lastLoginAt: '2026-08-17 11:00',
-      },
-    ]);
-
-    const response = await GET(createRequest('http://localhost/api/users?google_id=google-1'));
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toMatchObject({
-      data: {
-        googleId: 'google-1',
-        email: 'anna@example.com',
-      },
-    });
-  });
-
   it('validates email in POST /api/users', async () => {
     const response = await POST(
       createJsonRequest('http://localhost/api/users', 'POST', {

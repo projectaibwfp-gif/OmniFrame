@@ -2,6 +2,15 @@ export type ApiResponse<T> = {
   data: T;
 };
 
+export interface ApiErrorDto {
+  code: string;
+  message: string;
+}
+
+export interface ApiErrorResponseDto {
+  error: ApiErrorDto;
+}
+
 export type UserRole = "admin" | "user" | "moderator";
 
 export interface AuthStateDto {

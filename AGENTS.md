@@ -109,6 +109,13 @@ Szczegóły w `README.md` (sekcja „Format czasu w całym systemie").
   frontendem i backendem.
 - DTO trzymamy w **camelCase**. `snake_case` zostaje wyłącznie przy mapowaniu
   wierszy bazy danych i na granicy SQL.
+- Każdy błąd API ma jeden format: `{ "error": { "code": "...", "message": "..." } }`.
+  Błędy twórz wyłącznie przez `errorResponse()`, a schemat utrzymuj zgodny
+  z `backend/src/lib/openapi.ts`.
+- `/api/users` zwraca wyłącznie listę. Pojedynczego użytkownika pobieraj przez
+  `/api/users/:googleId`; nie zmieniaj kształtu odpowiedzi query parametrem.
+- Po zmianie kontraktu aktualizuj `shared/api-contract.ts`, OpenAPI,
+  test kontraktowy oraz dokumentację endpointów.
 - Po dodaniu lub zmianie endpointu zaktualizuj `shared/api-contract.ts`,
   specyfikację OpenAPI (`backend/src/lib/openapi.ts`) oraz listę endpointów
   w `README.md` i `backend/README.md`.

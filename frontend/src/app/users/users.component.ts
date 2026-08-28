@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { AppDateTimePipe } from '../core/date-time.pipe';
 import { UsersService, type User } from './users.service';
@@ -16,6 +17,7 @@ export class UsersComponent {
   protected readonly apiError = signal(false);
 
   private readonly usersService = inject(UsersService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadUsers();
@@ -26,7 +28,10 @@ export class UsersComponent {
     this.apiError.set(false);
     this.usersService
       .getUsers()
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (users) => this.users.set(users),
         error: () => this.apiError.set(true),

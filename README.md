@@ -22,6 +22,26 @@ OmniFrame/
 
 Wspólny kontrakt API używa camelCase w DTO; snake_case zostaje tylko przy mapowaniu do/z bazy danych.
 
+### Kontrakt odpowiedzi API
+
+Każdy błąd HTTP ma stały, maszynowo czytelny kształt:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Request body is invalid"
+  }
+}
+```
+
+`code` służy do obsługi błędu po stronie klienta, `message` jest komunikatem
+dla użytkownika. Backend tworzy błędy przez `errorResponse()`, a schemat jest
+publikowany w `GET /api/openapi`.
+
+`GET /api/users` zwraca listę użytkowników. Pojedynczy rekord pobierany jest
+przez `GET /api/users/:googleId`, bez wariantu `?google_id=...`.
+
 Najważniejsze pliki:
 
 ```text
@@ -132,7 +152,8 @@ Endpointy:
 - `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchamiany co 12 godzin,
 - `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
-- `GET /api/users` - lista użytkowników lub pojedynczy user po `google_id`,
+- `GET /api/users` - lista użytkowników,
+- `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID,
 - `POST /api/users` - ręczny upsert użytkownika Google.
 
 Swagger UI backendu jest dostępne pod `http://localhost:3000/swagger`.

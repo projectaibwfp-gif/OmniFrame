@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { HighscoresSnapshotsService } from './highscores-snapshots.service';
@@ -29,6 +37,7 @@ export class HighscoresSnapshotsComponent {
   protected readonly formatCheckedAt = formatCheckedAt;
 
   private readonly highscoresSnapshotsService = inject(HighscoresSnapshotsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadSnapshots();
@@ -118,7 +127,10 @@ export class HighscoresSnapshotsComponent {
         world: this.selectedWorld(),
         sortDir: this.sortDir(),
       })
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => {
           this.records.set(response.data);

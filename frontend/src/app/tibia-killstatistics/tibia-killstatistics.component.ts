@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { TibiaKillStatisticsEntryDto } from '@shared/api-contract';
 import { TibiaKillStatisticsService } from './tibia-killstatistics.service';
@@ -21,6 +29,7 @@ export class TibiaKillStatisticsComponent {
   protected readonly selectedWorldLabel = computed(() => this.selectedWorld() ?? '');
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.worlds.set(['Antica', 'Secura', 'Dia']);
@@ -44,6 +53,10 @@ export class TibiaKillStatisticsComponent {
     this.loadStatistics(world);
   }
 
+  protected formatTotal(value: number): string {
+    return value.toLocaleString('en-US');
+  }
+
   private setWorld(world: string): void {
     this.selectedWorld.set(world === '' ? null : world);
     this.statistics.set([]);
@@ -62,7 +75,10 @@ export class TibiaKillStatisticsComponent {
 
     this.tibiaKillStatisticsService
       .getKillStatistics(world)
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response) => {
           this.statistics.set(response.entries);
@@ -70,9 +86,5 @@ export class TibiaKillStatisticsComponent {
         },
         error: () => this.apiError.set(true),
       });
-  }
-
-  protected formatTotal(value: number): string {
-    return value.toLocaleString('en-US');
   }
 }

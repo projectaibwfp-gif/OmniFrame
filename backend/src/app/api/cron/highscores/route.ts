@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { errorResponse } from '@/lib/api-response';
 import { ErrorCode } from '@/lib/errors';
 import { logInfo, logError } from '@/lib/logger';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
@@ -67,6 +68,6 @@ export async function POST(_request: NextRequest): Promise<NextResponse> {
     stats.duration = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
     logError('cron.error', ErrorCode.INTERNAL_ERROR, stats, new Error(message));
-    return NextResponse.json({ success: false, error: message, stats }, { status: 500 });
+    return errorResponse(message, 500, ErrorCode.INTERNAL_ERROR);
   }
 }

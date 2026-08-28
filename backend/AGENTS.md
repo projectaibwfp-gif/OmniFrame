@@ -127,6 +127,14 @@ selektują surową kolumnę: `created_at AS "createdAt"`.
     Swagger UI pod `/swagger`. Po zmianie endpointu zaktualizuj
     `src/lib/openapi.ts` oraz listy endpointów w `README.md` i `backend/README.md`.
 
+33. Wszystkie błędy HTTP mają kontrakt `{ "error": { "code": "string", "message": "string" } }`.
+    Używaj `errorResponse()` i aktualizuj schemat `ErrorResponse` w OpenAPI.
+34. `/api/users` obsługuje wyłącznie listę użytkowników. Pojedynczy rekord pobieraj
+    przez `GET /api/users/:googleId`; nie używaj query parametru `google_id` do zmiany
+    kształtu odpowiedzi.
+35. Zmiany kontraktów wymagają aktualizacji `shared/api-contract.ts`, OpenAPI oraz
+    testu w `src/lib/api-contract.test.ts`.
+
 ## Deployment
 
 33. Zmienne środowiskowe ustawiaj w Vercel (`Settings > Environment Variables`):

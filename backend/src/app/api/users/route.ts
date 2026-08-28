@@ -2,14 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type {
   ApiResponse,
   UserRole,
-  UsersListItemDto,
   UsersListResponseDto,
 } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
-import { getUserByGoogleId, listUsers } from '@/lib/users';
+import { listUsers } from '@/lib/users';
 import { DEFAULT_USER_ROLE, USER_ROLES } from '@/lib/validation';
 
 const DEFAULT_USERS_LIMIT = 50;
@@ -33,30 +32,11 @@ type GoogleUserPayload = {
 /**
  * GET /api/users
  * Returns paginated list of all users, ordered by registration date (newest first).
- *
- * GET /api/users?google_id=<id>
- * Returns a single user by Google ID.
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const auth = await requireAuth(request);
   if (isAuthDenied(auth)) {
     return auth.response;
-  }
-
-  const googleId = request.nextUrl.searchParams.get('google_id');
-
-  if (googleId) {
-    try {
-      const user = await getUserByGoogleId(googleId);
-      if (user === null) {
-        return errorResponse('User not found', 404, ErrorCode.NOT_FOUND);
-      }
-
-      return NextResponse.json<ApiResponse<UsersListItemDto>>({ data: user });
-    } catch (error) {
-      logError('users.getOne', ErrorCode.DB_QUERY_FAILED, { googleId }, error);
-      return errorResponse('Could not fetch user', 500, ErrorCode.DB_QUERY_FAILED);
-    }
   }
 
   const limitParam = request.nextUrl.searchParams.get('limit');

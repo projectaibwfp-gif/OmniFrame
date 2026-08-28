@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -127,6 +135,7 @@ export class DashboardComponent {
   });
 
   private readonly dashboardService = inject(DashboardService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadDashboard();
@@ -137,7 +146,10 @@ export class DashboardComponent {
     this.apiError.set(false);
     this.dashboardService
       .getDashboard()
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (dashboard) => this.dashboard.set(dashboard),
         error: () => this.apiError.set(true),
