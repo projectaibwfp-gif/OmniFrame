@@ -23,6 +23,11 @@ Wymagana zmienna:
 
 Opcjonalne zmienne:
 
+- `GOOGLE_CLIENT_ID` - client ID Google OAuth do weryfikacji ID tokena (fallback: `VITE_GOOGLE_CLIENT_ID`, potem stała domyślna w `shared/runtime-config.ts`).
+- `SESSION_JWT_SECRET` - sekret podpisu access-token cookie sesji (`omniframe.session`, TTL 15 min). Bez niego backend używa hardcodowanego sekretu deweloperskiego - **ustaw w produkcji**.
+- `SESSION_REFRESH_SECRET` - sekret podpisu refresh-token cookie (`omniframe.refresh`, TTL 30 dni, sliding). Jak wyżej - **ustaw w produkcji**.
+- `TIBIA_DATA_API_BASE_URL` - bazowy URL zewnętrznego API TibiaData (domyślnie `https://dev.tibiadata.com/v4`).
+- `CRON_WORLDS` - światy skanowane przez `POST /api/cron/highscores`, oddzielone przecinkami (domyślnie `Dia,Amera,Antica`).
 - `CHARACTER_SNAPSHOT_TTL_MINUTES` - TTL cache'u profilu postaci pobieranego z bazy (domyślnie `15`). Jeśli w tabeli `character_lookups` mamy snapshot młodszy niż TTL, endpoint `GET /api/character/:name` zwraca go bez odpytywania TibiaData. Ustaw `0`, aby zawsze pobierać dane na żywo.
 
 ## Uruchomienie lokalne
@@ -41,6 +46,26 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 
 - `GET /api/health` - status API + połączenie z bazą,
 - `GET /api/openapi` - specyfikacja OpenAPI (JSON),
+- `GET /api/dashboard` - metryki dashboardu (konta, logowania, rejestracje, polecenia),
+- `GET /api/auth/state` - tworzy i zapisuje stan logowania Google,
+- `POST /api/auth/google` - loguje przez Google, ustawia cookie sesji i refresh,
+- `GET /api/auth/me` - zwraca aktualną sesję użytkownika,
+- `PUT /api/auth/me/main-character` - łączy postać TibiaData z kontem jako główną,
+- `DELETE /api/auth/me/main-character` - odpina główną postać od konta,
+- `POST /api/auth/refresh` - odnawia sesję z refresh cookie,
+- `POST /api/auth/logout` - czyści cookie sesji,
+- `GET /api/boostable-bosses` - aktualnie boostowany boss + pełna lista bossów,
+- `GET /api/creatures` - aktualnie boostowany potwór + pełna lista creature,
+- `GET /api/character/:name` - dane postaci TibiaData, dokładny EXP z highscores i historia sprawdzeń,
+- `GET /api/killstatistics/:world` - statystyki zabójstw TibiaData dla świata,
+- `GET /api/highscores-snapshots` - snapshoty highscores z paginacją, sortowaniem i filtrem po świecie,
+- `POST /api/cron/highscores` - pobiera i zapisuje highscores wszystkich skonfigurowanych światów i vocation,
+- `GET /api/news` - najnowsze newsy z TibiaData (cache 15 min),
+- `POST /api/referrals/capture` - odkłada pierwszy referral do cookie,
+- `GET /api/users` - lista użytkowników lub jeden po `google_id`,
+- `POST /api/users` - ręczny upsert użytkownika Google.
+
+Pełny opis payloadów i scenariuszy: `GET /api/openapi` (Swagger UI pod `/swagger`).
 
 ## Format czasu
 

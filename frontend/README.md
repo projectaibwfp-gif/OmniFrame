@@ -19,11 +19,13 @@ cp .env.example .env
 Zmienne:
 
 - `VITE_API_BASE_URL` - bazowy adres API używany przez frontend (domyślnie `/api`).
+- `VITE_GOOGLE_CLIENT_ID` - client ID Google OAuth (patrz sekcja „Google OAuth" poniżej).
 
 Przykład (`.env.example`):
 
 ```env
 VITE_API_BASE_URL=/api
+VITE_GOOGLE_CLIENT_ID=...
 ```
 
 ## Uruchomienie lokalne
@@ -82,8 +84,22 @@ kalendarzową i nie przesuwa ich strefą.
 
 ## Routing
 
-- `/` - dashboard,
-- `/about` - informacje o projekcie.
+Wszystkie ścieżki poza `/login` wymagają zalogowania (`authGuard`, przekierowuje
+na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`).
+
+- `/login` - logowanie przez Google Identity Services,
+- `/` - dashboard z metrykami, wykresem i tabelą użytkowników,
+- `/users` - lista użytkowników z oznaczeniem kont z polecenia,
+- `/profile` - dane bieżącego użytkownika i link polecający,
+- `/about` - opis warstw aplikacji,
+- `/news` - aktualności z TibiaData, filtry, sortowanie, stronicowanie,
+- `/boosted` - boostowany boss i potwór (alias `/boostable-bosses`),
+- `/character` - wyszukiwanie postaci, EXP z highscores, historia sprawdzeń,
+- `/hunting-places`, `/hunting-places/:id` - miejsca polowań z filtrami i mapą Tibii,
+- `/charm-places`, `/charm-places/:id` - miejsca na charm'y z filtrami i mapą Tibii,
+- `/quests`, `/quests/:id` - questy z opisem i spoilerem wykonania,
+- `/highscores-snapshots` - snapshoty highscores z paginacją i sortowaniem,
+- `/killstatistics` - statystyki zabójstw TibiaData per świat.
 
 ## Internacjonalizacja (i18n)
 
@@ -156,8 +172,6 @@ npm run test
 npm run preview
 ```
 
-Ostatnia aktualizacja: 2026-08-16 21:38
-
 ## Google OAuth (frontend only)
 
 Aplikacja ma logowanie przez Google bez backendu:
@@ -166,8 +180,9 @@ Aplikacja ma logowanie przez Google bez backendu:
 - po poprawnym logowaniu użytkownik trafia na dashboard,
 - dashboard wyświetla imię i nazwisko z konta Google,
 - przycisk `Logout` wylogowuje i przenosi z powrotem na `/login`,
-- sesja logowania wygasa automatycznie po ~30 minutach nieaktywności
-  (sliding: aktywność przedłuża sesję; brak wywołań API przez 30 min wylogowuje),
+- sesja logowania jest trwała (remember me) - refresh cookie żyje 30 dni i
+  odnawia się przy każdym wywołaniu API (sliding), access cookie żyje 15 minut
+  i odnawia się w tle,
 - backend weryfikuje Google ID token i ustawia własne cookie sesji
   `HttpOnly`/`Secure`,
 - lista użytkowników pokazuje też rolę `admin`, `user` albo `moderator`

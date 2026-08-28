@@ -106,14 +106,11 @@ Backend będzie dostępny pod `http://localhost:3000`. Plik `backend/.env` jest
 ignorowany przez Git i nie należy wpisywać jego zawartości do README, commitów
 ani logów.
 
-Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`):
-
-| Zmienna                   | Znaczenie                                                                                     |
-| ------------------------- | --------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`            | connection string Postgres/Neon (host pooler, `sslmode=require`)                              |
-| `GOOGLE_CLIENT_ID`        | client ID Google używany do weryfikacji ID tokena                                             |
-| `TIBIA_DATA_API_BASE_URL` | bazowy URL zewnętrznego API TibiaData (domyślnie `https://dev.tibiadata.com/v4`)              |
-| `CRON_WORLDS`             | lista światów do skanowania przez cron, oddzielone przecinkami (domyślnie `Dia,Amera,Antica`) |
+Konfiguracja (`backend/.env`, na podstawie `backend/.env.example`): jedyna
+wymagana zmienna to `DATABASE_URL` (connection string Postgres/Neon, host
+pooler, `sslmode=require`). Pełna lista opcjonalnych zmiennych (Google OAuth,
+sekrety sesji, TibiaData, cron) jest w `backend/README.md` (sekcja
+„Konfiguracja").
 
 Endpointy:
 
@@ -130,6 +127,7 @@ Endpointy:
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
+- `GET /api/killstatistics/:world` - zwraca statystyki zabójstw TibiaData (`/v4/killstatistics/{world}`) dla podanego świata,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca wszystkie rekordy snapshots highscores z paginacją, sortowaniem po `level` i filtrem po świecie,
 - `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchamiany co 12 godzin,
 - `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
@@ -181,20 +179,11 @@ Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
 
 ## Routing frontendu
 
-- `/` - dashboard z metrykami, wykresem, akcjami oraz tabelą użytkowników,
-- `/boosted` - podstrona z aktualnie boostowanym bossem i potworem, plus dwie domyślnie zwinięte listy (bossów i creature),
-- `/character` - podstrona do wyszukiwania postaci po nazwie, z blokiem EXP z highscores i tabelą historii sprawdzeń,
-- `/hunting-places` - przeglądarka miejsc polowań z filtrami (miasto, profesja, poziom, dostęp), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Wyszukaj postać"; kafelek przenosi do `/hunting-places/:id` ze szczegółami i mapą Tibii,
-- `/charm-places` - przeglądarka miejsc na charm'y z filtrami (miasto, profesja), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Miejsca polowań"; kafelek przenosi do `/charm-places/:id` ze szczegółami i mapą Tibii,
-- `/quests` - przeglądarka questów z filtrami (miasto, kategoria), sortowaniem, kafelkami i stronicowaniem; dostępna z bocznej nawigacji pod "Charm places"; kafelek przenosi do `/quests/:id` z opisem i ukrytym spoilerem wykonania,
-- `/news` - aktualności z oficjalnej strony Tibia pobierane przez `GET /api/news` z cache 15 minut; filtry (kategoria, typ), sortowanie (data, tytuł, kategoria) i stronicowanie; dostępna jako pierwszy przycisk w bocznej nawigacji,
-- `/users` - lista użytkowników z oznaczeniem kont z polecenia,
-- `/profile` - dane bieżącego użytkownika i link polecający z kopiowaniem,
-- `/about` - opis warstw aplikacji.
-
-Routing używa lazy-loaded standalone components. Dashboard pobiera dane z
-`GET /api/dashboard`, lista użytkowników z `GET /api/users`, a komponent profilu
-pracuje na danych sesji zwracanych przez `GET /api/auth/me`.
+Routing używa lazy-loaded standalone components, chronionych `authGuard`
+(wymaga sesji, poza `/login`). Pełna lista ścieżek jest w `frontend/README.md`
+(sekcja „Routing"). Dashboard pobiera dane z `GET /api/dashboard`, lista
+użytkowników z `GET /api/users`, a komponent profilu pracuje na danych sesji
+zwracanych przez `GET /api/auth/me`.
 
 ## Responsiveness i Layout
 
@@ -470,11 +459,11 @@ npm run db:migrate                # migracje bazy (migration/*.sql)
 
 Jeden format zapisu i jeden format wyświetlania - bez wyjątków:
 
-| Warstwa            | Format                                     | Gdzie trzymamy regułę                                        |
-| ------------------ | ------------------------------------------ | ------------------------------------------------------------ |
-| baza               | `TIMESTAMPTZ` (`DEFAULT now()`)            | migracje w `backend/migration/`                              |
-| API (JSON)         | ISO 8601 UTC, np. `2026-08-26T13:36:00.000Z` | `toIsoUtc()` w `backend/src/lib/date-time.ts`               |
-| frontend (widok)   | `dd.MM.yyyy HH:mm` / `dd.MM.yyyy`          | `DATE_TIME_FORMAT` / `DATE_FORMAT` w `frontend/src/app/core/date-time.ts` |
+| Warstwa          | Format                                       | Gdzie trzymamy regułę                                                     |
+| ---------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| baza             | `TIMESTAMPTZ` (`DEFAULT now()`)              | migracje w `backend/migration/`                                           |
+| API (JSON)       | ISO 8601 UTC, np. `2026-08-26T13:36:00.000Z` | `toIsoUtc()` w `backend/src/lib/date-time.ts`                             |
+| frontend (widok) | `dd.MM.yyyy HH:mm` / `dd.MM.yyyy`            | `DATE_TIME_FORMAT` / `DATE_FORMAT` w `frontend/src/app/core/date-time.ts` |
 
 - Backend **nie** formatuje czasu w SQL-u (`to_char`) - zapytania zwracają surową
   kolumnę, a mapper wiersza na DTO przepuszcza ją przez `toIsoUtc()`.

@@ -37,7 +37,8 @@ const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
 const SESSION_ISSUER = 'omniframe';
 const SESSION_AUDIENCE = 'omniframe-web';
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
-const REFRESH_TOKEN_TTL_SECONDS = 30 * 60;
+// 30 dni - sesja przetrwa restart przeglądarki (sliding: każde /auth/refresh odnawia oba tokeny).
+const REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 const OAUTH_STATE_TTL_SECONDS = 10 * 60;
 const DEFAULT_SESSION_SECRET = 'omniframe-dev-session-secret-change-me';
 const DEFAULT_REFRESH_SECRET = 'omniframe-dev-refresh-secret-change-me';
