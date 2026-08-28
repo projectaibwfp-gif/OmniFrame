@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-08-28T10:01:55.639Z"
+    commit: "db0b4eda23210f5dba0bb82960481369aa869733"
+    frontend:
+      version: "0.21.0"
+      tag: "frontend-v0.21.0"
+      changed: true
+      commits:
+      - hash: "db0b4eda"
+        author: "Bartłomiej Wolski"
+        date: "2026-08-28T12:00:03+02:00"
+        message: "feat: refine login component styling with improved layout and text alignment"
+    backend:
+      version: "0.12.0"
+      tag: "backend-v0.12.0"
+      changed: false
+      commits: []
   - date: "2026-08-28T09:30:01.172Z"
     commit: "1a2176acd5ebcf86d05aa5649c3a95078e90f6aa"
     frontend:
