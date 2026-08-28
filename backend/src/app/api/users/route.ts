@@ -1,9 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type {
-  ApiResponse,
-  UserRole,
-  UsersListResponseDto,
-} from '@shared/api-contract';
+import type { ApiResponse, UserRole, UsersListResponseDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
