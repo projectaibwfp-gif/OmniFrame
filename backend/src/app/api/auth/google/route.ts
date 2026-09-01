@@ -1,11 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type {
-  ApiResponse,
-  AuthGoogleRequestDto,
-  AuthGoogleResponseDto,
-  AuthGoogleUserDto,
-} from '@shared/api-contract';
+import type { ApiResponse, AuthGoogleResponseDto, AuthGoogleUserDto } from '@shared/api-contract';
+import { AuthGoogleRequestSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
+import { parseJsonBody } from '@/lib/request-validation';
 import { clearPendingReferral, getPendingReferral } from '@/lib/referral';
 import {
   clearLoginState,
@@ -21,25 +18,18 @@ import { logError } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  let payload: Partial<AuthGoogleRequestDto>;
-
-  try {
-    payload = (await request.json()) as Partial<AuthGoogleRequestDto>;
-  } catch (error) {
-    logError('auth.google', ErrorCode.REQUEST_INVALID_JSON, {}, error);
-    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
+  const validation = await parseJsonBody(request, AuthGoogleRequestSchema, {
+    scope: 'auth.google.login',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
 
-  const credential = payload.credential?.trim();
-  if (!credential) {
-    logError('auth.google', ErrorCode.VALIDATION_FAILED, { reason: 'missing credential' });
-    return errorResponse('credential is required', 400, ErrorCode.VALIDATION_FAILED);
-  }
+  const { credential, state } = validation.data;
 
-  const state = payload.state?.trim();
-  if (!state || !isLoginStateValid(request, state)) {
+  if (!isLoginStateValid(request, state)) {
     logError('auth.google', ErrorCode.AUTH_INVALID_LOGIN_STATE, {
-      hasState: Boolean(state),
+      hasState: true,
     });
     const denied = errorResponse('Invalid login state', 403, ErrorCode.AUTH_INVALID_LOGIN_STATE);
     clearLoginState(denied);

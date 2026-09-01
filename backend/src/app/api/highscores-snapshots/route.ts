@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import type { HighscoresSnapshotsListDto } from '@shared/api-contract';
+import { HighscoresSnapshotsQuerySchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
+import { parseSearchParams } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { listHighscoresSnapshots } from '@/lib/highscores-snapshots';
@@ -8,38 +10,22 @@ import { logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 50;
-const MAX_PAGE_SIZE = 200;
-
-function toPositiveInteger(value: string | null, fallback: number): number {
-  if (!value) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return fallback;
-  }
-
-  return parsed;
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const auth = await requireAuth(request);
   if (isAuthDenied(auth)) {
     return auth.response;
   }
 
-  const page = toPositiveInteger(request.nextUrl.searchParams.get('page'), DEFAULT_PAGE);
-  const pageSize = Math.min(
-    toPositiveInteger(request.nextUrl.searchParams.get('pageSize'), DEFAULT_PAGE_SIZE),
-    MAX_PAGE_SIZE,
-  );
-  const worldParam = request.nextUrl.searchParams.get('world');
-  const world = worldParam?.trim() ? worldParam.trim() : null;
-  const sortDirRaw = request.nextUrl.searchParams.get('sortDir');
-  const sortDir: 'asc' | 'desc' = sortDirRaw === 'asc' ? 'asc' : 'desc';
+  const validation = parseSearchParams(request, HighscoresSnapshotsQuerySchema, {
+    scope: 'highscores-snapshots.list',
+  });
+  if (!validation.ok) {
+    return validation.response;
+  }
+
+  const { page, pageSize: rawPageSize, world: rawWorld, sortDir } = validation.data;
+  const pageSize = Math.min(rawPageSize, 200);
+  const world = rawWorld && rawWorld.trim() ? rawWorld.trim() : null;
 
   try {
     const result = await listHighscoresSnapshots(page, pageSize, world, sortDir);

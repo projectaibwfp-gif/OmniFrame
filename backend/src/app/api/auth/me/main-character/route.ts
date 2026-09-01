@@ -2,10 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type {
   ApiResponse,
   AuthCurrentUserResponseDto,
-  LinkMainCharacterRequestDto,
   TibiaCharacterDto,
 } from '@shared/api-contract';
+import { LinkMainCharacterRequestSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
+import { parseJsonBody } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
@@ -24,18 +25,14 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     return auth.response;
   }
 
-  let payload: LinkMainCharacterRequestDto;
-  try {
-    payload = (await request.json()) as LinkMainCharacterRequestDto;
-  } catch (error) {
-    logError('auth.mainCharacter.link', ErrorCode.REQUEST_INVALID_JSON, {}, error);
-    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
+  const validation = await parseJsonBody(request, LinkMainCharacterRequestSchema, {
+    scope: 'auth.mainCharacter.link',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
 
-  const characterName = payload?.name?.trim();
-  if (!characterName) {
-    return errorResponse('Character name is required', 400, ErrorCode.VALIDATION_FAILED);
-  }
+  const { name: characterName } = validation.data;
 
   let character: TibiaCharacterDto;
   try {

@@ -8,7 +8,7 @@
       <button class="btn btn-primary btn-sm" type="button" (click)="loadUsers()">Odśwież</button>
     </div>
 
-    @if (isLoading()) {
+    @if (state.isLoading()) {
       <div class="users-loader" aria-busy="true" aria-live="polite">
         @for (item of [1, 2, 3, 4]; track item) {
           <article class="user-card loader-card">
@@ -34,8 +34,10 @@
           </article>
         }
       </div>
-    } @else if (apiError()) {
-      <div class="table-message error">Nie udało się pobrać danych z API.</div>
+    } @else if (state.isError()) {
+      <div class="table-message error" role="alert">{{ state.errorMessage() }}</div>
+    } @else if (state.isEmpty()) {
+      <div class="table-message">{{ emptyMessage }}</div>
     } @else {
       <div class="user-cards">
         @for (user of users(); track user.id) {

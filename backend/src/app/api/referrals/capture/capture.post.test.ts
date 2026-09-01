@@ -34,7 +34,7 @@ describe('POST /api/referrals/capture', () => {
     await expect(response.json()).resolves.toEqual({
       error: {
         code: 'VALIDATION_FAILED',
-        message: 'referralCode must contain only letters, numbers, dots, underscores, or dashes',
+        message: 'Request body is invalid: referralCode: has invalid format',
       },
     });
   });

@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import type { ApiResponse, TibiaKillStatisticsWorldDto } from '@shared/api-contract';
+import { WorldParamSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
+import { parseRouteParams } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { logError } from '@/lib/logger';
@@ -8,7 +10,7 @@ import { fetchKillStatistics, TibiaDataNotFoundError } from '@/lib/tibiadata';
 
 export const dynamic = 'force-dynamic';
 
-interface RouteParams {
+interface RouteParams extends Record<string, string | undefined> {
   world: string;
 }
 
@@ -22,11 +24,14 @@ export async function GET(
   }
 
   const params = await props.params;
-  const world = decodeURIComponent(params.world ?? '').trim();
-
-  if (!world) {
-    return errorResponse('World is required', 400, ErrorCode.VALIDATION_FAILED);
+  const validation = parseRouteParams(params, WorldParamSchema, {
+    scope: 'killstatistics.get',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
+
+  const world = validation.data.world;
 
   try {
     const data = await fetchKillStatistics(world);

@@ -10,7 +10,7 @@
 
 ## P1 — stabilność danych i API
 
-- [ ] Dodać walidację requestów przez wspólny schemat runtime.
+- [x] Dodać walidację requestów przez wspólny schemat runtime.
 - [ ] Dodać constraint unikalności snapshotów per postać/świat/bucket.
 - [ ] Zmienić `TIMESTAMP` na `TIMESTAMPTZ` w snapshotach.
 - [ ] Zastąpić N+1 w snapshotach operacjami batch.
@@ -38,7 +38,7 @@
 - [ ] Dodać centralny `ApiClient` i wspólną obsługę `ApiErrorResponseDto`.
 - [x] Ograniczyć `subscribe()` w komponentach na rzecz `toSignal()`/
       `takeUntilDestroyed()`.
-- [ ] Dodać globalny handler błędów HTTP oraz spójne stany loading/error/empty.
+- [x] Dodać globalny handler błędów HTTP oraz spójne stany loading/error/empty.
 - [ ] Dodać testy komponentów i serwisów dla krytycznych ścieżek.
 
 ## P2 — utrzymanie

@@ -4,7 +4,9 @@ import type {
   TibiaCharacterHistoryEntryDto,
   TibiaCharacterLookupDto,
 } from '@shared/api-contract';
+import { CharacterNameParamSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
+import { parseRouteParams } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import {
   getFreshCharacterSnapshot,
@@ -33,7 +35,7 @@ function getSnapshotTtlSeconds(): number {
   return Math.floor(parsed * SECONDS_PER_MINUTE);
 }
 
-interface RouteParams {
+interface RouteParams extends Record<string, string | undefined> {
   name: string;
 }
 
@@ -47,11 +49,14 @@ export async function GET(
   }
 
   const params = await props.params;
-  const characterName = decodeURIComponent(params.name ?? '').trim();
-
-  if (!characterName) {
-    return errorResponse('Character name is required', 400, ErrorCode.VALIDATION_FAILED);
+  const validation = parseRouteParams(params, CharacterNameParamSchema, {
+    scope: 'character.get',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
+
+  const characterName = validation.data.name;
 
   try {
     const snapshotTtlSeconds = getSnapshotTtlSeconds();

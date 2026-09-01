@@ -1,16 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AppDateTimePipe } from '../core/date-time.pipe';
+import { createRequestState } from '../core/request-state';
 import {
   DashboardService,
   type DashboardActivityPoint,
@@ -36,9 +29,8 @@ interface DashboardStatCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  protected readonly dashboard = signal<DashboardData | null>(null);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly state = createRequestState<DashboardData>();
+  protected readonly dashboard = this.state.data;
   protected readonly currentUser = inject(AuthService).user;
   protected readonly todayLabel = this.formatTodayLabel();
   protected readonly activity = computed(() => this.dashboard()?.activity ?? []);
@@ -142,18 +134,7 @@ export class DashboardComponent {
   }
 
   protected loadDashboard(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-    this.dashboardService
-      .getDashboard()
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (dashboard) => this.dashboard.set(dashboard),
-        error: () => this.apiError.set(true),
-      });
+    this.state.run(this.dashboardService.getDashboard().pipe(takeUntilDestroyed(this.destroyRef)));
   }
 
   protected activitySummary(point: DashboardActivityPoint): string {

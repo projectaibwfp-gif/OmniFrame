@@ -10,6 +10,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { authInterceptor } from './app/auth/auth.interceptor';
 import { credentialsInterceptor } from './app/auth/credentials.interceptor';
+import { httpErrorInterceptor } from './app/core/http-error.interceptor';
 import { AuthService } from './app/auth/auth.service';
 import { ThemeService } from './app/services/theme.service';
 import { routes } from './app/app.routes';
@@ -18,7 +19,9 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
     provideAnimations(),
-    provideHttpClient(withInterceptors([credentialsInterceptor, authInterceptor])),
+    provideHttpClient(
+      withInterceptors([credentialsInterceptor, authInterceptor, httpErrorInterceptor]),
+    ),
     {
       provide: APP_INITIALIZER,
       multi: true,

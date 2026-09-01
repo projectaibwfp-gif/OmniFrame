@@ -11,7 +11,7 @@
   >
 </div>
 
-@if (isLoading()) {
+@if (state.isLoading()) {
   <div class="dashboard-loader" aria-busy="true" aria-live="polite">
     <div class="loader-grid">
       @for (item of [1, 2, 3, 4]; track item) {
@@ -49,8 +49,8 @@
       </section>
     </div>
   </div>
-} @else if (apiError()) {
-  <div class="table-message error">Nie udało się pobrać statystyk dashboardu.</div>
+} @else if (state.isError()) {
+  <div class="table-message error" role="alert">{{ state.errorMessage() }}</div>
 } @else if (dashboard(); as data) {
   <div class="stats-grid">
     @for (card of statCards(); track card.label) {

@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
 import { AppDateTimePipe } from '../core/date-time.pipe';
+import { createRequestState } from '../core/request-state';
 import { UsersService, type User } from './users.service';
+
+const EMPTY_USERS_MESSAGE = 'Brak użytkowników do wyświetlenia.';
+const NAME_FALLBACK = '—';
 
 @Component({
   selector: 'app-users',
@@ -12,9 +15,11 @@ import { UsersService, type User } from './users.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent {
-  protected readonly users = signal<User[]>([]);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly state = createRequestState<User[]>({
+    isEmpty: (users) => users.length === 0,
+  });
+  protected readonly users = computed<User[]>(() => this.state.data() ?? []);
+  protected readonly emptyMessage = EMPTY_USERS_MESSAGE;
 
   private readonly usersService = inject(UsersService);
   private readonly destroyRef = inject(DestroyRef);
@@ -24,28 +29,17 @@ export class UsersComponent {
   }
 
   protected loadUsers(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-    this.usersService
-      .getUsers()
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (users) => this.users.set(users),
-        error: () => this.apiError.set(true),
-      });
+    this.state.run(this.usersService.getUsers().pipe(takeUntilDestroyed(this.destroyRef)));
   }
 
   protected fullName(user: User): string {
     const parts = [user.givenName, user.familyName].filter(Boolean);
-    return parts.length ? parts.join(' ') : (user.name ?? '—');
+    return parts.length ? parts.join(' ') : (user.name ?? NAME_FALLBACK);
   }
 
   protected referralLabel(user: User): string {
     if (!user.referredByCode) {
-      return '—';
+      return NAME_FALLBACK;
     }
 
     return user.referredByName
