@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-09-01T06:10:36.812Z"
+    commit: "58406c622a40dc2e2f5e241c838686ab0cef7586"
+    frontend:
+      version: "0.22.0"
+      tag: "frontend-v0.22.0"
+      changed: true
+      commits:
+      - hash: "58406c62"
+        author: "Bartek"
+        date: "2026-09-01T08:08:15+02:00"
+        message: "feat: add runtime request validation schema"
+    backend:
+      version: "0.13.0"
+      tag: "backend-v0.13.0"
+      changed: true
+      commits:
+      - hash: "58406c62"
+        author: "Bartek"
+        date: "2026-09-01T08:08:15+02:00"
+        message: "feat: add runtime request validation schema"
   - date: "2026-08-28T10:01:55.639Z"
     commit: "db0b4eda23210f5dba0bb82960481369aa869733"
     frontend:
