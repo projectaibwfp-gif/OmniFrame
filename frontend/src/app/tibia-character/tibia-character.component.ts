@@ -4,10 +4,12 @@ import {
   DestroyRef,
   computed,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
@@ -35,6 +37,7 @@ export class TibiaCharacterComponent {
   protected readonly linkMainCharacterError = signal<string | null>(null);
   protected readonly linkMainCharacterSuccess = signal(false);
   protected readonly isHistoryExpanded = signal(false);
+  protected readonly isRefreshingMainCharacter = signal(false);
 
   protected readonly character = computed(() => this.lookup()?.character ?? null);
   protected readonly history = computed(() => this.lookup()?.history ?? []);
@@ -51,9 +54,36 @@ export class TibiaCharacterComponent {
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
   private readonly mainCharacterService = inject(MainCharacterService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  constructor() {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const nameFromUrl = params.get('name')?.trim() ?? '';
+      if (!nameFromUrl) {
+        return;
+      }
+
+      this.characterName.set(nameFromUrl);
+      this.loadCharacterByName(nameFromUrl, false);
+    });
+  }
 
   protected setCharacterName(value: string): void {
     this.characterName.set(value);
+  }
+
+  protected refreshMainCharacter(): void {
+    const mainCharacterName = this.mainCharacter()?.name?.trim();
+    if (!mainCharacterName || this.isLoading() || this.isRefreshingMainCharacter()) {
+      return;
+    }
+
+    this.isRefreshingMainCharacter.set(true);
+    this.characterName.set(mainCharacterName);
+    this.loadCharacterByName(mainCharacterName, true, () => {
+      this.isRefreshingMainCharacter.set(false);
+    });
   }
 
   protected toggleHistory(): void {
@@ -80,7 +110,7 @@ export class TibiaCharacterComponent {
       return;
     }
 
-    this.loadCharacterByName(name);
+    this.loadCharacterByName(name, true);
   }
 
   protected repeatLookup(name: string): void {
@@ -90,7 +120,7 @@ export class TibiaCharacterComponent {
     }
 
     this.characterName.set(normalizedName);
-    this.loadCharacterByName(normalizedName);
+    this.loadCharacterByName(normalizedName, true);
   }
 
   protected setAsMainCharacter(): void {
@@ -121,7 +151,19 @@ export class TibiaCharacterComponent {
       });
   }
 
-  private loadCharacterByName(name: string): void {
+  private loadCharacterByName(
+    name: string,
+    syncUrl: boolean,
+    onFinalize?: () => void,
+  ): void {
+    if (syncUrl) {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { name },
+        queryParamsHandling: 'merge',
+      });
+    }
+
     this.isLoading.set(true);
     this.lookup.set(null);
     this.apiError.set(null);
@@ -131,13 +173,19 @@ export class TibiaCharacterComponent {
     this.tibiaCharacterService
       .getCharacter(name)
       .pipe(
-        finalize(() => this.isLoading.set(false)),
+        finalize(() => {
+          this.isLoading.set(false);
+          onFinalize?.();
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: (response) => {
           this.pushRecentCharacterName(name);
           this.lookup.set(response);
+          if (this.mainCharacterService.isCurrentMain(response.character.name)) {
+            this.mainCharacterService.refreshCurrentUserMainCharacter(response.character);
+          }
         },
         error: (error) => {
           if (error?.status === 404) {

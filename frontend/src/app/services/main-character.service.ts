@@ -5,6 +5,7 @@ import type {
   ApiResponse,
   AuthCurrentUserResponseDto,
   LinkMainCharacterRequestDto,
+  TibiaCharacterDto,
   UserMainCharacterDto,
 } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
@@ -74,5 +75,22 @@ export class MainCharacterService {
       this.http.delete<LinkResponse>(buildApiUrl('/auth/me/main-character')),
     );
     this.authService.user.set(mapAuthUser(response.data.user));
+  }
+
+  refreshCurrentUserMainCharacter(character: TibiaCharacterDto): void {
+    const currentUser = this.authService.user();
+    if (!currentUser?.mainCharacter) {
+      return;
+    }
+
+    this.authService.user.set({
+      ...currentUser,
+      mainCharacter: {
+        ...currentUser.mainCharacter,
+        level: character.level,
+        vocation: character.vocation,
+        world: character.world,
+      },
+    });
   }
 }

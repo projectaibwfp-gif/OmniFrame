@@ -137,6 +137,29 @@ $stat-gap: 12px;
     letter-spacing: 0.02em;
   }
 
+  .main-character-header-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .main-character-refresh {
+    padding: 6px 10px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 999px;
+    background: c.$surface-card;
+    color: c.$text-700;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   .main-character-controls {
     display: flex;
     align-items: center;
