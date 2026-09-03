@@ -5,7 +5,7 @@ import { logInfo, logError } from '@/lib/logger';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
 
 const DEFAULT_CRON_WORLDS = 'Dia,Amera,Antica';
-const CRON_VOCATIONS = ['knights', 'paladins', 'druids', 'sorcerers'] as const;
+const CRON_VOCATIONS = ['knights', 'paladins', 'druids', 'sorcerers', 'monks'] as const;
 
 export const dynamic = 'force-dynamic';
 // Next.js only accepts statically analysable literals for segment config exports,

@@ -156,7 +156,13 @@ const HTTP_BAD_REQUEST = 400;
 const HTTP_NOT_FOUND = 404;
 const HTTP_OK = 200;
 
-export type TibiaHighscoresVocation = 'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers';
+export type TibiaHighscoresVocation =
+  | 'all'
+  | 'knights'
+  | 'paladins'
+  | 'druids'
+  | 'sorcerers'
+  | 'monks';
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {
@@ -364,6 +370,9 @@ function mapCharacterVocationToHighscoresVocation(
   }
   if (normalizedVocation.includes('sorcerer')) {
     return 'sorcerers';
+  }
+  if (normalizedVocation.includes('monk')) {
+    return 'monks';
   }
 
   return null;

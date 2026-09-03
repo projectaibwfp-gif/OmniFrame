@@ -25,11 +25,11 @@ describe('POST /api/cron/highscores', () => {
       success: true,
       stats: {
         worldsProcessed: 1,
-        vocationsProcessed: 4,
-        charactersCollected: 40,
+        vocationsProcessed: 5,
+        charactersCollected: 50,
       },
     });
-    expect(tibiadataMocks.fetchHighscoresForWorldAndVocation).toHaveBeenCalledTimes(4);
+    expect(tibiadataMocks.fetchHighscoresForWorldAndVocation).toHaveBeenCalledTimes(5);
   });
 
   it('continues processing after one vocation fails', async () => {
@@ -44,8 +44,8 @@ describe('POST /api/cron/highscores', () => {
       success: true,
       stats: {
         worldsProcessed: 1,
-        vocationsProcessed: 3,
-        charactersCollected: 30,
+        vocationsProcessed: 4,
+        charactersCollected: 40,
       },
     });
   });

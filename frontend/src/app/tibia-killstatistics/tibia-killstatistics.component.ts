@@ -11,6 +11,10 @@ import { finalize } from 'rxjs';
 import type { TibiaKillStatisticsEntryDto } from '@shared/api-contract';
 import { TibiaKillStatisticsService } from './tibia-killstatistics.service';
 
+type BossFilter = 'all' | 'today' | 'week' | 'old';
+
+const BOSS_MAX_WEEKLY_KILLS = 100;
+
 @Component({
   selector: 'app-tibia-killstatistics',
   templateUrl: './tibia-killstatistics.component.html',
@@ -24,9 +28,41 @@ export class TibiaKillStatisticsComponent {
   protected readonly updatedAt = signal<string | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly apiError = signal(false);
+  protected readonly bossFilter = signal<BossFilter>('all');
 
   protected readonly hasStatistics = computed(() => this.statistics().length > 0);
   protected readonly selectedWorldLabel = computed(() => this.selectedWorld() ?? '');
+
+  protected readonly bossCandidates = computed(() =>
+    this.statistics().filter(
+      (entry) => entry.lastWeekKilled > 0 && entry.lastWeekKilled <= BOSS_MAX_WEEKLY_KILLS,
+    ),
+  );
+
+  protected readonly bossesKilledToday = computed(() =>
+    this.bossCandidates()
+      .filter((entry) => entry.lastDayKilled > 0)
+      .sort((a, b) => b.lastDayKilled - a.lastDayKilled),
+  );
+
+  protected readonly filteredStatistics = computed(() => {
+    const filter = this.bossFilter();
+    const all = this.statistics();
+    if (filter === 'all') {
+      return all;
+    }
+
+    const bosses = this.bossCandidates();
+    if (filter === 'today') {
+      return bosses.filter((entry) => entry.lastDayKilled > 0);
+    }
+    if (filter === 'week') {
+      return bosses.filter((entry) => entry.lastDayKilled === 0 && entry.lastWeekKilled > 0);
+    }
+    return this.statistics().filter(
+      (entry) => entry.lastWeekKilled === 0 && entry.lastDayKilled === 0,
+    );
+  });
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,6 +91,10 @@ export class TibiaKillStatisticsComponent {
 
   protected formatTotal(value: number): string {
     return value.toLocaleString('en-US');
+  }
+
+  protected setBossFilter(filter: BossFilter): void {
+    this.bossFilter.set(filter);
   }
 
   private setWorld(world: string): void {

@@ -45,31 +45,92 @@
       }
     </div>
 
-    <div class="killstatistics-grid">
-      @for (entry of statistics(); track entry.race) {
-        <article class="killstatistics-card">
-          <span class="killstatistics-card__label">{{ entry.race }}</span>
-          <div class="killstatistics-card__metrics">
-            <div>
-              <span class="killstatistics-card__metric-label">Players / day</span>
-              <strong>{{ formatTotal(entry.lastDayPlayersKilled) }}</strong>
-            </div>
-            <div>
-              <span class="killstatistics-card__metric-label">Killed / day</span>
-              <strong>{{ formatTotal(entry.lastDayKilled) }}</strong>
-            </div>
-            <div>
-              <span class="killstatistics-card__metric-label">Players / week</span>
-              <strong>{{ formatTotal(entry.lastWeekPlayersKilled) }}</strong>
-            </div>
-            <div>
-              <span class="killstatistics-card__metric-label">Killed / week</span>
-              <strong>{{ formatTotal(entry.lastWeekKilled) }}</strong>
-            </div>
-          </div>
-        </article>
-      }
+    @if (bossesKilledToday().length > 0) {
+      <section class="boss-today-card">
+        <header class="boss-today-card__header">
+          <span class="boss-today-card__badge">Padło dziś</span>
+          <h2>Bossowie ubici dziś ({{ bossesKilledToday().length }})</h2>
+        </header>
+        <div class="boss-today-card__list">
+          @for (boss of bossesKilledToday(); track boss.race) {
+            <article class="boss-today-item">
+              <strong class="boss-today-item__name">{{ boss.race }}</strong>
+              <span class="boss-today-item__count"
+                >{{ formatTotal(boss.lastDayKilled) }} ubić dziś</span
+              >
+              <span class="boss-today-item__meta"
+                >{{ formatTotal(boss.lastWeekKilled) }} w tygodniu</span
+              >
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    <div class="boss-filter" role="tablist" aria-label="Filtr bossów">
+      <button
+        type="button"
+        class="boss-filter__chip"
+        [class.is-active]="bossFilter() === 'all'"
+        (click)="setBossFilter('all')"
+      >
+        Wszystko
+      </button>
+      <button
+        type="button"
+        class="boss-filter__chip"
+        [class.is-active]="bossFilter() === 'today'"
+        (click)="setBossFilter('today')"
+      >
+        Bossowie · dziś
+      </button>
+      <button
+        type="button"
+        class="boss-filter__chip"
+        [class.is-active]="bossFilter() === 'week'"
+        (click)="setBossFilter('week')"
+      >
+        Bossowie · ten tydzień
+      </button>
+      <button
+        type="button"
+        class="boss-filter__chip"
+        [class.is-active]="bossFilter() === 'old'"
+        (click)="setBossFilter('old')"
+      >
+        Dawno
+      </button>
     </div>
+
+    @if (filteredStatistics().length === 0) {
+      <div class="killstatistics-page__message">Brak wpisów pasujących do wybranego filtra.</div>
+    } @else {
+      <div class="killstatistics-grid">
+        @for (entry of filteredStatistics(); track entry.race) {
+          <article class="killstatistics-card">
+            <span class="killstatistics-card__label">{{ entry.race }}</span>
+            <div class="killstatistics-card__metrics">
+              <div>
+                <span class="killstatistics-card__metric-label">Players / day</span>
+                <strong>{{ formatTotal(entry.lastDayPlayersKilled) }}</strong>
+              </div>
+              <div>
+                <span class="killstatistics-card__metric-label">Killed / day</span>
+                <strong>{{ formatTotal(entry.lastDayKilled) }}</strong>
+              </div>
+              <div>
+                <span class="killstatistics-card__metric-label">Players / week</span>
+                <strong>{{ formatTotal(entry.lastWeekPlayersKilled) }}</strong>
+              </div>
+              <div>
+                <span class="killstatistics-card__metric-label">Killed / week</span>
+                <strong>{{ formatTotal(entry.lastWeekKilled) }}</strong>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
   } @else {
     <div class="killstatistics-page__message">Brak danych dla wybranego świata.</div>
   }
