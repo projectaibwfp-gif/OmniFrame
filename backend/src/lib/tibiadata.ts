@@ -157,12 +157,7 @@ const HTTP_NOT_FOUND = 404;
 const HTTP_OK = 200;
 
 export type TibiaHighscoresVocation =
-  | 'all'
-  | 'knights'
-  | 'paladins'
-  | 'druids'
-  | 'sorcerers'
-  | 'monks';
+  'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers' | 'monks';
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {

@@ -1,4 +1,32 @@
 releases:
+  - date: "2026-09-03T09:59:38.718Z"
+    commit: "c2f2674c68c0f0244b5dd29d409deae837b38533"
+    frontend:
+      version: "0.23.0"
+      tag: "frontend-v0.23.0"
+      changed: true
+      commits:
+      - hash: "c2f2674c"
+        author: "Bartek"
+        date: "2026-09-03T11:57:55+02:00"
+        message: "feat: update cron schedule and enhance highscores processing with new vocation and statistics filters"
+      - hash: "bb5149fe"
+        author: "Bartek"
+        date: "2026-09-03T11:53:06+02:00"
+        message: "feat: update cron schedule and enhance highscores processing with new vocation and statistics filters"
+      - hash: "68c37257"
+        author: "Bartek"
+        date: "2026-09-03T11:36:23+02:00"
+        message: "feat: add refresh functionality for main character with UI updates"
+    backend:
+      version: "0.14.0"
+      tag: "backend-v0.14.0"
+      changed: true
+      commits:
+      - hash: "bb5149fe"
+        author: "Bartek"
+        date: "2026-09-03T11:53:06+02:00"
+        message: "feat: update cron schedule and enhance highscores processing with new vocation and statistics filters"
   - date: "2026-09-01T06:10:36.812Z"
     commit: "58406c622a40dc2e2f5e241c838686ab0cef7586"
     frontend:

@@ -150,11 +150,7 @@ export class TibiaCharacterComponent {
       });
   }
 
-  private loadCharacterByName(
-    name: string,
-    syncUrl: boolean,
-    onFinalize?: () => void,
-  ): void {
+  private loadCharacterByName(name: string, syncUrl: boolean, onFinalize?: () => void): void {
     if (syncUrl) {
       void this.router.navigate([], {
         relativeTo: this.route,
