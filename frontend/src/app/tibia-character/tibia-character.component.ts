@@ -4,7 +4,6 @@ import {
   DestroyRef,
   computed,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
