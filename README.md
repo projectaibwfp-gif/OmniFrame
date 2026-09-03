@@ -1,5 +1,11 @@
 # OmniFrame
 
+> **Zasada pracy:** przed każdym commitem/PR uruchom lokalne sprawdzenia w
+> zmienionej aplikacji (`format:check`, `lint`, `build`, `test`). Jeżeli
+> którekolwiek nie przechodzi, popraw i powtórz - patrz sekcja
+> "[Weryfikacja zmian](#weryfikacja-zmian)". Ta sama reguła obowiązuje agentów
+> AI (Copilot / Codex) pracujących w repo.
+
 Starter aplikacji z frontendem Angular 22 + Vite, backendem REST Next.js 16
 oraz Neon Postgres. `frontend` i `backend` są niezależnymi aplikacjami,
 uruchamianymi w osobnych terminalach.
@@ -259,6 +265,45 @@ npm run test
 Backend używa Vitest. Testy obejmują każdy route w `backend/src/app/api/**`
 i pokrywają co najmniej dwa scenariusze na endpoint (ścieżki sukcesu i błędu /
 autoryzacji / walidacji, zależnie od route'a).
+
+## Weryfikacja zmian
+
+Każda zmiana w kodzie (człowiek albo agent AI - Copilot / Codex) musi być
+zweryfikowana **przed commitem/PR** lokalnym uruchomieniem quality gate w
+dotkniętych aplikacjach. Nie zgłaszaj zadania jako gotowego, jeśli którykolwiek
+krok nie przechodzi.
+
+Po zmianach we `frontend/**`:
+
+```bash
+cd frontend
+npm run format:check
+npm run lint
+npm run build
+npm run test
+```
+
+Po zmianach w `backend/**`:
+
+```bash
+cd backend
+npm run format:check
+npm run lint
+npm run build
+npm run test
+```
+
+Po zmianach w `shared/**` uruchom oba zestawy - kontrakt jest importowany po
+obu stronach.
+
+Zasady dodatkowe:
+
+- Jeżeli `format:check` czerwony, uruchom `npm run format` i powtórz.
+- Jeżeli `lint` czerwony, uruchom `npm run lint:fix` (jeśli istnieje) i popraw
+  resztę ręcznie. Lint pracuje z `--max-warnings=0` - ostrzeżenie = błąd.
+- Jeżeli `build` lub `test` czerwony, popraw kod i powtarzaj do zieleni.
+- Ta sama lista poleceń jest źródłem prawdy dla agentów AI (patrz
+  `AGENTS.md`, sekcja "Quality gate").
 
 ## Wdrożenie (Vercel)
 
