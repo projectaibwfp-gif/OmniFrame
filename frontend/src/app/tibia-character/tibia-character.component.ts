@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -65,6 +66,13 @@ export class TibiaCharacterComponent {
 
       this.characterName.set(nameFromUrl);
       this.loadCharacterByName(nameFromUrl, false);
+    });
+
+    effect(() => {
+      const mainChar = this.mainCharacter();
+      if (mainChar && mainChar.name) {
+        void this.mainCharacterService.refreshMainCharacterFromTibia();
+      }
     });
   }
 

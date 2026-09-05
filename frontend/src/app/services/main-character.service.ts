@@ -6,6 +6,7 @@ import type {
   AuthCurrentUserResponseDto,
   LinkMainCharacterRequestDto,
   TibiaCharacterDto,
+  TibiaCharacterLookupDto,
   UserMainCharacterDto,
 } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
@@ -14,6 +15,7 @@ import { buildApiUrl } from '../config/api.config';
 import { formatMainCharacterBadge, shortVocation } from '../core/vocation';
 
 type LinkResponse = ApiResponse<AuthCurrentUserResponseDto>;
+type CharacterResponse = ApiResponse<TibiaCharacterLookupDto>;
 
 /**
  * Owner of the "main character" feature: HTTP calls against
@@ -92,5 +94,21 @@ export class MainCharacterService {
         world: character.world,
       },
     });
+  }
+
+  async refreshMainCharacterFromTibia(): Promise<void> {
+    const mainCharacterName = this.name();
+    if (!mainCharacterName) {
+      return;
+    }
+
+    try {
+      const response = await firstValueFrom(
+        this.http.put<LinkResponse>(buildApiUrl('/auth/me/main-character/refresh'), {}),
+      );
+      this.authService.user.set(mapAuthUser(response.data.user));
+    } catch (error) {
+      console.warn('Failed to refresh main character from TibiaData', error);
+    }
   }
 }

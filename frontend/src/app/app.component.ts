@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { BoostedService } from './services/boosted.service';
@@ -113,6 +120,15 @@ export class AppComponent {
   });
 
   private readonly router = inject(Router);
+
+  constructor() {
+    effect(() => {
+      const mainChar = this.mainCharacter();
+      if (mainChar && mainChar.name) {
+        void this.mainCharacterService.refreshMainCharacterFromTibia();
+      }
+    });
+  }
 
   protected toggleMobileNav(): void {
     this.navOpen.update((value) => !value);
