@@ -149,7 +149,7 @@ interface TibiaDataKillStatisticsResponse {
 }
 
 type JsonRecord = Record<string, unknown>;
-const MAX_HIGHSCORE_PAGES = 20;
+const MAX_HIGHSCORE_PAGES = 50;
 const RESTRICTION_MODE_ERROR_CODE = 9002;
 const MS_PER_MINUTE = 60_000;
 const HTTP_BAD_REQUEST = 400;

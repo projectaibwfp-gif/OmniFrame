@@ -35,8 +35,6 @@ interface HighscoresSnapshotListRow {
   checkedAt: SqlTimestamp;
 }
 
-const SAVE_BUCKET_MS = 15 * 60 * 1000;
-
 export interface HighscoresSnapshotsListResult {
   data: HighscoresSnapshotRecordDto[];
   total: number;
@@ -44,46 +42,8 @@ export interface HighscoresSnapshotsListResult {
 }
 
 /**
- * Round timestamp to nearest 15-minute interval
- * 10:00, 10:15, 10:30, 10:45, 11:00, etc.
- */
-function roundTo15MinBucket(timestamp: Date): Date {
-  const ms = timestamp.getTime();
-  const rounded = Math.floor(ms / SAVE_BUCKET_MS) * SAVE_BUCKET_MS;
-  return new Date(rounded);
-}
-
-/**
- * Check if character should be saved (15-min bucketing)
- */
-async function shouldSaveCharacter(normalizedName: string, world: string): Promise<boolean> {
-  try {
-    const sql = getSql();
-    const result = (await sql`
-      SELECT last_save_bucket FROM character_highscores_last_save 
-      WHERE normalized_name = ${normalizedName.toLowerCase()} AND world = ${world}
-    `) as Array<{ last_save_bucket: string }>;
-
-    if (!result.length) {
-      return true; // Not saved before
-    }
-
-    const lastBucket = new Date(result[0].last_save_bucket);
-    const currentBucket = roundTo15MinBucket(new Date());
-    return lastBucket.getTime() !== currentBucket.getTime();
-  } catch (error) {
-    logWarn(
-      'highscores.saveSnapshots',
-      ErrorCode.DB_QUERY_FAILED,
-      { reason: 'Error checking last save' },
-      error,
-    );
-    return true;
-  }
-}
-
-/**
  * Save characters from highscores snapshot
+ * Only saves if level, vocation, or world changed since last snapshot for that character
  */
 export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): Promise<void> {
   if (!snapshots.length) {
@@ -91,42 +51,35 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
   }
 
   const now = new Date();
-  const currentBucket = roundTo15MinBucket(now);
-
-  const charactersToSave: HighscoresSnapshot[] = [];
-
-  for (const snapshot of snapshots) {
-    const shouldSave = await shouldSaveCharacter(snapshot.characterName, snapshot.world);
-    if (shouldSave) {
-      charactersToSave.push(snapshot);
-    }
-  }
-
-  if (!charactersToSave.length) {
-    return;
-  }
 
   try {
     const sql = getSql();
 
-    // Insert snapshots
-    for (const snapshot of charactersToSave) {
+    for (const snapshot of snapshots) {
+      // Get latest snapshot for this character on this world
+      const lastSnapshot = (await sql`
+        SELECT exact_experience
+        FROM character_highscores_snapshots
+        WHERE normalized_name = ${snapshot.characterName.toLowerCase()} AND world = ${snapshot.world}
+        ORDER BY checked_at DESC
+        LIMIT 1
+      `) as Array<{ exact_experience: number }>;
+
+      // Only save if this is first snapshot OR EXP changed
+      const hasExpChanged =
+        !lastSnapshot.length || lastSnapshot[0].exact_experience !== snapshot.exactExperience;
+
+      if (!hasExpChanged) {
+        // EXP is identical to last snapshot - skip to avoid duplicate
+        continue;
+      }
+
+      // EXP changed - save this snapshot
       await sql`
         INSERT INTO character_highscores_snapshots 
         (character_name, normalized_name, world, vocation, level, rank, exact_experience, checked_at)
         VALUES (${snapshot.characterName}, ${snapshot.characterName.toLowerCase()}, ${snapshot.world}, 
                 ${snapshot.vocation}, ${snapshot.level}, ${snapshot.rank}, ${snapshot.exactExperience}, ${now})
-      `;
-    }
-
-    // Update last save buckets
-    for (const snapshot of charactersToSave) {
-      const normalizedName = snapshot.characterName.toLowerCase();
-      await sql`
-        INSERT INTO character_highscores_last_save (normalized_name, world, last_save_bucket)
-        VALUES (${normalizedName}, ${snapshot.world}, ${currentBucket})
-        ON CONFLICT (normalized_name, world) DO UPDATE 
-        SET last_save_bucket = ${currentBucket}
       `;
     }
   } catch (error) {
