@@ -1,4 +1,36 @@
 releases:
+  - date: "2026-09-05T11:33:38.688Z"
+    commit: "9837660d5655e250a4097fe6076e48328de60ac2"
+    frontend:
+      version: "0.24.0"
+      tag: "frontend-v0.24.0"
+      changed: true
+      commits:
+      - hash: "9837660d"
+        author: "Bartek"
+        date: "2026-09-05T13:31:50+02:00"
+        message: "feat: enhance highscores management by cleaning up snapshots and updating cron schedule"
+      - hash: "05e02540"
+        author: "Bartek"
+        date: "2026-09-05T13:11:37+02:00"
+        message: "feat: implement main character refresh functionality with reactive updates"
+    backend:
+      version: "0.15.0"
+      tag: "backend-v0.15.0"
+      changed: true
+      commits:
+      - hash: "9837660d"
+        author: "Bartek"
+        date: "2026-09-05T13:31:50+02:00"
+        message: "feat: enhance highscores management by cleaning up snapshots and updating cron schedule"
+      - hash: "4eb832c7"
+        author: "Bartek"
+        date: "2026-09-05T13:19:48+02:00"
+        message: "feat: clean up highscores data by removing duplicates and optimizing snapshot saving logic"
+      - hash: "05e02540"
+        author: "Bartek"
+        date: "2026-09-05T13:11:37+02:00"
+        message: "feat: implement main character refresh functionality with reactive updates"
   - date: "2026-09-03T09:59:38.718Z"
     commit: "c2f2674c68c0f0244b5dd29d409deae837b38533"
     frontend:
