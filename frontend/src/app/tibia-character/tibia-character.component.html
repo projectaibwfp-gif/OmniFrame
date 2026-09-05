@@ -337,53 +337,64 @@
       <button
         type="button"
         class="section-toggle"
-        (click)="toggleHistory()"
-        [attr.aria-expanded]="isHistoryExpanded()"
+        (click)="toggleHighscoresHistory()"
+        [attr.aria-expanded]="isHighscoresHistoryExpanded()"
       >
         <div class="section-heading">
           <p class="eyebrow">Historia</p>
-          <h2>Sprawdzenia postaci ({{ history().length }})</h2>
+          <h2>Highscores snapshots ({{ highscoresHistory().length }})</h2>
         </div>
         <span
           class="section-toggle__chevron"
-          [class.is-open]="isHistoryExpanded()"
+          [class.is-open]="isHighscoresHistoryExpanded()"
           aria-hidden="true"
         ></span>
       </button>
-      @if (isHistoryExpanded()) {
-        @if (history().length > 0) {
+      @if (isHighscoresHistoryExpanded()) {
+        @if (highscoresHistory().length > 0) {
           <div class="history-table-wrapper app-table-wrap">
             <table class="history-table app-table">
               <thead>
                 <tr>
-                  <th>Data sprawdzenia</th>
-                  <th>Postać</th>
+                  <th>Kiedy</th>
+                  <th>Zmiana EXP</th>
+                  <th>Lvl</th>
+                  <th>Ranking prof</th>
+                  <th>Doświadczenie</th>
                   <th>Świat</th>
-                  <th>Vocation</th>
-                  <th>Level</th>
-                  <th>EXP</th>
-                  <th>Status</th>
-                  <th>Rank</th>
                 </tr>
               </thead>
               <tbody>
-                @for (entry of history(); track entry.id) {
+                @for (entry of highscoresHistory(); track entry.id; let idx = $index) {
                   <tr>
-                    <td>{{ entry.checkedAt | appDateTime }}</td>
-                    <td>{{ entry.name }}</td>
-                    <td>{{ entry.world ?? '-' }}</td>
-                    <td>{{ entry.vocation ?? '-' }}</td>
-                    <td>{{ entry.level ?? '-' }}</td>
-                    <td>{{ entry.exactExperience ?? '-' }}</td>
-                    <td>{{ entry.experienceStatus ?? '-' }}</td>
-                    <td>{{ entry.experienceRank ?? '-' }}</td>
+                    <td class="text-mono">{{ entry.checkedAt | appDateTime }}</td>
+                    <td class="text-mono text-right">
+                      @if (idx < highscoresHistory().length - 1) {
+                        @let prevExp = highscoresHistory()[idx + 1].exactExperience;
+                        @if (entry.exactExperience > prevExp) {
+                          <span class="badge badge-gain"
+                            >+{{ entry.exactExperience - prevExp | number }}</span
+                          >
+                        } @else if (entry.exactExperience < prevExp) {
+                          <span class="badge badge-loss">{{
+                            entry.exactExperience - prevExp | number
+                          }}</span>
+                        } @else {
+                          <span class="badge badge-neutral">—</span>
+                        }
+                      }
+                    </td>
+                    <td class="text-center">{{ entry.level }}</td>
+                    <td class="text-center">{{ entry.rank }}</td>
+                    <td class="text-mono text-right">{{ entry.exactExperience | number }}</td>
+                    <td>{{ entry.world }}</td>
                   </tr>
                 }
               </tbody>
             </table>
           </div>
         } @else {
-          <p class="empty-data">Brak historii sprawdzeń dla tej postaci.</p>
+          <p class="empty-data">Brak highscores snapshots dla tej postaci.</p>
         }
       }
     </section>

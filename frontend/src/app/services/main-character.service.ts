@@ -6,7 +6,6 @@ import type {
   AuthCurrentUserResponseDto,
   LinkMainCharacterRequestDto,
   TibiaCharacterDto,
-  TibiaCharacterLookupDto,
   UserMainCharacterDto,
 } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
@@ -15,7 +14,6 @@ import { buildApiUrl } from '../config/api.config';
 import { formatMainCharacterBadge, shortVocation } from '../core/vocation';
 
 type LinkResponse = ApiResponse<AuthCurrentUserResponseDto>;
-type CharacterResponse = ApiResponse<TibiaCharacterLookupDto>;
 
 /**
  * Owner of the "main character" feature: HTTP calls against

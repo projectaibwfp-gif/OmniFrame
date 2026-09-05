@@ -35,9 +35,9 @@ curl -X POST https://yourdomain/api/cron/highscores
 
 ## Harmonogram
 
-**Rekomendacja: uruchamiać co 12 godzin**
+**Harmonogram: co 4 godziny (GitHub Actions)**
 
-System zapisuje dane z 15-minutowym bucketing'iem — ta sama postać nie zostanie zapisana dwa razy w tym samym bucket'cie. Cron co 12 godzin wystarcza do regularnego odświeżania rankingu bez nadmiernego obciążania API TibiaData.
+System zbiera dane co 4 godziny = 6 snapshotu dziennie. Każdy nowy EXP = nowy snapshot w bazie.
 
 ### GitHub Actions (recommended)
 
@@ -48,7 +48,7 @@ name: Cron - Highscores Collection
 
 on:
   schedule:
-    - cron: '0 */12 * * *' # Co 12 godzin
+    - cron: '0 */4 * * *' # Co 4 godziny
 
 jobs:
   cron:

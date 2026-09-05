@@ -2,7 +2,7 @@ name: Cron - Highscores Collection
 
 on:
   schedule:
-    - cron: "0 2,8,14,20 * * *" # 04:00, 10:00, 16:00, 22:00 czasu PL (CEST)
+    - cron: "0 */4 * * *" # Co 4 godziny
 
 jobs:
   cron:

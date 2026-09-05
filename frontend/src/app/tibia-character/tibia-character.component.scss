@@ -417,6 +417,44 @@ $stat-gap: 12px;
     width: 100%;
     min-width: 760px;
   }
+
+  .text-mono {
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    white-space: nowrap;
+
+    &-gain {
+      background: c.$success-bg;
+      color: c.$success-fg;
+    }
+
+    &-loss {
+      background: c.$danger-bg;
+      color: c.$danger-fg;
+    }
+
+    &-neutral {
+      background: c.$surface-card;
+      color: c.$text-400;
+    }
+  }
 }
 
 @media (max-width: c.$bp-mobile) {

@@ -11,7 +11,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import type { TibiaCharacterExperienceDto, TibiaCharacterLookupDto } from '@shared/api-contract';
+import type {
+  TibiaCharacterExperienceDto,
+  TibiaCharacterLookupDto,
+  HighscoresSnapshotRecordDto,
+} from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
 import { AuthService } from '../auth/auth.service';
 import { MainCharacterService } from '../services/main-character.service';
@@ -38,6 +42,8 @@ export class TibiaCharacterComponent {
   protected readonly linkMainCharacterSuccess = signal(false);
   protected readonly isHistoryExpanded = signal(false);
   protected readonly isRefreshingMainCharacter = signal(false);
+  protected readonly isHighscoresHistoryExpanded = signal(false);
+  protected readonly highscoresHistory = signal<HighscoresSnapshotRecordDto[]>([]);
 
   protected readonly character = computed(() => this.lookup()?.character ?? null);
   protected readonly history = computed(() => this.lookup()?.history ?? []);
@@ -95,6 +101,13 @@ export class TibiaCharacterComponent {
 
   protected toggleHistory(): void {
     this.isHistoryExpanded.update((value) => !value);
+  }
+
+  protected toggleHighscoresHistory(): void {
+    this.isHighscoresHistoryExpanded.update((value) => !value);
+    if (this.isHighscoresHistoryExpanded() && !this.highscoresHistory().length) {
+      this.loadHighscoresHistory();
+    }
   }
 
   protected getExperienceStatusLabel(experience: TibiaCharacterExperienceDto): string {
@@ -208,5 +221,25 @@ export class TibiaCharacterComponent {
       );
       return [name, ...existingWithoutCurrent].slice(0, 12);
     });
+  }
+
+  private loadHighscoresHistory(): void {
+    const character = this.character();
+    if (!character?.name) {
+      return;
+    }
+
+    this.tibiaCharacterService
+      .getHighscoresHistory(character.name)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.highscoresHistory.set(response.data ?? []);
+        },
+        error: (error) => {
+          console.error('Failed to load highscores history:', error);
+          this.highscoresHistory.set([]);
+        },
+      });
   }
 }
