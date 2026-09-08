@@ -48,6 +48,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'boosted/:kind/:name',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./boostable-bosses/boostable-bosses-detail.component').then(
+        ({ BoostableBossesDetailComponent }) => BoostableBossesDetailComponent,
+      ),
+  },
+  {
     path: 'boostable-bosses',
     redirectTo: 'boosted',
     pathMatch: 'full',

@@ -6,6 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { BoostableBossesDto, TibiaCreaturesDto } from '@shared/api-contract';
@@ -13,6 +14,7 @@ import { BoostableBossesService } from './boostable-bosses.service';
 
 @Component({
   selector: 'app-boostable-bosses',
+  imports: [RouterLink],
   templateUrl: './boostable-bosses.component.html',
   styleUrl: './boostable-bosses.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

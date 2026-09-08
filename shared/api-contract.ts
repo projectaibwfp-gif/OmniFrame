@@ -165,6 +165,32 @@ export interface TibiaCreaturesDto {
   creatureList: TibiaCreatureDto[];
 }
 
+export type CharacterProgressTargetKind = 'boss' | 'creature';
+
+export type CharacterProgressStatus = 'first-time' | 'completed';
+
+export interface CharacterProgressEntryDto {
+  characterName: string;
+  targetKind: CharacterProgressTargetKind;
+  targetName: string;
+  status: CharacterProgressStatus;
+  updatedAt: string;
+}
+
+export interface CharacterProgressListDto {
+  entries: CharacterProgressEntryDto[];
+}
+
+export interface CharacterProgressUpdateRequestDto {
+  targetKind: CharacterProgressTargetKind;
+  targetName: string;
+  status: CharacterProgressStatus;
+}
+
+export interface CharacterProgressUpdateResponseDto {
+  entry: CharacterProgressEntryDto;
+}
+
 export interface TibiaCharacterGuildDto {
   name: string;
   rank: string;

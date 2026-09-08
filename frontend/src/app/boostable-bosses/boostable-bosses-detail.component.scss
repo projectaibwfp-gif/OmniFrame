@@ -1,0 +1,335 @@
+@use '../places/places-detail-shared' as shared;
+@use '../../styles/colors' as c;
+
+:host {
+  display: block;
+}
+
+.boosted-detail-page {
+  @include shared.detail-page;
+}
+
+.detail-header {
+  @include shared.detail-header;
+}
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-subtitle {
+  color: c.$text-400;
+  font-size: 13px;
+}
+
+.back-link {
+  @include shared.back-link;
+}
+
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero-card {
+  @include shared.detail-card;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+
+  &__image {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 16px;
+    border: 1px solid c.$border-subtle;
+    background: c.$surface-alt;
+    padding: 12px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h2 {
+      margin: 0;
+      color: c.$text-700;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0;
+      color: c.$text-500;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  }
+}
+
+.hero-chip {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: c.$info-bg;
+  color: c.$info-fg;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.info-tile {
+  @include shared.detail-card;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &--wide {
+    grid-column: span 3;
+  }
+}
+
+.tile-value {
+  color: c.$text-700;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.detail-card {
+  @include shared.detail-card;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  h3 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 16px;
+  }
+}
+
+.detail-card--wide {
+  grid-column: span 2;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.info-row {
+  @include shared.info-row;
+}
+
+.info-label {
+  @include shared.info-label;
+}
+
+.info-value {
+  @include shared.info-value;
+}
+
+.info-section {
+  @include shared.info-section;
+}
+
+.tag-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resistance-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.resistance-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  font-size: 12px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.loot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.loot-tile {
+  min-height: 116px;
+  padding: 14px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 16px;
+  background: linear-gradient(180deg, c.$surface-card-overlay-strong 0%, c.$surface-alt 100%);
+  box-shadow:
+    inset 0 1px 0 c.$overlay-highlight,
+    0 12px 24px c.$shadow-strong;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, c.$warning-fg-accent 0%, c.$info-accent-strong 100%);
+  }
+
+  &:hover {
+    border-color: c.$info-accent-strong;
+    box-shadow:
+      inset 0 1px 0 c.$overlay-highlight,
+      0 16px 30px c.$shadow-strong;
+    transform: translateY(-2px);
+  }
+
+  strong {
+    color: c.$text-700;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+}
+
+.loot-tile__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.loot-rarity-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, c.$warning-fg-accent 0%, c.$info-accent-strong 100%);
+  box-shadow: 0 0 0 5px c.$warning-bg;
+}
+
+.loot-chance {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: c.$surface-card;
+  color: c.$info-fg-soft;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid c.$border-subtle;
+}
+
+.loot-notes {
+  color: c.$text-400;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-button,
+.save-button {
+  padding: 8px 12px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 8px;
+  background: c.$surface-card;
+  color: c.$text-700;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.status-button--active,
+.save-button {
+  border-color: c.$brand-primary;
+}
+
+.save-button {
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+}
+
+.status-message {
+  margin: 0;
+  font-size: 13px;
+
+  &--error {
+    color: c.$danger-fg;
+  }
+
+  &--success {
+    color: c.$success-fg;
+  }
+}
+
+.empty-state {
+  @include shared.detail-card;
+  color: c.$text-500;
+}
+
+@media (max-width: c.$bp-mobile) {
+  .hero-card {
+    grid-template-columns: 1fr;
+
+    &__image {
+      width: 96px;
+      height: 96px;
+    }
+  }
+
+  .stats-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-tile--wide,
+  .detail-card--wide {
+    grid-column: auto;
+  }
+}

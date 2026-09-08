@@ -19,6 +19,7 @@ const REFERRAL_CODE_MAX_LENGTH = 64;
 const CHARACTER_NAME_MAX_LENGTH = 30;
 const WORLD_MAX_LENGTH = 30;
 const GOOGLE_ID_MAX_LENGTH = 64;
+const TARGET_NAME_MAX_LENGTH = 255;
 const HIGHSCORES_MIN_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE_SIZE = 50;
@@ -38,6 +39,12 @@ export const ReferralCaptureRequestSchema = objectSchema({
 
 export const LinkMainCharacterRequestSchema = objectSchema({
   name: stringSchema({ maxLength: CHARACTER_NAME_MAX_LENGTH }),
+});
+
+export const CharacterProgressUpdateRequestSchema = objectSchema({
+  targetKind: enumSchema(['boss', 'creature'] as const),
+  targetName: stringSchema({ maxLength: TARGET_NAME_MAX_LENGTH }),
+  status: enumSchema(['first-time', 'completed'] as const),
 });
 
 export const CharacterNameParamSchema = objectSchema({
@@ -65,6 +72,7 @@ export const HighscoresSnapshotsQuerySchema = objectSchema({
 export type AuthGoogleRequestInput = Infer<typeof AuthGoogleRequestSchema>;
 export type ReferralCaptureRequestInput = Infer<typeof ReferralCaptureRequestSchema>;
 export type LinkMainCharacterRequestInput = Infer<typeof LinkMainCharacterRequestSchema>;
+export type CharacterProgressUpdateRequestInput = Infer<typeof CharacterProgressUpdateRequestSchema>;
 export type CharacterNameParamInput = Infer<typeof CharacterNameParamSchema>;
 export type WorldParamInput = Infer<typeof WorldParamSchema>;
 export type GoogleIdParamInput = Infer<typeof GoogleIdParamSchema>;

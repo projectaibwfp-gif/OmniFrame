@@ -43,6 +43,8 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 - `GET /api/openapi` - specyfikacja OpenAPI (JSON),
 - `GET /api/users` - lista użytkowników,
 - `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID,
+- `GET /api/auth/me/character-progress` - statusy bossów i potworów dla głównej postaci,
+- `PUT /api/auth/me/character-progress` - zapis statusu dla bossa lub potwora głównej postaci,
 
 ## Kontrakt błędów
 

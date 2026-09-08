@@ -236,6 +236,39 @@ export const openApiDocument = {
                 properties: { name: { type: 'string' } },
               },
             },
+            '/api/auth/me/character-progress': {
+              get: {
+                tags: ['Auth'],
+                summary: 'Returns progress statuses for the current user main character.',
+                responses: {
+                  200: { description: 'Character progress list' },
+                },
+              },
+              put: {
+                tags: ['Auth'],
+                summary: 'Stores one progress status for the current user main character.',
+                requestBody: {
+                  required: true,
+                  content: {
+                    'application/json': {
+                      schema: {
+                        type: 'object',
+                        required: ['targetKind', 'targetName', 'status'],
+                        properties: {
+                          targetKind: { type: 'string', enum: ['boss', 'creature'] },
+                          targetName: { type: 'string' },
+                          status: { type: 'string', enum: ['first-time', 'completed'] },
+                        },
+                      },
+                    },
+                  },
+                },
+                responses: {
+                  200: { description: 'Updated character progress entry' },
+                  400: { description: 'Missing main character or invalid payload' },
+                },
+              },
+            },
           },
         },
         responses: {

@@ -17,7 +17,10 @@
     <section class="boss-card">
       <h2>Aktualnie boostowany</h2>
       @if (currentBossesData.boosted; as boosted) {
-        <article class="boss-item boss-item--highlighted">
+        <article
+          class="boss-item boss-item--highlighted boss-item--clickable"
+          [routerLink]="['/boosted', 'boss', boosted.name]"
+        >
           <img [src]="boosted.imageUrl" [alt]="boosted.name" loading="lazy" />
           <div>
             <strong>{{ boosted.name }}</strong>
@@ -42,7 +45,10 @@
         @if (availableBosses().length > 0) {
           <div class="boss-list">
             @for (boss of availableBosses(); track boss.name) {
-              <article class="boss-item">
+              <article
+                class="boss-item boss-item--clickable"
+                [routerLink]="['/boosted', 'boss', boss.name]"
+              >
                 <img [src]="boss.imageUrl" [alt]="boss.name" loading="lazy" />
                 <div>
                   <strong>{{ boss.name }}</strong>
@@ -72,7 +78,10 @@
     <section class="boss-card">
       <h2>Aktualnie boostowany potwór</h2>
       @if (currentCreaturesData.boosted; as boostedCreature) {
-        <article class="boss-item boss-item--highlighted">
+        <article
+          class="boss-item boss-item--highlighted boss-item--clickable"
+          [routerLink]="['/boosted', 'creature', boostedCreature.name]"
+        >
           <img [src]="boostedCreature.imageUrl" [alt]="boostedCreature.name" loading="lazy" />
           <div>
             <strong>{{ boostedCreature.name }}</strong>
@@ -97,7 +106,10 @@
         @if (availableCreatures().length > 0) {
           <div class="boss-list">
             @for (creature of availableCreatures(); track creature.race) {
-              <article class="boss-item">
+              <article
+                class="boss-item boss-item--clickable"
+                [routerLink]="['/boosted', 'creature', creature.name]"
+              >
                 <img [src]="creature.imageUrl" [alt]="creature.name" loading="lazy" />
                 <div>
                   <strong>{{ creature.name }}</strong>

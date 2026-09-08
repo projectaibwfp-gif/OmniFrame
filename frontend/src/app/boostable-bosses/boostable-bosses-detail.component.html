@@ -1,0 +1,136 @@
+<div class="boosted-detail-page">
+  <div class="detail-header">
+    <a class="back-link" routerLink="/boosted">{{ labels().back }}</a>
+    <div class="hero-title">
+      <h1>{{ name() }}</h1>
+      @if (mainCharacter(); as mainCharacter) {
+        <span class="hero-subtitle">{{ labels().progress }}: {{ mainCharacter.name }}</span>
+      }
+    </div>
+  </div>
+
+  @if (detail(); as detail) {
+    <div class="detail-layout">
+      <section class="hero-card">
+        @if (detail.imageUrl) {
+          <img
+            class="hero-card__image"
+            [src]="detail.imageUrl"
+            [alt]="detail.name"
+            loading="lazy"
+          />
+        }
+        <div class="hero-card__content">
+          <span class="hero-chip">{{ detailTypeLabel() }}</span>
+          <h2>{{ labels().overview }}</h2>
+          <p>{{ detail.shortDescription }}</p>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="info-tile">
+          <span class="info-label">{{ labels().currentTarget }}</span>
+          <strong class="tile-value">{{ detailTypeLabel() }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().soloLevel }}</span>
+          <strong class="tile-value">{{ detail.soloLevel }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().groupLevel }}</span>
+          <strong class="tile-value">{{ detail.groupLevel }}</strong>
+        </article>
+        <article class="info-tile info-tile--wide">
+          <span class="info-label">{{ labels().location }}</span>
+          <strong class="tile-value">{{ detail.location }}</strong>
+        </article>
+        <article class="info-tile info-tile--wide">
+          <span class="info-label">{{ labels().accessQuest }}</span>
+          <strong class="tile-value">{{ detail.accessQuest }}</strong>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="detail-card">
+          <h3>{{ labels().attackStyle }}</h3>
+          <ul class="tag-list">
+            @for (attack of detail.attackStyle; track attack) {
+              <li class="tag-chip">{{ attack }}</li>
+            }
+          </ul>
+        </article>
+
+        <article class="detail-card">
+          <h3>{{ labels().resistances }}</h3>
+          <div class="resistance-list">
+            @for (resistance of detail.resistances; track resistance.type) {
+              <span class="resistance-chip">{{ resistance.type }}: {{ resistance.value }}</span>
+            }
+          </div>
+        </article>
+
+        <article class="detail-card detail-card--wide">
+          <div class="card-header">
+            <h3>{{ labels().loot }}</h3>
+          </div>
+          <div class="loot-grid">
+            @for (loot of detail.loot; track loot.name) {
+              <div class="loot-tile">
+                <div class="loot-tile__header">
+                  <span class="loot-rarity-dot"></span>
+                  <span class="loot-chance">{{ loot.chance }}</span>
+                </div>
+                <strong>{{ loot.name }}</strong>
+                @if (loot.notes) {
+                  <small class="loot-notes">{{ loot.notes }}</small>
+                }
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="detail-card detail-card--wide">
+          <h3>{{ labels().progress }}</h3>
+          <div class="status-actions">
+            <button
+              type="button"
+              class="status-button"
+              [class.status-button--active]="selectedStatus() === 'first-time'"
+              (click)="setStatus('first-time')"
+            >
+              {{ labels().firstTime }}
+            </button>
+            <button
+              type="button"
+              class="status-button"
+              [class.status-button--active]="selectedStatus() === 'completed'"
+              (click)="setStatus('completed')"
+            >
+              {{ labels().completed }}
+            </button>
+            <button
+              type="button"
+              class="save-button"
+              (click)="saveStatus()"
+              [disabled]="isSavingStatus()"
+            >
+              @if (isSavingStatus()) {
+                Zapisywanie...
+              } @else {
+                Zapisz
+              }
+            </button>
+          </div>
+
+          @if (saveError(); as saveErrorMessage) {
+            <p class="status-message status-message--error">{{ saveErrorMessage }}</p>
+          } @else if (saveSuccess()) {
+            <p class="status-message status-message--success">{{ labels().saveSuccess }}</p>
+          }
+        </article>
+      </section>
+    </div>
+  } @else {
+    <div class="empty-state">{{ labels().noDetails }}</div>
+  }
+</div>

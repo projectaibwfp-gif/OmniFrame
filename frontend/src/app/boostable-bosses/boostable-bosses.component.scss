@@ -140,6 +140,15 @@
       border-color: c.$info-accent-strong;
       background: c.$info-bg;
     }
+
+    &--clickable {
+      cursor: pointer;
+
+      &:hover {
+        border-color: c.$brand-primary;
+        transform: translateY(-1px);
+      }
+    }
   }
 }
 
