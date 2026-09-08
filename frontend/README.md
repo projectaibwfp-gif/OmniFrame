@@ -98,6 +98,7 @@ na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`).
 - `/hunting-places`, `/hunting-places/:id` - miejsca polowań z filtrami i mapą Tibii,
 - `/charm-places`, `/charm-places/:id` - miejsca na charm'y z filtrami i mapą Tibii,
 - `/quests`, `/quests/:id` - questy z opisem i spoilerem wykonania,
+- `/loot` - baza itemów z kategoriami, wyszukiwaniem, filtrami i market value,
 - `/highscores-snapshots` - snapshoty highscores z paginacją i sortowaniem,
 - `/killstatistics` - statystyki zabójstw TibiaData per świat.
 

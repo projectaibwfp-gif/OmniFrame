@@ -200,6 +200,10 @@ Logowanie przez Google jest obsługiwane po stronie backendu: frontend wysyła
 Google ID token do `/api/auth/google`, backend go weryfikuje, ustawia cookie
 sesji `HttpOnly` i trzyma stan użytkownika przez `/api/auth/me`.
 
+Frontend udostępnia też zakładkę `/loot` z filtrowaniem, wyszukiwaniem,
+kategoriami i orientacyjnym market value dla itemów. Dane są obecnie statyczne,
+przygotowane pod przyszłe podpięcie API.
+
 W trybie dev Vite proxy przekazuje `/api/*` do
 `https://apiomniframe.vercel.app`, a na Vercel działa rewrite `/api/*` -> backend.
 Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.

@@ -123,6 +123,11 @@ export const routes: Routes = [
       import('./quests/quests.component').then(({ QuestsComponent }) => QuestsComponent),
   },
   {
+    path: 'loot',
+    canActivate: [authGuard],
+    loadComponent: () => import('./loot/loot.component').then(({ LootComponent }) => LootComponent),
+  },
+  {
     path: 'quests/:id',
     canActivate: [authGuard],
     loadComponent: () =>

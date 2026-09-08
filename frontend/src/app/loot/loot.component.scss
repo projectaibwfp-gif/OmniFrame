@@ -1,0 +1,281 @@
+@use 'colors' as c;
+
+.loot-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    h1 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$text-300;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__intro {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 13px;
+  }
+}
+
+.loot-note,
+.filters-card,
+.results-bar,
+.empty-state {
+  padding: 16px 20px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px c.$shadow-medium;
+}
+
+.loot-note {
+  color: c.$text-500;
+  font-size: 13px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label,
+  .filter-label {
+    color: c.$text-400;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &--range {
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .range-separator {
+      color: c.$text-300;
+      font-weight: 700;
+    }
+  }
+
+  &--actions {
+    button {
+      height: 38px;
+    }
+  }
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 8px;
+  background: c.$surface-card;
+  color: c.$text-700;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: c.$brand-primary;
+    box-shadow: 0 0 0 3px c.$brand-primary-tint;
+  }
+}
+
+.filter-input[type='number'] {
+  appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+.sort-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed c.$border-subtle;
+}
+
+.sort-label {
+  color: c.$text-400;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sort-button {
+  padding: 6px 12px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 999px;
+  background: c.$surface-card;
+  color: c.$text-600;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: c.$brand-primary;
+    color: c.$brand-on-surface;
+  }
+}
+
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.results-count {
+  color: c.$text-500;
+  font-size: 14px;
+
+  strong {
+    color: c.$text-700;
+  }
+}
+
+.page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: c.$text-500;
+  font-size: 13px;
+
+  .filter-select {
+    width: auto;
+    min-width: 64px;
+  }
+}
+
+.loot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.loot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px c.$shadow-medium;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    h3 {
+      margin: 0 0 6px;
+      color: c.$text-700;
+      font-size: 16px;
+    }
+  }
+
+  &__category {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: c.$info-bg;
+    color: c.$info-fg;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  &__value {
+    color: c.$brand-on-surface;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  &__description {
+    margin: 0;
+    color: c.$text-500;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &__meta {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+
+    div {
+      display: grid;
+      gap: 4px;
+    }
+
+    dt {
+      color: c.$text-300;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0;
+      color: c.$text-600;
+      font-size: 13px;
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: c.$text-500;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .filters-grid,
+  .loot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sort-bar,
+  .results-bar,
+  .loot-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

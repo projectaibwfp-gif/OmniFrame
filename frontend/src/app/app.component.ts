@@ -24,6 +24,7 @@ interface NavTranslations {
   huntingPlaces: string;
   charmPlaces: string;
   quests: string;
+  loot: string;
   snapshots: string;
   killstatistics: string;
   users: string;
@@ -40,6 +41,7 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     huntingPlaces: 'Hunting places',
     charmPlaces: 'Charm places',
     quests: 'Quests',
+    loot: 'Loot',
     snapshots: 'Highscores DB',
     killstatistics: 'Killstatistics',
     users: 'Users',
@@ -54,6 +56,7 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     huntingPlaces: 'Miejsca polowań',
     charmPlaces: 'Charm places',
     quests: 'Questy',
+    loot: 'Loot',
     snapshots: 'Highscores DB',
     killstatistics: 'Killstatistics',
     users: 'Użytkownicy',
@@ -101,6 +104,7 @@ export class AppComponent {
       { path: '/hunting-places', label: translations.huntingPlaces, icon: '🗺', exact: false },
       { path: '/charm-places', label: translations.charmPlaces, icon: '✨', exact: false },
       { path: '/quests', label: translations.quests, icon: '📜', exact: false },
+      { path: '/loot', label: translations.loot, icon: '💰', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/killstatistics', label: translations.killstatistics, icon: '☠', exact: false },
     ] as const;

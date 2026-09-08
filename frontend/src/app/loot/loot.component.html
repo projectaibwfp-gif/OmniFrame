@@ -1,0 +1,189 @@
+<div class="loot-page">
+  <header class="loot-page__header">
+    <p class="loot-page__eyebrow">{{ labels().eyebrow }}</p>
+    <h1>{{ labels().title }}</h1>
+    <p class="loot-page__intro">{{ labels().intro }}</p>
+  </header>
+
+  <div class="loot-note">
+    {{ labels().staticDataNote }}
+  </div>
+
+  <section class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label for="loot-search">{{ labels().searchLabel }}</label>
+        <input
+          id="loot-search"
+          type="text"
+          class="filter-input"
+          [ngModel]="search()"
+          (ngModelChange)="setSearch($event)"
+          [placeholder]="labels().searchPlaceholder"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="loot-category">{{ labels().categoryLabel }}</label>
+        <select
+          id="loot-category"
+          class="filter-select"
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="setCategory($event)"
+        >
+          <option value="">{{ labels().allCategories }}</option>
+          @for (category of categories; track category) {
+            <option [value]="category">{{ categoryLabel(category) }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="loot-members">{{ labels().membersLabel }}</label>
+        <select
+          id="loot-members"
+          class="filter-select"
+          [ngModel]="selectedMembers()"
+          (ngModelChange)="setMembers($event)"
+        >
+          <option value="">{{ labels().allAccess }}</option>
+          <option value="members">{{ labels().membersOnly }}</option>
+          <option value="free">{{ labels().freeAndMembers }}</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="loot-stackable">{{ labels().stackableLabel }}</label>
+        <select
+          id="loot-stackable"
+          class="filter-select"
+          [ngModel]="selectedStackable()"
+          (ngModelChange)="setStackable($event)"
+        >
+          <option value="">{{ labels().allStackability }}</option>
+          <option value="stackable">{{ labels().stackableOnly }}</option>
+          <option value="non-stackable">{{ labels().nonStackableOnly }}</option>
+        </select>
+      </div>
+
+      <div class="filter-field filter-field--range">
+        <label for="loot-min-value">{{ labels().marketValue }}</label>
+        <div class="range-row">
+          <input
+            id="loot-min-value"
+            type="number"
+            class="filter-input"
+            [ngModel]="minValue()"
+            (ngModelChange)="setMinValue($event === null || $event === '' ? null : +$event)"
+            [placeholder]="labels().minValueLabel"
+            min="0"
+          />
+          <span class="range-separator">-</span>
+          <input
+            type="number"
+            class="filter-input"
+            [ngModel]="maxValue()"
+            (ngModelChange)="setMaxValue($event === null || $event === '' ? null : +$event)"
+            [placeholder]="labels().maxValueLabel"
+            min="0"
+          />
+        </div>
+      </div>
+
+      <div class="filter-field filter-field--actions">
+        <span class="filter-label">&nbsp;</span>
+        <button class="btn btn-outline-secondary w-100" type="button" (click)="clearFilters()">
+          {{ labels().clearFilters }}
+        </button>
+      </div>
+    </div>
+
+    <div class="sort-bar">
+      <span class="sort-label">{{ labels().sortBy }}:</span>
+      <button class="sort-button" type="button" (click)="sort.toggle('name')">
+        {{ labels().sortName }} {{ sort.indicator('name') }}
+      </button>
+      <button class="sort-button" type="button" (click)="sort.toggle('category')">
+        {{ labels().sortCategory }} {{ sort.indicator('category') }}
+      </button>
+      <button class="sort-button" type="button" (click)="sort.toggle('marketValue')">
+        {{ labels().sortMarketValue }} {{ sort.indicator('marketValue') }}
+      </button>
+      <button class="sort-button" type="button" (click)="sort.toggle('membersOnly')">
+        {{ labels().sortMembers }} {{ sort.indicator('membersOnly') }}
+      </button>
+    </div>
+  </section>
+
+  <section class="results-bar">
+    <span class="results-count"
+      >{{ labels().found }}: <strong>{{ filteredItems().length }}</strong></span
+    >
+    <div class="page-size">
+      <label class="filter-label" for="page-size">{{ labels().perPage }}:</label>
+      <select
+        id="page-size"
+        class="filter-select"
+        [ngModel]="paged.pageSize()"
+        (ngModelChange)="paged.setPageSize(+$event)"
+      >
+        @for (size of paged.pageSizeOptions; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+  </section>
+
+  @if (paged.items().length > 0) {
+    <section class="loot-grid">
+      @for (item of paged.items(); track item.id) {
+        <article class="loot-card">
+          <div class="loot-card__header">
+            <div>
+              <h3>{{ item.name }}</h3>
+              <span class="loot-card__category">{{ categoryLabel(item.category) }}</span>
+            </div>
+            <strong class="loot-card__value">{{ formatMarketValue(item.marketValue) }} gp</strong>
+          </div>
+
+          <p class="loot-card__description">{{ item.description }}</p>
+
+          <dl class="loot-card__meta">
+            <div>
+              <dt>{{ labels().access }}</dt>
+              <dd>{{ item.membersOnly ? labels().membersOnly : labels().freeAndMembers }}</dd>
+            </div>
+            <div>
+              <dt>{{ labels().stackable }}</dt>
+              <dd>{{ item.stackable ? labels().yes : labels().no }}</dd>
+            </div>
+            <div>
+              <dt>{{ labels().sources }}</dt>
+              <dd>{{ item.sources.join(', ') }}</dd>
+            </div>
+          </dl>
+        </article>
+      }
+    </section>
+
+    <app-pagination
+      [page]="paged.page()"
+      [totalPages]="paged.totalPages()"
+      [startIndex]="paged.startIndex()"
+      [endIndex]="paged.endIndex()"
+      [total]="paged.total()"
+      [previousLabel]="labels().previous"
+      [nextLabel]="labels().next"
+      ariaLabel="Stronicowanie lootu"
+      (pageChange)="paged.setPage($event)"
+    />
+  } @else {
+    <div class="empty-state">
+      <p>{{ labels().emptyTitle }}</p>
+      <button class="btn btn-outline-primary" type="button" (click)="clearFilters()">
+        {{ labels().emptyAction }}
+      </button>
+    </div>
+  }
+</div>
