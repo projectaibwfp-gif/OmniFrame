@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-09-08T08:37:11.992Z"
+    commit: "7ee1ea99bd92fe4926f9860dc2d4733348731a0d"
+    frontend:
+      version: "0.25.0"
+      tag: "frontend-v0.25.0"
+      changed: true
+      commits:
+      - hash: "7ee1ea99"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-08T10:35:22+02:00"
+        message: "feat: implement character progress tracking with API integration and UI components"
+    backend:
+      version: "0.16.0"
+      tag: "backend-v0.16.0"
+      changed: true
+      commits:
+      - hash: "7ee1ea99"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-08T10:35:22+02:00"
+        message: "feat: implement character progress tracking with API integration and UI components"
   - date: "2026-09-05T11:33:38.688Z"
     commit: "9837660d5655e250a4097fe6076e48328de60ac2"
     frontend:
