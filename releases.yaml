@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-09-08T09:53:56.681Z"
+    commit: "0d32c74d9f8930fdc152b11e349cd0ff48a788ce"
+    frontend:
+      version: "0.27.0"
+      tag: "frontend-v0.27.0"
+      changed: true
+      commits:
+      - hash: "0d32c74d"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-08T11:51:53+02:00"
+        message: "feat: update app display name and enhance SEO metadata across components"
+    backend:
+      version: "0.17.0"
+      tag: "backend-v0.17.0"
+      changed: true
+      commits:
+      - hash: "0d32c74d"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-08T11:51:53+02:00"
+        message: "feat: update app display name and enhance SEO metadata across components"
   - date: "2026-09-08T09:32:53.954Z"
     commit: "a1011abdc5b5e76ff03732941428e683668ecc33"
     frontend:
