@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-08T09:32:53.954Z"
+    commit: "a1011abdc5b5e76ff03732941428e683668ecc33"
+    frontend:
+      version: "0.26.0"
+      tag: "frontend-v0.26.0"
+      changed: true
+      commits:
+      - hash: "a1011abd"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-08T11:29:22+02:00"
+        message: "feat: add loot component with filtering, searching, and market value display"
+    backend:
+      version: "0.16.0"
+      tag: "backend-v0.16.0"
+      changed: false
+      commits: []
   - date: "2026-09-08T08:37:11.992Z"
     commit: "7ee1ea99bd92fe4926f9860dc2d4733348731a0d"
     frontend:
