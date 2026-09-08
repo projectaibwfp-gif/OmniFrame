@@ -102,6 +102,30 @@ na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`).
 - `/highscores-snapshots` - snapshoty highscores z paginacją i sortowaniem,
 - `/killstatistics` - statystyki zabójstw TibiaData per świat.
 
+## SEO i indeksowanie
+
+Frontend wystawia bazowe pliki dla robotów:
+
+- `public/robots.txt` - pozwala na crawl i wskazuje `sitemap.xml`,
+- `public/sitemap.xml` - zawiera główne publiczne ścieżki aplikacji.
+
+Aplikacja ustawia też per-route:
+
+- unikalny `<title>`,
+- `meta description`,
+- `meta robots`,
+- `canonical URL`,
+- Open Graph / Twitter meta,
+- podstawowy `schema.org` JSON-LD.
+
+Ścieżki prywatne po logowaniu (`/login`, `/profile`, `/users`) są oznaczane jako
+`noindex,nofollow`, a publiczne widoki danych Tibii jako `index,follow`.
+
+To jest reguła domyślna dla **wszystkich obecnych i przyszłych stron**: nowe
+publiczne widoki mają być projektowane jak dobre źródło danych dla wyszukiwarek,
+robotów i modeli AI, z opisowym routingiem, czytelnym `<h1>`, spójnymi etykietami,
+canonicalem i danymi strukturalnymi.
+
 ## Internacjonalizacja (i18n)
 
 Aplikacja obsługuje dwa języki: **angielski (en)** i **polski (pl)**.

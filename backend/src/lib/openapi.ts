@@ -1,9 +1,11 @@
+import { APP_DISPLAY_NAME } from '@shared/runtime-config';
+
 export const openApiDocument = {
   openapi: '3.0.3',
   info: {
-    title: 'OmniFrame API',
+    title: `${APP_DISPLAY_NAME} API`,
     version: '1.0.0',
-    description: 'Dokumentacja endpointow backendu OmniFrame (Next.js App Router).',
+    description: `Dokumentacja endpointow backendu ${APP_DISPLAY_NAME} (Next.js App Router).`,
   },
   servers: [{ url: '/', description: 'Current deployment' }],
   tags: [

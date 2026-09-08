@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 @Component({
   selector: 'app-about',
@@ -8,4 +9,6 @@ import { RouterLink } from '@angular/router';
   styleUrl: './about.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AboutComponent {}
+export class AboutComponent {
+  protected readonly appDisplayName = APP_DISPLAY_NAME;
+}

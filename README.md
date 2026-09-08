@@ -216,6 +216,11 @@ Routing używa lazy-loaded standalone components, chronionych `authGuard`
 użytkowników z `GET /api/users`, a komponent profilu pracuje na danych sesji
 zwracanych przez `GET /api/auth/me`.
 
+Publiczne strony frontendu traktujemy architektonicznie jako źródła danych:
+każda obecna i przyszła ścieżka publiczna powinna mieć opisowy URL, unikalny
+tytuł i opis, canonical, właściwe reguły robots, wpis w sitemapie oraz
+machine-readable strukturę, gdy prezentuje dane Tibii.
+
 ## Responsiveness i Layout
 
 Aplikacja jest **mobile-first, responsywna**:

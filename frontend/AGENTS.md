@@ -110,22 +110,39 @@ projektu).
     `tibia/tibia-map.ts` (`buildTibiaMapUrl`). Tabele etykiet i18n trzymaj w
     osobnym `*.labels.ts`, nie w komponencie.
 
+## SEO, crawlery i modele AI
+
+35. Każda strona frontendu dostaje domyślnie techniczne SEO: unikalny `title`,
+    `meta description`, `canonical`, właściwe `meta robots` oraz podstawowe
+    dane strukturalne `schema.org` (JSON-LD).
+36. Strony będące źródłem danych Tibii (`/news`, `/boosted`, `/character`,
+    `/hunting-places`, `/charm-places`, `/quests`, `/loot`,
+    `/highscores-snapshots`, `/killstatistics` i ich widoki szczegółowe)
+    projektuj jak czytelne źródło dla Google, crawlerów i modeli AI:
+    opisowe URL-e, jednoznaczne nagłówki, semantyczne sekcje, stabilne etykiety
+    filtrów i treść opisującą dataset.
+37. Strony prywatne lub zależne od sesji (`/login`, `/profile`, `/users` i inne
+    widoki niewnoszące publicznej wartości w SEO) oznaczaj `noindex,nofollow`.
+38. Po dodaniu, zmianie nazwy albo usunięciu publicznej ścieżki zaktualizuj
+    routing, SEO mapę tras, `public/sitemap.xml`, `public/robots.txt` jeśli to
+    potrzebne, oraz sekcję SEO/Routing w `frontend/README.md`.
+
 ## Data i godzina
 
-35. Backend zwraca każdy timestamp jako ISO 8601 UTC. **Nigdy nie renderuj
+39. Backend zwraca każdy timestamp jako ISO 8601 UTC. **Nigdy nie renderuj
     surowego stringa z API** (`{{ user.lastLoginAt }}`) - użytkownik zobaczy
     wtedy godzinę UTC, inną niż lokalna.
-36. Jest **jeden** format wyświetlania, w stałych w `core/date-time.ts`:
+40. Jest **jeden** format wyświetlania, w stałych w `core/date-time.ts`:
     `DATE_TIME_FORMAT` (`dd.MM.yyyy HH:mm`), `DATE_FORMAT` (`dd.MM.yyyy`),
     `EMPTY_DATE_PLACEHOLDER`. Nie dodawaj własnych wzorców ani
     `| date: 'medium'`.
-37. W szablonach używaj pipe'ów z `core/date-time.pipe.ts`: `| appDateTime`
+41. W szablonach używaj pipe'ów z `core/date-time.pipe.ts`: `| appDateTime`
     (data + godzina) i `| appDate` (sama data). W TypeScripcie - `formatDateTime()`,
     `formatDateOnly()`, `toLocalDayKey()` z `core/date-time.ts`.
-38. Pipe'y przeliczają czas na strefę przeglądarki. Wartości `YYYY-MM-DD`
+42. Pipe'y przeliczają czas na strefę przeglądarki. Wartości `YYYY-MM-DD`
     (kolumny `DATE`, np. data urodzenia) `appDate` traktuje jako datę
     kalendarzową i nie przesuwa ich strefą.
 
 ## Artefakty
 
-39. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.
+43. Nie commituj `frontend/out-tsc/` ani `frontend/dist/` - są ignorowane w Git.

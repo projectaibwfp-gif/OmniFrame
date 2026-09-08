@@ -3,7 +3,7 @@
     <header class="topbar card">
       <div class="card-body topbar-body">
         <a class="brand" routerLink="/" (click)="closeMobileNav()">
-          <span>Omni<span class="brand-accent">Frame</span></span>
+          <span>{{ appDisplayName }}</span>
         </a>
 
         <div class="topbar-actions">
@@ -137,7 +137,7 @@
 
         <footer class="footer card">
           <div class="card-body footer-body">
-            <span>OmniFrame</span>
+            <span>{{ appDisplayName }}</span>
             <span>Google OAuth dashboard • Real API</span>
           </div>
         </footer>

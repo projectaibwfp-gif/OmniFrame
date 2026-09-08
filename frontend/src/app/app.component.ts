@@ -13,6 +13,7 @@ import { LocalizationService, type Locale } from './services/localization.servic
 import { MainCharacterService } from './services/main-character.service';
 import { LanguageSwitcherComponent } from './components/language-switcher.component';
 import { ThemeSwitcherComponent } from './components/theme-switcher.component';
+import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 const INITIALS_MAX_CHARS = 2;
 
@@ -79,6 +80,7 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+  protected readonly appDisplayName = APP_DISPLAY_NAME;
   protected readonly authService = inject(AuthService);
   protected readonly localizationService = inject(LocalizationService);
   protected readonly mainCharacterService = inject(MainCharacterService);

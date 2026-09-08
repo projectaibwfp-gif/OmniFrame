@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,7 @@ import { AuthService } from '../auth/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
+  protected readonly appDisplayName = APP_DISPLAY_NAME;
   protected readonly authService = inject(AuthService);
 
   private readonly route = inject(ActivatedRoute);

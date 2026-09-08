@@ -1,3 +1,7 @@
+export const APP_NAME = 'OmniFrame';
+export const APP_DISPLAY_NAME = APP_NAME;
+export const APP_BASE_URL = 'https://omniframe.vercel.app';
+
 export const DEFAULT_GOOGLE_CLIENT_ID =
   "181921852616-kqff26dgukqpg5o46ulkik3ir2hcri4r.apps.googleusercontent.com";
 

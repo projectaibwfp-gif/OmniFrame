@@ -127,6 +127,12 @@ Szczegóły w `README.md` (sekcja „Format czasu w całym systemie").
 - Nie commituj artefaktów builda (`frontend/out-tsc/`, `frontend/dist/`, `backend/.next/`).
 - Nie wpisuj sekretów, tokenów ani zawartości plików `.env` do kodu, commitów,
   logów ani dokumentacji.
+- Publiczne ścieżki frontendu projektuj z myślą o indeksowaniu przez Google,
+  crawlery i modele AI: opisowy routing, unikalne tytuły i opisy, canonical,
+  poprawne robots oraz dane strukturalne tam, gdzie strona jest źródłem danych.
+- Po zmianie publicznych ścieżek lub informacji indeksowanych aktualizuj
+  dokumentację SEO/routingu oraz odpowiednie pliki wspierające crawl (`robots.txt`,
+  `sitemap.xml`, mapa SEO tras).
 - Po zmianie zależności uruchom `npm install` w odpowiednim katalogu i zatwierdź
   zaktualizowany `package-lock.json`.
 - Commity w formacie Conventional Commits (`feat:`, `fix:`, `docs:`) - workflow

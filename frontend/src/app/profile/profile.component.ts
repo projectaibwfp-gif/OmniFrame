@@ -16,6 +16,7 @@ import { buildApiUrl } from '../config/api.config';
 import { AppDatePipe } from '../core/date-time.pipe';
 import { MainCharacterService } from '../services/main-character.service';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
+import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 const INITIALS_MAX_CHARS = 2;
 const INITIALS_FALLBACK = 'U';
@@ -31,6 +32,7 @@ const MAIN_CHARACTER_UNLINK_ERROR = 'Nie udało się odpiąć postaci. Spróbuj 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent {
+  protected readonly appDisplayName = APP_DISPLAY_NAME;
   protected readonly currentUser = inject(AuthService).user;
   protected readonly copyState = signal<'idle' | 'success' | 'error'>('idle');
   protected readonly editMode = signal(false);

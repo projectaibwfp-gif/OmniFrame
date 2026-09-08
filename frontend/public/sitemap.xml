@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://omniframe.vercel.app/</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/about</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/news</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/boosted</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/character</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/hunting-places</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/charm-places</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/quests</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/loot</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/highscores-snapshots</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/killstatistics</loc>
+  </url>
+</urlset>
