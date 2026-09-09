@@ -191,6 +191,15 @@ export class SeoService {
       };
     }
 
+    if (path.startsWith('/creature/')) {
+      return {
+        title: `Tibia creature details - ${APP_DISPLAY_NAME}`,
+        description:
+          'Unified Tibia creature reference with stats, resistances, loot drops and hunting places.',
+        schemaType: 'Dataset',
+      };
+    }
+
     return DEFAULT_SEO;
   }
 

@@ -2,6 +2,65 @@ export type ApiResponse<T> = {
   data: T;
 };
 
+// ---------------------------------------------------------------------------
+// Unified creature / monster model
+// Single source of truth for creature data across loot, hunting-places,
+// boosted bosses/creatures and future API endpoints.
+// ---------------------------------------------------------------------------
+
+/** Lightweight reference to a creature — used for cross-linking between modules. */
+export interface CreatureRef {
+  name: string;
+  slug: string;
+}
+
+/**
+ * Numeric resistance percentages (Tibia convention).
+ * Positive = creature takes MORE damage (weak to that element).
+ * Negative = creature takes LESS damage (resistant).
+ * -100 = immune.
+ */
+export interface CreatureResistances {
+  physical: number;
+  fire: number;
+  ice: number;
+  energy: number;
+  earth: number;
+  holy: number;
+  death: number;
+}
+
+/** Loot entry on a creature detail page. */
+export interface CreatureLootEntry {
+  name: string;
+  chance: string;
+  notes?: string;
+}
+
+/**
+ * Unified creature detail — merges data from hunting-places JSON,
+ * boosted boss/creature static data and (future) API responses.
+ * Every field except name/slug/boss is optional because not every
+ * source provides every field.
+ */
+export interface CreatureDetailDto {
+  name: string;
+  slug: string;
+  imageUrl?: string;
+  health?: number;
+  experience?: number;
+  boss: boolean;
+  charmPoints?: number;
+  resistances?: CreatureResistances;
+  attackStyle?: string[];
+  loot?: CreatureLootEntry[];
+  shortDescription?: string;
+  accessQuest?: string;
+  location?: string;
+  soloLevel?: string;
+  groupLevel?: string;
+}
+
 export interface ApiErrorDto {
   code: string;
   message: string;

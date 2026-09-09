@@ -24,6 +24,9 @@
           <span class="hero-chip">{{ detailTypeLabel() }}</span>
           <h2>{{ labels().overview }}</h2>
           <p>{{ detail.shortDescription }}</p>
+          <a class="hero-card__creature-link" [routerLink]="['/creature', detail.slug]">
+            {{ labels().viewCreaturePage }}
+          </a>
         </div>
       </section>
 
@@ -63,8 +66,10 @@
         <article class="detail-card">
           <h3>{{ labels().resistances }}</h3>
           <div class="resistance-list">
-            @for (resistance of detail.resistances; track resistance.type) {
-              <span class="resistance-chip">{{ resistance.type }}: {{ resistance.value }}</span>
+            @for (entry of resistanceEntries(detail); track entry.label) {
+              <span class="resistance-chip {{ resistanceClass(entry.value) }}">
+                {{ entry.label }} {{ entry.value > 0 ? '+' : '' }}{{ entry.value }}%
+              </span>
             }
           </div>
         </article>

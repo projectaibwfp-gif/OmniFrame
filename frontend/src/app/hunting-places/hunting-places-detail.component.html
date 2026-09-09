@@ -97,7 +97,9 @@
           <div class="monsters-grid">
             @for (monster of place.monsters; track monster.slug) {
               <article class="monster-card">
-                <h4>{{ monster.name }}</h4>
+                <h4>
+                  <a [routerLink]="['/creature', monster.slug]">{{ monster.name }}</a>
+                </h4>
                 <div class="monster-stats">
                   <span
                     >{{ labels().health }}: <strong>{{ monster.health }}</strong></span

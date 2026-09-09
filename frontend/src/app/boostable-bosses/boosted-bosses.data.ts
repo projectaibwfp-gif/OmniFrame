@@ -1,31 +1,13 @@
-export interface BoostedResistance {
-  type: string;
-  value: string;
-}
+import type { CreatureDetailDto, CreatureLootEntry } from '@shared/api-contract';
 
-export interface BoostedLootEntry {
-  name: string;
-  chance: string;
-  notes?: string;
-}
-
-export interface BoostedBossDetailEntry {
-  name: string;
-  imageUrl?: string;
-  shortDescription: string;
-  accessQuest: string;
-  location: string;
-  soloLevel: string;
-  groupLevel: string;
-  attackStyle: string[];
-  resistances: BoostedResistance[];
-  loot: BoostedLootEntry[];
-}
+export type BoostedBossDetailEntry = CreatureDetailDto;
 
 export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lloyd',
+    slug: 'Lloyd',
     imageUrl: 'https://static.tibia.com/images/library/creatures/lloyd.gif',
+    boss: true,
     shortDescription:
       'Piracki boss nastawiony na obrazenia fizyczne i death, dobry do szybkiego sprawdzenia statusu pod glowna postac.',
     accessQuest: 'Brak specjalnego questa dostepowego.',
@@ -33,12 +15,15 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
     soloLevel: '250+',
     groupLevel: '150+',
     attackStyle: ['mocne uderzenia fizyczne', 'obrazenia death', 'przywolania'],
-    resistances: [
-      { type: 'Physical', value: 'wysoka' },
-      { type: 'Earth', value: 'srednia' },
-      { type: 'Fire', value: 'niska' },
-      { type: 'Ice', value: 'niska' },
-    ],
+    resistances: {
+      physical: -50,
+      earth: -20,
+      fire: -10,
+      ice: -10,
+      energy: 0,
+      holy: 0,
+      death: 0,
+    },
     loot: [
       { name: 'platinum coin', chance: 'very common' },
       { name: 'great mana potion', chance: 'common' },
@@ -59,3 +44,5 @@ export function findBoostedBossDetails(name: string | undefined): BoostedBossDet
 
   return BOOSTED_BOSSES.find((entry) => entry.name === name) ?? null;
 }
+
+export type { CreatureLootEntry as BoostedLootEntry };

@@ -1,35 +1,29 @@
-import type { BoostedLootEntry, BoostedResistance } from './boosted-bosses.data';
+import type { CreatureDetailDto } from '@shared/api-contract';
 
-export interface BoostedCreatureDetailEntry {
-  name: string;
-  imageUrl?: string;
-  shortDescription: string;
-  accessQuest: string;
-  location: string;
-  soloLevel: string;
-  groupLevel: string;
-  attackStyle: string[];
-  resistances: BoostedResistance[];
-  loot: BoostedLootEntry[];
-}
+export type BoostedCreatureDetailEntry = CreatureDetailDto;
 
 export const BOOSTED_CREATURES: BoostedCreatureDetailEntry[] = [
   {
     name: 'Dragon Lord',
+    slug: 'Dragon-Lord',
     imageUrl: 'https://static.tibia.com/images/library/creatures/dragonlord.gif',
+    boss: false,
     shortDescription:
       'Klasyczny fire caster z mocnym melee, dobry kandydat do oznaczania czy glowna postac ma go juz zrobionego.',
-    accessQuest: 'Brak specjalnego questa dostepowego.',
+    accessQuest: 'Brak specjalnego tego dostepowego.',
     location: 'Fenrock, Darashia Dragon Lair, PoH, okolice Yalahar.',
     soloLevel: '70+',
     groupLevel: '45+',
     attackStyle: ['fire wave', 'fire bomb', 'mocny melee'],
-    resistances: [
-      { type: 'Fire', value: 'bardzo wysoka' },
-      { type: 'Ice', value: 'slaba' },
-      { type: 'Energy', value: 'neutralna' },
-      { type: 'Physical', value: 'neutralna' },
-    ],
+    resistances: {
+      physical: 0,
+      fire: -90,
+      ice: 10,
+      energy: 0,
+      earth: 0,
+      holy: 0,
+      death: 0,
+    },
     loot: [
       { name: 'dragon ham', chance: 'very common' },
       { name: 'strong health potion', chance: 'common' },

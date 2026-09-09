@@ -1,0 +1,314 @@
+@use 'colors' as c;
+
+.creature-detail-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: c.$text-700;
+  }
+
+  .back-link {
+    color: c.$text-500;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-right: 0.25rem;
+
+    &:hover {
+      color: c.$text-700;
+    }
+  }
+
+  .detail-badge {
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: c.$surface-alt;
+    color: c.$text-600;
+  }
+}
+
+.detail-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hero-card {
+  display: flex;
+  gap: 1.25rem;
+  background: c.$surface-card;
+  border: 1px solid c.$border-subtle;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+
+  &__image {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    h2 {
+      font-size: 1.125rem;
+      margin: 0 0 0.5rem;
+      color: c.$text-700;
+    }
+
+    p {
+      margin: 0;
+      color: c.$text-500;
+      line-height: 1.5;
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.info-tile {
+  background: c.$surface-card;
+  border: 1px solid c.$border-subtle;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &--wide {
+    grid-column: span 2;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    color: c.$text-400;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tile-value {
+    font-size: 1.125rem;
+    color: c.$text-700;
+  }
+}
+
+.detail-card {
+  background: c.$surface-card;
+  border: 1px solid c.$border-subtle;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+
+  &--wide {
+    grid-column: 1 / -1;
+  }
+
+  h3 {
+    font-size: 1rem;
+    margin: 0 0 0.75rem;
+    color: c.$text-700;
+  }
+}
+
+.resistance-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resistance-chip {
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &.resist-immune {
+    background: c.$surface-dark-card-alt;
+    color: c.$text-on-dark;
+  }
+
+  &.resist-strong {
+    background: c.$surface-alt;
+    color: c.$text-600;
+  }
+
+  &.resist-weak {
+    background: c.$surface-card-overlay;
+    color: c.$text-700;
+  }
+
+  &.resist-neutral {
+    background: c.$surface-card;
+    color: c.$text-400;
+    border: 1px solid c.$border-subtle;
+  }
+}
+
+.tag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-chip {
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  background: c.$surface-alt;
+  color: c.$text-600;
+}
+
+.loot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.loot-tile {
+  padding: 0.75rem;
+  border: 1px solid c.$border-subtle;
+  border-radius: 0.5rem;
+  background: c.$surface-card;
+
+  &__header {
+    margin-bottom: 0.375rem;
+  }
+
+  .loot-chance {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: c.$text-400;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+    color: c.$text-700;
+  }
+
+  .loot-notes {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: c.$text-400;
+  }
+}
+
+.item-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.item-chip {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  text-decoration: none;
+
+  &--link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+
+    &:hover {
+      background: c.$surface-card-overlay;
+      color: c.$text-700;
+    }
+  }
+
+  &__value {
+    font-size: 0.6875rem;
+    color: c.$text-400;
+  }
+}
+
+.place-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.place-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  background: c.$surface-alt;
+  color: c.$text-600;
+  text-decoration: none;
+
+  &:hover {
+    background: c.$surface-card-overlay;
+    color: c.$text-700;
+  }
+
+  &__level {
+    font-size: 0.6875rem;
+    color: c.$text-400;
+  }
+}
+
+.empty-state,
+.not-found {
+  text-align: center;
+  padding: 2rem;
+  color: c.$text-400;
+
+  h2 {
+    margin: 0 0 0.75rem;
+    color: c.$text-500;
+  }
+
+  a {
+    color: c.$text-600;
+    text-decoration: none;
+
+    &:hover {
+      color: c.$text-700;
+    }
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .creature-detail-page {
+    padding: 1rem;
+  }
+
+  .hero-card {
+    flex-direction: column;
+
+    &__image {
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  .info-tile--wide {
+    grid-column: span 1;
+  }
+}

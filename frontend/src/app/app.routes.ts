@@ -128,6 +128,14 @@ export const routes: Routes = [
     loadComponent: () => import('./loot/loot.component').then(({ LootComponent }) => LootComponent),
   },
   {
+    path: 'creature/:slug',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia/creature-detail.component').then(
+        ({ CreatureDetailComponent }) => CreatureDetailComponent,
+      ),
+  },
+  {
     path: 'quests/:id',
     canActivate: [authGuard],
     loadComponent: () =>

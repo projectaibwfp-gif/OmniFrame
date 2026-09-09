@@ -133,6 +133,16 @@
     margin: 0 0 8px;
     color: c.$text-700;
     font-size: 13px;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: c.$text-600;
+        text-decoration: underline;
+      }
+    }
   }
 }
 

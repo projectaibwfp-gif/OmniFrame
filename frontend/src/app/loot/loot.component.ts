@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PaginationComponent } from '../components/pagination/pagination.component';
 import { createPagedList } from '../core/paged-list';
 import { createSort } from '../core/sort';
@@ -25,9 +26,10 @@ function matchesSearch(item: LootItem, search: string): boolean {
     return true;
   }
 
-  return [item.name, item.description, ...item.sources].some((value) =>
-    value.toLowerCase().includes(search),
-  );
+  const droppedByNames = item.droppedBy.map((creature) => creature.name);
+  const allSearchableText = [item.name, item.description, ...droppedByNames, ...item.otherSources];
+
+  return allSearchableText.some((value) => value.toLowerCase().includes(search));
 }
 
 function matchesCategory(item: LootItem, category: LootCategory | ''): boolean {
@@ -73,7 +75,7 @@ function matchesFilters(item: LootItem, filters: LootFilters): boolean {
 
 @Component({
   selector: 'app-loot',
-  imports: [FormsModule, PaginationComponent],
+  imports: [FormsModule, RouterLink, PaginationComponent],
   templateUrl: './loot.component.html',
   styleUrl: './loot.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

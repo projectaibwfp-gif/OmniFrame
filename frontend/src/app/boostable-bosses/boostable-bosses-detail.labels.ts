@@ -20,6 +20,7 @@ export interface BoostedDetailLabels {
   saveError: string;
   saveSuccess: string;
   noMainCharacter: string;
+  viewCreaturePage: string;
 }
 
 const POLISH_LABELS: BoostedDetailLabels = {
@@ -44,6 +45,7 @@ const POLISH_LABELS: BoostedDetailLabels = {
   saveError: 'Nie udalo sie zapisac statusu.',
   saveSuccess: 'Status zapisany.',
   noMainCharacter: 'Najpierw ustaw glowna postac w profilu.',
+  viewCreaturePage: 'Pelna strona potwora →',
 };
 
 const ENGLISH_LABELS: BoostedDetailLabels = {
@@ -68,6 +70,7 @@ const ENGLISH_LABELS: BoostedDetailLabels = {
   saveError: 'Could not save status.',
   saveSuccess: 'Status saved.',
   noMainCharacter: 'Link your main character first in profile.',
+  viewCreaturePage: 'Full creature page →',
 };
 
 export function buildBoostedDetailLabels(isPl: boolean): BoostedDetailLabels {

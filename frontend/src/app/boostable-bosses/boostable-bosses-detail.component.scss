@@ -69,6 +69,19 @@
       line-height: 1.6;
     }
   }
+
+  &__creature-link {
+    width: fit-content;
+    margin-top: 4px;
+    color: c.$text-600;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+
+    &:hover {
+      color: c.$text-700;
+    }
+  }
 }
 
 .hero-chip {

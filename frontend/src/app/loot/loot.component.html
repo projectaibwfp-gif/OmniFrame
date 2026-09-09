@@ -160,7 +160,15 @@
             </div>
             <div>
               <dt>{{ labels().sources }}</dt>
-              <dd>{{ item.sources.join(', ') }}</dd>
+              <dd>
+                @for (creature of item.droppedBy; track creature.slug; let last = $last) {
+                  <a [routerLink]="['/creature', creature.slug]">{{ creature.name }}</a
+                  >{{ last && item.otherSources.length === 0 ? '' : ', ' }}
+                }
+                @for (source of item.otherSources; track source; let last = $last) {
+                  {{ source }}{{ last ? '' : ', ' }}
+                }
+              </dd>
             </div>
           </dl>
         </article>

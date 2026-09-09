@@ -1,16 +1,9 @@
+import type { CreatureResistances } from '@shared/api-contract';
 import type { Coordinates, TibiaRoute } from '../tibia/tibia-map';
 import type { Vocation } from '../tibia/vocation';
 import huntingPlacesData from './hunting-places.json';
 
-export interface HuntingMonsterResistances {
-  energy: number;
-  earth: number;
-  fire: number;
-  ice: number;
-  holy: number;
-  death: number;
-  physical: number;
-}
+export type HuntingMonsterResistances = CreatureResistances;
 
 export interface HuntingMonster {
   name: string;

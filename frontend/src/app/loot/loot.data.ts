@@ -1,3 +1,5 @@
+import type { CreatureRef } from '@shared/api-contract';
+
 export type LootCategory =
   | 'weapons'
   | 'armor'
@@ -14,7 +16,8 @@ export interface LootItem {
   name: string;
   category: LootCategory;
   description: string;
-  sources: readonly string[];
+  droppedBy: readonly CreatureRef[];
+  otherSources: readonly string[];
   marketValue: number;
   stackable: boolean;
   membersOnly: boolean;
@@ -32,13 +35,18 @@ export const LOOT_CATEGORIES: readonly LootCategory[] = [
   'valuables',
 ];
 
+function creature(name: string): CreatureRef {
+  return { name, slug: name.replace(/\s+/g, '-') };
+}
+
 export const LOOT_ITEMS: readonly LootItem[] = [
   {
     id: 'magic-sword',
     name: 'Magic Sword',
     category: 'weapons',
     description: 'Klasyczny miecz endgame dla collectorow i knightow.',
-    sources: ['Demon', 'Warlock', 'Ferumbras'],
+    droppedBy: [creature('Demon'), creature('Warlock'), creature('Ferumbras')],
+    otherSources: [],
     marketValue: 800000,
     stackable: false,
     membersOnly: true,
@@ -48,7 +56,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Avalanche Rune',
     category: 'runes',
     description: 'Popularna runa AoE do expa i teamhuntow.',
-    sources: ['Player crafting', 'Market'],
+    droppedBy: [],
+    otherSources: ['Player crafting', 'Market'],
     marketValue: 320,
     stackable: true,
     membersOnly: false,
@@ -58,7 +67,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Golden Armor',
     category: 'armor',
     description: 'Cenny klasyk z bossow i mocniejszych potworow.',
-    sources: ['Dragon Lord', 'Demon'],
+    droppedBy: [creature('Dragon Lord'), creature('Demon')],
+    otherSources: [],
     marketValue: 150000,
     stackable: false,
     membersOnly: true,
@@ -68,7 +78,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Crown Helmet',
     category: 'helmets',
     description: 'Jeden z czestszych profitowych helmow na market.',
-    sources: ['Behemoth', 'Hero'],
+    droppedBy: [creature('Behemoth'), creature('Hero')],
+    otherSources: [],
     marketValue: 12000,
     stackable: false,
     membersOnly: true,
@@ -78,7 +89,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Knight Legs',
     category: 'legs',
     description: 'Stabilny loot dla knighta i uniwersalny item na handel.',
-    sources: ['Dragon Lord', 'Frost Dragon'],
+    droppedBy: [creature('Dragon Lord'), creature('Frost Dragon')],
+    otherSources: [],
     marketValue: 18000,
     stackable: false,
     membersOnly: true,
@@ -88,7 +100,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Boots of Haste',
     category: 'boots',
     description: 'Buty premium zwiekszajace mobilnosc postaci.',
-    sources: ['Hero', 'Orshabaal'],
+    droppedBy: [creature('Hero'), creature('Orshabaal')],
+    otherSources: [],
     marketValue: 40000,
     stackable: false,
     membersOnly: true,
@@ -98,7 +111,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Stone Skin Amulet',
     category: 'accessories',
     description: 'Przydatny amulet defensywny do bossow i PvE.',
-    sources: ['Player crafting', 'Market'],
+    droppedBy: [],
+    otherSources: ['Player crafting', 'Market'],
     marketValue: 3500,
     stackable: true,
     membersOnly: false,
@@ -108,7 +122,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Green Dragon Leather',
     category: 'creature-products',
     description: 'Produkt potwora potrzebny do outfitow i questa.',
-    sources: ['Dragon Lord', 'Dragon'],
+    droppedBy: [creature('Dragon Lord'), creature('Dragon')],
+    otherSources: [],
     marketValue: 1800,
     stackable: true,
     membersOnly: false,
@@ -118,7 +133,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Gold Ingot',
     category: 'valuables',
     description: 'Cenny surowiec i prosty loot do szybkiego sellowania.',
-    sources: ['Lloyd', 'Pirates', 'War Golem'],
+    droppedBy: [creature('Lloyd'), creature('Pirates'), creature('War Golem')],
+    otherSources: [],
     marketValue: 5000,
     stackable: true,
     membersOnly: false,
@@ -128,7 +144,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Fire Sword',
     category: 'weapons',
     description: 'Tania bron pod progression i market flip.',
-    sources: ['Dragon', 'Dragon Lord', 'Hero'],
+    droppedBy: [creature('Dragon'), creature('Dragon Lord'), creature('Hero')],
+    otherSources: [],
     marketValue: 4000,
     stackable: false,
     membersOnly: false,
@@ -138,7 +155,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Demon Shield',
     category: 'armor',
     description: 'Popularna tarcza z mocnych potworow i bossow.',
-    sources: ['Demon', 'Hellhound'],
+    droppedBy: [creature('Demon'), creature('Hellhound')],
+    otherSources: [],
     marketValue: 30000,
     stackable: false,
     membersOnly: true,
@@ -148,7 +166,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Zaoan Helmet',
     category: 'helmets',
     description: 'Bardzo popularny helm pod hunt i szybki profit.',
-    sources: ['Lizard Chosen', 'Draken Warmaster'],
+    droppedBy: [creature('Lizard Chosen'), creature('Draken Warmaster')],
+    otherSources: [],
     marketValue: 9000,
     stackable: false,
     membersOnly: true,
@@ -158,7 +177,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Blue Legs',
     category: 'legs',
     description: 'Czesci ekwipunku dla paladyna i knighta.',
-    sources: ['Hero', 'Hydra'],
+    droppedBy: [creature('Hero'), creature('Hydra')],
+    otherSources: [],
     marketValue: 15000,
     stackable: false,
     membersOnly: true,
@@ -168,7 +188,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Soft Boots',
     category: 'boots',
     description: 'Bardzo chodliwy item utility na market.',
-    sources: ['Nightmare', 'Player trade'],
+    droppedBy: [creature('Nightmare')],
+    otherSources: ['Player trade'],
     marketValue: 120000,
     stackable: false,
     membersOnly: true,
@@ -178,7 +199,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Ring of Healing',
     category: 'accessories',
     description: 'Akcesorium sustainowe o stalej wartosci rynkowej.',
-    sources: ['Lloyd', 'Monk', 'Necromancer'],
+    droppedBy: [creature('Lloyd'), creature('Monk'), creature('Necromancer')],
+    otherSources: [],
     marketValue: 8000,
     stackable: false,
     membersOnly: false,
@@ -188,7 +210,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Sudden Death Rune',
     category: 'runes',
     description: 'Mocna runa single target z duzym obrotem na rynku.',
-    sources: ['Player crafting', 'Market'],
+    droppedBy: [],
+    otherSources: ['Player crafting', 'Market'],
     marketValue: 220,
     stackable: true,
     membersOnly: false,
@@ -198,7 +221,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Protective Charm',
     category: 'creature-products',
     description: 'Produkt craftowy wypadajacy z mistycznych stworzen.',
-    sources: ['Blue Djinn', 'Necromancer'],
+    droppedBy: [creature('Blue Djinn'), creature('Necromancer')],
+    otherSources: [],
     marketValue: 2500,
     stackable: true,
     membersOnly: true,
@@ -208,7 +232,8 @@ export const LOOT_ITEMS: readonly LootItem[] = [
     name: 'Platinum Coin',
     category: 'valuables',
     description: 'Podstawowa waluta wypadajaca z wielu potworow.',
-    sources: ['Lloyd', 'Hydra', 'Frost Dragon'],
+    droppedBy: [creature('Lloyd'), creature('Hydra'), creature('Frost Dragon')],
+    otherSources: [],
     marketValue: 100,
     stackable: true,
     membersOnly: false,

@@ -1,0 +1,163 @@
+<div class="creature-detail-page">
+  @if (creature(); as creature) {
+    <div class="detail-header">
+      <a class="back-link" routerLink="/loot">{{ labels().back }}</a>
+      <h1>{{ creature.name }}</h1>
+      <span class="detail-badge">{{ creature.boss ? labels().boss : labels().creature }}</span>
+    </div>
+
+    <div class="detail-layout">
+      @if (creature.imageUrl || creature.shortDescription) {
+        <section class="hero-card">
+          @if (creature.imageUrl) {
+            <img
+              class="hero-card__image"
+              [src]="creature.imageUrl"
+              [alt]="creature.name"
+              loading="lazy"
+            />
+          }
+          @if (creature.shortDescription) {
+            <div class="hero-card__content">
+              <h2>{{ labels().overview }}</h2>
+              <p>{{ creature.shortDescription }}</p>
+            </div>
+          }
+        </section>
+      }
+
+      <section class="stats-grid">
+        @if (creature.health !== undefined) {
+          <article class="info-tile">
+            <span class="info-label">{{ labels().health }}</span>
+            <strong class="tile-value">{{ creature.health }}</strong>
+          </article>
+        }
+        @if (creature.experience !== undefined) {
+          <article class="info-tile">
+            <span class="info-label">{{ labels().experience }}</span>
+            <strong class="tile-value">{{ creature.experience }}</strong>
+          </article>
+        }
+        @if (creature.charmPoints !== undefined) {
+          <article class="info-tile">
+            <span class="info-label">{{ labels().charmPoints }}</span>
+            <strong class="tile-value">{{ creature.charmPoints }}</strong>
+          </article>
+        }
+        @if (creature.soloLevel) {
+          <article class="info-tile">
+            <span class="info-label">{{ labels().soloLevel }}</span>
+            <strong class="tile-value">{{ creature.soloLevel }}</strong>
+          </article>
+        }
+        @if (creature.groupLevel) {
+          <article class="info-tile">
+            <span class="info-label">{{ labels().groupLevel }}</span>
+            <strong class="tile-value">{{ creature.groupLevel }}</strong>
+          </article>
+        }
+        @if (creature.location) {
+          <article class="info-tile info-tile--wide">
+            <span class="info-label">{{ labels().location }}</span>
+            <strong class="tile-value">{{ creature.location }}</strong>
+          </article>
+        }
+        @if (creature.accessQuest) {
+          <article class="info-tile info-tile--wide">
+            <span class="info-label">{{ labels().accessQuest }}</span>
+            <strong class="tile-value">{{ creature.accessQuest }}</strong>
+          </article>
+        }
+      </section>
+
+      @if (creature.resistances) {
+        <section class="detail-card">
+          <h3>{{ labels().resistances }}</h3>
+          <div class="resistance-list">
+            @for (entry of resistanceEntries(creature); track entry.label) {
+              <span class="resistance-chip {{ resistanceClass(entry.value) }}">
+                {{ entry.label }} {{ entry.value > 0 ? '+' : '' }}{{ entry.value }}%
+              </span>
+            }
+          </div>
+        </section>
+      }
+
+      @if (creature.attackStyle?.length) {
+        <section class="detail-card">
+          <h3>{{ labels().attackStyle }}</h3>
+          <ul class="tag-list">
+            @for (attack of creature.attackStyle; track attack) {
+              <li class="tag-chip">{{ attack }}</li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (creature.loot?.length) {
+        <section class="detail-card detail-card--wide">
+          <h3>{{ labels().loot }}</h3>
+          <div class="loot-grid">
+            @for (loot of creature.loot; track loot.name) {
+              <div class="loot-tile">
+                <div class="loot-tile__header">
+                  <span class="loot-chance">{{ loot.chance }}</span>
+                </div>
+                <strong>{{ loot.name }}</strong>
+                @if (loot.notes) {
+                  <small class="loot-notes">{{ loot.notes }}</small>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @if (creature.droppedItems.length > 0) {
+        <section class="detail-card detail-card--wide">
+          <h3>{{ labels().droppedItems }}</h3>
+          <div class="item-chips">
+            @for (item of creature.droppedItems; track item.id) {
+              <a class="item-chip item-chip--link" [routerLink]="['/loot']">
+                {{ item.name }}
+                <span class="item-chip__value">{{ formatMarketValue(item.marketValue) }} gp</span>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      @if (creature.huntingPlaces.length > 0) {
+        <section class="detail-card detail-card--wide">
+          <h3>{{ labels().huntingPlaces }}</h3>
+          <div class="place-links">
+            @for (place of creature.huntingPlaces; track place.id) {
+              <a class="place-link" [routerLink]="['/hunting-places', place.id]">
+                {{ place.name }}
+                <span class="place-link__level">{{ place.minLevel }}+</span>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      @if (
+        !creature.imageUrl &&
+        !creature.shortDescription &&
+        !creature.resistances &&
+        !creature.attackStyle?.length &&
+        !creature.loot?.length &&
+        creature.droppedItems.length === 0 &&
+        creature.huntingPlaces.length === 0
+      ) {
+        <div class="empty-state">{{ labels().noData }}</div>
+      }
+    </div>
+  } @else {
+    <div class="not-found">
+      <h2>{{ labels().notFound }}</h2>
+      <a routerLink="/loot">{{ labels().notFoundAction }}</a>
+    </div>
+  }
+</div>
