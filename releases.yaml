@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-09T09:37:51.610Z"
+    commit: "5c7466ed9c8ca0799e5e3a5acf55720110a48d0a"
+    frontend:
+      version: "0.28.0"
+      tag: "frontend-v0.28.0"
+      changed: true
+      commits:
+      - hash: "5c7466ed"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-09T11:35:55+02:00"
+        message: "feat: add unified creature detail page with stats, resistances, and loot information"
+    backend:
+      version: "0.17.0"
+      tag: "backend-v0.17.0"
+      changed: false
+      commits: []
   - date: "2026-09-08T09:53:56.681Z"
     commit: "0d32c74d9f8930fdc152b11e349cd0ff48a788ce"
     frontend:
