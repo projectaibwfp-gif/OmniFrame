@@ -1,4 +1,28 @@
 releases:
+  - date: "2026-09-10T13:10:18.466Z"
+    commit: "fc48db06560dd5ce218b53c00b365227df258727"
+    frontend:
+      version: "0.32.0"
+      tag: "frontend-v0.32.0"
+      changed: true
+      commits:
+      - hash: "fc48db06"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-10T15:08:26+02:00"
+        message: "feat: add worlds, spells, houses, and fansites features with routing and UI integration"
+      - hash: "ae0ce448"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-10T15:06:04+02:00"
+        message: "feat: add worlds, spells, houses, and fansites features with routing and UI integration"
+    backend:
+      version: "0.19.0"
+      tag: "backend-v0.19.0"
+      changed: true
+      commits:
+      - hash: "ae0ce448"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-10T15:06:04+02:00"
+        message: "feat: add worlds, spells, houses, and fansites features with routing and UI integration"
   - date: "2026-09-10T10:45:28.855Z"
     commit: "019c089fc3f08200f010fc864463043adc52fce9"
     frontend:
