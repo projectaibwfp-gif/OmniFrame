@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-10T10:45:28.855Z"
+    commit: "019c089fc3f08200f010fc864463043adc52fce9"
+    frontend:
+      version: "0.31.0"
+      tag: "frontend-v0.31.0"
+      changed: true
+      commits:
+      - hash: "019c089f"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-10T12:42:37+02:00"
+        message: "feat: enhance vocation handling with mapping and UI updates for main character"
+    backend:
+      version: "0.18.0"
+      tag: "backend-v0.18.0"
+      changed: false
+      commits: []
   - date: "2026-09-10T10:20:09.119Z"
     commit: "3ba63ff1ee9aedcc01ddf3a018ea77a270184a5e"
     frontend:
