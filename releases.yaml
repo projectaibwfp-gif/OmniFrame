@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-10T10:20:09.119Z"
+    commit: "3ba63ff1ee9aedcc01ddf3a018ea77a270184a5e"
+    frontend:
+      version: "0.30.0"
+      tag: "frontend-v0.30.0"
+      changed: true
+      commits:
+      - hash: "3ba63ff1"
+        author: "Bartłomiej Wolski"
+        date: "2026-09-10T12:17:50+02:00"
+        message: "feat: add hunting recommendations feature with UI integration and filtering logic"
+    backend:
+      version: "0.18.0"
+      tag: "backend-v0.18.0"
+      changed: false
+      commits: []
   - date: "2026-09-10T10:01:39.643Z"
     commit: "fe18d431bf7f0558fb3706ea372960ae598ca27b"
     frontend:
