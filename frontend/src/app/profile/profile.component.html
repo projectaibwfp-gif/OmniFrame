@@ -138,6 +138,49 @@
             }
           </article>
 
+          @if (huntingRecommendations().length > 0) {
+            <article class="profile-item-card hunting-recommendations-card">
+              <div class="hunting-recommendations-heading">
+                <span class="hunting-recommendations-icon" aria-hidden="true">⚔</span>
+                <div>
+                  <span class="label">Dopasowane do Twojej postaci</span>
+                  <h2>Propozycje miejsc polowań</h2>
+                  <p>
+                    Dwie miejscówki dobrane do poziomu
+                    <strong>{{ mainCharacter()?.level }}</strong
+                    >. Kliknij kartę, aby zobaczyć szczegóły.
+                  </p>
+                </div>
+              </div>
+
+              <div class="hunting-recommendations-grid">
+                @for (recommendation of huntingRecommendations(); track recommendation.place.id) {
+                  <a
+                    class="hunting-recommendation"
+                    [routerLink]="['/hunting-places', recommendation.place.id]"
+                  >
+                    <div class="hunting-recommendation__topline">
+                      <span class="hunting-recommendation__level"
+                        >{{ recommendation.place.minLevel }}+</span
+                      >
+                      @if (recommendation.vocationMatch) {
+                        <span class="hunting-recommendation__match">Twoja profesja</span>
+                      } @else {
+                        <span class="hunting-recommendation__match">Alternatywa</span>
+                      }
+                    </div>
+                    <h3>{{ recommendation.place.name }}</h3>
+                    <div class="hunting-recommendation__stats">
+                      <span>EXP {{ recommendation.place.rawExp }}</span>
+                      <span>Zysk {{ recommendation.place.profit }}</span>
+                    </div>
+                    <span class="hunting-recommendation__action">Zobacz miejscówkę →</span>
+                  </a>
+                }
+              </div>
+            </article>
+          }
+
           <article class="profile-item-card referral-card">
             <div class="referral-heading">
               <span class="referral-icon" aria-hidden="true">↗</span>

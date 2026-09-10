@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
 import { mapAuthUser } from '../auth/auth-user.mapper';
@@ -17,6 +18,7 @@ import { AppDatePipe } from '../core/date-time.pipe';
 import { MainCharacterService } from '../services/main-character.service';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 import { APP_DISPLAY_NAME } from '@shared/runtime-config';
+import { getHuntingRecommendations } from './hunting-recommendations';
 
 const INITIALS_MAX_CHARS = 2;
 const INITIALS_FALLBACK = 'U';
@@ -26,7 +28,7 @@ const MAIN_CHARACTER_UNLINK_ERROR = 'Nie udało się odpiąć postaci. Spróbuj 
 
 @Component({
   selector: 'app-profile',
-  imports: [AppDatePipe, FormsModule],
+  imports: [AppDatePipe, FormsModule, RouterLink],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,6 +50,10 @@ export class ProfileComponent {
 
   protected readonly mainCharacter = computed(() => this.mainCharacterService.character());
   protected readonly mainCharacterBadge = computed(() => this.mainCharacterService.badge());
+  protected readonly huntingRecommendations = computed(() => {
+    const character = this.mainCharacter();
+    return getHuntingRecommendations(character?.level, character?.vocation);
+  });
 
   protected readonly initials = computed(() => {
     const user = this.currentUser();

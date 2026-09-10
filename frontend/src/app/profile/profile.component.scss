@@ -352,6 +352,146 @@
   border-top: 1px solid c.$border-subtle;
 }
 
+.hunting-recommendations-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, c.$surface-card 0%, c.$surface-alt 100%);
+
+  &::after {
+    position: absolute;
+    right: -52px;
+    bottom: -84px;
+    width: 210px;
+    height: 210px;
+    border: 1px solid c.$brand-primary-soft;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 22px c.$brand-primary-soft-lite,
+      0 0 0 46px c.$brand-primary-soft-lite;
+    content: '';
+    pointer-events: none;
+  }
+}
+
+.hunting-recommendations-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  p {
+    max-width: 560px;
+    margin: 8px 0 0;
+    color: c.$text-400;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+.hunting-recommendations-icon {
+  display: grid;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+  font-size: 21px;
+  box-shadow: 0 8px 18px c.$shadow-medium;
+}
+
+.hunting-recommendations-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.hunting-recommendation {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 12px;
+  background: c.$surface-alt;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+
+  &:hover {
+    border-color: c.$brand-primary;
+    box-shadow: 0 10px 22px c.$shadow-medium;
+    transform: translateY(-2px);
+  }
+
+  &__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__level {
+    color: c.$brand-primary;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  &__match {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: c.$brand-primary-tint;
+    color: c.$brand-primary;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 14px 0 12px;
+    color: c.$text-700;
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  &__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    color: c.$text-400;
+    font-size: 12px;
+  }
+
+  &__stats span {
+    padding: 4px 8px;
+    border: 1px solid c.$border-subtle;
+    border-radius: 999px;
+  }
+
+  &__action {
+    margin-top: 18px;
+    color: c.$brand-primary;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
 .btn-unlink {
   background: transparent;
   border: none;
@@ -564,5 +704,9 @@ textarea.form-control {
       min-width: auto;
       width: 100%;
     }
+  }
+
+  .hunting-recommendations-grid {
+    grid-template-columns: 1fr;
   }
 }
