@@ -10,12 +10,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { TibiaKillStatisticsEntryDto } from '@shared/api-contract';
 import { MainCharacterService } from '../services/main-character.service';
+import { TibiaWorldsService } from '../tibia-worlds/tibia-worlds.service';
+import { buildWorldOptions } from '../tibia-worlds/world-options';
 import { TibiaKillStatisticsService } from './tibia-killstatistics.service';
 
 type BossFilter = 'all' | 'today' | 'week' | 'old';
 
 const BOSS_MAX_WEEKLY_KILLS = 100;
-const DEFAULT_WORLDS = ['Antica', 'Secura', 'Dia'];
 
 @Component({
   selector: 'app-tibia-killstatistics',
@@ -25,6 +26,7 @@ const DEFAULT_WORLDS = ['Antica', 'Secura', 'Dia'];
 })
 export class TibiaKillStatisticsComponent {
   protected readonly worlds = signal<string[]>([]);
+  protected readonly worldsError = signal(false);
   protected readonly selectedWorld = signal<string | null>(null);
   protected readonly statistics = signal<TibiaKillStatisticsEntryDto[]>([]);
   protected readonly updatedAt = signal<string | null>(null);
@@ -67,20 +69,12 @@ export class TibiaKillStatisticsComponent {
   });
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
+  private readonly tibiaWorldsService = inject(TibiaWorldsService);
   private readonly mainCharacterService = inject(MainCharacterService);
   private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    const mainCharacterWorld = this.mainCharacterService.world();
-    this.worlds.set(
-      mainCharacterWorld && !DEFAULT_WORLDS.includes(mainCharacterWorld)
-        ? [...DEFAULT_WORLDS, mainCharacterWorld]
-        : DEFAULT_WORLDS,
-    );
-
-    if (mainCharacterWorld) {
-      this.loadStatistics(mainCharacterWorld);
-    }
+    this.loadWorlds();
   }
 
   protected onWorldChange(event: Event): void {
@@ -107,6 +101,24 @@ export class TibiaKillStatisticsComponent {
 
   protected setBossFilter(filter: BossFilter): void {
     this.bossFilter.set(filter);
+  }
+
+  private loadWorlds(): void {
+    this.tibiaWorldsService
+      .getWorlds()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          const mainCharacterWorld = this.mainCharacterService.world();
+          this.worlds.set(buildWorldOptions(response.regularWorlds, mainCharacterWorld));
+          this.worldsError.set(false);
+
+          if (!this.selectedWorld() && mainCharacterWorld) {
+            this.loadStatistics(mainCharacterWorld);
+          }
+        },
+        error: () => this.worldsError.set(true),
+      });
   }
 
   private setWorld(world: string): void {

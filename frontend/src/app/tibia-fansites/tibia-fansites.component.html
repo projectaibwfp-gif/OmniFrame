@@ -1,0 +1,81 @@
+@if (isLoading()) {
+  <div class="fansites-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="fansites-page__message fansites-page__message--error">
+    {{ labels().error }}
+    <button class="fansite-card__tag" type="button" (click)="loadFansites()">
+      {{ labels().retry }}
+    </button>
+  </div>
+} @else {
+  <div class="fansites-page">
+    <header class="fansites-page__header">
+      <p class="fansites-page__eyebrow">{{ labels().eyebrow }}</p>
+      <h1>{{ labels().title }}</h1>
+      <p class="fansites-page__intro">{{ labels().intro }}</p>
+    </header>
+
+    @for (section of sections(); track section.title) {
+      <section class="section-card">
+        <h2>{{ section.title }}</h2>
+
+        @if (section.fansites.length > 0) {
+          <div class="fansite-grid">
+            @for (fansite of section.fansites; track fansite.name) {
+              <article class="fansite-card">
+                <div class="fansite-card__header">
+                  @if (fansite.logoUrl) {
+                    <img
+                      class="fansite-card__logo"
+                      [src]="fansite.logoUrl"
+                      [alt]="fansite.name"
+                      loading="lazy"
+                    />
+                  }
+                  <h3 class="fansite-card__name">{{ fansite.name }}</h3>
+                </div>
+
+                @if (fansite.languages.length > 0) {
+                  <div class="fansite-card__meta">
+                    <span class="fansite-card__meta-label">{{ labels().languages }}</span>
+                    @for (language of fansite.languages; track language) {
+                      <span class="fansite-card__tag">{{ language }}</span>
+                    }
+                  </div>
+                }
+
+                @if (fansite.specials.length > 0) {
+                  <div class="fansite-card__meta">
+                    <span class="fansite-card__meta-label">{{ labels().specials }}</span>
+                    @for (special of fansite.specials; track special) {
+                      <span class="fansite-card__tag">{{ special }}</span>
+                    }
+                  </div>
+                }
+
+                @if (fansite.fansiteItem) {
+                  <div class="fansite-card__meta">
+                    <span class="fansite-card__tag">{{ labels().fansiteItem }}</span>
+                  </div>
+                }
+
+                @if (fansite.homepage) {
+                  <a
+                    class="fansite-card__link"
+                    [href]="fansite.homepage"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ labels().homepage }}
+                  </a>
+                }
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="fansites-page__message">{{ labels().empty }}</div>
+        }
+      </section>
+    }
+  </div>
+}

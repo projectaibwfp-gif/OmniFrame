@@ -86,6 +86,30 @@ const SEO_BY_ROUTE: Record<string, SeoRouteDefinition> = {
       'Analyze Tibia kill statistics by world with structured creature and boss kill data.',
     schemaType: 'Dataset',
   },
+  '/worlds': {
+    title: 'Tibia worlds - regular and tournament world list',
+    description:
+      'Explore every regular and tournament Tibia world with status, players online and record data.',
+    schemaType: 'Dataset',
+  },
+  '/spells': {
+    title: 'Tibia spells and runes - searchable list',
+    description:
+      'Browse the full Tibia spell and rune list with level, mana, price and premium requirements.',
+    schemaType: 'Dataset',
+  },
+  '/houses': {
+    title: 'Tibia houses and guildhalls - town listings',
+    description:
+      'Find Tibia houses and guildhalls by world and town with rent, size and availability status.',
+    schemaType: 'Dataset',
+  },
+  '/fansites': {
+    title: 'Tibia fansites - promoted and supported communities',
+    description:
+      'Discover official Tibia fansites promoted and supported by CipSoft, with languages and specials.',
+    schemaType: 'CollectionPage',
+  },
   '/login': {
     title: `Login - ${APP_DISPLAY_NAME}`,
     description: `Sign in to ${APP_DISPLAY_NAME}.`,
@@ -105,6 +129,95 @@ const SEO_BY_ROUTE: Record<string, SeoRouteDefinition> = {
     schemaType: 'WebPage',
   },
 };
+
+interface SeoPrefixDefinition {
+  prefix: string;
+  seo: SeoRouteDefinition;
+}
+
+const SEO_BY_ROUTE_PREFIX: readonly SeoPrefixDefinition[] = [
+  {
+    prefix: '/boosted/',
+    seo: {
+      title: `Tibia boosted target details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia boosted boss or creature reference with loot, resistances, access and practical notes.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/quests/',
+    seo: {
+      title: `Tibia quest details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Structured Tibia quest details with requirements, category and walkthrough context.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/hunting-places/',
+    seo: {
+      title: `Tibia hunting place details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia hunting place reference with level range, profit and tactical notes.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/charm-places/',
+    seo: {
+      title: `Tibia charm place details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia charm place reference with monsters, route and bestiary farming context.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/creature/',
+    seo: {
+      title: `Tibia creature details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Unified Tibia creature reference with stats, resistances, loot drops and hunting places.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/world/',
+    seo: {
+      title: `Tibia world details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia world information with status, PvP type, transfer rules and players online.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/spell/',
+    seo: {
+      title: `Tibia spell details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia spell information with level, mana, price, formula and available vocations.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/house/',
+    seo: {
+      title: `Tibia house details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia house and guildhall information with size, beds, rent and ownership status.',
+      schemaType: 'Dataset',
+    },
+  },
+  {
+    prefix: '/guild/',
+    seo: {
+      title: `Tibia guild details - ${APP_DISPLAY_NAME}`,
+      description:
+        'Detailed Tibia guild information with founding date, members, ranks and guildhalls.',
+      schemaType: 'Dataset',
+    },
+  },
+];
 
 @Injectable({
   providedIn: 'root',
@@ -151,56 +264,13 @@ export class SeoService {
   }
 
   private resolveSeo(path: string): SeoRouteDefinition {
-    if (SEO_BY_ROUTE[path]) {
-      return SEO_BY_ROUTE[path];
+    const exactMatch = SEO_BY_ROUTE[path];
+    if (exactMatch) {
+      return exactMatch;
     }
 
-    if (path.startsWith('/boosted/')) {
-      return {
-        title: `Tibia boosted target details - ${APP_DISPLAY_NAME}`,
-        description:
-          'Detailed Tibia boosted boss or creature reference with loot, resistances, access and practical notes.',
-        schemaType: 'Dataset',
-      };
-    }
-
-    if (path.startsWith('/quests/')) {
-      return {
-        title: `Tibia quest details - ${APP_DISPLAY_NAME}`,
-        description:
-          'Structured Tibia quest details with requirements, category and walkthrough context.',
-        schemaType: 'Dataset',
-      };
-    }
-
-    if (path.startsWith('/hunting-places/')) {
-      return {
-        title: `Tibia hunting place details - ${APP_DISPLAY_NAME}`,
-        description:
-          'Detailed Tibia hunting place reference with level range, profit and tactical notes.',
-        schemaType: 'Dataset',
-      };
-    }
-
-    if (path.startsWith('/charm-places/')) {
-      return {
-        title: `Tibia charm place details - ${APP_DISPLAY_NAME}`,
-        description:
-          'Detailed Tibia charm place reference with monsters, route and bestiary farming context.',
-        schemaType: 'Dataset',
-      };
-    }
-
-    if (path.startsWith('/creature/')) {
-      return {
-        title: `Tibia creature details - ${APP_DISPLAY_NAME}`,
-        description:
-          'Unified Tibia creature reference with stats, resistances, loot drops and hunting places.',
-        schemaType: 'Dataset',
-      };
-    }
-
-    return DEFAULT_SEO;
+    const prefixMatch = SEO_BY_ROUTE_PREFIX.find(({ prefix }) => path.startsWith(prefix));
+    return prefixMatch?.seo ?? DEFAULT_SEO;
   }
 
   private buildCanonicalUrl(path: string): string {

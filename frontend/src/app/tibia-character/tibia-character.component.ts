@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import type {
   TibiaCharacterExperienceDto,
@@ -25,7 +25,7 @@ const MAIN_CHARACTER_LINK_ERROR = 'Nie udało się powiązać postaci. Spróbuj 
 
 @Component({
   selector: 'app-tibia-character',
-  imports: [FormsModule, AppDateTimePipe],
+  imports: [FormsModule, AppDateTimePipe, RouterLink],
   templateUrl: './tibia-character.component.html',
   styleUrl: './tibia-character.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

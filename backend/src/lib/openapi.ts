@@ -238,39 +238,6 @@ export const openApiDocument = {
                 properties: { name: { type: 'string' } },
               },
             },
-            '/api/auth/me/character-progress': {
-              get: {
-                tags: ['Auth'],
-                summary: 'Returns progress statuses for the current user main character.',
-                responses: {
-                  200: { description: 'Character progress list' },
-                },
-              },
-              put: {
-                tags: ['Auth'],
-                summary: 'Stores one progress status for the current user main character.',
-                requestBody: {
-                  required: true,
-                  content: {
-                    'application/json': {
-                      schema: {
-                        type: 'object',
-                        required: ['targetKind', 'targetName', 'status'],
-                        properties: {
-                          targetKind: { type: 'string', enum: ['boss', 'creature'] },
-                          targetName: { type: 'string' },
-                          status: { type: 'string', enum: ['first-time', 'completed'] },
-                        },
-                      },
-                    },
-                  },
-                },
-                responses: {
-                  200: { description: 'Updated character progress entry' },
-                  400: { description: 'Missing main character or invalid payload' },
-                },
-              },
-            },
           },
         },
         responses: {
@@ -284,6 +251,39 @@ export const openApiDocument = {
         summary: 'Unlinks the main character from the current user.',
         responses: {
           200: { description: 'Updated current user without main character' },
+        },
+      },
+    },
+    '/api/auth/me/character-progress': {
+      get: {
+        tags: ['Auth'],
+        summary: 'Returns progress statuses for the current user main character.',
+        responses: {
+          200: { description: 'Character progress list' },
+        },
+      },
+      put: {
+        tags: ['Auth'],
+        summary: 'Stores one progress status for the current user main character.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['targetKind', 'targetName', 'status'],
+                properties: {
+                  targetKind: { type: 'string', enum: ['boss', 'creature'] },
+                  targetName: { type: 'string' },
+                  status: { type: 'string', enum: ['first-time', 'completed'] },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Updated character progress entry' },
+          400: { description: 'Missing main character or invalid payload' },
         },
       },
     },
@@ -321,6 +321,180 @@ export const openApiDocument = {
         responses: {
           200: { description: 'Kill statistics payload' },
           404: { description: 'Kill statistics not found' },
+        },
+      },
+    },
+    '/api/fansites': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns promoted and supported fansites from TibiaData.',
+        responses: {
+          200: { description: 'Fansites payload' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/guild/{name}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns guild details by name from TibiaData.',
+        parameters: [
+          {
+            name: 'name',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Guild payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/guilds/{world}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns active and forming guilds for a world from TibiaData.',
+        parameters: [
+          {
+            name: 'world',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Guilds overview payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/house/{world}/{houseId}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns house details by world and house id from TibiaData.',
+        parameters: [
+          {
+            name: 'world',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+          {
+            name: 'houseId',
+            in: 'path',
+            required: true,
+            schema: { type: 'integer', minimum: 1 },
+          },
+        ],
+        responses: {
+          200: { description: 'House payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/houses/{world}/{town}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns houses and guildhalls for a town from TibiaData.',
+        parameters: [
+          {
+            name: 'world',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+          {
+            name: 'town',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Houses overview payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/spell/{spellId}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns spell details by spell id from TibiaData.',
+        parameters: [
+          {
+            name: 'spellId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Spell payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/spells': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns the full spell list from TibiaData.',
+        responses: {
+          200: { description: 'Spells overview payload' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/world/{name}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns world details including online players from TibiaData.',
+        parameters: [
+          {
+            name: 'name',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'World payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/worlds': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns all regular and tournament worlds from TibiaData.',
+        responses: {
+          200: { description: 'Worlds overview payload' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
         },
       },
     },

@@ -113,6 +113,15 @@ $stat-gap: 12px;
       color: c.$text-700;
     }
 
+    &--link {
+      color: c.$brand-on-surface;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
     &--brand {
       background: c.$brand-primary-tint;
       border-color: c.$brand-primary-tint-strong;

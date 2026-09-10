@@ -45,6 +45,15 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 - `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID,
 - `GET /api/auth/me/character-progress` - statusy bossów i potworów dla głównej postaci,
 - `PUT /api/auth/me/character-progress` - zapis statusu dla bossa lub potwora głównej postaci,
+- `GET /api/fansites` - promowane i wspierane fansite'y (TibiaData `v4/fansites`),
+- `GET /api/guild/:name` - szczegóły gildii (TibiaData `v4/guild/{name}`),
+- `GET /api/guilds/:world` - aktywne i formujące się gildie świata (TibiaData `v4/guilds/{world}`),
+- `GET /api/house/:world/:houseId` - szczegóły domu (TibiaData `v4/house/{world}/{houseid}`),
+- `GET /api/houses/:world/:town` - domy i guildhalle miasta (TibiaData `v4/houses/{world}/{town}`),
+- `GET /api/spell/:spellId` - szczegóły zaklęcia (TibiaData `v4/spell/{spellid}`),
+- `GET /api/spells` - pełna lista zaklęć (TibiaData `v4/spells`),
+- `GET /api/world/:name` - szczegóły świata wraz z graczami online (TibiaData `v4/world/{name}`),
+- `GET /api/worlds` - wszystkie światy regularne i turniejowe (TibiaData `v4/worlds`),
 
 ## Kontrakt błędów
 

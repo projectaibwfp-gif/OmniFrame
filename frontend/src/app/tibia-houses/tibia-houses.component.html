@@ -1,0 +1,122 @@
+@if (isLoadingWorlds()) {
+  <div class="houses-page__message">{{ labels().loading }}</div>
+} @else {
+  <div class="houses-page">
+    <header class="houses-page__header">
+      <p class="houses-page__eyebrow">{{ labels().eyebrow }}</p>
+      <h1>{{ labels().title }}</h1>
+      <p class="houses-page__intro">{{ labels().intro }}</p>
+    </header>
+
+    @if (worldsError()) {
+      <div class="houses-page__message houses-page__message--error">
+        {{ labels().worldsError }}
+      </div>
+    }
+
+    <section class="filters-card">
+      <div class="filters-grid">
+        <div class="filter-field">
+          <label for="houses-world">{{ labels().worldLabel }}</label>
+          <select
+            id="houses-world"
+            class="filter-select"
+            [ngModel]="selectedWorld()"
+            (ngModelChange)="setSelectedWorld($event)"
+          >
+            <option value="">{{ labels().worldPlaceholder }}</option>
+            @for (world of worlds(); track world) {
+              <option [value]="world">{{ world }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="houses-town">{{ labels().townLabel }}</label>
+          <input
+            id="houses-town"
+            type="text"
+            class="filter-input"
+            [ngModel]="town()"
+            (ngModelChange)="setTown($event)"
+            [placeholder]="labels().townPlaceholder"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-field">
+          <button
+            class="search-button"
+            type="button"
+            (click)="search()"
+            [disabled]="!canSearch() || isLoading()"
+          >
+            {{ labels().searchAction }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    @if (isLoading()) {
+      <div class="houses-page__message">{{ labels().loading }}</div>
+    } @else if (apiError()) {
+      <div class="houses-page__message houses-page__message--error">
+        {{ labels().error }}
+        <button class="search-button" type="button" (click)="search()">{{ labels().retry }}</button>
+      </div>
+    } @else if (!hasResults()) {
+      <div class="houses-page__message">{{ labels().noSelection }}</div>
+    } @else {
+      <div class="houses-page__summary"> {{ resultWorld() }} · {{ resultTown() }} </div>
+
+      @for (section of sections(); track section.title) {
+        <section class="houses-table-wrapper">
+          <h2 class="houses-table-title">{{ section.title }}</h2>
+
+          @if (section.houses.length > 0) {
+            <table class="houses-table">
+              <thead>
+                <tr>
+                  <th>{{ labels().houseColumn }}</th>
+                  <th>{{ labels().sizeColumn }}</th>
+                  <th>{{ labels().bedsColumn }}</th>
+                  <th>{{ labels().rentColumn }}</th>
+                  <th>{{ labels().statusColumn }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (house of section.houses; track house.houseId) {
+                  <tr class="house-row" [routerLink]="['/house', resultWorld(), house.houseId]">
+                    <td
+                      ><strong>{{ house.name }}</strong></td
+                    >
+                    <td>{{ house.size ?? '-' }}</td>
+                    <td>{{ house.beds ?? '-' }}</td>
+                    <td>{{ house.rent ?? '-' }}</td>
+                    <td>
+                      @switch (houseStatus(house)) {
+                        @case ('rented') {
+                          <span class="status-chip status-chip--rented">{{ labels().rented }}</span>
+                        }
+                        @case ('auctioned') {
+                          <span class="status-chip status-chip--auctioned">{{
+                            labels().auctioned
+                          }}</span>
+                        }
+                        @default {
+                          <span class="status-chip">{{ labels().free }}</span>
+                        }
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="houses-page__message">{{ labels().empty }}</p>
+          }
+        </section>
+      }
+    }
+  </div>
+}

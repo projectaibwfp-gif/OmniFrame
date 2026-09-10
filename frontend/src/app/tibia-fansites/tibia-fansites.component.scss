@@ -1,0 +1,155 @@
+@use 'colors' as c;
+
+.fansites-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    padding: 24px;
+    background: c.$surface-card-overlay;
+    border: 1px solid c.$border-translucent;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px c.$shadow-medium;
+
+    h1 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$brand-on-surface;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__intro {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &__message {
+    padding: 16px;
+    border-radius: 12px;
+    background: c.$surface-alt;
+    color: c.$text-400;
+    text-align: center;
+
+    &--error {
+      background: c.$danger-bg;
+      color: c.$danger-fg;
+    }
+  }
+}
+
+.fansite-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.fansite-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 14px;
+  box-shadow: 0 8px 16px c.$shadow-soft;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: c.$surface-alt;
+  }
+
+  &__name {
+    margin: 0;
+    color: c.$text-700;
+    font-size: 16px;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__meta-label {
+    color: c.$text-400;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__tag {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: c.$surface-alt;
+    border: 1px solid c.$border-subtle;
+    color: c.$text-600;
+  }
+
+  &__link {
+    margin-top: auto;
+    color: c.$brand-on-surface;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.section-card {
+  padding: 20px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px c.$shadow-medium;
+
+  h2 {
+    margin: 0 0 14px;
+    color: c.$text-700;
+    font-size: clamp(17px, 2vw, 20px);
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .fansites-page {
+    &__header {
+      padding: 18px;
+    }
+  }
+
+  .fansite-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-card {
+    padding: 16px;
+  }
+}

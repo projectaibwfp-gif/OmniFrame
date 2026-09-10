@@ -1,0 +1,166 @@
+@use 'colors' as c;
+
+.house-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    padding: 24px;
+    background: c.$surface-card-overlay;
+    border: 1px solid c.$border-translucent;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px c.$shadow-medium;
+
+    h1 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$brand-on-surface;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__intro {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &__message {
+    padding: 16px;
+    border-radius: 12px;
+    background: c.$surface-alt;
+    color: c.$text-400;
+    text-align: center;
+
+    &--error {
+      background: c.$danger-bg;
+      color: c.$danger-fg;
+    }
+  }
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: c.$brand-on-surface;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.info-tile {
+  padding: 16px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px c.$shadow-soft;
+
+  .info-label {
+    display: block;
+    color: c.$text-400;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .tile-value {
+    display: block;
+    margin-top: 4px;
+    color: c.$text-700;
+    font-size: 18px;
+  }
+}
+
+.section-card {
+  padding: 20px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px c.$shadow-medium;
+
+  h2 {
+    margin: 0 0 12px;
+    color: c.$text-700;
+    font-size: clamp(17px, 2vw, 20px);
+  }
+
+  p {
+    margin: 0;
+    color: c.$text-600;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+.status-chip {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: c.$surface-alt;
+  border: 1px solid c.$border-subtle;
+  color: c.$text-600;
+
+  &--rented {
+    background: c.$danger-bg;
+    border-color: c.$danger-strong-border;
+    color: c.$danger-fg;
+  }
+
+  &--auctioned {
+    background: c.$warning-bg;
+    border-color: c.$border-subtle;
+    color: c.$warning-fg;
+  }
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid c.$border-subtle;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  span {
+    color: c.$text-400;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  strong {
+    color: c.$text-700;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

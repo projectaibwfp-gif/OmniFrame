@@ -100,7 +100,12 @@ na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`).
 - `/quests`, `/quests/:id` - questy z opisem i spoilerem wykonania,
 - `/loot` - baza itemów z kategoriami, wyszukiwaniem, filtrami i market value,
 - `/highscores-snapshots` - snapshoty highscores z paginacją i sortowaniem,
-- `/killstatistics` - statystyki zabójstw TibiaData per świat.
+- `/killstatistics` - statystyki zabójstw TibiaData per świat,
+- `/worlds`, `/world/:name` - lista światów Tibii i szczegóły świata z listą online,
+- `/spells`, `/spell/:spellId` - lista zaklęć i run oraz szczegóły zaklęcia,
+- `/houses`, `/house/:world/:houseId` - domy i guildhalle per świat i miasto,
+- `/fansites` - fansite'y promowane i wspierane przez CipSoft,
+- `/guild/:name` - szczegóły gildii (członkowie, zaproszenia, guildhalle).
 
 ## SEO i indeksowanie
 

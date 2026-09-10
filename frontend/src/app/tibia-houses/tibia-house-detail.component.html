@@ -1,0 +1,96 @@
+@if (isLoading()) {
+  <div class="house-detail-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="house-detail-page__message house-detail-page__message--error">
+    {{ labels().error }}
+    <button class="status-chip" type="button" (click)="loadHouse()">{{ labels().retry }}</button>
+  </div>
+} @else if (house(); as house) {
+  <div class="house-detail-page">
+    <a class="back-link" routerLink="/houses">{{ labels().back }}</a>
+
+    <header class="house-detail-page__header">
+      <p class="house-detail-page__eyebrow">Tibia</p>
+      <h1>{{ house.name }}</h1>
+      <p class="house-detail-page__intro">{{ worldName() }}</p>
+    </header>
+
+    <div class="stats-grid">
+      <article class="info-tile">
+        <span class="info-label">{{ labels().world }}</span>
+        <strong class="tile-value">{{ worldName() }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().town }}</span>
+        <strong class="tile-value">{{ house.town ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().type }}</span>
+        <strong class="tile-value">{{ house.type ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().size }}</span>
+        <strong class="tile-value">{{ house.size ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().beds }}</span>
+        <strong class="tile-value">{{ house.beds ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().rent }}</span>
+        <strong class="tile-value">{{ house.rent ?? '-' }}</strong>
+      </article>
+    </div>
+
+    @if (house.status; as status) {
+      <section class="section-card">
+        <h2>{{ labels().statusTitle }}</h2>
+        <p>
+          @if (status.isRented) {
+            <span class="status-chip status-chip--rented">{{ labels().rented }}</span>
+          } @else if (status.isAuctioned) {
+            <span class="status-chip status-chip--auctioned">{{ labels().auctioned }}</span>
+          } @else {
+            <span class="status-chip">{{ labels().free }}</span>
+          }
+        </p>
+
+        @if (status.rental; as rental) {
+          <div class="detail-field">
+            <span>{{ labels().owner }}</span>
+            <strong>{{ rental.owner ?? '-' }}</strong>
+          </div>
+          <div class="detail-field">
+            <span>{{ labels().paidUntil }}</span>
+            <strong>{{ rental.paidUntil | appDateTime }}</strong>
+          </div>
+        }
+
+        @if (status.isMoving) {
+          <div class="detail-field">
+            <span>{{ labels().statusTitle }}</span>
+            <strong>{{ labels().moving }}</strong>
+          </div>
+        }
+
+        @if (status.auction; as auction) {
+          <div class="detail-field">
+            <span>{{ labels().currentBid }}</span>
+            <strong>{{ auction.currentBid ?? '-' }}</strong>
+          </div>
+          <div class="detail-field">
+            <span>{{ labels().biddingEnd }}</span>
+            <strong>{{ auction.auctionEnd | appDateTime }}</strong>
+          </div>
+        }
+      </section>
+    } @else {
+      <section class="section-card">
+        <h2>{{ labels().statusTitle }}</h2>
+        <p>{{ labels().noStatus }}</p>
+      </section>
+    }
+  </div>
+} @else {
+  <div class="house-detail-page__message">{{ labels().error }}</div>
+}

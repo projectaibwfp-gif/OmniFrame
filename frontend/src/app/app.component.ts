@@ -28,6 +28,10 @@ interface NavTranslations {
   loot: string;
   snapshots: string;
   killstatistics: string;
+  worlds: string;
+  spells: string;
+  houses: string;
+  fansites: string;
   users: string;
   profile: string;
   about: string;
@@ -45,6 +49,10 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     loot: 'Loot',
     snapshots: 'Highscores DB',
     killstatistics: 'Killstatistics',
+    worlds: 'Worlds',
+    spells: 'Spells',
+    houses: 'Houses',
+    fansites: 'Fansites',
     users: 'Users',
     profile: 'Profile',
     about: 'About project',
@@ -60,6 +68,10 @@ const NAV_TRANSLATIONS: Record<Locale, NavTranslations> = {
     loot: 'Loot',
     snapshots: 'Highscores DB',
     killstatistics: 'Killstatistics',
+    worlds: 'Światy',
+    spells: 'Zaklęcia',
+    houses: 'Domy',
+    fansites: 'Fansite’y',
     users: 'Użytkownicy',
     profile: 'Profil',
     about: 'O projekcie',
@@ -109,6 +121,10 @@ export class AppComponent {
       { path: '/loot', label: translations.loot, icon: '💰', exact: false },
       { path: '/highscores-snapshots', label: translations.snapshots, icon: '📊', exact: false },
       { path: '/killstatistics', label: translations.killstatistics, icon: '☠', exact: false },
+      { path: '/worlds', label: translations.worlds, icon: '🌍', exact: false },
+      { path: '/spells', label: translations.spells, icon: '🔮', exact: false },
+      { path: '/houses', label: translations.houses, icon: '🏠', exact: false },
+      { path: '/fansites', label: translations.fansites, icon: '💬', exact: false },
     ] as const;
   });
 

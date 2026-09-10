@@ -256,8 +256,8 @@
 
       <div class="extra-info">
         @if (currentCharacter.guild; as guild) {
-          <span class="chip chip--muted"
-            ><strong>Guild:</strong>&nbsp;{{ guild.name }} ({{ guild.rank }})</span
+          <a class="chip chip--muted chip--link" [routerLink]="['/guild', guild.name]"
+            ><strong>Guild:</strong>&nbsp;{{ guild.name }} ({{ guild.rank }})</a
           >
         }
         @if (currentCharacter.marriedTo) {

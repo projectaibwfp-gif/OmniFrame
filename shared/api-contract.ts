@@ -224,9 +224,9 @@ export interface TibiaCreaturesDto {
   creatureList: TibiaCreatureDto[];
 }
 
-export type CharacterProgressTargetKind = 'boss' | 'creature';
+export type CharacterProgressTargetKind = "boss" | "creature";
 
-export type CharacterProgressStatus = 'first-time' | 'completed';
+export type CharacterProgressStatus = "first-time" | "completed";
 
 export interface CharacterProgressEntryDto {
   characterName: string;
@@ -374,4 +374,264 @@ export interface TibiaNewsDto {
 export interface TibiaNewsListDto {
   news: TibiaNewsDto[];
   cachedAt: string;
+}
+
+export interface TibiaFansiteContentTypeDto {
+  statistics: boolean;
+  texts: boolean;
+  tools: boolean;
+  wiki: boolean;
+}
+
+export interface TibiaFansiteSocialMediaDto {
+  discord: boolean;
+  facebook: boolean;
+  instagram: boolean;
+  reddit: boolean;
+  twitch: boolean;
+  twitter: boolean;
+  youtube: boolean;
+}
+
+export interface TibiaFansiteDto {
+  contact: string | null;
+  contentType: TibiaFansiteContentTypeDto | null;
+  fansiteItem: boolean;
+  fansiteItemUrl: string | null;
+  homepage: string | null;
+  languages: string[];
+  logoUrl: string | null;
+  name: string;
+  socialMedia: TibiaFansiteSocialMediaDto | null;
+  specials: string[];
+}
+
+export interface TibiaFansitesDto {
+  promoted: TibiaFansiteDto[];
+  supported: TibiaFansiteDto[];
+}
+
+export interface TibiaGuildhallDto {
+  name: string | null;
+  paidUntil: string | null;
+  world: string | null;
+}
+
+export interface TibiaInvitedGuildMemberDto {
+  date: string | null;
+  name: string;
+}
+
+export interface TibiaGuildMemberDto {
+  joined: string | null;
+  level: number | null;
+  name: string;
+  rank: string | null;
+  status: string | null;
+  title: string | null;
+  vocation: string | null;
+}
+
+export interface TibiaGuildDto {
+  active: boolean;
+  description: string | null;
+  disbandCondition: string | null;
+  disbandDate: string | null;
+  founded: string | null;
+  guildhalls: TibiaGuildhallDto[];
+  homepage: string | null;
+  inWar: boolean;
+  invites: TibiaInvitedGuildMemberDto[];
+  logoUrl: string | null;
+  members: TibiaGuildMemberDto[];
+  membersInvited: number | null;
+  membersTotal: number | null;
+  name: string;
+  openApplications: boolean;
+  playersOffline: number | null;
+  playersOnline: number | null;
+  world: string | null;
+}
+
+export interface TibiaGuildOverviewDto {
+  description: string | null;
+  logoUrl: string | null;
+  name: string;
+}
+
+export interface TibiaGuildsOverviewDto {
+  active: TibiaGuildOverviewDto[];
+  formation: TibiaGuildOverviewDto[];
+  world: string | null;
+}
+
+export interface TibiaHouseAuctionDto {
+  auctionEnd: string | null;
+  auctionOngoing: boolean;
+  currentBid: number | null;
+  currentBidder: string | null;
+}
+
+export interface TibiaHouseRentalDto {
+  movingDate: string | null;
+  owner: string | null;
+  ownerSex: string | null;
+  paidUntil: string | null;
+  transferAccept: boolean;
+  transferPrice: number | null;
+  transferReceiver: string | null;
+}
+
+export interface TibiaHouseStatusDto {
+  auction: TibiaHouseAuctionDto | null;
+  isAuctioned: boolean;
+  isMoving: boolean;
+  isRented: boolean;
+  isTransfering: boolean;
+  original: string | null;
+  rental: TibiaHouseRentalDto | null;
+}
+
+export interface TibiaHouseDto {
+  beds: number | null;
+  houseId: number | null;
+  img: string | null;
+  name: string;
+  rent: number | null;
+  size: number | null;
+  status: TibiaHouseStatusDto | null;
+  town: string | null;
+  type: string | null;
+  world: string | null;
+}
+
+export interface TibiaHouseOverviewAuctionDto {
+  currentBid: number | null;
+  finished: boolean;
+  timeLeft: string | null;
+}
+
+export interface TibiaHouseOverviewDto {
+  auction: TibiaHouseOverviewAuctionDto | null;
+  auctioned: boolean;
+  houseId: number | null;
+  name: string;
+  rent: number | null;
+  rented: boolean;
+  size: number | null;
+}
+
+export interface TibiaHousesOverviewDto {
+  guildhallList: TibiaHouseOverviewDto[];
+  houseList: TibiaHouseOverviewDto[];
+  town: string | null;
+  world: string | null;
+}
+
+export interface TibiaRuneInformationDto {
+  damageType: string | null;
+  groupAttack: boolean;
+  groupHealing: boolean;
+  groupSupport: boolean;
+  level: number | null;
+  magicLevel: number | null;
+  vocation: string[];
+}
+
+export interface TibiaSpellInformationDto {
+  amount: number | null;
+  city: string[];
+  cooldownAlone: number | null;
+  cooldownGroup: number | null;
+  damageType: string | null;
+  formula: string | null;
+  groupAttack: boolean;
+  groupHealing: boolean;
+  groupSupport: boolean;
+  level: number | null;
+  mana: number | null;
+  premiumOnly: boolean;
+  price: number | null;
+  soulPoints: number | null;
+  typeInstant: boolean;
+  typeRune: boolean;
+  vocation: string[];
+}
+
+export interface TibiaSpellDto {
+  formula: string | null;
+  groupAttack: boolean;
+  groupHealing: boolean;
+  groupSupport: boolean;
+  level: number | null;
+  mana: number | null;
+  name: string;
+  premiumOnly: boolean;
+  price: number | null;
+  spellId: string;
+  typeInstant: boolean;
+  typeRune: boolean;
+}
+
+export interface TibiaSpellDetailsDto {
+  description: string | null;
+  hasRuneInformation: boolean;
+  hasSpellInformation: boolean;
+  imageUrl: string | null;
+  name: string;
+  runeInformation: TibiaRuneInformationDto | null;
+  spellId: string;
+  spellInformation: TibiaSpellInformationDto | null;
+}
+
+export interface TibiaSpellsOverviewDto {
+  spellList: TibiaSpellDto[];
+  spellsFilter: string | null;
+}
+
+export interface TibiaOnlinePlayerDto {
+  level: number | null;
+  name: string;
+  vocation: string | null;
+}
+
+export interface TibiaWorldDto {
+  battleyeDate: string | null;
+  battleyeProtected: boolean;
+  creationDate: string | null;
+  gameWorldType: string | null;
+  location: string | null;
+  name: string;
+  onlinePlayers: TibiaOnlinePlayerDto[];
+  playersOnline: number | null;
+  premiumOnly: boolean;
+  pvpType: string | null;
+  recordDate: string | null;
+  recordPlayers: number | null;
+  status: string | null;
+  tournamentWorldType: string | null;
+  transferType: string | null;
+  worldQuestTitles: string[];
+}
+
+export interface TibiaWorldOverviewDto {
+  battleyeDate: string | null;
+  battleyeProtected: boolean;
+  gameWorldType: string | null;
+  location: string | null;
+  name: string;
+  playersOnline: number | null;
+  premiumOnly: boolean;
+  pvpType: string | null;
+  status: string | null;
+  tournamentWorldType: string | null;
+  transferType: string | null;
+}
+
+export interface TibiaWorldsOverviewDto {
+  playersOnline: number | null;
+  recordDate: string | null;
+  recordPlayers: number | null;
+  regularWorlds: TibiaWorldOverviewDto[];
+  tournamentWorlds: TibiaWorldOverviewDto[];
 }

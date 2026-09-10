@@ -1,0 +1,186 @@
+@use 'colors' as c;
+
+.houses-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    padding: 24px;
+    background: c.$surface-card-overlay;
+    border: 1px solid c.$border-translucent;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px c.$shadow-medium;
+
+    h1 {
+      margin: 0 0 8px;
+      color: c.$text-700;
+      font-size: clamp(24px, 3vw, 30px);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 8px;
+    color: c.$brand-on-surface;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__intro {
+    margin: 0;
+    color: c.$text-400;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &__message {
+    padding: 16px;
+    border-radius: 12px;
+    background: c.$surface-alt;
+    color: c.$text-400;
+    text-align: center;
+
+    &--error {
+      background: c.$danger-bg;
+      color: c.$danger-fg;
+    }
+  }
+}
+
+.filters-card {
+  padding: 16px;
+  background: c.$surface-card-overlay;
+  border: 1px solid c.$border-translucent;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px c.$shadow-soft;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    color: c.$text-400;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid c.$border-subtle;
+  border-radius: 8px;
+  background: c.$surface-card;
+  color: c.$text-700;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: c.$brand-primary;
+  }
+}
+
+.search-button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 8px;
+  background: c.$brand-primary;
+  color: c.$text-on-primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.houses-table-wrapper {
+  overflow-x: auto;
+}
+
+.houses-table-title {
+  margin: 0 0 10px;
+  color: c.$text-700;
+  font-size: clamp(16px, 2vw, 19px);
+}
+
+.houses-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 13px;
+    border-bottom: 1px solid c.$border-subtle;
+  }
+
+  th {
+    color: c.$text-400;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+  }
+
+  td {
+    color: c.$text-600;
+  }
+}
+
+.house-row {
+  cursor: pointer;
+
+  &:hover {
+    background: c.$surface-alt;
+  }
+
+  strong {
+    color: c.$text-700;
+  }
+}
+
+.status-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: c.$surface-alt;
+  border: 1px solid c.$border-subtle;
+  color: c.$text-600;
+
+  &--rented {
+    background: c.$danger-bg;
+    border-color: c.$danger-strong-border;
+    color: c.$danger-fg;
+  }
+
+  &--auctioned {
+    background: c.$warning-bg;
+    border-color: c.$border-subtle;
+    color: c.$warning-fg;
+  }
+}
+
+@media (max-width: c.$bp-mobile) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+}

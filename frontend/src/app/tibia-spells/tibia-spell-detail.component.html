@@ -1,0 +1,117 @@
+@if (isLoading()) {
+  <div class="spell-detail-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="spell-detail-page__message spell-detail-page__message--error">
+    {{ labels().error }}
+    <button class="tag-chip" type="button" (click)="loadSpell()">{{ labels().retry }}</button>
+  </div>
+} @else if (spell(); as spell) {
+  <div class="spell-detail-page">
+    <a class="back-link" routerLink="/spells">{{ labels().back }}</a>
+
+    <header class="spell-detail-page__header">
+      <p class="spell-detail-page__eyebrow">Tibia</p>
+      <h1>{{ spell.name }}</h1>
+      <p class="spell-detail-page__intro">{{ spell.spellId }}</p>
+    </header>
+
+    @if (spellInformation(); as info) {
+      <div class="stats-grid">
+        <article class="info-tile">
+          <span class="info-label">{{ labels().level }}</span>
+          <strong class="tile-value">{{ info.level ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().mana }}</span>
+          <strong class="tile-value">{{ info.mana ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().price }}</span>
+          <strong class="tile-value">{{ info.price ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().cooldownAlone }}</span>
+          <strong class="tile-value">{{ info.cooldownAlone ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().cooldownGroup }}</span>
+          <strong class="tile-value">{{ info.cooldownGroup ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().damageType }}</span>
+          <strong class="tile-value">{{ info.damageType ?? '-' }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().type }}</span>
+          <strong class="tile-value">{{ spellTypeLabel() }}</strong>
+        </article>
+        <article class="info-tile">
+          <span class="info-label">{{ labels().premiumOnly }}</span>
+          <strong class="tile-value">{{ info.premiumOnly ? labels().yes : labels().no }}</strong>
+        </article>
+      </div>
+    }
+
+    @if (spell.description) {
+      <section class="section-card">
+        <h2>{{ labels().description }}</h2>
+        <p>{{ spell.description }}</p>
+      </section>
+    }
+
+    @if (spellInformation(); as info) {
+      <section class="section-card">
+        <h2>{{ labels().formula }}</h2>
+        <p>{{ info.formula ?? '-' }}</p>
+      </section>
+
+      <section class="section-card">
+        <h2>{{ labels().vocation }}</h2>
+        <ul class="tag-list">
+          @for (vocation of info.vocation; track vocation) {
+            <li class="tag-chip">{{ vocation }}</li>
+          }
+        </ul>
+      </section>
+
+      @if (info.city.length > 0) {
+        <section class="section-card">
+          <h2>{{ labels().city }}</h2>
+          <ul class="tag-list">
+            @for (city of info.city; track city) {
+              <li class="tag-chip">{{ city }}</li>
+            }
+          </ul>
+        </section>
+      }
+    }
+
+    @if (runeInformation(); as rune) {
+      <section class="section-card">
+        <h2>{{ labels().runeTitle }}</h2>
+        <div class="stats-grid">
+          <article class="info-tile">
+            <span class="info-label">{{ labels().level }}</span>
+            <strong class="tile-value">{{ rune.level ?? '-' }}</strong>
+          </article>
+          <article class="info-tile">
+            <span class="info-label">{{ labels().magicLevel }}</span>
+            <strong class="tile-value">{{ rune.magicLevel ?? '-' }}</strong>
+          </article>
+          <article class="info-tile">
+            <span class="info-label">{{ labels().damageType }}</span>
+            <strong class="tile-value">{{ rune.damageType ?? '-' }}</strong>
+          </article>
+        </div>
+
+        <ul class="tag-list">
+          @for (vocation of rune.vocation; track vocation) {
+            <li class="tag-chip">{{ vocation }}</li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+} @else {
+  <div class="spell-detail-page__message">{{ labels().error }}</div>
+}

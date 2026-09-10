@@ -33,4 +33,16 @@
   <url>
     <loc>https://omniframe.vercel.app/killstatistics</loc>
   </url>
+  <url>
+    <loc>https://omniframe.vercel.app/worlds</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/spells</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/houses</loc>
+  </url>
+  <url>
+    <loc>https://omniframe.vercel.app/fansites</loc>
+  </url>
 </urlset>

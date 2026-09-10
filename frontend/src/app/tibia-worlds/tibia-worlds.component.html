@@ -1,0 +1,79 @@
+@if (isLoading()) {
+  <div class="worlds-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="worlds-page__message worlds-page__message--error">
+    {{ labels().error }}
+    <button class="toggle-button" type="button" (click)="loadWorlds()">{{ labels().retry }}</button>
+  </div>
+} @else if (data(); as data) {
+  <div class="worlds-page">
+    <header class="worlds-page__header">
+      <p class="worlds-page__eyebrow">{{ labels().eyebrow }}</p>
+      <h1>{{ labels().title }}</h1>
+      <p class="worlds-page__intro">{{ labels().intro }}</p>
+    </header>
+
+    <div class="record-bar">
+      <article class="record-tile">
+        <span>{{ labels().playersOnline }}</span>
+        <strong>{{ data.playersOnline ?? '-' }}</strong>
+      </article>
+      <article class="record-tile">
+        <span>{{ labels().recordLabel }} · {{ labels().recordPlayers }}</span>
+        <strong>{{ data.recordPlayers ?? '-' }}</strong>
+      </article>
+      <article class="record-tile">
+        <span>{{ labels().recordLabel }} · {{ labels().recordDate }}</span>
+        <strong>{{ data.recordDate | appDateTime }}</strong>
+      </article>
+    </div>
+
+    @for (section of sections(); track section.kind) {
+      <section class="world-list-card">
+        <div class="section-header">
+          <h2>{{ section.title }} ({{ section.worlds.length }})</h2>
+          <button class="toggle-button" type="button" (click)="toggleSection(section.kind)">
+            {{ isCollapsed(section.kind) ? labels().toggleExpand : labels().toggleCollapse }}
+          </button>
+        </div>
+
+        @if (isCollapsed(section.kind)) {
+          <p class="collapsed-note">{{ labels().listCollapsed }}</p>
+        } @else if (section.worlds.length > 0) {
+          <div class="worlds-table-wrapper">
+            <table class="worlds-table">
+              <thead>
+                <tr>
+                  <th>{{ labels().nameColumn }}</th>
+                  <th>{{ labels().pvpType }}</th>
+                  <th>{{ labels().location }}</th>
+                  <th>{{ labels().playersOnlineColumn }}</th>
+                  <th>{{ labels().transferType }}</th>
+                  <th>{{ labels().status }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (world of section.worlds; track world.name) {
+                  <tr class="world-row" [routerLink]="['/world', world.name]">
+                    <td
+                      ><strong>{{ world.name }}</strong></td
+                    >
+                    <td>{{ world.pvpType ?? '-' }}</td>
+                    <td>{{ world.location ?? '-' }}</td>
+                    <td>{{ world.playersOnline ?? '-' }}</td>
+                    <td>{{ world.transferType ?? '-' }}</td>
+                    <td>{{ world.status ?? '-' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="collapsed-note">{{ labels().empty }}</p>
+        }
+      </section>
+    }
+  </div>
+} @else {
+  <div class="worlds-page__message">{{ labels().error }}</div>
+}

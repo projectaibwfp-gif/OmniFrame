@@ -1,0 +1,101 @@
+@if (isLoading()) {
+  <div class="world-detail-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="world-detail-page__message world-detail-page__message--error">
+    {{ labels().error }}
+    <button class="toggle-button" type="button" (click)="loadWorld()">{{ labels().retry }}</button>
+  </div>
+} @else if (world(); as world) {
+  <div class="world-detail-page">
+    <a class="back-link" routerLink="/worlds">{{ labels().back }}</a>
+
+    <header class="world-detail-page__header">
+      <p class="world-detail-page__eyebrow">Tibia</p>
+      <h1>{{ world.name }}</h1>
+      <p class="world-detail-page__intro">{{ world.pvpType ?? '-' }}</p>
+    </header>
+
+    <div class="stats-grid">
+      <article class="info-tile">
+        <span class="info-label">{{ labels().status }}</span>
+        <strong class="tile-value">{{ world.status ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().playersOnline }}</span>
+        <strong class="tile-value">{{ world.playersOnline ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().creationDate }}</span>
+        <strong class="tile-value">{{ world.creationDate ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().transferType }}</span>
+        <strong class="tile-value">{{ world.transferType ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().pvpType }}</span>
+        <strong class="tile-value">{{ world.pvpType ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().location }}</span>
+        <strong class="tile-value">{{ world.location ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().gameWorldType }}</span>
+        <strong class="tile-value">{{ world.gameWorldType ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().battleyeDate }}</span>
+        <strong class="tile-value">{{ world.battleyeDate | appDate }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().premiumOnly }}</span>
+        <strong class="tile-value">{{ world.premiumOnly ? labels().yes : labels().no }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().battleyeProtected }}</span>
+        <strong class="tile-value">{{
+          world.battleyeProtected ? labels().yes : labels().no
+        }}</strong>
+      </article>
+    </div>
+
+    @if (world.worldQuestTitles.length > 0) {
+      <section class="section-card">
+        <h2>{{ labels().worldQuests }}</h2>
+        <ul class="tag-list">
+          @for (quest of world.worldQuestTitles; track quest) {
+            <li class="tag-chip">{{ quest }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="section-card">
+      <div class="section-header">
+        <h2>{{ labels().onlinePlayersTitle }} ({{ onlinePlayers().length }})</h2>
+        <button class="toggle-button" type="button" (click)="toggleOnlineList()">
+          {{ isOnlineListCollapsed() ? labels().toggleExpand : labels().toggleCollapse }}
+        </button>
+      </div>
+
+      @if (isOnlineListCollapsed()) {
+        <p class="collapsed-note">{{ labels().collapsedNote }}</p>
+      } @else if (onlinePlayers().length > 0) {
+        <div class="online-list">
+          @for (player of onlinePlayers(); track player.name) {
+            <div class="online-row">
+              <span class="online-row__name">{{ player.name }}</span>
+              <span class="online-row__meta">{{ player.vocation ?? '-' }}</span>
+              <span class="online-row__level">{{ player.level ?? '-' }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="collapsed-note">{{ labels().noneOnline }}</p>
+      }
+    </section>
+  </div>
+} @else {
+  <div class="world-detail-page__message">{{ labels().error }}</div>
+}

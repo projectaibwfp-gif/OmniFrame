@@ -85,6 +85,70 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'worlds',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-worlds/tibia-worlds.component').then(
+        ({ TibiaWorldsComponent }) => TibiaWorldsComponent,
+      ),
+  },
+  {
+    path: 'world/:name',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-worlds/tibia-world-detail.component').then(
+        ({ TibiaWorldDetailComponent }) => TibiaWorldDetailComponent,
+      ),
+  },
+  {
+    path: 'spells',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-spells/tibia-spells.component').then(
+        ({ TibiaSpellsComponent }) => TibiaSpellsComponent,
+      ),
+  },
+  {
+    path: 'spell/:spellId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-spells/tibia-spell-detail.component').then(
+        ({ TibiaSpellDetailComponent }) => TibiaSpellDetailComponent,
+      ),
+  },
+  {
+    path: 'houses',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-houses/tibia-houses.component').then(
+        ({ TibiaHousesComponent }) => TibiaHousesComponent,
+      ),
+  },
+  {
+    path: 'house/:world/:houseId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-houses/tibia-house-detail.component').then(
+        ({ TibiaHouseDetailComponent }) => TibiaHouseDetailComponent,
+      ),
+  },
+  {
+    path: 'fansites',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-fansites/tibia-fansites.component').then(
+        ({ TibiaFansitesComponent }) => TibiaFansitesComponent,
+      ),
+  },
+  {
+    path: 'guild/:name',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./tibia-guild/tibia-guild.component').then(
+        ({ TibiaGuildComponent }) => TibiaGuildComponent,
+      ),
+  },
+  {
     path: 'hunting-places',
     canActivate: [authGuard],
     loadComponent: () =>

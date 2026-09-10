@@ -18,6 +18,10 @@ const REFERRAL_CODE_PATTERN = /^[A-Za-z0-9._-]+$/;
 const REFERRAL_CODE_MAX_LENGTH = 64;
 const CHARACTER_NAME_MAX_LENGTH = 30;
 const WORLD_MAX_LENGTH = 30;
+const TIBIA_NAME_MAX_LENGTH = 100;
+const TOWN_MAX_LENGTH = 100;
+const SPELL_ID_MAX_LENGTH = 100;
+const HOUSE_ID_MIN = 1;
 const GOOGLE_ID_MAX_LENGTH = 64;
 const TARGET_NAME_MAX_LENGTH = 255;
 const HIGHSCORES_MIN_PAGE = 1;
@@ -42,9 +46,9 @@ export const LinkMainCharacterRequestSchema = objectSchema({
 });
 
 export const CharacterProgressUpdateRequestSchema = objectSchema({
-  targetKind: enumSchema(['boss', 'creature'] as const),
+  targetKind: enumSchema(["boss", "creature"] as const),
   targetName: stringSchema({ maxLength: TARGET_NAME_MAX_LENGTH }),
-  status: enumSchema(['first-time', 'completed'] as const),
+  status: enumSchema(["first-time", "completed"] as const),
 });
 
 export const CharacterNameParamSchema = objectSchema({
@@ -53,6 +57,28 @@ export const CharacterNameParamSchema = objectSchema({
 
 export const WorldParamSchema = objectSchema({
   world: stringSchema({ maxLength: WORLD_MAX_LENGTH }),
+});
+
+export const TibiaNameParamSchema = objectSchema({
+  name: stringSchema({ maxLength: TIBIA_NAME_MAX_LENGTH }),
+});
+
+export const TownParamSchema = objectSchema({
+  town: stringSchema({ maxLength: TOWN_MAX_LENGTH }),
+});
+
+export const WorldTownParamSchema = objectSchema({
+  world: stringSchema({ maxLength: WORLD_MAX_LENGTH }),
+  town: stringSchema({ maxLength: TOWN_MAX_LENGTH }),
+});
+
+export const SpellIdParamSchema = objectSchema({
+  spellId: stringSchema({ maxLength: SPELL_ID_MAX_LENGTH }),
+});
+
+export const HouseIdParamSchema = objectSchema({
+  world: stringSchema({ maxLength: WORLD_MAX_LENGTH }),
+  houseId: intFromStringSchema({ min: HOUSE_ID_MIN }),
 });
 
 export const GoogleIdParamSchema = objectSchema({
@@ -64,18 +90,34 @@ export const HighscoresSnapshotsQuerySchema = objectSchema({
     intFromStringSchema({ min: HIGHSCORES_MIN_PAGE }),
     HIGHSCORES_DEFAULT_PAGE,
   ),
-  pageSize: withDefault(intFromStringSchema({ min: 1 }), HIGHSCORES_DEFAULT_PAGE_SIZE),
+  pageSize: withDefault(
+    intFromStringSchema({ min: 1 }),
+    HIGHSCORES_DEFAULT_PAGE_SIZE,
+  ),
   world: withDefault(stringSchema({ maxLength: WORLD_MAX_LENGTH }), ""),
   sortDir: withDefault(enumSchema(["asc", "desc"] as const), "desc"),
 });
 
 export type AuthGoogleRequestInput = Infer<typeof AuthGoogleRequestSchema>;
-export type ReferralCaptureRequestInput = Infer<typeof ReferralCaptureRequestSchema>;
-export type LinkMainCharacterRequestInput = Infer<typeof LinkMainCharacterRequestSchema>;
-export type CharacterProgressUpdateRequestInput = Infer<typeof CharacterProgressUpdateRequestSchema>;
+export type ReferralCaptureRequestInput = Infer<
+  typeof ReferralCaptureRequestSchema
+>;
+export type LinkMainCharacterRequestInput = Infer<
+  typeof LinkMainCharacterRequestSchema
+>;
+export type CharacterProgressUpdateRequestInput = Infer<
+  typeof CharacterProgressUpdateRequestSchema
+>;
 export type CharacterNameParamInput = Infer<typeof CharacterNameParamSchema>;
 export type WorldParamInput = Infer<typeof WorldParamSchema>;
+export type TibiaNameParamInput = Infer<typeof TibiaNameParamSchema>;
+export type TownParamInput = Infer<typeof TownParamSchema>;
+export type WorldTownParamInput = Infer<typeof WorldTownParamSchema>;
+export type SpellIdParamInput = Infer<typeof SpellIdParamSchema>;
+export type HouseIdParamInput = Infer<typeof HouseIdParamSchema>;
 export type GoogleIdParamInput = Infer<typeof GoogleIdParamSchema>;
-export type HighscoresSnapshotsQueryInput = Infer<typeof HighscoresSnapshotsQuerySchema>;
+export type HighscoresSnapshotsQueryInput = Infer<
+  typeof HighscoresSnapshotsQuerySchema
+>;
 
 export type SharedSchema<T> = Schema<T>;

@@ -29,6 +29,12 @@
     </button>
   </div>
 
+  @if (worldsError()) {
+    <div class="killstatistics-page__message killstatistics-page__message--error">
+      Nie udało się pobrać listy światów.
+    </div>
+  }
+
   @if (isLoading()) {
     <div class="killstatistics-page__message">Ładowanie danych...</div>
   } @else if (apiError()) {

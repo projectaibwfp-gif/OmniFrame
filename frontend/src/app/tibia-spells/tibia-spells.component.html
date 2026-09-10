@@ -1,0 +1,82 @@
+@if (isLoading()) {
+  <div class="spells-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="spells-page__message spells-page__message--error">
+    {{ labels().error }}
+    <button class="type-chip" type="button" (click)="loadSpells()">{{ labels().retry }}</button>
+  </div>
+} @else {
+  <div class="spells-page">
+    <header class="spells-page__header">
+      <p class="spells-page__eyebrow">{{ labels().eyebrow }}</p>
+      <h1>{{ labels().title }}</h1>
+      <p class="spells-page__intro">{{ labels().intro }}</p>
+    </header>
+
+    <section class="filters-card">
+      <label for="spells-search">{{ labels().searchLabel }}</label>
+      <input
+        id="spells-search"
+        type="text"
+        class="filter-input"
+        [ngModel]="search()"
+        (ngModelChange)="setSearch($event)"
+        [placeholder]="labels().searchPlaceholder"
+        autocomplete="off"
+      />
+    </section>
+
+    @if (spells().length > 0) {
+      <div class="spells-table-wrapper">
+        <table class="spells-table">
+          <thead>
+            <tr>
+              <th>{{ labels().nameColumn }}</th>
+              <th>{{ labels().levelColumn }}</th>
+              <th>{{ labels().manaColumn }}</th>
+              <th>{{ labels().priceColumn }}</th>
+              <th>{{ labels().typeColumn }}</th>
+              <th>{{ labels().premiumColumn }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (spell of paged.items(); track spell.spellId) {
+              <tr class="spell-row" [routerLink]="['/spell', spell.spellId]">
+                <td
+                  ><strong>{{ spell.name }}</strong></td
+                >
+                <td>{{ spell.level ?? '-' }}</td>
+                <td>{{ spell.mana ?? '-' }}</td>
+                <td>{{ spell.price ?? '-' }}</td>
+                <td>
+                  @if (spell.typeInstant && spell.typeRune) {
+                    <span class="type-chip">{{ labels().instant }} / {{ labels().rune }}</span>
+                  } @else if (spell.typeInstant) {
+                    <span class="type-chip">{{ labels().instant }}</span>
+                  } @else {
+                    <span class="type-chip">{{ labels().rune }}</span>
+                  }
+                </td>
+                <td>{{ spell.premiumOnly ? labels().premium : labels().notPremium }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <app-pagination
+        [page]="paged.page()"
+        [totalPages]="paged.totalPages()"
+        [startIndex]="paged.startIndex()"
+        [endIndex]="paged.endIndex()"
+        [total]="paged.total()"
+        [previousLabel]="labels().previous"
+        [nextLabel]="labels().next"
+        ariaLabel="Stronicowanie zaklęć"
+        (pageChange)="paged.setPage($event)"
+      />
+    } @else {
+      <div class="spells-page__message">{{ labels().empty }}</div>
+    }
+  </div>
+}

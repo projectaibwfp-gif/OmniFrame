@@ -1,0 +1,162 @@
+@if (isLoading()) {
+  <div class="tibia-guild-page__message">{{ labels().loading }}</div>
+} @else if (apiError()) {
+  <div class="tibia-guild-page__message tibia-guild-page__message--error">
+    {{ labels().error }}
+    <button class="toggle-button" type="button" (click)="loadGuild()">
+      {{ labels().retry }}
+    </button>
+  </div>
+} @else if (guild(); as guild) {
+  <div class="tibia-guild-page">
+    <a class="back-link" routerLink="/character">{{ labels().back }}</a>
+
+    <header class="tibia-guild-page__header">
+      <p class="tibia-guild-page__eyebrow">Tibia</p>
+      <h1>{{ guild.name }}</h1>
+      <p class="tibia-guild-page__intro">{{ guild.world ?? '-' }}</p>
+    </header>
+
+    <div class="stats-grid">
+      <article class="info-tile">
+        <span class="info-label">{{ labels().world }}</span>
+        <strong class="tile-value">{{ guild.world ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().founded }}</span>
+        <strong class="tile-value">{{ guild.founded | appDate }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().membersTotal }}</span>
+        <strong class="tile-value">{{ guild.membersTotal ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().membersOnline }}</span>
+        <strong class="tile-value">{{ guild.playersOnline ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().membersOffline }}</span>
+        <strong class="tile-value">{{ guild.playersOffline ?? '-' }}</strong>
+      </article>
+      <article class="info-tile">
+        <span class="info-label">{{ labels().membersInvited }}</span>
+        <strong class="tile-value">{{ guild.membersInvited ?? '-' }}</strong>
+      </article>
+    </div>
+
+    <div class="guild-flags">
+      <span class="status-chip">{{ guild.active ? labels().active : labels().inactive }}</span>
+      @if (guild.inWar) {
+        <span class="status-chip">{{ labels().inWar }}</span>
+      }
+      @if (guild.openApplications) {
+        <span class="status-chip">{{ labels().openApplications }}</span>
+      }
+      @if (guild.homepage) {
+        <a class="status-chip" [href]="guild.homepage" target="_blank" rel="noopener noreferrer">{{
+          labels().homepage
+        }}</a>
+      }
+    </div>
+
+    @if (guild.description) {
+      <section class="section-card">
+        <h2>{{ labels().description }}</h2>
+        <p>{{ guild.description }}</p>
+      </section>
+    }
+
+    @if (guild.guildhalls.length > 0) {
+      <section class="section-card">
+        <h2>{{ labels().guildhallsTitle }}</h2>
+        <div class="guildhall-list">
+          @for (guildhall of guild.guildhalls; track guildhall) {
+            <div class="guildhall-row">
+              <strong>{{ guildhall.name }}</strong>
+              <span>{{ guildhall.world ?? '-' }}</span>
+              <span>{{ guildhall.paidUntil | appDateTime }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="section-card">
+      <div class="section-header">
+        <h2>{{ labels().membersTitle }} ({{ members().length }})</h2>
+        <button class="toggle-button" type="button" (click)="toggleMembers()">
+          {{ isMembersCollapsed() ? labels().toggleExpand : labels().toggleCollapse }}
+        </button>
+      </div>
+
+      @if (isMembersCollapsed()) {
+        <p class="collapsed-note">{{ labels().listCollapsed }}</p>
+      } @else if (members().length > 0) {
+        <div class="members-table-wrapper">
+          <table class="members-table">
+            <thead>
+              <tr>
+                <th>{{ labels().rankColumn }}</th>
+                <th>{{ labels().nameColumn }}</th>
+                <th>{{ labels().levelColumn }}</th>
+                <th>{{ labels().vocationColumn }}</th>
+                <th>{{ labels().statusColumn }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (member of members(); track member.name) {
+                <tr>
+                  <td>{{ member.rank ?? '-' }}</td>
+                  <td
+                    ><strong>{{ member.name }}</strong></td
+                  >
+                  <td>{{ member.level ?? '-' }}</td>
+                  <td>{{ member.vocation ?? '-' }}</td>
+                  <td>{{ member.status ?? '-' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="collapsed-note">{{ labels().empty }}</p>
+      }
+    </section>
+
+    @if (invites().length > 0) {
+      <section class="section-card">
+        <div class="section-header">
+          <h2>{{ labels().invitesTitle }} ({{ invites().length }})</h2>
+          <button class="toggle-button" type="button" (click)="toggleInvites()">
+            {{ isInvitesCollapsed() ? labels().toggleExpand : labels().toggleCollapse }}
+          </button>
+        </div>
+
+        @if (!isInvitesCollapsed()) {
+          <div class="members-table-wrapper">
+            <table class="members-table">
+              <thead>
+                <tr>
+                  <th>{{ labels().nameColumn }}</th>
+                  <th>{{ labels().joinedColumn }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (invite of invites(); track invite.name) {
+                  <tr>
+                    <td
+                      ><strong>{{ invite.name }}</strong></td
+                    >
+                    <td>{{ invite.date | appDate }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </div>
+} @else {
+  <div class="tibia-guild-page__message">{{ labels().error }}</div>
+}
