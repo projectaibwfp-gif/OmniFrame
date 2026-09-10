@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
 import { readFileSync } from 'node:fs';
-import { APP_BASE_URL, APP_DISPLAY_NAME } from '../shared/runtime-config';
+import { APP_BASE_URL, APP_DISPLAY_NAME } from '../shared/runtime-config.ts';
 
 const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),

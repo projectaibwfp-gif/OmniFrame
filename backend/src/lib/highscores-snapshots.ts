@@ -128,86 +128,101 @@ export async function listHighscoresSnapshots(
   const normalizedWorld = world?.trim() ?? null;
 
   let rows: HighscoresSnapshotListRow[];
-  let countRows: Array<{ total: string | number }>;
 
-  if (normalizedWorld) {
-    if (sortDir === 'asc') {
-      rows = (await sql`
-        SELECT id,
-               character_name AS "characterName",
+  if (sortDir === 'asc') {
+    rows = (await sql`
+      WITH latest_per_character AS (
+        SELECT DISTINCT ON (normalized_name, world)
+               id AS "latestId",
+               normalized_name,
                world,
-               vocation,
-               level,
-               rank,
-               exact_experience AS "exactExperience",
-               checked_at AS "checkedAt"
+               level AS "latestLevel",
+               checked_at AS "latestCheckedAt"
         FROM character_highscores_snapshots
-        WHERE world = ${normalizedWorld}
-        ORDER BY level ASC, checked_at DESC
+        WHERE world = COALESCE(${normalizedWorld}, world)
+        ORDER BY normalized_name, world, checked_at DESC, id DESC
+      ),
+      paged_characters AS (
+        SELECT normalized_name,
+               world,
+               "latestId",
+               "latestLevel",
+               "latestCheckedAt"
+        FROM latest_per_character
+        ORDER BY "latestLevel" ASC, "latestCheckedAt" DESC, "latestId" DESC
         LIMIT ${pageSize}
         OFFSET ${offset}
-      `) as HighscoresSnapshotListRow[];
-    } else {
-      rows = (await sql`
-        SELECT id,
-               character_name AS "characterName",
-               world,
-               vocation,
-               level,
-               rank,
-               exact_experience AS "exactExperience",
-               checked_at AS "checkedAt"
-        FROM character_highscores_snapshots
-        WHERE world = ${normalizedWorld}
-        ORDER BY level DESC, checked_at DESC
-        LIMIT ${pageSize}
-        OFFSET ${offset}
-      `) as HighscoresSnapshotListRow[];
-    }
-
-    countRows = (await sql`
-      SELECT COUNT(*)::text AS total
-      FROM character_highscores_snapshots
-      WHERE world = ${normalizedWorld}
-    `) as Array<{ total: string | number }>;
+      )
+      SELECT snapshots.id,
+             snapshots.character_name AS "characterName",
+             snapshots.world,
+             snapshots.vocation,
+             snapshots.level,
+             snapshots.rank,
+             snapshots.exact_experience AS "exactExperience",
+             snapshots.checked_at AS "checkedAt"
+      FROM character_highscores_snapshots AS snapshots
+      INNER JOIN paged_characters
+        ON paged_characters.normalized_name = snapshots.normalized_name
+       AND paged_characters.world = snapshots.world
+      ORDER BY paged_characters."latestLevel" ASC,
+               paged_characters."latestCheckedAt" DESC,
+               paged_characters."latestId" DESC,
+               snapshots.checked_at DESC,
+               snapshots.id DESC
+    `) as HighscoresSnapshotListRow[];
   } else {
-    if (sortDir === 'asc') {
-      rows = (await sql`
-        SELECT id,
-               character_name AS "characterName",
+    rows = (await sql`
+      WITH latest_per_character AS (
+        SELECT DISTINCT ON (normalized_name, world)
+               id AS "latestId",
+               normalized_name,
                world,
-               vocation,
-               level,
-               rank,
-               exact_experience AS "exactExperience",
-               checked_at AS "checkedAt"
+               level AS "latestLevel",
+               checked_at AS "latestCheckedAt"
         FROM character_highscores_snapshots
-        ORDER BY level ASC, checked_at DESC
+        WHERE world = COALESCE(${normalizedWorld}, world)
+        ORDER BY normalized_name, world, checked_at DESC, id DESC
+      ),
+      paged_characters AS (
+        SELECT normalized_name,
+               world,
+               "latestId",
+               "latestLevel",
+               "latestCheckedAt"
+        FROM latest_per_character
+        ORDER BY "latestLevel" DESC, "latestCheckedAt" DESC, "latestId" DESC
         LIMIT ${pageSize}
         OFFSET ${offset}
-      `) as HighscoresSnapshotListRow[];
-    } else {
-      rows = (await sql`
-        SELECT id,
-               character_name AS "characterName",
-               world,
-               vocation,
-               level,
-               rank,
-               exact_experience AS "exactExperience",
-               checked_at AS "checkedAt"
-        FROM character_highscores_snapshots
-        ORDER BY level DESC, checked_at DESC
-        LIMIT ${pageSize}
-        OFFSET ${offset}
-      `) as HighscoresSnapshotListRow[];
-    }
-
-    countRows = (await sql`
-      SELECT COUNT(*)::text AS total
-      FROM character_highscores_snapshots
-    `) as Array<{ total: string | number }>;
+      )
+      SELECT snapshots.id,
+             snapshots.character_name AS "characterName",
+             snapshots.world,
+             snapshots.vocation,
+             snapshots.level,
+             snapshots.rank,
+             snapshots.exact_experience AS "exactExperience",
+             snapshots.checked_at AS "checkedAt"
+      FROM character_highscores_snapshots AS snapshots
+      INNER JOIN paged_characters
+        ON paged_characters.normalized_name = snapshots.normalized_name
+       AND paged_characters.world = snapshots.world
+      ORDER BY paged_characters."latestLevel" DESC,
+               paged_characters."latestCheckedAt" DESC,
+               paged_characters."latestId" DESC,
+               snapshots.checked_at DESC,
+               snapshots.id DESC
+    `) as HighscoresSnapshotListRow[];
   }
+
+  const countRows = (await sql`
+    SELECT COUNT(*)::text AS total
+    FROM (
+      SELECT DISTINCT normalized_name, world
+      FROM character_highscores_snapshots
+      WHERE world = COALESCE(${normalizedWorld}, world)
+    ) AS unique_characters
+  `) as Array<{ total: string | number }>;
 
   const worldRows = (await sql`
     SELECT DISTINCT world

@@ -2,6 +2,7 @@ import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { formatDateTime, toLocalDayKey } from '../core/date-time';
 
 export const PAGE_SIZE = 50;
+const GROUP_KEY_SEPARATOR = '\u0000';
 
 export interface GroupedSnapshotRecord {
   latest: HighscoresSnapshotRecordDto;
@@ -22,6 +23,12 @@ function getCheckedAtTimestamp(checkedAt: string): number {
 // klucz z UTC rozjeżdżałby przyrost EXP dla snapshotów tuż po lokalnej północy.
 function getCheckedAtDay(checkedAt: string): string {
   return toLocalDayKey(checkedAt) || checkedAt;
+}
+
+function getSnapshotGroupKey(record: HighscoresSnapshotRecordDto): string {
+  return [record.world.trim().toLowerCase(), record.characterName.trim().toLowerCase()].join(
+    GROUP_KEY_SEPARATOR,
+  );
 }
 
 function getPreviousDayExperienceIncrease(
@@ -56,7 +63,7 @@ export function groupSnapshotRecords(
   const groups = new Map<string, HighscoresSnapshotRecordDto[]>();
 
   for (const record of records) {
-    const key = record.characterName.trim().toLowerCase();
+    const key = getSnapshotGroupKey(record);
     const current = groups.get(key) ?? [];
     current.push(record);
     groups.set(key, current);
