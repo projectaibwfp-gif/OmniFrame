@@ -4,7 +4,9 @@ import { RouterLink } from '@angular/router';
 import { PaginationComponent } from '../components/pagination/pagination.component';
 import { createPagedList } from '../core/paged-list';
 import { createSort } from '../core/sort';
+import { vocationFromName } from '../core/vocation';
 import { LocalizationService } from '../services/localization.service';
+import { MainCharacterService } from '../services/main-character.service';
 import { vocationClass, type Vocation, VOCATIONS } from '../tibia/vocation';
 import { HUNTING_PLACES, type HuntingPlace } from './hunting-places.data';
 import { buildHuntingLabels } from './hunting-places.labels';
@@ -119,6 +121,14 @@ export class HuntingPlacesComponent {
   protected readonly paged = createPagedList(this.sortedPlaces);
 
   private readonly localizationService = inject(LocalizationService);
+  private readonly mainCharacterService = inject(MainCharacterService);
+
+  constructor() {
+    const mainCharacterVocation = vocationFromName(this.mainCharacterService.vocation());
+    if (mainCharacterVocation) {
+      this.activeTab.set(mainCharacterVocation);
+    }
+  }
 
   protected setSearchName(value: string): void {
     this.searchName.set(value);

@@ -1,3 +1,5 @@
+import type { Vocation } from '../tibia/vocation';
+
 const VOCATION_SHORT_CODES: Record<string, string> = {
   'elite knight': 'EK',
   knight: 'K',
@@ -13,6 +15,18 @@ const VOCATION_SHORT_CODES: Record<string, string> = {
 };
 
 const FALLBACK_VOCATION_CODE = '?';
+const VOCATION_NAMES: Record<string, Vocation> = {
+  knight: 'Knight',
+  'elite knight': 'Knight',
+  paladin: 'Paladin',
+  'royal paladin': 'Paladin',
+  druid: 'Druid',
+  'elder druid': 'Druid',
+  sorcerer: 'Sorcerer',
+  'master sorcerer': 'Sorcerer',
+  monk: 'Monk',
+  'exalted monk': 'Monk',
+};
 
 export function shortVocation(vocation: string | null | undefined): string {
   if (!vocation) {
@@ -20,6 +34,10 @@ export function shortVocation(vocation: string | null | undefined): string {
   }
   const normalized = vocation.trim().toLowerCase();
   return VOCATION_SHORT_CODES[normalized] ?? vocation.charAt(0).toUpperCase();
+}
+
+export function vocationFromName(vocation: string | null | undefined): Vocation | null {
+  return VOCATION_NAMES[vocation?.trim().toLowerCase() ?? ''] ?? null;
 }
 
 export function formatMainCharacterBadge(

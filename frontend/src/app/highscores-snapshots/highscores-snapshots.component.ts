@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
+import { MainCharacterService } from '../services/main-character.service';
 import { HighscoresSnapshotsService } from './highscores-snapshots.service';
 import { PAGE_SIZE, formatCheckedAt, groupSnapshotRecords } from './highscores-grouping';
 
@@ -37,9 +38,11 @@ export class HighscoresSnapshotsComponent {
   protected readonly formatCheckedAt = formatCheckedAt;
 
   private readonly highscoresSnapshotsService = inject(HighscoresSnapshotsService);
+  private readonly mainCharacterService = inject(MainCharacterService);
   private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
+    this.selectedWorld.set(this.mainCharacterService.world());
     this.loadSnapshots();
   }
 

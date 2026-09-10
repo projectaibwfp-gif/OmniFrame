@@ -9,11 +9,13 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type { TibiaKillStatisticsEntryDto } from '@shared/api-contract';
+import { MainCharacterService } from '../services/main-character.service';
 import { TibiaKillStatisticsService } from './tibia-killstatistics.service';
 
 type BossFilter = 'all' | 'today' | 'week' | 'old';
 
 const BOSS_MAX_WEEKLY_KILLS = 100;
+const DEFAULT_WORLDS = ['Antica', 'Secura', 'Dia'];
 
 @Component({
   selector: 'app-tibia-killstatistics',
@@ -65,10 +67,20 @@ export class TibiaKillStatisticsComponent {
   });
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
+  private readonly mainCharacterService = inject(MainCharacterService);
   private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.worlds.set(['Antica', 'Secura', 'Dia']);
+    const mainCharacterWorld = this.mainCharacterService.world();
+    this.worlds.set(
+      mainCharacterWorld && !DEFAULT_WORLDS.includes(mainCharacterWorld)
+        ? [...DEFAULT_WORLDS, mainCharacterWorld]
+        : DEFAULT_WORLDS,
+    );
+
+    if (mainCharacterWorld) {
+      this.loadStatistics(mainCharacterWorld);
+    }
   }
 
   protected onWorldChange(event: Event): void {

@@ -53,6 +53,14 @@
                 (click)="closeMobileNav()"
               >
                 <span class="main-character-chip__badge">{{ mainCharacterBadge() }}</span>
+                @if (character.world) {
+                  <span class="main-character-chip__world">{{ character.world }}</span>
+                }
+                @if (character.vocation) {
+                  <span class="main-character-chip__vocation">{{
+                    mainCharacterService.vocationShort()
+                  }}</span>
+                }
                 <span class="main-character-chip__name">{{ character.name }}</span>
               </a>
             }
