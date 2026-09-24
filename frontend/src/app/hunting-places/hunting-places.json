@@ -60989,5 +60989,1112 @@
         }
       ]
     }
+  },
+  {
+    "id": "Issavi-Puzzle-Chambers-EKED",
+    "name": "Issavi Puzzle Chambers",
+    "minLevel": 500,
+    "rawExp": "3kk+",
+    "profit": "500k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Black Sphinx Acolyte",
+        "slug": "Black-Sphinx-Acolyte",
+        "health": 8100,
+        "experience": 7200,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": -10,
+          "fire": 0,
+          "ice": 0,
+          "holy": 30,
+          "death": -100,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Burning Gladiator",
+        "slug": "Burning-Gladiator",
+        "health": 10000,
+        "experience": 7350,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -20,
+          "earth": 0,
+          "fire": -30,
+          "ice": 20,
+          "holy": 0,
+          "death": 0,
+          "physical": -20
+        }
+      },
+      {
+        "name": "Priestess of the Wild Sun",
+        "slug": "Priestess-of-the-Wild-Sun",
+        "health": 8500,
+        "experience": 6400,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -15,
+          "earth": 0,
+          "fire": -20,
+          "ice": 25,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Sphinx-Issavi-ED-EK",
+    "name": "Sphinx Issavi",
+    "minLevel": 450,
+    "rawExp": "6kk+",
+    "profit": "800k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Crypt Warden",
+        "slug": "Crypt-Warden",
+        "health": 8300,
+        "experience": 8400,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": -20,
+          "fire": 0,
+          "ice": 0,
+          "holy": -25,
+          "death": 35,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Sphinx",
+        "slug": "Sphinx",
+        "health": 8500,
+        "experience": 6980,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": -10,
+          "ice": 15,
+          "holy": -15,
+          "death": 12,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Deathlings-ED-EK",
+    "name": "Deathlings",
+    "minLevel": 400,
+    "rawExp": "3.5kk+",
+    "profit": "850k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Deathling Scout",
+        "slug": "Deathling-Scout",
+        "health": 7200,
+        "experience": 6300,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 10,
+          "earth": 10,
+          "fire": -100,
+          "ice": -100,
+          "holy": 0,
+          "death": -10,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Deathling Spellsinger",
+        "slug": "Deathling-Spellsinger",
+        "health": 7200,
+        "experience": 6400,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 10,
+          "earth": 10,
+          "fire": -100,
+          "ice": -100,
+          "holy": 0,
+          "death": -10,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Falcon-EK-ED",
+    "name": "Falcons",
+    "minLevel": 400,
+    "rawExp": "3kk+",
+    "profit": "900k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Falcon Knight",
+        "slug": "Falcon-Knight",
+        "health": 9000,
+        "experience": 6300,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": 0,
+          "ice": 0,
+          "holy": 10,
+          "death": -50,
+          "physical": -30
+        }
+      },
+      {
+        "name": "Falcon Paladin",
+        "slug": "Falcon-Paladin",
+        "health": 8500,
+        "experience": 6900,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": 0,
+          "ice": 0,
+          "holy": 10,
+          "death": -50,
+          "physical": -10
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Nightmare-Isles-DUO",
+    "name": "Nightmare Isles",
+    "minLevel": 200,
+    "rawExp": "1.5kk+",
+    "profit": "350k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Choking Fear",
+        "slug": "Choking-Fear",
+        "health": 5800,
+        "experience": 4700,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -2,
+          "earth": -100,
+          "fire": -100,
+          "ice": -10,
+          "holy": 0,
+          "death": -55,
+          "physical": -10
+        }
+      },
+      {
+        "name": "Retching Horror",
+        "slug": "Retching-Horror",
+        "health": 5300,
+        "experience": 4100,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 3,
+          "earth": -100,
+          "fire": -85,
+          "ice": -15,
+          "holy": 0,
+          "death": -22,
+          "physical": -5
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Haunted-Temple-EKED",
+    "name": "Haunted Temple",
+    "minLevel": 180,
+    "rawExp": "1.3kk+",
+    "profit": "120k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Gazer Spectre",
+        "slug": "Gazer-Spectre",
+        "health": 4500,
+        "experience": 4200,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": -60,
+          "ice": 30,
+          "holy": 0,
+          "death": 0,
+          "physical": -85
+        }
+      },
+      {
+        "name": "Thanatursus",
+        "slug": "Thanatursus",
+        "health": 7200,
+        "experience": 6300,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -50,
+          "earth": 0,
+          "fire": 0,
+          "ice": 0,
+          "holy": -20,
+          "death": 20,
+          "physical": -30
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Cults-Carlin-ED-EK",
+    "name": "Cults Carlin",
+    "minLevel": 60,
+    "rawExp": "600k+",
+    "profit": "40k+",
+    "premium": true,
+    "recommendedVocations": ["Druid", "Knight"],
+    "monsters": [
+      {
+        "name": "Cult Believer",
+        "slug": "Cult-Believer",
+        "health": 975,
+        "experience": 850,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -10,
+          "earth": -10,
+          "fire": -10,
+          "ice": -10,
+          "holy": -10,
+          "death": 0,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Cult Enforcer",
+        "slug": "Cult-Enforcer",
+        "health": 1000,
+        "experience": 1000,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": 0,
+          "ice": 0,
+          "holy": 0,
+          "death": 0,
+          "physical": -10
+        }
+      },
+      {
+        "name": "Vicious Squire",
+        "slug": "Vicious-Squire",
+        "health": 1000,
+        "experience": 900,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -40,
+          "earth": -50,
+          "fire": -30,
+          "ice": -10,
+          "holy": -50,
+          "death": 20,
+          "physical": -10
+        }
+      },
+      {
+        "name": "Vile Grandmaster",
+        "slug": "Vile-Grandmaster",
+        "health": 1700,
+        "experience": 1500,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -25,
+          "earth": -25,
+          "fire": -25,
+          "ice": -10,
+          "holy": -50,
+          "death": 0,
+          "physical": -20
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Krailos-Ruins-4VOC",
+    "name": "Krailos Ruins",
+    "minLevel": 50,
+    "rawExp": "650k+",
+    "profit": "30k+",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Nightmare",
+        "slug": "Nightmare",
+        "health": 2700,
+        "experience": 1800,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -20,
+          "earth": -100,
+          "fire": -20,
+          "ice": -10,
+          "holy": 25,
+          "death": -100,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Nightmare Scion",
+        "slug": "Nightmare-Scion",
+        "health": 1400,
+        "experience": 1350,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -20,
+          "earth": -100,
+          "fire": -20,
+          "ice": -10,
+          "holy": 25,
+          "death": -100,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Undead Gladiator",
+        "slug": "Undead-Gladiator",
+        "health": 1000,
+        "experience": 800,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": -20,
+          "earth": 10,
+          "fire": -80,
+          "ice": 0,
+          "holy": -10,
+          "death": 5,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Jaded-Roots-4VOC",
+    "name": "Jaded Roots",
+    "minLevel": 950,
+    "rawExp": "12kk+",
+    "profit": "3kk-3.5kk",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Bloated Man-Maggot",
+        "slug": "Bloated-Man-Maggot",
+        "health": 31700,
+        "experience": 21570,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": 15,
+          "earth": -40,
+          "fire": -15,
+          "ice": 15,
+          "holy": 5,
+          "death": -5,
+          "physical": -45
+        }
+      },
+      {
+        "name": "Mycobiontic Beetle",
+        "slug": "Mycobiontic-Beetle",
+        "health": 30200,
+        "experience": 21175,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": 15,
+          "earth": -60,
+          "fire": -35,
+          "ice": 25,
+          "holy": 5,
+          "death": 0,
+          "physical": -25
+        }
+      },
+      {
+        "name": "Oozing Corpus",
+        "slug": "Oozing-Corpus",
+        "health": 28700,
+        "experience": 20600,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": 25,
+          "earth": -40,
+          "fire": -25,
+          "ice": 10,
+          "holy": 10,
+          "death": 0,
+          "physical": -30
+        }
+      },
+      {
+        "name": "Sopping Corpus",
+        "slug": "Sopping-Corpus",
+        "health": 33400,
+        "experience": 22465,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": 20,
+          "earth": -50,
+          "fire": -30,
+          "ice": 10,
+          "holy": 5,
+          "death": -10,
+          "physical": -40
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Gnomprona-West",
+    "name": "Gnomprona - West",
+    "minLevel": 800,
+    "rawExp": "10kk+",
+    "profit": "3kk+",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Emerald Tortoise",
+        "slug": "Emerald-Tortoise",
+        "health": 22300,
+        "experience": 13040,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": -10,
+          "earth": 15,
+          "fire": -10,
+          "ice": -10,
+          "holy": -10,
+          "death": 0,
+          "physical": -20
+        }
+      },
+      {
+        "name": "Gore Horn",
+        "slug": "Gore-Horn",
+        "health": 20620,
+        "experience": 13540,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": -30,
+          "earth": -50,
+          "fire": 10,
+          "ice": 10,
+          "holy": 0,
+          "death": 0,
+          "physical": 10
+        }
+      },
+      {
+        "name": "Gorerilla",
+        "slug": "Gorerilla",
+        "health": 16850,
+        "experience": 14160,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": -20,
+          "ice": 5,
+          "holy": 5,
+          "death": 0,
+          "physical": -30
+        }
+      },
+      {
+        "name": "Hulking Prehemoth",
+        "slug": "Hulking-Prehemoth",
+        "health": 20700,
+        "experience": 13640,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": -30,
+          "earth": 0,
+          "fire": -40,
+          "ice": 30,
+          "holy": 30,
+          "death": 0,
+          "physical": -5
+        }
+      },
+      {
+        "name": "Sabretooth",
+        "slug": "Sabretooth",
+        "health": 17300,
+        "experience": 12830,
+        "boss": false,
+        "charmPoints": 100,
+        "resistances": {
+          "energy": -10,
+          "earth": 10,
+          "fire": 10,
+          "ice": 10,
+          "holy": 0,
+          "death": 0,
+          "physical": 10
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Deeper-Ingol-4VOC",
+    "name": "Deeper Ingol",
+    "minLevel": 700,
+    "rawExp": "6kk+",
+    "profit": "2kk-2.2kk",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Boar Man",
+        "slug": "Boar-Man",
+        "health": 9200,
+        "experience": 7100,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -15,
+          "earth": -5,
+          "fire": -15,
+          "ice": -5,
+          "holy": 10,
+          "death": -5,
+          "physical": -10
+        }
+      },
+      {
+        "name": "Carnivostrich",
+        "slug": "Carnivostrich",
+        "health": 8250,
+        "experience": 6710,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -15,
+          "earth": 0,
+          "fire": 10,
+          "ice": 10,
+          "holy": 20,
+          "death": -5,
+          "physical": 10
+        }
+      },
+      {
+        "name": "Crape Man",
+        "slug": "Crape-Man",
+        "health": 9150,
+        "experience": 5040,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -10,
+          "earth": -5,
+          "fire": 0,
+          "ice": 5,
+          "holy": 0,
+          "death": 15,
+          "physical": -15
+        }
+      },
+      {
+        "name": "Harpy",
+        "slug": "Harpy",
+        "health": 7700,
+        "experience": 5720,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -25,
+          "earth": -10,
+          "fire": 5,
+          "ice": 10,
+          "holy": 0,
+          "death": 5,
+          "physical": 5
+        }
+      },
+      {
+        "name": "Liodile",
+        "slug": "Liodile",
+        "health": 8600,
+        "experience": 6310,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -25,
+          "earth": -30,
+          "fire": 10,
+          "ice": 5,
+          "holy": 15,
+          "death": -5,
+          "physical": 10
+        }
+      },
+      {
+        "name": "Rhindeer",
+        "slug": "Rhindeer",
+        "health": 8650,
+        "experience": 5600,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -5,
+          "earth": -20,
+          "fire": 10,
+          "ice": 0,
+          "holy": 5,
+          "death": 0,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Nimmersatts-Breeding-Ground-4VOC",
+    "name": "Nimmersatt's Breeding Ground",
+    "minLevel": 550,
+    "rawExp": "7kk+",
+    "profit": "3.5kk-4kk",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Dragolisk",
+        "slug": "Dragolisk",
+        "health": 6180,
+        "experience": 4650,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 10,
+          "fire": -40,
+          "ice": 5,
+          "holy": 15,
+          "death": 10,
+          "physical": -15
+        }
+      },
+      {
+        "name": "Mega Dragon",
+        "slug": "Mega-Dragon",
+        "health": 7920,
+        "experience": 7180,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 10,
+          "earth": 10,
+          "fire": -20,
+          "ice": -20,
+          "holy": 10,
+          "death": -20,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Wardragon",
+        "slug": "Wardragon",
+        "health": 6960,
+        "experience": 5340,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 5,
+          "earth": 10,
+          "fire": -40,
+          "ice": 10,
+          "holy": 5,
+          "death": -15,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Fire-Library-4VOC",
+    "name": "Fire Library",
+    "minLevel": 400,
+    "rawExp": "4kk+",
+    "profit": "700k-800k",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Burning Book",
+        "slug": "Burning-Book",
+        "health": 18000,
+        "experience": 13200,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": -100,
+          "ice": 10,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Rage Squid",
+        "slug": "Rage-Squid",
+        "health": 17000,
+        "experience": 16300,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": -100,
+          "ice": 15,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Ice-Library-4VOC",
+    "name": "Ice Library",
+    "minLevel": 400,
+    "rawExp": "5kk-7.5kk",
+    "profit": "1.5kk-2kk",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Icecold Book",
+        "slug": "Icecold-Book",
+        "health": 21000,
+        "experience": 12750,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": 10,
+          "ice": -100,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Squid Warden",
+        "slug": "Squid-Warden",
+        "health": 16500,
+        "experience": 15300,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": 0,
+          "fire": 15,
+          "ice": -100,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Cobra-Bastion-4VOC",
+    "name": "Cobra Bastion",
+    "minLevel": 300,
+    "rawExp": "3kk-4.5kk",
+    "profit": "800k-1500k",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Cobra Assassin",
+        "slug": "Cobra-Assassin",
+        "health": 8200,
+        "experience": 6980,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": -100,
+          "fire": 0,
+          "ice": 0,
+          "holy": 0,
+          "death": 0,
+          "physical": -20
+        }
+      },
+      {
+        "name": "Cobra Scout",
+        "slug": "Cobra-Scout",
+        "health": 8500,
+        "experience": 7310,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": -100,
+          "fire": 0,
+          "ice": 0,
+          "holy": 0,
+          "death": 0,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Cobra Vizier",
+        "slug": "Cobra-Vizier",
+        "health": 8500,
+        "experience": 7650,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 0,
+          "earth": -100,
+          "fire": 0,
+          "ice": 0,
+          "holy": 10,
+          "death": 0,
+          "physical": -10
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
+  },
+  {
+    "id": "Prison-3-4VOC",
+    "name": "Prison -3",
+    "minLevel": 200,
+    "rawExp": "2kk-3.5kk",
+    "profit": "300k-800k",
+    "premium": true,
+    "recommendedVocations": ["Knight", "Paladin", "Druid", "Sorcerer", "Monk"],
+    "monsters": [
+      {
+        "name": "Blightwalker",
+        "slug": "Blightwalker",
+        "health": 8100,
+        "experience": 6400,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -20,
+          "earth": -100,
+          "fire": -50,
+          "ice": -15,
+          "holy": 30,
+          "death": -100,
+          "physical": 10
+        }
+      },
+      {
+        "name": "Dark Torturer",
+        "slug": "Dark-Torturer",
+        "health": 7350,
+        "experience": 4650,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -30,
+          "earth": -90,
+          "fire": -100,
+          "ice": 10,
+          "holy": 10,
+          "death": -10,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Demon Outcast",
+        "slug": "Demon-Outcast",
+        "health": 6900,
+        "experience": 6200,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 8,
+          "earth": -40,
+          "fire": -100,
+          "ice": -5,
+          "holy": 6,
+          "death": -30,
+          "physical": -15
+        }
+      },
+      {
+        "name": "Hellhound",
+        "slug": "Hellhound",
+        "health": 7500,
+        "experience": 5440,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": -10,
+          "earth": -20,
+          "fire": -100,
+          "ice": 5,
+          "holy": 5,
+          "death": 0,
+          "physical": 0
+        }
+      },
+      {
+        "name": "Juggernaut",
+        "slug": "Juggernaut",
+        "health": 18000,
+        "experience": 11200,
+        "boss": false,
+        "charmPoints": 50,
+        "resistances": {
+          "energy": 10,
+          "earth": -20,
+          "fire": -30,
+          "ice": -10,
+          "holy": 5,
+          "death": 0,
+          "physical": -30
+        }
+      },
+      {
+        "name": "Plaguesmith",
+        "slug": "Plaguesmith",
+        "health": 8250,
+        "experience": 3800,
+        "boss": false,
+        "charmPoints": 25,
+        "resistances": {
+          "energy": 10,
+          "earth": -100,
+          "fire": -30,
+          "ice": -20,
+          "holy": 10,
+          "death": -10,
+          "physical": 0
+        }
+      }
+    ],
+    "quests": [],
+    "imbuements": [],
+    "trinkets": [],
+    "valuableDrop": []
   }
 ]

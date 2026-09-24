@@ -82,15 +82,17 @@
       </div>
 
       <div class="detail-side">
-        <div class="detail-map card">
-          <h3>{{ labels().map }}</h3>
-          <app-tibia-minimap
-            [coordinates]="place.coordinates"
-            [zoom]="place.mapZoom ?? defaultMapZoom"
-            [route]="place.route"
-            [size]="480"
-          />
-        </div>
+        @if (place.coordinates && place.route) {
+          <div class="detail-map card">
+            <h3>{{ labels().map }}</h3>
+            <app-tibia-minimap
+              [coordinates]="place.coordinates"
+              [zoom]="place.mapZoom ?? defaultMapZoom"
+              [route]="place.route"
+              [size]="480"
+            />
+          </div>
+        }
 
         <div class="detail-monsters card">
           <h3>{{ labels().monsters }}</h3>

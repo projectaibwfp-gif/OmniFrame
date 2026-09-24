@@ -38,9 +38,14 @@ export interface HuntingPlace {
   imbuements: HuntingImbuement[];
   trinkets: string[];
   valuableDrop: string[];
-  coordinates: Coordinates;
+  /**
+   * Mapa i trasa nie są dostępne dla wszystkich miejsc (np. lokacje Duo/4-Voc
+   * dodane bez szczegółowego scrapingu trasy) - są opcjonalne, a widok detali
+   * pomija sekcję mapy, gdy ich brakuje.
+   */
+  coordinates?: Coordinates;
   mapZoom?: number;
-  route: TibiaRoute;
+  route?: TibiaRoute;
 }
 
 /**
