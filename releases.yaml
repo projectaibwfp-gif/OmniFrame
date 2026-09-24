@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-24T09:23:16.470Z"
+    commit: "1f9e1716d804afedfb24f097effb64d16efe2ebd"
+    frontend:
+      version: "0.33.0"
+      tag: "frontend-v0.33.0"
+      changed: true
+      commits:
+      - hash: "1f9e1716"
+        author: "Bartek"
+        date: "2026-09-24T11:21:11+02:00"
+        message: "feat: add comprehensive boss data from tibia.fandom.com with detailed attributes and references"
+    backend:
+      version: "0.19.0"
+      tag: "backend-v0.19.0"
+      changed: false
+      commits: []
   - date: "2026-09-10T13:10:18.466Z"
     commit: "fc48db06560dd5ce218b53c00b365227df258727"
     frontend:
