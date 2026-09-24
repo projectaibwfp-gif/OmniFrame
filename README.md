@@ -530,6 +530,25 @@ npm run format:check              # sprawdzenie formatowania Prettier
 npm run db:migrate                # migracje bazy (migration/*.sql)
 ```
 
+## Dane bossów z tibia.fandom.com
+
+W `frontend/src/app/boostable-bosses/` znajduje się kompletny research
+wszystkich bossowalnych bossów Tibii, zebrany z tibia.fandom.com:
+
+- `boostable-boss-list-reference.data.ts` - surowa lista referencyjna 112
+  bossów (`name`, `imageUrl`, `featured`) w formacie zgodnym z TibiaData API.
+- `tibia-fandom-batch-1.ts` ... `tibia-fandom-batch-7.ts` - siedem plików
+  archiwalnych z surowym researchem (`CreatureDetailDto`-podobne obiekty: opis,
+  questy dostępowe, lokalizacja, sugerowany poziom solo/grupa, styl ataku,
+  odporności, loot) dla 111 bossów, zebrane batchami po ~16 bossów. Zachowane
+  jako backup/referencja - dane z nich są już scalone do `boosted-bosses.data.ts`.
+- `boosted-bosses.data.ts` - docelowy plik z aktywnymi wpisami wykorzystywanymi
+  przez `findBoostedBossDetails` i widok `/boosted/boss/:name`. Zawiera już
+  wszystkie 112 bossów (111 z tibia.fandom.com + `Lloyd`), z ujednoliconą
+  wielkością liter w nazwach ("Neferi The Spy", "Timira The Many-Headed",
+  "Unaz The Mean", "Urmahlullu The Weakened", "Vok The Freakish") zgodną
+  z `boostable-boss-list-reference.data.ts`.
+
 ## Dalszy rozwój
 
 1. Rozszerz REST API w `backend/src/app/api/`, dodając autoryzację, paginację
