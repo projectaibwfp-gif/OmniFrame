@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-09-24T13:30:29.107Z"
+    commit: "23696060d93ef98c3400cf573dc2b6f5e9af1a1c"
+    frontend:
+      version: "0.34.0"
+      tag: "frontend-v0.34.0"
+      changed: true
+      commits:
+      - hash: "23696060"
+        author: "Bartek"
+        date: "2026-09-24T15:28:42+02:00"
+        message: "feat: enhance boostable bosses and creatures data with resolved image URLs"
+    backend:
+      version: "0.19.0"
+      tag: "backend-v0.19.0"
+      changed: false
+      commits: []
   - date: "2026-09-24T09:23:16.470Z"
     commit: "1f9e1716d804afedfb24f097effb64d16efe2ebd"
     frontend:
