@@ -6,7 +6,7 @@ export const BOOSTED_CREATURES: BoostedCreatureDetailEntry[] = [
   {
     name: 'Dragon Lord',
     slug: 'Dragon-Lord',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/dragonlord.gif',
+    imageUrl: 'https://static.tibia.com/images/library/dragonlord.gif',
     boss: false,
     shortDescription:
       'Klasyczny fire caster z mocnym melee, dobry kandydat do oznaczania czy glowna postac ma go juz zrobionego.',
@@ -44,4 +44,15 @@ export function findBoostedCreatureDetails(
   }
 
   return BOOSTED_CREATURES.find((entry) => entry.name === name) ?? null;
+}
+
+/**
+ * Creatures don't change their library image over time - prefer the curated,
+ * already-verified `imageUrl` over whatever TibiaData returns for the same
+ * name, and only fall back to the API value for creatures we haven't curated
+ * yet.
+ */
+export function resolveCreatureImageUrl(name: string, apiImageUrl: string): string {
+  const match = BOOSTED_CREATURES.find((entry) => entry.name.toLowerCase() === name.toLowerCase());
+  return match?.imageUrl ?? apiImageUrl;
 }

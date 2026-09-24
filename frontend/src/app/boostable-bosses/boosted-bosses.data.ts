@@ -6,7 +6,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Abyssador',
     slug: 'Abyssador',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/abyssador.gif',
+    imageUrl: 'https://static.tibia.com/images/library/abyssador.gif',
     boss: true,
     shortDescription:
       'Najtrudniejszy z bossów Warzone, bardzo mobilny i często staje się niewidzialny. Zadaje dużo obrażeń earth i fizycznych, a do tego potrafi bardzo mocno się leczyć.',
@@ -67,7 +67,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Adventurer Group',
     slug: 'Adventurer-Group',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/adventurergroup.gif',
+    imageUrl: 'https://static.tibia.com/images/library/adventurergroup.gif',
     boss: true,
     shortDescription:
       'To starcie z pięcioma przeciwnikami naraz, po jednym na każdą profesję, a po zejściu na czerwone HP przechodzą oni w silniejsze formy avatarów. Trzeba unikać bright crystalów z mana drainem i przygotować się, że po ich zabiciu pojawia się Fatal Bug.',
@@ -105,7 +105,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ahau',
     slug: 'Ahau',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ahau.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ahau.gif',
     boss: true,
     shortDescription:
       'Przywódca Iksów walczący głównie obrażeniami earth i fire. Najważniejsza mechanika to cztery życia oraz coraz większa strefa lawy po każdym odrodzeniu.',
@@ -167,7 +167,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Amenef The Burning',
     slug: 'Amenef-The-Burning',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ameneftheburning.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ameneftheburning.gif',
     boss: true,
     shortDescription:
       'Ognisty miniboss kultystów Fafnara z Kilmaresh. Sam zestaw ciosów nie jest skomplikowany, ale bije solidnie w zwarciu i premiuje graczy z ochroną na fire oraz energy.',
@@ -229,7 +229,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Anomaly',
     slug: 'Anomaly',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/anomaly.gif',
+    imageUrl: 'https://static.tibia.com/images/library/anomaly.gif',
     boss: true,
     shortDescription:
       'Boss z Heart of Destruction, który regularnie przechodzi w formę Charged Anomaly odporną na zwykły damage. Wtedy trzeba przeciągać go przez czerwone vortexy, bo to one zdejmują mu życie.',
@@ -291,7 +291,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Arbaziloth',
     slug: 'Arbaziloth',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/arbaziloth4spheres.gif',
+    imageUrl: 'https://static.tibia.com/images/library/arbaziloth4spheres.gif',
     boss: true,
     shortDescription:
       'Finałowy boss No Rest for the Wicked Quest z wyraźną mechaniką faz i zdejmowania niewrażliwości wędką. Trzeba uważać na ciągłe przywołania, efekt Powerless i momenty, w których boss staje się nietykalny aż do przeciągnięcia go przez fioletowy ogień.',
@@ -353,7 +353,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Black Vixen',
     slug: 'Black-Vixen',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/vixen.gif',
+    imageUrl: 'https://static.tibia.com/images/library/vixen.gif',
     boss: true,
     shortDescription:
       'Liderka werefoxów walcząca na dystans i lubiąca znikanie oraz przywołania. Sama walka nie jest bardzo ciężka, ale paraliż, death beam i summon werefoxa potrafią szybko dołożyć obrażeń.',
@@ -414,7 +414,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Blight Mariner',
     slug: 'Blight-Mariner',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/blightmariner.gif',
+    imageUrl: 'https://static.tibia.com/images/library/blightmariner.gif',
     boss: true,
     shortDescription:
       'Boss z Between the Lines Quest oparty bardziej na mechanice niż na samych statystykach. Nie wolno bić go, gdy żyją Drowned Deck Hands, bo wtedy leczy 5000 HP, a z czasem arena zalewa się dodatkowymi spittersami.',
@@ -475,7 +475,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Bloodback',
     slug: 'Bloodback',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/bloodhoof.gif',
+    imageUrl: 'https://static.tibia.com/images/library/bloodhoof.gif',
     boss: true,
     shortDescription:
       'Lider wereboarów walczący głównie fizycznie i przez przywołanie wsparcia. To prosty solo boss, ale w zwarciu potrafi mocno przycisnąć, więc dystans i fire wciąż działają najlepiej.',
@@ -531,7 +531,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Bone Overlord',
     slug: 'Bone-Overlord',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/boneoverlordbosstiary.gif',
+    imageUrl: 'https://static.tibia.com/images/library/boneoverlordbosstiary.gif',
     boss: true,
     shortDescription:
       'Finał The Roost of the Graveborn Quest z rozbudowaną walką fazową. Najpierw trzeba zniszczyć soulcage’e i ogarniać teleporty, agony, curse oraz mana drain, a dopiero potem dobić właściwą phylactery z lootem.',
@@ -594,7 +594,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Brain Head',
     slug: 'Brain-Head',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/brainhead.gif',
+    imageUrl: 'https://static.tibia.com/images/library/brainhead.gif',
     boss: true,
     shortDescription:
       'Undead boss z Feaster of Souls, którego trzeba bić głównie ice. Należy najpierw oczyścić część Cerebellumów i bardzo uważać na energię, bo ta leczy bossa, a fire według strategii też jest złym wyborem.',
@@ -655,7 +655,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Brokul',
     slug: 'Brokul',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/brokul.gif',
+    imageUrl: 'https://static.tibia.com/images/library/brokul.gif',
     boss: true,
     shortDescription:
       'Boss deathlingów z Secret Library, bardzo groźny dla graczy stojących na linii jego beamów. Nie wolno stać przed nim ani zbyt blisko, bo łączy mocne beamy z bombami, paraliżem i leczeniem.',
@@ -716,7 +716,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Chagorz',
     slug: 'Chagorz',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/chagorz.gif',
+    imageUrl: 'https://static.tibia.com/images/library/chagorz.gif',
     boss: true,
     shortDescription:
       'Jeden z najcięższych bossów Rotten Blood Quest, mocno oparty na polach darkfield, pillarach i rotten charge. Jeśli drużyna źle zarządza ruchem albo dopuści do złych eksplozji i beamów, boss szybko zaczyna leczyć się i karać ogromnym burstem fire.',
@@ -778,7 +778,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Count Vlarkorth',
     slug: 'Count-Vlarkorth',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/countvlarkort.gif',
+    imageUrl: 'https://static.tibia.com/images/library/countvlarkort.gif',
     boss: true,
     shortDescription:
       'Boss z Grave Danger Quest, który robi się uciążliwy głównie przez summonowanie minionów i fazy niewrażliwości. Trzeba trzymać Soulless Miniony z dala od niego i poprawnie używać szczątków dark vocationów, inaczej walka mocno się przeciąga.',
@@ -839,7 +839,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Court Warlock',
     slug: 'Court-Warlock',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/courtwarlock.gif',
+    imageUrl: 'https://static.tibia.com/images/library/courtwarlock.gif',
     boss: true,
     shortDescription:
       'Finał The Order of the Stag Quest zaczyna się od długiej gauntletowej obrony przeciw falom Raubritterów i zabójczemu death terenowi. Sam Court Warlock pojawia się dopiero po wyczyszczeniu minionów i jego końcowa siła zależy od tego, jak dobrze drużyna poradziła sobie wcześniej.',
@@ -901,7 +901,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Darkfang',
     slug: 'Darkfang',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/darkfang.gif',
+    imageUrl: 'https://static.tibia.com/images/library/darkfang.gif',
     boss: true,
     shortDescription:
       'Wilkolaczy boss z Grimvale, walczacy glownie w zwarciu i wspierajacy sie przywolaniami. Najwieksze zagrozenie robi, gdy summonowane wilki zaczynaja dokladac obrazenia obok jego falowego ataku.',
@@ -958,7 +958,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Deathstrike',
     slug: 'Deathstrike',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/deathstrike.gif',
+    imageUrl: 'https://static.tibia.com/images/library/deathstrike.gif',
     boss: true,
     shortDescription:
       "Warzone'owy geo-elemental z bardzo mocnym melee, niewidzialnoscia i czestym leczeniem. Walka dluzy sie przez jego self-heal, wiec potrzebuje stalej presji i sensownego focusu druzyny.",
@@ -1019,7 +1019,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Dragon Pack',
     slug: 'Dragon-Pack',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/representingdespor.gif',
+    imageUrl: 'https://static.tibia.com/images/library/representingdespor.gif',
     boss: true,
     shortDescription:
       'To nie klasyczny pojedynczy boss, lecz reprezentacja Dragon Hoard z finalu 20 Years a Cook Quest. Sam cel jest nieosiagalny, a zagrozenie pochodzi od ostatniego smoka, z ktorym dzieli pule zycia.',
@@ -1080,7 +1080,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Drume',
     slug: 'Drume',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/drume.gif',
+    imageUrl: 'https://static.tibia.com/images/library/drume.gif',
     boss: true,
     shortDescription:
       'Uzurpator z Order of the Lion walczacy w zwarciu, ale dorzucajacy mocne earth i death. Dodatkowe ryzyko daja jego przywolania, wiec walka robi sie niebezpieczna, gdy zespol traci kontrole nad polem.',
@@ -1142,7 +1142,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Duke Krule',
     slug: 'Duke-Krule',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/dukekrule.gif',
+    imageUrl: 'https://static.tibia.com/images/library/dukekrule.gif',
     boss: true,
     shortDescription:
       'Undead boss z Grave Danger, ktory sam nie jest najgorszy, ale jego summony i mechanika ognia oraz wody potrafia skasowac nieustawiona druzyne. Gracze z rozna przemiana nie powinni podchodzic do siebie, bo dostaja bardzo wysoki burst.',
@@ -1203,7 +1203,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Earl Osam',
     slug: 'Earl-Osam',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/earlosam.gif',
+    imageUrl: 'https://static.tibia.com/images/library/earlosam.gif',
     boss: true,
     shortDescription:
       'Nekromantyczny boss z Grave Danger oparty o ice i earth. Kluczowy moment walki to faza channelingu, kiedy trzeba blyskawicznie zbijac Magical Spheres, bo kazda kula moze podleczyc go o ogromna ilosc hp.',
@@ -1264,7 +1264,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ekatrix',
     slug: 'Ekatrix',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ekatrix.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ekatrix.gif',
     boss: true,
     shortDescription:
       'Niski poziomem boss-czarownica z Tainted Souls, walczaca jak mocniejsza Witch. Trzyma dystans, rzuca ogien i zostawia fire fieldy, ale dla przygotowanej postaci nie stanowi duzego zagrozenia.',
@@ -1320,7 +1320,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Eldritch Dragon Lord',
     slug: 'Eldritch-Dragon-Lord',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/eldritchdragonlord.gif',
+    imageUrl: 'https://static.tibia.com/images/library/eldritchdragonlord.gif',
     boss: true,
     shortDescription:
       'Nowoczesny smok-boss z Roost of the Graveborn, nastawiony na mocna presje i nagrody questowe. Przy skromnych danych na wiki najlepiej traktowac go jak znacznie wzmocnionego Dragon Lorda z wysoka kara za bledy pozycyjne.',
@@ -1377,7 +1377,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Eradicator',
     slug: 'Eradicator',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/eradicator.gif',
+    imageUrl: 'https://static.tibia.com/images/library/eradicator.gif',
     boss: true,
     shortDescription:
       'Elektryczny boss z Heart of Destruction z bardzo mocnym melee i stalym spamem energy wave oraz beam. Co pewien czas zmienia forme i przywoluje Sparks of Destruction, wiec druzyna musi szybko przelaczac fokus.',
@@ -1438,7 +1438,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Essence Of Malice',
     slug: 'Essence-Of-Malice',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/essenceofmalice.gif',
+    imageUrl: 'https://static.tibia.com/images/library/essenceofmalice.gif',
     boss: true,
     shortDescription:
       'Smoczo-undeadowy boss z Cults of Tibia, bijacy glownie death i walczacy bez szczegolnie skomplikowanej mechaniki. Najwazniejsze to nie opierac dps-u na death i wykorzystywac jego wyrazne slabosci na zywioly.',
@@ -1494,7 +1494,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Faceless Bane',
     slug: 'Faceless-Bane',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/facelessbane.gif',
+    imageUrl: 'https://static.tibia.com/images/library/facelessbane.gif',
     boss: true,
     shortDescription:
       'Dream Courtsowy duch-boss, ktory laczy energy, death i life drain oraz doklada trzy typy spectrow naraz. W praktyce trzeba unikac death damage i dobrze zabezpieczyc blockerowi energy/death, bo combo wchodzi niemal co ture.',
@@ -1556,7 +1556,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ghulosh',
     slug: 'Ghulosh',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ghulosh.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ghulosh.gif',
     boss: true,
     shortDescription:
       'Biblioteczny demon z Secret Library z charakterystyczna faza Deathgaze. Walka polega na ustawianiu odbitych beamow w Concentrated Death i jednoczesnym pilnowaniu minionow, bo samo bicie bossa nie wystarczy.',
@@ -1618,7 +1618,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Gnomevil',
     slug: 'Gnomevil',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/gnomehorticulist.gif',
+    imageUrl: 'https://static.tibia.com/images/library/gnomehorticulist.gif',
     boss: true,
     shortDescription:
       'Warzone 2 boss, relatywnie latwy jak na swoja pule hp, ale z bardzo mocnym melee i paskudnym mana drainem. Najbezpieczniej zamknac go na blokerach, bo wtedy jego beamy i retarget na najwyzszy dps sa duzo latwiejsze do opanowania.',
@@ -1679,7 +1679,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Gorzindel',
     slug: 'Gorzindel',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/gorzindel.gif',
+    imageUrl: 'https://static.tibia.com/images/library/gorzindel.gif',
     boss: true,
     shortDescription:
       'Demoniczny boss z Secret Library, ktorego najpierw trzeba oslabic przez niszczenie ksiag w osobnych pokojach. Walka mocno premiuje kontrole minionow, szybkie przejscia przez teleport i odporna druzyne na paralize.',
@@ -1741,7 +1741,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: "Goshnar's Cruelty",
     slug: "Goshnar's-Cruelty",
-    imageUrl: 'https://static.tibia.com/images/library/creatures/goshnarscruelty.gif',
+    imageUrl: 'https://static.tibia.com/images/library/goshnarscruelty.gif',
     boss: true,
     shortDescription:
       'Soul Warowy boss-duch walczacy przewaznie w zwarciu, ale regularnie mieszajacy fizyczne combosy z life drainem. Nie ma wyraznych slabosci elementarnych, wiec najwazniejsze sa defensy i stabilne utrzymanie pozycji.',
@@ -1802,7 +1802,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: "Goshnar's Greed",
     slug: "Goshnar's-Greed",
-    imageUrl: 'https://static.tibia.com/images/library/creatures/goshnarsgreed.gif',
+    imageUrl: 'https://static.tibia.com/images/library/goshnarsgreed.gif',
     boss: true,
     shortDescription:
       'Soul Warowy boss z Mirrored Nightmare, opisany na wiki dosc skromnie, ale traktowany jako dluga i wymagajaca walka endgame. Przy braku oczywistych slabosci najlepiej wejsc z pelnym przygotowaniem defensywnym i mocnym, rownym dps-em.',
@@ -1863,7 +1863,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: "Goshnar's Hatred",
     slug: "Goshnar's-Hatred",
-    imageUrl: 'https://static.tibia.com/images/library/creatures/goshnarshatred.gif',
+    imageUrl: 'https://static.tibia.com/images/library/goshnarshatred.gif',
     boss: true,
     shortDescription:
       'Upiorny archfoe z Soul War skupiony na czystej wytrzymalosci i dlugiej walce w ciasnej arenie.',
@@ -1918,7 +1918,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: "Goshnar's Malice",
     slug: "Goshnar's-Malice",
-    imageUrl: 'https://static.tibia.com/images/library/creatures/goshnarsmalice.gif',
+    imageUrl: 'https://static.tibia.com/images/library/goshnarsmalice.gif',
     boss: true,
     shortDescription:
       'Lodowy archfoe z Soul War, ktory odbija zywiolowe obrazenia i potrafi mocno karac za zly element ataku.',
@@ -1974,7 +1974,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: "Goshnar's Spite",
     slug: "Goshnar's-Spite",
-    imageUrl: 'https://static.tibia.com/images/library/creatures/goshnarsspite.gif',
+    imageUrl: 'https://static.tibia.com/images/library/goshnarsspite.gif',
     boss: true,
     shortDescription:
       'Soul Warowy archfoe bazujacy na energii, earth i life drainie, grozny zwlaszcza dla zle ustawionej druzyny.',
@@ -2030,7 +2030,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Grand Master Oberon',
     slug: 'Grand-Master-Oberon',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/grandmasteroberon.gif',
+    imageUrl: 'https://static.tibia.com/images/library/grandmasteroberon.gif',
     boss: true,
     shortDescription:
       'Lider Order of the Falcon z wyrazna mechanika debat i resetowania zycia przy niskim hp.',
@@ -2091,7 +2091,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ice Horror',
     slug: 'Ice-Horror',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/icehorror.gif',
+    imageUrl: 'https://static.tibia.com/images/library/icehorror.gif',
     boss: true,
     shortDescription:
       'Nowoczesny boss z Okolnir oparty o burst energy i death, z lodowa odpornoscia i questowym cooldown resetem.',
@@ -2148,7 +2148,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ichgahal',
     slug: 'Ichgahal',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ichgahal.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ichgahal.gif',
     boss: true,
     shortDescription:
       'Jeden z najciezszych bossow Rotten Blood, z ogromnym hp, przywolaniami i bardzo mocnym death ringiem.',
@@ -2209,7 +2209,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Irgix The Flimsy',
     slug: 'Irgix-The-Flimsy',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/irgix.gif',
+    imageUrl: 'https://static.tibia.com/images/library/irgix.gif',
     boss: true,
     shortDescription:
       'Widmowy boss z Feaster of Souls, prostszy mechanicznie, ale mocno niewrazliwy na energy i death.',
@@ -2265,7 +2265,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Katex Blood Tongue',
     slug: 'Katex-Blood-Tongue',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/katex.gif',
+    imageUrl: 'https://static.tibia.com/images/library/katex.gif',
     boss: true,
     shortDescription:
       'Werehyaenowy boss z Lion Sanctum, niepozorny na papierze, ale grozny przez summon i szybkie kombo death plus earth.',
@@ -2326,7 +2326,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'King Zelos',
     slug: 'King-Zelos',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/kingzelos.gif',
+    imageUrl: 'https://static.tibia.com/images/library/kingzelos.gif',
     boss: true,
     shortDescription:
       'Final Grave Danger, byly krol Thais oparty na death obrazeniach, hexie i skalowaniu trudnosci zaleznie od postepu druzyny.',
@@ -2387,7 +2387,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Kusuma',
     slug: 'Kusuma',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/kusuma.gif',
+    imageUrl: 'https://static.tibia.com/images/library/kusuma.gif',
     boss: true,
     shortDescription:
       "Asuryjski boss z Marapur, mobilny i wygodny do kite'owania dzieki unikaniu energy fieldow.",
@@ -2443,7 +2443,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lady Tenebris',
     slug: 'Lady-Tenebris',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ladytenebris.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ladytenebris.gif',
     boss: true,
     shortDescription:
       'Boss Forgotten Knowledge skupiony na death obrazeniach i groznej eksplozji po teleportowaniu graczy do srodka areny.',
@@ -2504,7 +2504,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lloyd',
     slug: 'Lloyd',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/lloyd.gif',
+    imageUrl: 'https://static.tibia.com/images/library/lloyd.gif',
     boss: true,
     shortDescription:
       'Piracki boss nastawiony na obrazenia fizyczne i death, dobry do szybkiego sprawdzenia statusu pod glowna postac.',
@@ -2560,7 +2560,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lokathmor',
     slug: 'Lokathmor',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/lokathmor.gif',
+    imageUrl: 'https://static.tibia.com/images/library/lokathmor.gif',
     boss: true,
     shortDescription:
       'Demoniczny boss z Secret Library, slaby na earth i energy, a odporny na fire, z klasycznym bibliotekowym lootem tokenowym.',
@@ -2615,7 +2615,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lord Azaram',
     slug: 'Lord-Azaram',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/lordazaram.gif',
+    imageUrl: 'https://static.tibia.com/images/library/lordazaram.gif',
     boss: true,
     shortDescription:
       "Jeden z bossow Grave Danger, oparty na fazie z Azaram's Soul i wymuszajacy dobre prowadzenie duszy przez fioletowy ogien.",
@@ -2676,7 +2676,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Lord Retro',
     slug: 'Lord-Retro',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/lordretro.gif',
+    imageUrl: 'https://static.tibia.com/images/library/lordretro.gif',
     boss: true,
     shortDescription:
       'Rocznicowy final 25 Years of Tibia Quest, bardziej mechaniczny niz lootowy, z praktycznie pelna niewrazliwoscia na standardowe obrazenia.',
@@ -2697,7 +2697,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Magma Bubble',
     slug: 'Magma-Bubble',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/magmacolossus.gif',
+    imageUrl: 'https://static.tibia.com/images/library/magmacolossus.gif',
     boss: true,
     shortDescription:
       'Finalny boss Primal Ordeal stojacy w miejscu i zasypujacy arene projektylami fire oraz efektami obszarowymi.',
@@ -2758,7 +2758,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Maior Domus',
     slug: 'Maior-Domus',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/maiordomus.gif',
+    imageUrl: 'https://static.tibia.com/images/library/maiordomus.gif',
     boss: true,
     shortDescription:
       'Pierwsza forma Maior Domus z finalnej walki Make Believe Quest, dostepna tez w Boss Difficulty System.',
@@ -2792,7 +2792,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Mazoran',
     slug: 'Mazoran',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/mazoran.gif',
+    imageUrl: 'https://static.tibia.com/images/library/mazoran.gif',
     boss: true,
     shortDescription:
       "Demoniczny boss z Ferumbras' Ascension, ktory sam w sobie jest prosty, ale arena regularnie zamienia sie w lawe. Najwieksze zagrozenie to obrazenia fire z podlogi i dodatkowe przywolania podczas kolejnych fal.",
@@ -2849,7 +2849,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Mazzinor',
     slug: 'Mazzinor',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/mazzinor.gif',
+    imageUrl: 'https://static.tibia.com/images/library/mazzinor.gif',
     boss: true,
     shortDescription:
       'Biblioteczny demon energy, ktory co pewien czas przechodzi w faze niesmiertelnosci i przygotowuje zabojcze eksplozje na cala komnate. Kluczowe jest tworzenie vortexow z Wild Knowledge i wejscie w nie we wlasciwym momencie.',
@@ -2911,7 +2911,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Megasylvan Yselda',
     slug: 'Megasylvan-Yselda',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/yselda.gif',
+    imageUrl: 'https://static.tibia.com/images/library/yselda.gif',
     boss: true,
     shortDescription:
       'Stacjonarny boss z Adventures of Galthen Quest, ktorego trzeba najpierw oslabic wypowiadajac konkretne slowa. Do pelnego zaliczenia walki warto dodatkowo utrzymac przy zyciu cztery Megasylvan Saplings w rogach sali.',
@@ -2969,7 +2969,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Melting Frozen Horror',
     slug: 'Melting-Frozen-Horror',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/frozenhorror.gif',
+    imageUrl: 'https://static.tibia.com/images/library/frozenhorror.gif',
     boss: true,
     shortDescription:
       'Lodowy boss z Forgotten Knowledge, ktory leczy sie od obrazen ice i wymusza gre wokol Dragon Egg. Druzyna musi utrzymac bossa z dala od jajka i kontrolowac przywolane Frozen Miniony, bo ich ataki rowniez go wzmacniaja.',
@@ -3027,7 +3027,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Mimar Haffar',
     slug: 'Mimar-Haffar',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/mimarhaffar.gif',
+    imageUrl: 'https://static.tibia.com/images/library/mimarhaffar.gif',
     boss: true,
     shortDescription:
       'Pierwsza forma Mimar Haffar z Make Believe Quest i zarazem walka podpieta pod Boss Difficulty System. Strona wiki jest uboga, ale sam encounter nalezy traktowac jako nowoczesnego questa-bossa z rosnaca presja zalezne od wybranego poziomu trudnosci.',
@@ -3072,7 +3072,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Mitmah Vanguard',
     slug: 'Mitmah-Vanguard',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/mitmahvanguard.gif',
+    imageUrl: 'https://static.tibia.com/images/library/mitmahvanguard.gif',
     boss: true,
     shortDescription:
       'Bardzo niebezpieczny boss Iksupan, ktory teleportuje sie, rootuje cala druzyne i karze stanie blisko poteznym energy UE. Walka wymaga dystansu, bo potrafi tez przebijac magic wall i wild growth.',
@@ -3126,7 +3126,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Murcion',
     slug: 'Murcion',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/murcion.gif',
+    imageUrl: 'https://static.tibia.com/images/library/murcion.gif',
     boss: true,
     shortDescription:
       'Jeden z trudniejszych bossow Rotten Blood Quest, zostawiajacy mould zadajacy procentowe obrazenia i leczacy go, gdy sam na nim stoi. Dodatkowa presje robia wybuchajace Mushrooms oraz Elder Bloodjawy, przez co walka wymaga bardzo zdyscyplinowanego ruchu po malej sali.',
@@ -3187,7 +3187,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Neferi The Spy',
     slug: 'Neferi-The-Spy',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/neferithespy.gif',
+    imageUrl: 'https://static.tibia.com/images/library/neferithespy.gif',
     boss: true,
     shortDescription:
       'Miniboss z Kilmaresh, stawiajacy glownie na zwarcie, death damage i pojedyncze przywolanie Skeleton Elite Warrior. To raczej szybka walka, ale warto uwazac na nagle skoki obrazen oraz slabosc na ice.',
@@ -3248,7 +3248,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Outburst',
     slug: 'Outburst',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/outburst.gif',
+    imageUrl: 'https://static.tibia.com/images/library/outburst.gif',
     boss: true,
     shortDescription:
       'Elektro-elementalny boss z Otherworld, ktory po przyjeciu obrazen kilkukrotnie przechodzi w forme Charging Outburst. Sama walka jest prostsza od bardziej technicznych encounterow, ale transformacje i obrazenia energy nadal potrafia zabolec slabsze postacie.',
@@ -3310,7 +3310,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Plagirath',
     slug: 'Plagirath',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/plagirath.gif',
+    imageUrl: 'https://static.tibia.com/images/library/plagirath.gif',
     boss: true,
     shortDescription:
       "Plagowy demon z Ferumbras' Ascension, ktory zasypuje sale Oozami, paraliza i mocnym poison damage. Dodatkowo czasami przemienia cel w Bog Raider, a po zakonczeniu efektu nastepuje bolesna eksplozja wokol gracza.",
@@ -3371,7 +3371,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ragiaz',
     slug: 'Ragiaz',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ragiaz.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ragiaz.gif',
     boss: true,
     shortDescription:
       'Nieumarlo-demoniczny boss z Grounds of Undeath, ktory miesza mocne ciosy fizyczne z earth damage i leczeniem. Najwazniejsza mechanika to szybkie zbicie Bone Capsule, bo w tej formie odzyskuje sporo zycia.',
@@ -3432,7 +3432,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ratmiral Blackwhiskers',
     slug: 'Ratmiral-Blackwhiskers',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ratmiral.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ratmiral.gif',
     boss: true,
     shortDescription:
       "Finalny boss A Pirate's Tail Quest, walczacy w zwarciu, ale wspierany przez cala piracko-szczurza zaloge. Sama postac Ratmirala nie jest najgorsza, lecz dodatkowe Piraty i minibossowie szybko podnosza presje na druzyne.",
@@ -3493,7 +3493,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Ravenous Hunger',
     slug: 'Ravenous-Hunger',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/ravenoushunger.gif',
+    imageUrl: 'https://static.tibia.com/images/library/ravenoushunger.gif',
     boss: true,
     shortDescription:
       'Popularny daily boss z Cults of Tibia, glownie przez szanse na Elven Mail. Walczy w zwarciu, przywoluje Mutated Bats i leczy sie life drain wave, dlatego magowie powinni trzymac bezpieczny dystans.',
@@ -3555,7 +3555,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Razzagorn',
     slug: 'Razzagorn',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/razzargorn.gif',
+    imageUrl: 'https://static.tibia.com/images/library/razzargorn.gif',
     boss: true,
     shortDescription:
       "Destrukcyjny demon z Ferumbras' Ascension, mieszajacy fire, energy i death damage z przywolaniami Eruption of Destruction. Gdy addy zostana zignorowane, boss staje sie wyraznie grozniejszy i walka szybko sie destabilizuje.",
@@ -3617,7 +3617,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Realityquake',
     slug: 'Realityquake',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/realityquake.gif',
+    imageUrl: 'https://static.tibia.com/images/library/realityquake.gif',
     boss: true,
     shortDescription:
       'Boss z Heart of Destruction pojawiajacy sie dopiero po pokonaniu Foreshock i Aftershock. Sama strona wiki podaje malo detali, ale encounter pelni role finalnego stat-checku tej sekwencji w Otherworld.',
@@ -3674,7 +3674,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Rupture',
     slug: 'Rupture',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/rupture.gif',
+    imageUrl: 'https://static.tibia.com/images/library/rupture.gif',
     boss: true,
     shortDescription:
       'Boss z Otherworld, ktorego nie wolno bezmyslnie bic przez cala walke. Po pojawieniu sie Damage Resonance trzeba natychmiast przerzucic obrazenia na przywolanie, bo kazdy hit w Rupture leczy go o tysiace punktow zycia.',
@@ -3736,7 +3736,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Scarlett Etzel',
     slug: 'Scarlett-Etzel',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/scarlettetzelstill.gif',
+    imageUrl: 'https://static.tibia.com/images/library/scarlettetzelstill.gif',
     boss: true,
     shortDescription:
       "Boss z Cobra Bastion z mechanika luster i Galthen's Chestplate. Najwieksze ryzyko daje leczenie przy zlym oknie podatnosci oraz potezny wybuch earth podczas poprawnego trafienia.",
@@ -3794,7 +3794,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Shadowpelt',
     slug: 'Shadowpelt',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/blackpelt.gif',
+    imageUrl: 'https://static.tibia.com/images/library/blackpelt.gif',
     boss: true,
     shortDescription:
       'Lider werebearow z Grimvale, walczacy glownie w zwarciu i wspierajacy sie leczeniem oraz summonem. Sama walka jest prosta, ale przedluzanie jej daje bossowi czas na odnowienie zycia.',
@@ -3850,7 +3850,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Sharpclaw',
     slug: 'Sharpclaw',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sharpclaw.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sharpclaw.gif',
     boss: true,
     shortDescription:
       'Przywodca werebadgerow z Grimvale, nastawiony na zwarcie i irytujace wsparcie kontrola many. Dodatkowe zagrozenie tworza invis, oslabienie magii i przywolany werebadger.',
@@ -3906,7 +3906,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Shulgrax',
     slug: 'Shulgrax',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/shulgrax.gif',
+    imageUrl: 'https://static.tibia.com/images/library/shulgrax.gif',
     boss: true,
     shortDescription:
       "Ciezki demoniczny boss z Ferumbras' Ascension, ktory laczy wysokie melee z fire i smiercionosnym sustainem. Bloker traci na nim sporo skutecznosci przez czeste obnizanie skilli melee.",
@@ -3962,7 +3962,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Sir Baeloc',
     slug: 'Sir-Baeloc',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sirbaeloc.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sirbaeloc.gif',
     boss: true,
     shortDescription:
       'Undead boss z Grave Danger, ktory sam w sobie nie jest najgorszy, ale wymusza rownoczesne ubicie z Sir Nictrosem. Dodatkowy problem tworza summony i leczenie od death damage.',
@@ -4023,7 +4023,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Sir Nictros',
     slug: 'Sir-Nictros',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sirnictros.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sirnictros.gif',
     boss: true,
     shortDescription:
       'Brat Sir Baeloca i druga polowa pary z Grave Danger. Kluczowe jest ubijanie obu bossow naraz, bo inaczej beda sie wzajemnie leczyc, a death damage dodatkowo bardzo mu pomaga.',
@@ -4056,7 +4056,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Sister Hetai',
     slug: 'Sister-Hetai',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sisterhetai.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sisterhetai.gif',
     boss: true,
     shortDescription:
       'Miniboss kultystow Fafnara z Kilmaresh, oparty glownie na mocnym melee i presji w zwarciu. Nie ma rozbudowanej mechaniki, ale jej wytrzymalosc i szybki kontakt karza slabo przygotowane postacie.',
@@ -4113,7 +4113,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Soul Of Dragonking Zyrtarch',
     slug: 'Soul-Of-Dragonking-Zyrtarch',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/dragonkingzyrtrachkillable.gif',
+    imageUrl: 'https://static.tibia.com/images/library/dragonkingzyrtrachkillable.gif',
     boss: true,
     shortDescription:
       'Smiertelna forma Dragonking Zyrtarcha z Forgotten Knowledge. Wiki ma skromny opis walki, ale boss wyraznie nalezy do drakenow i jest calkowicie odporny na fire.',
@@ -4168,7 +4168,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Srezz Yellow Eyes',
     slug: 'Srezz-Yellow-Eyes',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/srezz.gif',
+    imageUrl: 'https://static.tibia.com/images/library/srezz.gif',
     boss: true,
     shortDescription:
       'Serpentowaty boss z Lion Sanctum, grozny glownie przez life drain i solidny earth burst. Nie ma skomplikowanej mechaniki, ale stale obrazenia wysysajace zycie szybko zuzywaja zasoby.',
@@ -4224,7 +4224,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Tarbaz',
     slug: 'Tarbaz',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/tarbaz.gif',
+    imageUrl: 'https://static.tibia.com/images/library/tarbaz.gif',
     boss: true,
     shortDescription:
       'Demoniczny miniboss z Ferumbras’ Ascension nastawiony na obrażenia fire i death. Walka jest prosta mechanicznie, ale trzeba uważać na beam oraz niszczenie magic walli i wild growthów.',
@@ -4280,7 +4280,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Tentugly',
     slug: 'Tentugly',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/fakeseamonster.gif',
+    imageUrl: 'https://static.tibia.com/images/library/fakeseamonster.gif',
     boss: true,
     shortDescription:
       "Morski boss z A Pirate's Tail Quest, w praktyce walczony jako glowa Tentuglyego wspierana przez macki. Sam sie nie porusza, ale doklada energy i wymaga szybkiego focusu po pojawieniu sie.",
@@ -4341,7 +4341,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Thaian',
     slug: 'Thaian',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/thaian.gif',
+    imageUrl: 'https://static.tibia.com/images/library/thaian.gif',
     boss: true,
     shortDescription:
       'Boss z Feaster of Souls o ekstremalnie wysokich redukcjach na wszystkie typy obrazen. Najwiekszym problemem jest dlugosc walki i koniecznosc utrzymania stalego dps mimo jego twardosci.',
@@ -4397,7 +4397,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Blazing Rose',
     slug: 'The-Blazing-Rose',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/blazingrose.gif',
+    imageUrl: 'https://static.tibia.com/images/library/blazingrose.gif',
     boss: true,
     shortDescription:
       'Asuri boss z The Secret Library Quest, opisany na wiki bardzo skromnie. Najpewniejsza informacja to calkowita odpornosc na fire i osadzenie walki w Asura Palace.',
@@ -4448,7 +4448,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Brainstealer',
     slug: 'The-Brainstealer',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/brainstealer.gif',
+    imageUrl: 'https://static.tibia.com/images/library/brainstealer.gif',
     boss: true,
     shortDescription:
       'Finalny boss Too Hot to Handle Quest, oparty o mocne life drainy i mechanike Madness. Walka wymaga dobrej pozycji, bo beam boli bardzo mocno, a Mental Nexus robi fazy niewrazliwosci.',
@@ -4509,7 +4509,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Diamond Blossom',
     slug: 'The-Diamond-Blossom',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/diamondblossom.gif',
+    imageUrl: 'https://static.tibia.com/images/library/diamondblossom.gif',
     boss: true,
     shortDescription:
       'Asuri boss z The Secret Library Quest, o slabiej opisanej walce niz wiekszosc nowoczesnych bossow. Z pewnych danych wynika jedynie, ze lepiej znosi death niz pozostale zywioly i przebywa w Asura Palace.',
@@ -4560,7 +4560,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Dread Maiden',
     slug: 'The-Dread-Maiden',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/dreadmaiden.gif',
+    imageUrl: 'https://static.tibia.com/images/library/dreadmaiden.gif',
     boss: true,
     shortDescription:
       'Boss z Feaster of Souls, ktory trzeba oslabic przez prowadzenie kolorowych duchow do odpowiednich vorteksow. Zla obsluga tej mechaniki leczy bossa albo karze druzyne dodatkowymi obrazeniami.',
@@ -4616,7 +4616,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Enraged Thorn Knight',
     slug: 'The-Enraged-Thorn-Knight',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/thornknight.gif',
+    imageUrl: 'https://static.tibia.com/images/library/thornknight.gif',
     boss: true,
     shortDescription:
       'Jedna z form Thorn Knighta w Forgotten Knowledge, wygladajaca jak Crystal Warlord. Najwazniejsza zasada walki to calkowite unikanie death damage, bo boss leczy wtedy wielokrotnosc otrzymanych obrazen.',
@@ -4672,7 +4672,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The False God',
     slug: 'The-False-God',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/falsegod.gif',
+    imageUrl: 'https://static.tibia.com/images/library/falsegod.gif',
     boss: true,
     shortDescription:
       'Mocny minotaurzy boss z Cults of Tibia, oparty glownie na melee i presji obszarowej. Najwazniejsza mechanika walki to ciagly ruch po sali i unikanie Sphere of Wrath.',
@@ -4733,7 +4733,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Fear Feaster',
     slug: 'The-Fear-Feaster',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/fearfeaster.gif',
+    imageUrl: 'https://static.tibia.com/images/library/fearfeaster.gif',
     boss: true,
     shortDescription:
       'Nieumarla bestia z Feaster of Souls, ktora lubi cisnac walke w zwarciu. Jest wyraznie slabsza na physical, fire i energy, ale death zamiast szkodzic moze ja podleczyc.',
@@ -4794,7 +4794,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Flaming Orchid',
     slug: 'The-Flaming-Orchid',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/flamingorchid.gif',
+    imageUrl: 'https://static.tibia.com/images/library/flamingorchid.gif',
     boss: true,
     shortDescription:
       'Asuryjski boss z Asura Palace, ktory miesza fire, death i mana drain. Potrafi paralizowac, znikac i leczyc sie, wiec walka robi sie grozna dla postaci bez ochrony na zywioly.',
@@ -4857,7 +4857,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Gravedigger',
     slug: 'The-Gravedigger',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/thegravedigger.gif',
+    imageUrl: 'https://static.tibia.com/images/library/thegravedigger.gif',
     boss: true,
     shortDescription:
       'Boss z The Roost of the Graveborn Quest, ktory stoi blisko celu, rzuca mocne fire balle i dorzuca przywolania Bonelord Totemow. Dodatkowo ignoruje Challenge i zwykle skupia sie na najblizszym graczu.',
@@ -4919,7 +4919,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Lily Of Night',
     slug: 'The-Lily-Of-Night',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/lilyofnight.gif',
+    imageUrl: 'https://static.tibia.com/images/library/lilyofnight.gif',
     boss: true,
     shortDescription:
       'Slabo opisana bosska powiazana z Secret Library, ale z dostepna lista lootu i wyrazna odpornoscia na death. Z uwagi na skape dane z wiki najlepiej traktowac ja jako asuryjskiego archfoe z neutralnymi pozostalymi zywiolami.',
@@ -4974,7 +4974,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Mega Magmaoid',
     slug: 'The-Mega-Magmaoid',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/megamagmaoid.gif',
+    imageUrl: 'https://static.tibia.com/images/library/megamagmaoid.gif',
     boss: true,
     shortDescription:
       'Pyro-elementalny boss z Too Hot to Handle Quest. Jest odporny na earth, wzmacnia go fire i ma widoczna slabosc na death, ale wiki nie podaje jeszcze wiarygodnej tabeli lootu.',
@@ -4995,7 +4995,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Monster',
     slug: 'The-Monster',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/themonster.gif',
+    imageUrl: 'https://static.tibia.com/images/library/themonster.gif',
     boss: true,
     shortDescription:
       'Finalowy eksperyment Doctor Marrow z Cradle of Monsters. Na starcie jest praktycznie niewrazliwy i trzeba oslabic go, przeciagajac po rozlanych odczynnikach z niszczonych pojemnikow.',
@@ -5051,7 +5051,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Moonlight Aster',
     slug: 'The-Moonlight-Aster',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/moonlightaster.gif',
+    imageUrl: 'https://static.tibia.com/images/library/moonlightaster.gif',
     boss: true,
     shortDescription:
       'Asuryjski boss z wyraznym pakietem kontroli: mana drain, curse, paraliza, niewidzialnosc i samoleczenie. Walka jest podobna do Flaming Orchid, ale mocniej karze slabosci na earth i energy.',
@@ -5114,7 +5114,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Moonsnow Magnolia',
     slug: 'The-Moonsnow-Magnolia',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/moonsnowmagnolia.gif',
+    imageUrl: 'https://static.tibia.com/images/library/moonsnowmagnolia.gif',
     boss: true,
     shortDescription:
       'Boss z Shards of a Broken Moon Quest, o slabo opisanej mechanice, ale dobrze udokumentowanych nagrodach. Zle znosi earth, fire i energy, a najlepiej broni sie przed ice.',
@@ -5158,7 +5158,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Nightmare Beast',
     slug: 'The-Nightmare-Beast',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/nightmarebeast.gif',
+    imageUrl: 'https://static.tibia.com/images/library/nightmarebeast.gif',
     boss: true,
     shortDescription:
       'Final boss Dream Courts z bardzo mocnymi atakami death na dystans. Kluczem do walki jest rotacyjne uzywanie totemu i tworzenie Dream Catcherow, aby zdejmowac curse z druzyny.',
@@ -5219,7 +5219,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Pale Worm',
     slug: 'The-Pale-Worm',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/paleworm.gif',
+    imageUrl: 'https://static.tibia.com/images/library/paleworm.gif',
     boss: true,
     shortDescription:
       'Koncowy boss Feaster of Souls, dzielacy pule zycia z A Weak Spot. Jest bardzo odporny na praktycznie kazdy zywiol i odpowiada poteznym melee, poison, death oraz holy.',
@@ -5281,7 +5281,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Rootkraken',
     slug: 'The-Rootkraken',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/rootkraken.gif',
+    imageUrl: 'https://static.tibia.com/images/library/rootkraken.gif',
     boss: true,
     shortDescription:
       'Finalowy boss Podzilla Quest, ktory miesza root, earth, death i holy. Najwiekszym zagrozeniem sa strefy kontroli i utrudnianie ruchu, a nie sam prosty burst z jednego zywiolu.',
@@ -5337,7 +5337,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Sandking',
     slug: 'The-Sandking',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sandkingfinal.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sandkingfinal.gif',
     boss: true,
     shortDescription:
       'Pustynny boss z Cults of Tibia, ktory miesza melee, chainy i obszarowe trucizny. Kluczowe jest niedopuszczenie, by wchodzil na zwloki Sand Broodow, bo wtedy mocno sie leczy.',
@@ -5398,7 +5398,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Scourge Of Oblivion',
     slug: 'The-Scourge-Of-Oblivion',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/scourgeofoblivion00.gif',
+    imageUrl: 'https://static.tibia.com/images/library/scourgeofoblivion00.gif',
     boss: true,
     shortDescription:
       'Finalowy boss Secret Library z wielofazowa walka i okresami niewrazliwosci. Podczas invul faz trzeba czyscic summony i przetrwac mieszanke fire, physical oraz death.',
@@ -5460,7 +5460,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Souldespoiler',
     slug: 'The-Souldespoiler',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/souldespoiler.gif',
+    imageUrl: 'https://static.tibia.com/images/library/souldespoiler.gif',
     boss: true,
     shortDescription:
       'Cults of Tibia boss, ktory realnie traci zycie glownie dzieki Freed Soulom. Sam zadaje glownie physical i death, ale walka jest bardziej o obsluge mechaniki summonow niz o czysty dps.',
@@ -5521,7 +5521,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Source Of Corruption',
     slug: 'The-Source-Of-Corruption',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/sourceofcorruption.gif',
+    imageUrl: 'https://static.tibia.com/images/library/sourceofcorruption.gif',
     boss: true,
     shortDescription:
       'Elektro-elementalny final boss Cults of Tibia. Walczy w zwarciu, rzuca energy beam, przywoluje Soul Reapery i odbija czesc otrzymanych obrazen, wiec shooterzy musza pilnowac hp.',
@@ -5582,7 +5582,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Time Guardian',
     slug: 'The-Time-Guardian',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/timeguardian.gif',
+    imageUrl: 'https://static.tibia.com/images/library/timeguardian.gif',
     boss: true,
     shortDescription:
       'Maszynowy miniboss z Forgotten Knowledge Quest, walczacy w kilku formach ze wspolnym paskiem zycia. W podstawowej postaci najlepiej przyjmuje obrazenia fizyczne, a zywiolami bije wyraznie slabiej.',
@@ -5636,7 +5636,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Unarmored Voidborn',
     slug: 'The-Unarmored-Voidborn',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/voidbornvulnerable.gif',
+    imageUrl: 'https://static.tibia.com/images/library/voidbornvulnerable.gif',
     boss: true,
     shortDescription:
       'Druga forma voidborna z Cults of Tibia Quest, skrajnie podatna na praktycznie kazdy typ obrazen. Mimo olbrzymiej slabej odpornosci ma duzo hp, wiec walka nadal trwa chwile.',
@@ -5689,7 +5689,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Unwelcome',
     slug: 'The-Unwelcome',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/theunwelcome.gif',
+    imageUrl: 'https://static.tibia.com/images/library/theunwelcome.gif',
     boss: true,
     shortDescription:
       'Archfoe z Feaster of Souls Quest o bardzo wysokich odpornosciach na wszystkie podstawowe zrodla obrazen. To prostsza mechanicznie walka, ale wymaga solidnego sustainu i cierpliwego bicia.',
@@ -5737,7 +5737,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'The Winter Bloom',
     slug: 'The-Winter-Bloom',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/winterbloom.gif',
+    imageUrl: 'https://static.tibia.com/images/library/winterbloom.gif',
     boss: true,
     shortDescription:
       'Asura boss laczacy ice i death z niewidzialnoscia, paraliem oraz mana drainem. Najlatwiej wejsc przygotowanym na lod i szybko skrocic walke, bo potrafi tez sie podleczac.',
@@ -5791,7 +5791,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Timira The Many-Headed',
     slug: 'Timira-The-Many-Headed',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/timira.gif',
+    imageUrl: 'https://static.tibia.com/images/library/timira.gif',
     boss: true,
     shortDescription:
       'Finalna naga z Within the Tides Quest, walczaca glownie z bliska, ale rozlewajaca obrazenia po calej sali lancuchami i polami ognia. Wiekszosc zywiolow dziala na nia dobrze, a sorcererzy zwykle lepiej wypadaja na single target.',
@@ -5844,7 +5844,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Tropical Desolator',
     slug: 'Tropical-Desolator',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/tropicaldesolator.gif',
+    imageUrl: 'https://static.tibia.com/images/library/tropicaldesolator.gif',
     boss: true,
     shortDescription:
       'Iksowy boss z Between the Lines Quest, wspierany przez egzotyczne owoce z losowymi efektami. Najwieksze ryzyko daje heal dla bossa i fear, wiec trzeba stale kontrolowac pozycje.',
@@ -5897,7 +5897,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Unaz The Mean',
     slug: 'Unaz-The-Mean',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/unaz.gif',
+    imageUrl: 'https://static.tibia.com/images/library/unaz.gif',
     boss: true,
     shortDescription:
       'Upiorny boss z Feaster of Souls Quest, odporny na physical i energy, a calkowicie niewrazliwy na death. Walczy kontaktowo, ale potrafi dorzucic mocne komba zywiolowe, wiec warto podejsc z dobra ochrona.',
@@ -5945,7 +5945,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Urmahlullu The Weakened',
     slug: 'Urmahlullu-The-Weakened',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/urmahlulluweakest.gif',
+    imageUrl: 'https://static.tibia.com/images/library/urmahlulluweakest.gif',
     boss: true,
     shortDescription:
       'Oslabiona forma urmahlullu z Kilmaresh, ktora mimo nazwy nadal ma duzo zycia i nagradza mocnym burstem fire. To raczej statyczny boss do ustawienia i szybkiego fokusowania.',
@@ -5993,7 +5993,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Utua Stone Sting',
     slug: 'Utua-Stone-Sting',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/utua.gif',
+    imageUrl: 'https://static.tibia.com/images/library/utua.gif',
     boss: true,
     shortDescription:
       'Pajeczy boss z watku An Ancient Feud, oparty na poisonie i physicalu. Jest wolny, wiec dystans ma sporo kontroli nad walka, a knight moze ograniczyc zagrozenie ustawieniem po skosie.',
@@ -6041,7 +6041,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Vemiath',
     slug: 'Vemiath',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/vemiath.gif',
+    imageUrl: 'https://static.tibia.com/images/library/vemiath.gif',
     boss: true,
     shortDescription:
       'Rotten Blood boss z bardzo ciezka mechanika agony, pol darklight i eksplodujacego Rotten Charge. Sama odpornosc jest neutralna, ale walka wymaga perfekcyjnego ruchu i podzialu rol.',
@@ -6094,7 +6094,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Vladrukh',
     slug: 'Vladrukh',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/vladrukh.gif',
+    imageUrl: 'https://static.tibia.com/images/library/vladrukh.gif',
     boss: true,
     shortDescription:
       'Boss z Bloody Tusks Quest, o ktorym wiki podaje niewiele szczegolow bojowych. Traktuj go jako pozniejszy questowy cel z nastawieniem na wytrzymanie i loot endgame.',
@@ -6140,7 +6140,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Vok The Freakish',
     slug: 'Vok-The-Freakish',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/vok.gif',
+    imageUrl: 'https://static.tibia.com/images/library/vok.gif',
     boss: true,
     shortDescription:
       'Duchowy boss z Feaster of Souls Quest, bardzo twardy na death i energy, ale slabszy na ice. Sama strona nie opisuje wielu mechanik, dlatego walka zwykle sprowadza sie do ostroznego focusu i trzymania ochron.',
@@ -6188,7 +6188,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Wrathful Archivist',
     slug: 'Wrathful-Archivist',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/wrathfularchivist.gif',
+    imageUrl: 'https://static.tibia.com/images/library/wrathfularchivist.gif',
     boss: true,
     shortDescription:
       'Biblioteczny boss z Between the Lines Quest, odpornosci ma neutralne, ale cala trudnosc bierze sie z mechanik aktywowanych przez niebieskie ksiazki. Bez szybkiego ogarniania run, duchow i zwierzat pozostaje niesmiertelny.',
@@ -6241,7 +6241,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Yirkas Blue Scales',
     slug: 'Yirkas-Blue-Scales',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/yirkass.gif',
+    imageUrl: 'https://static.tibia.com/images/library/yirkass.gif',
     boss: true,
     shortDescription:
       'Jaszczurzy boss z An Ancient Feud, bazujacy glownie na energy i earth. Dystans ma tu przewage, bo mozna ograniczac jego fale i wykorzystywac filary do bezpieczniejszego kitingu.',
@@ -6289,7 +6289,7 @@ export const BOOSTED_BOSSES: BoostedBossDetailEntry[] = [
   {
     name: 'Zamulosh',
     slug: 'Zamulosh',
-    imageUrl: 'https://static.tibia.com/images/library/creatures/zamulosh.gif',
+    imageUrl: 'https://static.tibia.com/images/library/zamulosh.gif',
     boss: true,
     shortDescription:
       "Demoniczny slug Ferumbras' Ascension, walczacy z klonami, niewidzialnoscia i teleportami do centrum sali. Najwygodniej ubijac go obszarowo, bo skupienie tylko prawdziwej kopii zwykle spowalnia walke.",
@@ -6347,6 +6347,17 @@ export function findBoostedBossDetails(name: string | undefined): BoostedBossDet
   }
 
   return BOOSTED_BOSSES.find((entry) => entry.name === name) ?? null;
+}
+
+/**
+ * Bosses don't change their library image over time - prefer the curated,
+ * already-verified `imageUrl` over whatever TibiaData returns for the same
+ * name, and only fall back to the API value for bosses we haven't curated
+ * yet (e.g. newly added ones).
+ */
+export function resolveBossImageUrl(name: string, apiImageUrl: string): string {
+  const match = BOOSTED_BOSSES.find((entry) => entry.name.toLowerCase() === name.toLowerCase());
+  return match?.imageUrl ?? apiImageUrl;
 }
 
 export type { CreatureLootEntry as BoostedLootEntry };

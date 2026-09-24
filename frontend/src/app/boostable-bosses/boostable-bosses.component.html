@@ -13,10 +13,10 @@
     <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
       Nie udało się pobrać listy boostable bossów.
     </div>
-  } @else if (bossesData(); as currentBossesData) {
+  } @else if (bossesData()) {
     <section class="boss-card">
       <h2>Aktualnie boostowany</h2>
-      @if (currentBossesData.boosted; as boosted) {
+      @if (boostedBoss(); as boosted) {
         <article
           class="boss-item boss-item--highlighted boss-item--clickable"
           [routerLink]="['/boosted', 'boss', boosted.name]"
@@ -74,10 +74,10 @@
     <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
       Nie udało się pobrać listy creature.
     </div>
-  } @else if (creaturesData(); as currentCreaturesData) {
+  } @else if (creaturesData()) {
     <section class="boss-card">
       <h2>Aktualnie boostowany potwór</h2>
-      @if (currentCreaturesData.boosted; as boostedCreature) {
+      @if (boostedCreature(); as boostedCreature) {
         <article
           class="boss-item boss-item--highlighted boss-item--clickable"
           [routerLink]="['/boosted', 'creature', boostedCreature.name]"
