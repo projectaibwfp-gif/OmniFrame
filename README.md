@@ -11,7 +11,7 @@ oraz Neon Postgres. `frontend` i `backend` są niezależnymi aplikacjami,
 uruchamianymi w osobnych terminalach.
 
 Aktualny stan: Angular 22 budowany przez Vite
-(`@analogjs/vite-plugin-angular`), Next.js 16.3.0 oraz backend TypeScript,
+(`@analogjs/vite-plugin-angular`), Next.js 16.4.1 oraz backend TypeScript,
 w tym runner migracji. Neon korzysta z HTTPS/443, więc działa też w sieciach
 blokujących port 5432.
 

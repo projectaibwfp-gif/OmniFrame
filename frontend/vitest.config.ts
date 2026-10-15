@@ -10,6 +10,14 @@ export default defineConfig({
       '@shared': path.resolve(projectRoot, '../shared'),
     },
   },
+  // Specs are transpiled by oxc, which only reads `tsconfig.json`; the app uses
+  // `tsconfig.app.json`, so Angular's legacy decorators must be enabled here.
+  oxc: {
+    decorator: {
+      legacy: true,
+      emitDecoratorMetadata: true,
+    },
+  },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.spec.ts'],
