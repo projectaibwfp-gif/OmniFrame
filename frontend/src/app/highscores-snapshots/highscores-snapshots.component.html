@@ -12,11 +12,11 @@
       <select
         [value]="selectedWorld() ?? ''"
         (change)="onWorldChange($event)"
-        [disabled]="isLoading()"
+        [disabled]="snapshotsResource.isLoading()"
       >
         <option value="">Wszystkie światy</option>
         @for (world of worlds(); track world) {
-          <option [value]="world">{{ world }}</option>
+          <option [value]="world" [selected]="world === selectedWorld()">{{ world }}</option>
         }
       </select>
     </label>
@@ -25,19 +25,24 @@
       class="action-button"
       type="button"
       (click)="toggleSortDirection()"
-      [disabled]="isLoading()"
+      [disabled]="snapshotsResource.isLoading()"
     >
       Sortuj level: {{ sortDir() === 'desc' ? 'malejąco' : 'rosnąco' }}
     </button>
 
-    <button class="action-button" type="button" (click)="refresh()" [disabled]="isLoading()">
+    <button
+      class="action-button"
+      type="button"
+      (click)="refresh()"
+      [disabled]="snapshotsResource.isLoading()"
+    >
       Odśwież
     </button>
   </div>
 
-  @if (isLoading()) {
+  @if (snapshotsResource.isLoading()) {
     <div class="highscores-snapshots-page__message">Ładowanie rekordów...</div>
-  } @else if (apiError()) {
+  } @else if (snapshotsResource.error()) {
     <div class="highscores-snapshots-page__message highscores-snapshots-page__message--error">
       Nie udało się pobrać rekordów.
     </div>
@@ -74,7 +79,7 @@
               <td class="col-level">{{ recordGroup.latest.level }}</td>
               <td class="rank-value col-rank">{{ formatRank(recordGroup.latest.rank) }}</td>
               <td class="exp-value col-exp">{{
-                formatExperience(recordGroup.latest.exactExperience)
+                recordGroup.latest.exactExperience | appNumber
               }}</td>
               <td class="delta-value col-delta">
                 @if (recordGroup.previousDayExperienceIncrease !== null) {
@@ -83,9 +88,7 @@
                   <span class="no-delta">-</span>
                 }
               </td>
-              <td class="date-value col-date">{{
-                formatCheckedAt(recordGroup.latest.checkedAt)
-              }}</td>
+              <td class="date-value col-date">{{ recordGroup.latest.checkedAt | appDateTime }}</td>
               <td class="details-cell col-details">
                 @if (recordGroup.older.length > 0) {
                   <button
@@ -109,10 +112,10 @@
                   <div class="duplicate-row__panel">
                     @for (olderRecord of recordGroup.older; track olderRecord.id) {
                       <div class="duplicate-row__item">
-                        <span>{{ formatCheckedAt(olderRecord.checkedAt) }}</span>
+                        <span>{{ olderRecord.checkedAt | appDateTime }}</span>
                         <span>{{ formatRank(olderRecord.rank) }}</span>
                         <span>Lvl {{ olderRecord.level }}</span>
-                        <span>{{ formatExperience(olderRecord.exactExperience) }} EXP</span>
+                        <span>{{ olderRecord.exactExperience | appNumber }} EXP</span>
                       </div>
                     }
                   </div>
@@ -125,14 +128,18 @@
     </div>
 
     <div class="highscores-snapshots-page__pagination">
-      <button type="button" (click)="goToPreviousPage()" [disabled]="isLoading() || page() <= 1">
+      <button
+        type="button"
+        (click)="goToPreviousPage()"
+        [disabled]="snapshotsResource.isLoading() || page() <= 1"
+      >
         Poprzednia
       </button>
       <span>Strona {{ page() }} / {{ totalPages() }}</span>
       <button
         type="button"
         (click)="goToNextPage()"
-        [disabled]="isLoading() || page() >= totalPages()"
+        [disabled]="snapshotsResource.isLoading() || page() >= totalPages()"
       >
         Następna
       </button>

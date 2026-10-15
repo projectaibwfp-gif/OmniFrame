@@ -1,17 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { TibiaSpellDetailsDto } from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
 import { TibiaSpellsService } from './tibia-spells.service';
 import { buildSpellDetailLabels } from './tibia-spell-detail.labels';
@@ -25,9 +15,11 @@ import { buildSpellDetailLabels } from './tibia-spell-detail.labels';
 })
 export class TibiaSpellDetailComponent {
   readonly spellId = input.required<string>();
-  protected readonly spell = signal<TibiaSpellDetailsDto | null>(null);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly spellResource = rxResource({
+    params: () => this.spellId(),
+    stream: ({ params: spellId }) => this.tibiaSpellsService.getSpell(spellId),
+  });
+  protected readonly spell = resourceValueOr(this.spellResource, null);
 
   protected readonly labels = computed(() =>
     buildSpellDetailLabels(this.localization.currentLocale() === 'pl'),
@@ -45,25 +37,4 @@ export class TibiaSpellDetailComponent {
 
   private readonly tibiaSpellsService = inject(TibiaSpellsService);
   private readonly localization = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    effect(() => this.loadSpell());
-  }
-
-  protected loadSpell(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaSpellsService
-      .getSpell(this.spellId())
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.spell.set(response),
-        error: () => this.apiError.set(true),
-      });
-  }
 }

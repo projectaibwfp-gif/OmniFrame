@@ -1,4 +1,4 @@
-import type { CreatureDetailDto, CreatureLootEntry } from '@shared/api-contract';
+import type { BoostableBossDto, CreatureDetailDto, CreatureLootEntry } from '@shared/api-contract';
 
 export type BoostedBossDetailEntry = CreatureDetailDto;
 
@@ -6358,6 +6358,10 @@ export function findBoostedBossDetails(name: string | undefined): BoostedBossDet
 export function resolveBossImageUrl(name: string, apiImageUrl: string): string {
   const match = BOOSTED_BOSSES.find((entry) => entry.name.toLowerCase() === name.toLowerCase());
   return match?.imageUrl ?? apiImageUrl;
+}
+
+export function withResolvedBossImage(boss: BoostableBossDto): BoostableBossDto {
+  return { ...boss, imageUrl: resolveBossImageUrl(boss.name, boss.imageUrl) };
 }
 
 export type { CreatureLootEntry as BoostedLootEntry };

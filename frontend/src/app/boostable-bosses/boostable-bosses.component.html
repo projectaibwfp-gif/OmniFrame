@@ -7,9 +7,9 @@
     </p>
   </header>
 
-  @if (isLoadingBosses()) {
+  @if (bossesResource.isLoading()) {
     <div class="boostable-bosses-page__message">Ładowanie danych bossów...</div>
-  } @else if (bossApiError()) {
+  } @else if (bossesResource.error()) {
     <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
       Nie udało się pobrać listy boostable bossów.
     </div>
@@ -68,9 +68,9 @@
     </section>
   }
 
-  @if (isLoadingCreatures()) {
+  @if (creaturesResource.isLoading()) {
     <div class="boostable-bosses-page__message">Ładowanie danych creature...</div>
-  } @else if (creatureApiError()) {
+  } @else if (creaturesResource.error()) {
     <div class="boostable-bosses-page__message boostable-bosses-page__message--error">
       Nie udało się pobrać listy creature.
     </div>

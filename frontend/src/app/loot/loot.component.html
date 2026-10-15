@@ -144,7 +144,7 @@
               <h3>{{ item.name }}</h3>
               <span class="loot-card__category">{{ categoryLabel(item.category) }}</span>
             </div>
-            <strong class="loot-card__value">{{ formatMarketValue(item.marketValue) }} gp</strong>
+            <strong class="loot-card__value">{{ item.marketValue | appNumber }} gp</strong>
           </div>
 
           <p class="loot-card__description">{{ item.description }}</p>

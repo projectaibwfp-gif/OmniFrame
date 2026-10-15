@@ -1,9 +1,11 @@
-@if (isLoading()) {
+@if (houseResource.isLoading()) {
   <div class="house-detail-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (houseResource.error()) {
   <div class="house-detail-page__message house-detail-page__message--error">
     {{ labels().error }}
-    <button class="status-chip" type="button" (click)="loadHouse()">{{ labels().retry }}</button>
+    <button class="status-chip" type="button" (click)="houseResource.reload()">{{
+      labels().retry
+    }}</button>
   </div>
 } @else if (house(); as house) {
   <div class="house-detail-page">

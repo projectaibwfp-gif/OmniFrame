@@ -5,10 +5,12 @@
         <h1>Użytkownicy</h1>
         <p>Lista użytkowników zalogowanych przez Google.</p>
       </div>
-      <button class="btn btn-primary btn-sm" type="button" (click)="loadUsers()">Odśwież</button>
+      <button class="btn btn-primary btn-sm" type="button" (click)="usersResource.reload()"
+        >Odśwież</button
+      >
     </div>
 
-    @if (state.isLoading()) {
+    @if (usersResource.isLoading()) {
       <div class="users-loader" aria-busy="true" aria-live="polite">
         @for (item of [1, 2, 3, 4]; track item) {
           <article class="user-card loader-card">
@@ -34,9 +36,9 @@
           </article>
         }
       </div>
-    } @else if (state.isError()) {
-      <div class="table-message error" role="alert">{{ state.errorMessage() }}</div>
-    } @else if (state.isEmpty()) {
+    } @else if (errorMessage()) {
+      <div class="table-message error" role="alert">{{ errorMessage() }}</div>
+    } @else if (isEmpty()) {
       <div class="table-message">{{ emptyMessage }}</div>
     } @else {
       <div class="user-cards">

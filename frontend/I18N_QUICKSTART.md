@@ -81,8 +81,8 @@ const locale = localizationService.currentLocale; // Signal<'en' | 'pl'>
 // Set locale
 localizationService.setLocale('pl');
 
-// Get locale (getter)
-const current = localizationService.getLocale(); // 'en' | 'pl'
+// Read current locale value
+const current = localizationService.currentLocale(); // 'en' | 'pl'
 ```
 
 ## Automatyczna detekcja

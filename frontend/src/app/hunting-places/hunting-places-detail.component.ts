@@ -3,24 +3,10 @@ import { RouterLink } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
 import { DEFAULT_MAP_ZOOM } from '../tibia/tibia-map';
 import { TibiaMinimapComponent } from '../tibia/tibia-minimap.component';
+import { buildResistanceEntries, resistanceClass, type ResistanceEntry } from '../tibia/resistance';
 import { vocationClass } from '../tibia/vocation';
 import { HUNTING_PLACES, type HuntingMonster, type HuntingPlace } from './hunting-places.data';
 import { buildHuntingDetailLabels } from './hunting-places-detail.labels';
-
-interface ResistanceEntry {
-  label: string;
-  value: number;
-}
-
-const RESISTANCE_ORDER: (keyof HuntingMonster['resistances'])[] = [
-  'physical',
-  'fire',
-  'ice',
-  'energy',
-  'earth',
-  'holy',
-  'death',
-];
 
 @Component({
   selector: 'app-hunting-places-detail',
@@ -34,6 +20,7 @@ export class HuntingPlacesDetailComponent {
 
   protected readonly vocationClass = vocationClass;
   protected readonly defaultMapZoom = DEFAULT_MAP_ZOOM;
+  protected readonly resistanceClass = resistanceClass;
 
   protected readonly place = computed<HuntingPlace | undefined>(() =>
     HUNTING_PLACES.find((p) => p.id === this.id()),
@@ -46,19 +33,6 @@ export class HuntingPlacesDetailComponent {
   private readonly localization = inject(LocalizationService);
 
   protected resistanceEntries(monster: HuntingMonster): ResistanceEntry[] {
-    return RESISTANCE_ORDER.map((label) => ({ label, value: monster.resistances[label] }));
-  }
-
-  protected resistanceClass(value: number): string {
-    if (value <= -100) {
-      return 'resist-immune';
-    }
-    if (value < 0) {
-      return 'resist-strong';
-    }
-    if (value > 0) {
-      return 'resist-weak';
-    }
-    return 'resist-neutral';
+    return buildResistanceEntries(monster.resistances);
   }
 }

@@ -22,12 +22,12 @@ describe('LocalizationService', () => {
   });
 
   it('should initialize with default locale en for English browser', () => {
-    expect(service.getLocale()).toBe('en');
+    expect(service.currentLocale()).toBe('en');
   });
 
   it('should set locale to pl', () => {
     service.setLocale('pl');
-    expect(service.getLocale()).toBe('pl');
+    expect(service.currentLocale()).toBe('pl');
   });
 
   it('should update currentLocale signal', () => {

@@ -5,37 +5,34 @@ import {
   computed,
   inject,
   input,
+  linkedSignal,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import type {
+  CharacterProgressListDto,
   CharacterProgressStatus,
+  CharacterProgressTargetKind,
   CreatureDetailDto,
-  CreatureResistances,
 } from '@shared/api-contract';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
+import { buildResistanceEntries, resistanceClass, type ResistanceEntry } from '../tibia/resistance';
 import { MainCharacterService } from '../services/main-character.service';
 import { BoostableBossesService } from './boostable-bosses.service';
 import { buildBoostedDetailLabels } from './boostable-bosses-detail.labels';
 import { findBoostedBossDetails } from './boosted-bosses.data';
 import { findBoostedCreatureDetails } from './boosted-creatures.data';
 
-interface ResistanceEntry {
-  label: string;
-  value: number;
-}
+const DEFAULT_PROGRESS_STATUS: CharacterProgressStatus = 'first-time';
 
-const RESISTANCE_ORDER: (keyof CreatureResistances)[] = [
-  'physical',
-  'fire',
-  'ice',
-  'energy',
-  'earth',
-  'holy',
-  'death',
-];
+interface SavedStatusQuery {
+  kind: CharacterProgressTargetKind;
+  name: string;
+  characterName: string | null;
+}
 
 @Component({
   selector: 'app-boostable-bosses-detail',
@@ -47,7 +44,10 @@ const RESISTANCE_ORDER: (keyof CreatureResistances)[] = [
 export class BoostableBossesDetailComponent {
   readonly kind = input.required<'boss' | 'creature'>();
   readonly name = input.required<string>();
-  protected readonly selectedStatus = signal<CharacterProgressStatus>('first-time');
+  protected readonly selectedStatus = linkedSignal<CharacterProgressStatus>(
+    () => this.savedStatus() ?? DEFAULT_PROGRESS_STATUS,
+  );
+  protected readonly resistanceClass = resistanceClass;
   protected readonly isSavingStatus = signal(false);
   protected readonly saveError = signal<string | null>(null);
   protected readonly saveSuccess = signal(false);
@@ -68,34 +68,26 @@ export class BoostableBossesDetailComponent {
     this.kind() === 'boss' ? this.labels().boss : this.labels().creature,
   );
 
+  private readonly savedProgressResource = rxResource({
+    params: () => this.mainCharacterService.name() ?? undefined,
+    stream: () => this.boostableBossesService.getCharacterProgress(),
+  });
+  private readonly savedProgress = resourceValueOr(this.savedProgressResource, null);
+  private readonly savedStatus = computed(() =>
+    findSavedStatus(this.savedProgress(), {
+      kind: this.kind(),
+      name: this.name(),
+      characterName: this.mainCharacterService.name(),
+    }),
+  );
+
   private readonly boostableBossesService = inject(BoostableBossesService);
   private readonly mainCharacterService = inject(MainCharacterService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly localization = inject(LocalizationService);
 
-  constructor() {
-    this.loadSavedStatus();
-  }
-
   protected resistanceEntries(detail: CreatureDetailDto): ResistanceEntry[] {
-    if (!detail.resistances) {
-      return [];
-    }
-
-    return RESISTANCE_ORDER.map((key) => ({ label: key, value: detail.resistances![key] }));
-  }
-
-  protected resistanceClass(value: number): string {
-    if (value <= -100) {
-      return 'resist-immune';
-    }
-    if (value < 0) {
-      return 'resist-strong';
-    }
-    if (value > 0) {
-      return 'resist-weak';
-    }
-    return 'resist-neutral';
+    return detail.resistances ? buildResistanceEntries(detail.resistances) : [];
   }
 
   protected setStatus(status: CharacterProgressStatus): void {
@@ -128,25 +120,24 @@ export class BoostableBossesDetailComponent {
         },
       });
   }
+}
 
-  private loadSavedStatus(): void {
-    this.boostableBossesService
-      .getCharacterProgress()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          const mainCharacterName = this.mainCharacterService.name()?.toLowerCase();
-          const entry = response.entries.find(
-            (item) =>
-              item.targetKind === this.kind() &&
-              item.targetName.toLowerCase() === this.name().toLowerCase() &&
-              item.characterName.toLowerCase() === mainCharacterName,
-          );
-
-          if (entry) {
-            this.selectedStatus.set(entry.status);
-          }
-        },
-      });
+function findSavedStatus(
+  progress: CharacterProgressListDto | null,
+  query: SavedStatusQuery,
+): CharacterProgressStatus | null {
+  const characterName = query.characterName?.toLowerCase();
+  if (!progress || !characterName) {
+    return null;
   }
+
+  const targetName = query.name.toLowerCase();
+  const entry = progress.entries.find(
+    (item) =>
+      item.targetKind === query.kind &&
+      item.targetName.toLowerCase() === targetName &&
+      item.characterName.toLowerCase() === characterName,
+  );
+
+  return entry?.status ?? null;
 }

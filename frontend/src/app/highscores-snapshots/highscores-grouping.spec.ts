@@ -3,7 +3,6 @@ import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
 import { groupSnapshotRecords } from './highscores-grouping';
 
 vi.mock('../core/date-time', () => ({
-  formatDateTime: (value: string): string => value,
   toLocalDayKey: (value: string): string => value.slice(0, 10),
 }));
 

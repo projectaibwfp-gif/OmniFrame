@@ -16,10 +16,6 @@ export class LocalizationService {
     this.currentLocale.set(locale);
   }
 
-  getLocale(): Locale {
-    return this.currentLocale();
-  }
-
   private initializeLocale(): void {
     const browserLang = navigator.language.split('-')[0] as Locale;
     const supportedLocales: Locale[] = ['en', 'pl'];

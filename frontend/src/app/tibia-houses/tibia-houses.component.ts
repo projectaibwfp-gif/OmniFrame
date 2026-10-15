@@ -1,24 +1,22 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { TibiaHouseOverviewDto, TibiaHousesOverviewDto } from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
+import type { TibiaHouseOverviewDto } from '@shared/api-contract';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
-import { TibiaWorldsService } from '../tibia-worlds/tibia-worlds.service';
+import { WorldOptionsService } from '../tibia-worlds/world-options.service';
 import { TibiaHousesService } from './tibia-houses.service';
 import { buildHousesLabels } from './tibia-houses.labels';
 
 interface HouseListSection {
   title: string;
   houses: TibiaHouseOverviewDto[];
+}
+
+interface HousesSearch {
+  world: string;
+  town: string;
 }
 
 @Component({
@@ -29,14 +27,16 @@ interface HouseListSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TibiaHousesComponent {
-  protected readonly worlds = signal<string[]>([]);
+  protected readonly worlds = computed(() => this.worldOptions.options());
+  protected readonly isLoadingWorlds = computed(() => this.worldOptions.isLoading());
+  protected readonly worldsError = computed(() => this.worldOptions.hasError());
   protected readonly selectedWorld = signal('');
   protected readonly town = signal('');
-  protected readonly data = signal<TibiaHousesOverviewDto | null>(null);
-  protected readonly isLoading = signal(false);
-  protected readonly apiError = signal(false);
-  protected readonly isLoadingWorlds = signal(true);
-  protected readonly worldsError = signal(false);
+  protected readonly housesResource = rxResource({
+    params: () => this.submittedSearch(),
+    stream: ({ params }) => this.tibiaHousesService.getHouses(params.world, params.town),
+  });
+  protected readonly data = resourceValueOr(this.housesResource, null);
 
   protected readonly labels = computed(() =>
     buildHousesLabels(this.localization.currentLocale() === 'pl'),
@@ -54,23 +54,23 @@ export class TibiaHousesComponent {
   protected readonly resultTown = computed(() => this.data()?.town ?? '');
   protected readonly resultWorld = computed(() => this.data()?.world ?? '');
 
+  private readonly submittedSearch = signal<HousesSearch | undefined>(undefined);
   private readonly tibiaHousesService = inject(TibiaHousesService);
-  private readonly tibiaWorldsService = inject(TibiaWorldsService);
+  private readonly worldOptions = inject(WorldOptionsService);
   private readonly localization = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.loadWorlds();
+    this.worldOptions.retryIfFailed();
   }
 
   protected setSelectedWorld(value: string): void {
     this.selectedWorld.set(value);
-    this.data.set(null);
+    this.clearResults();
   }
 
   protected setTown(value: string): void {
     this.town.set(value);
-    this.data.set(null);
+    this.clearResults();
   }
 
   protected search(): void {
@@ -80,23 +80,7 @@ export class TibiaHousesComponent {
       return;
     }
 
-    this.loadHouses(world, town);
-  }
-
-  protected loadHouses(world: string, town: string): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaHousesService
-      .getHouses(world, town)
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.data.set(response),
-        error: () => this.apiError.set(true),
-      });
+    this.submittedSearch.set({ world, town });
   }
 
   protected houseStatus(house: TibiaHouseOverviewDto): 'rented' | 'auctioned' | 'free' {
@@ -109,16 +93,7 @@ export class TibiaHousesComponent {
     return 'free';
   }
 
-  private loadWorlds(): void {
-    this.tibiaWorldsService
-      .getWorlds()
-      .pipe(
-        finalize(() => this.isLoadingWorlds.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.worlds.set(response.regularWorlds.map((world) => world.name)),
-        error: () => this.worldsError.set(true),
-      });
+  private clearResults(): void {
+    this.submittedSearch.set(undefined);
   }
 }

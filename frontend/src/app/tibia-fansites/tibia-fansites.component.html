@@ -1,9 +1,9 @@
-@if (isLoading()) {
+@if (fansitesResource.isLoading()) {
   <div class="fansites-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (fansitesResource.error()) {
   <div class="fansites-page__message fansites-page__message--error">
     {{ labels().error }}
-    <button class="fansite-card__tag" type="button" (click)="loadFansites()">
+    <button class="fansite-card__tag" type="button" (click)="fansitesResource.reload()">
       {{ labels().retry }}
     </button>
   </div>

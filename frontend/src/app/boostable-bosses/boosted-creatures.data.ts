@@ -1,4 +1,4 @@
-import type { CreatureDetailDto } from '@shared/api-contract';
+import type { CreatureDetailDto, TibiaCreatureDto } from '@shared/api-contract';
 
 export type BoostedCreatureDetailEntry = CreatureDetailDto;
 
@@ -55,4 +55,8 @@ export function findBoostedCreatureDetails(
 export function resolveCreatureImageUrl(name: string, apiImageUrl: string): string {
   const match = BOOSTED_CREATURES.find((entry) => entry.name.toLowerCase() === name.toLowerCase());
   return match?.imageUrl ?? apiImageUrl;
+}
+
+export function withResolvedCreatureImage(creature: TibiaCreatureDto): TibiaCreatureDto {
+  return { ...creature, imageUrl: resolveCreatureImageUrl(creature.name, creature.imageUrl) };
 }

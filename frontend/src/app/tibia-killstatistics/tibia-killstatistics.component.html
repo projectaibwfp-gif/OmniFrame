@@ -15,16 +15,21 @@
       <select
         [value]="selectedWorld() ?? ''"
         (change)="onWorldChange($event)"
-        [disabled]="isLoading()"
+        [disabled]="statisticsResource.isLoading()"
       >
         <option value="">Wybierz świat</option>
         @for (world of worlds(); track world) {
-          <option [value]="world">{{ world }}</option>
+          <option [value]="world" [selected]="world === selectedWorld()">{{ world }}</option>
         }
       </select>
     </label>
 
-    <button class="action-button" type="button" (click)="refresh()" [disabled]="isLoading()">
+    <button
+      class="action-button"
+      type="button"
+      (click)="refresh()"
+      [disabled]="statisticsResource.isLoading()"
+    >
       Odśwież
     </button>
   </div>
@@ -35,9 +40,9 @@
     </div>
   }
 
-  @if (isLoading()) {
+  @if (statisticsResource.isLoading()) {
     <div class="killstatistics-page__message">Ładowanie danych...</div>
-  } @else if (apiError()) {
+  } @else if (statisticsResource.error()) {
     <div class="killstatistics-page__message killstatistics-page__message--error">
       Nie udało się pobrać danych.
     </div>
@@ -47,7 +52,7 @@
     <div class="killstatistics-page__summary">
       Wybrany świat: <strong>{{ selectedWorldLabel() }}</strong>
       @if (updatedAt()) {
-        | Aktualizacja: <strong>{{ updatedAt() }}</strong>
+        | Aktualizacja: <strong>{{ updatedAt() | appDateTime }}</strong>
       }
     </div>
 
@@ -62,10 +67,10 @@
             <article class="boss-today-item">
               <strong class="boss-today-item__name">{{ boss.race }}</strong>
               <span class="boss-today-item__count"
-                >{{ formatTotal(boss.lastDayKilled) }} ubić dziś</span
+                >{{ boss.lastDayKilled | appNumber }} ubić dziś</span
               >
               <span class="boss-today-item__meta"
-                >{{ formatTotal(boss.lastWeekKilled) }} w tygodniu</span
+                >{{ boss.lastWeekKilled | appNumber }} w tygodniu</span
               >
             </article>
           }
@@ -118,19 +123,19 @@
             <div class="killstatistics-card__metrics">
               <div>
                 <span class="killstatistics-card__metric-label">Players / day</span>
-                <strong>{{ formatTotal(entry.lastDayPlayersKilled) }}</strong>
+                <strong>{{ entry.lastDayPlayersKilled | appNumber }}</strong>
               </div>
               <div>
                 <span class="killstatistics-card__metric-label">Killed / day</span>
-                <strong>{{ formatTotal(entry.lastDayKilled) }}</strong>
+                <strong>{{ entry.lastDayKilled | appNumber }}</strong>
               </div>
               <div>
                 <span class="killstatistics-card__metric-label">Players / week</span>
-                <strong>{{ formatTotal(entry.lastWeekPlayersKilled) }}</strong>
+                <strong>{{ entry.lastWeekPlayersKilled | appNumber }}</strong>
               </div>
               <div>
                 <span class="killstatistics-card__metric-label">Killed / week</span>
-                <strong>{{ formatTotal(entry.lastWeekKilled) }}</strong>
+                <strong>{{ entry.lastWeekKilled | appNumber }}</strong>
               </div>
             </div>
           </article>

@@ -1,9 +1,9 @@
-@if (isLoading()) {
+@if (guildResource.isLoading()) {
   <div class="tibia-guild-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (guildResource.error()) {
   <div class="tibia-guild-page__message tibia-guild-page__message--error">
     {{ labels().error }}
-    <button class="toggle-button" type="button" (click)="loadGuild()">
+    <button class="toggle-button" type="button" (click)="guildResource.reload()">
       {{ labels().retry }}
     </button>
   </div>

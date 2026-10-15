@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PaginationComponent } from '../components/pagination/pagination.component';
+import { AppNumberPipe } from '../core/number-format.pipe';
 import { createPagedList } from '../core/paged-list';
 import { createSort } from '../core/sort';
 import { LocalizationService } from '../services/localization.service';
@@ -75,7 +76,7 @@ function matchesFilters(item: LootItem, filters: LootFilters): boolean {
 
 @Component({
   selector: 'app-loot',
-  imports: [FormsModule, RouterLink, PaginationComponent],
+  imports: [FormsModule, RouterLink, PaginationComponent, AppNumberPipe],
   templateUrl: './loot.component.html',
   styleUrl: './loot.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -131,7 +132,6 @@ export class LootComponent {
 
   protected readonly paged = createPagedList(this.sortedItems);
   private readonly localizationService = inject(LocalizationService);
-  private readonly marketValueFormatter = new Intl.NumberFormat('en-US');
 
   protected setSearch(value: string): void {
     this.search.set(value);
@@ -177,9 +177,5 @@ export class LootComponent {
   protected categoryLabel(category: LootCategory): string {
     const locale = this.localizationService.currentLocale();
     return CATEGORY_LABELS[category][locale];
-  }
-
-  protected formatMarketValue(value: number): string {
-    return this.marketValueFormatter.format(value);
   }
 }

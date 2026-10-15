@@ -107,8 +107,17 @@ projektu).
     `core/paged-list.ts` (`createPagedList(signal)`), `core/sort.ts`
     (`createSort(field, dir)`), `components/pagination/` (`<app-pagination>`),
     `tibia/vocation.ts` (`Vocation`, `VOCATIONS`, `vocationClass`),
-    `tibia/tibia-map.ts` (`buildTibiaMapUrl`). Tabele etykiet i18n trzymaj w
+    `tibia/tibia-map.ts` (`buildTibiaMapUrl`), `tibia/resistance.ts`
+    (`resistanceClass`), `tibia-worlds/world-options.service.ts` (lista światów),
+    `core/select-value.ts` (`readSelectValue`). Tabele etykiet i18n trzymaj w
     osobnym `*.labels.ts`, nie w komponencie.
+    34a. Dane z API ładuj przez `rxResource({ params, stream })` - anuluje poprzedni
+    request przy zmianie parametrów. Wartość czytaj przez `resourceValueOr()`, a
+    komunikat błędu przez `resourceErrorMessage()` z `core/resource-value.ts`
+    (`Resource.value()` rzuca w stanie błędu). Serwisy rozpakowują `{ data }`
+    przez `getApiData()` z `config/api-data.ts` - bez lokalnych typów `XResponse`.
+    34b. Liczby formatuj pipe'em `| appNumber` albo `formatNumber()` z
+    `core/number-format.ts`, nie `toLocaleString()` / własnym `Intl.NumberFormat`.
 
 ## SEO, crawlery i modele AI
 

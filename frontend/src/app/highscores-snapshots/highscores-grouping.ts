@@ -1,5 +1,5 @@
 import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
-import { formatDateTime, toLocalDayKey } from '../core/date-time';
+import { toLocalDayKey } from '../core/date-time';
 
 export const PAGE_SIZE = 50;
 const GROUP_KEY_SEPARATOR = '\u0000';
@@ -51,10 +51,6 @@ function getPreviousDayExperienceIncrease(
   }
 
   return null;
-}
-
-export function formatCheckedAt(checkedAt: string): string {
-  return formatDateTime(checkedAt);
 }
 
 export function groupSnapshotRecords(

@@ -1,16 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { TibiaWorldOverviewDto, TibiaWorldsOverviewDto } from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
+import type { TibiaWorldOverviewDto } from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
 import { TibiaWorldsService } from './tibia-worlds.service';
 import { buildWorldsLabels } from './tibia-worlds.labels';
@@ -31,9 +24,10 @@ interface WorldListSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TibiaWorldsComponent {
-  protected readonly data = signal<TibiaWorldsOverviewDto | null>(null);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly worldsResource = rxResource({
+    stream: () => this.tibiaWorldsService.getWorlds(),
+  });
+  protected readonly data = resourceValueOr(this.worldsResource, null);
 
   protected readonly labels = computed(() =>
     buildWorldsLabels(this.localization.currentLocale() === 'pl'),
@@ -54,27 +48,6 @@ export class TibiaWorldsComponent {
   private readonly collapsedKinds = signal<readonly WorldListKind[]>(['regular', 'tournament']);
   private readonly tibiaWorldsService = inject(TibiaWorldsService);
   private readonly localization = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    this.loadWorlds();
-  }
-
-  protected loadWorlds(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaWorldsService
-      .getWorlds()
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.data.set(response),
-        error: () => this.apiError.set(true),
-      });
-  }
 
   protected isCollapsed(kind: WorldListKind): boolean {
     return this.collapsedKinds().includes(kind);

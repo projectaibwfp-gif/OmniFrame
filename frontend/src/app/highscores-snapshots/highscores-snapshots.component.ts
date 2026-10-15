@@ -1,73 +1,89 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   computed,
   inject,
+  linkedSignal,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { HighscoresSnapshotRecordDto } from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
+import type { HighscoresSnapshotsListDto } from '@shared/api-contract';
+import { AppDateTimePipe } from '../core/date-time.pipe';
+import { formatNumber } from '../core/number-format';
+import { AppNumberPipe } from '../core/number-format.pipe';
+import { resourceValueOr } from '../core/resource-value';
+import { readSelectValue } from '../core/select-value';
 import { MainCharacterService } from '../services/main-character.service';
 import { HighscoresSnapshotsService } from './highscores-snapshots.service';
-import { PAGE_SIZE, formatCheckedAt, groupSnapshotRecords } from './highscores-grouping';
+import { PAGE_SIZE, groupSnapshotRecords } from './highscores-grouping';
 
 const DUPLICATE_SINGULAR_LABEL = '1 starszy wpis';
+const FIRST_PAGE = 1;
+const DEFAULT_TOTAL_PAGES = 1;
+const EMPTY_TOTAL = 0;
+
+type SortDirection = HighscoresSnapshotsListDto['sortDir'];
 
 @Component({
   selector: 'app-highscores-snapshots',
+  imports: [AppDateTimePipe, AppNumberPipe],
   templateUrl: './highscores-snapshots.component.html',
   styleUrl: './highscores-snapshots.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HighscoresSnapshotsComponent {
-  protected readonly records = signal<HighscoresSnapshotRecordDto[]>([]);
-  protected readonly worlds = signal<string[]>([]);
   protected readonly selectedWorld = signal<string | null>(null);
-  protected readonly sortDir = signal<'asc' | 'desc'>('desc');
-  protected readonly page = signal(1);
-  protected readonly totalPages = signal(1);
-  protected readonly total = signal(0);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
-  protected readonly expandedCharacterId = signal<number | null>(null);
+  protected readonly sortDir = signal<SortDirection>('desc');
+  protected readonly page = signal(FIRST_PAGE);
   protected readonly pageSize = PAGE_SIZE;
-  protected readonly groupedRecords = computed(() => groupSnapshotRecords(this.records()));
+  protected readonly snapshotsResource = rxResource({
+    params: () => ({
+      page: this.page(),
+      pageSize: this.pageSize,
+      world: this.selectedWorld(),
+      sortDir: this.sortDir(),
+    }),
+    stream: ({ params }) => this.highscoresSnapshotsService.getSnapshots(params),
+  });
+  protected readonly snapshots = resourceValueOr(this.snapshotsResource, null);
+  /** Lista światów zostaje z poprzedniej odpowiedzi, żeby select nie tracił opcji przy przeładowaniu. */
+  protected readonly worlds = linkedSignal<HighscoresSnapshotsListDto | null, string[]>({
+    source: this.snapshots,
+    computation: (snapshots, previous) => snapshots?.worlds ?? previous?.value ?? [],
+  });
+  protected readonly totalPages = computed(
+    () => this.snapshots()?.totalPages ?? DEFAULT_TOTAL_PAGES,
+  );
+  protected readonly total = computed(() => this.snapshots()?.total ?? EMPTY_TOTAL);
+  protected readonly expandedCharacterId = signal<number | null>(null);
+  protected readonly groupedRecords = computed(() =>
+    groupSnapshotRecords(this.snapshots()?.data ?? []),
+  );
   protected readonly hasRecords = computed(() => this.groupedRecords().length > 0);
-  protected readonly formatCheckedAt = formatCheckedAt;
 
   private readonly highscoresSnapshotsService = inject(HighscoresSnapshotsService);
   private readonly mainCharacterService = inject(MainCharacterService);
-  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.selectedWorld.set(this.mainCharacterService.world());
-    this.loadSnapshots();
   }
 
   protected onWorldChange(event: Event): void {
-    const target = event.target;
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
-    }
-
-    this.setWorld(target.value);
+    this.selectedWorld.set(readSelectValue(event));
+    this.page.set(FIRST_PAGE);
   }
 
   protected toggleSortDirection(): void {
     this.sortDir.update((value) => (value === 'desc' ? 'asc' : 'desc'));
-    this.page.set(1);
-    this.loadSnapshots();
+    this.page.set(FIRST_PAGE);
   }
 
   protected goToPreviousPage(): void {
-    if (this.page() <= 1) {
+    if (this.page() <= FIRST_PAGE) {
       return;
     }
 
     this.page.update((value) => value - 1);
-    this.loadSnapshots();
   }
 
   protected goToNextPage(): void {
@@ -76,11 +92,10 @@ export class HighscoresSnapshotsComponent {
     }
 
     this.page.update((value) => value + 1);
-    this.loadSnapshots();
   }
 
   protected refresh(): void {
-    this.loadSnapshots();
+    this.snapshotsResource.reload();
   }
 
   protected toggleCharacterDetails(characterId: number): void {
@@ -93,12 +108,8 @@ export class HighscoresSnapshotsComponent {
     return this.expandedCharacterId() === characterId;
   }
 
-  protected formatExperience(value: number): string {
-    return value.toLocaleString('en-US');
-  }
-
   protected formatRank(rank: number): string {
-    return `#${rank.toLocaleString('en-US')}`;
+    return `#${formatNumber(rank)}`;
   }
 
   protected formatDuplicateLabel(duplicatesCount: number): string {
@@ -110,38 +121,6 @@ export class HighscoresSnapshotsComponent {
   }
 
   protected formatExperienceDelta(delta: number): string {
-    return `+${delta.toLocaleString('en-US')}`;
-  }
-
-  private setWorld(world: string): void {
-    this.selectedWorld.set(world === '' ? null : world);
-    this.page.set(1);
-    this.loadSnapshots();
-  }
-
-  private loadSnapshots(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.highscoresSnapshotsService
-      .getSnapshots({
-        page: this.page(),
-        pageSize: this.pageSize,
-        world: this.selectedWorld(),
-        sortDir: this.sortDir(),
-      })
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => {
-          this.records.set(response.data);
-          this.worlds.set(response.worlds);
-          this.total.set(response.total);
-          this.totalPages.set(response.totalPages);
-        },
-        error: () => this.apiError.set(true),
-      });
+    return `+${formatNumber(delta)}`;
   }
 }

@@ -121,7 +121,7 @@
             @for (item of creature.droppedItems; track item.id) {
               <a class="item-chip item-chip--link" [routerLink]="['/loot']">
                 {{ item.name }}
-                <span class="item-chip__value">{{ formatMarketValue(item.marketValue) }} gp</span>
+                <span class="item-chip__value">{{ item.marketValue | appNumber }} gp</span>
               </a>
             }
           </div>

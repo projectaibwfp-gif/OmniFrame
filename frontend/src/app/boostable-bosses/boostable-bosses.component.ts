@@ -1,23 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type {
-  BoostableBossDto,
-  BoostableBossesDto,
-  TibiaCreatureDto,
-  TibiaCreaturesDto,
-} from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
+import type { BoostableBossDto, TibiaCreatureDto } from '@shared/api-contract';
+import { resourceValueOr } from '../core/resource-value';
 import { BoostableBossesService } from './boostable-bosses.service';
-import { resolveBossImageUrl } from './boosted-bosses.data';
-import { resolveCreatureImageUrl } from './boosted-creatures.data';
+import { withResolvedBossImage } from './boosted-bosses.data';
+import { withResolvedCreatureImage } from './boosted-creatures.data';
 
 @Component({
   selector: 'app-boostable-bosses',
@@ -27,66 +15,32 @@ import { resolveCreatureImageUrl } from './boosted-creatures.data';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoostableBossesComponent {
-  protected readonly bossesData = signal<BoostableBossesDto | null>(null);
-  protected readonly creaturesData = signal<TibiaCreaturesDto | null>(null);
-  protected readonly isLoadingBosses = signal(true);
-  protected readonly isLoadingCreatures = signal(true);
-  protected readonly bossApiError = signal(false);
-  protected readonly creatureApiError = signal(false);
+  protected readonly bossesResource = rxResource({
+    stream: () => this.boostableBossesService.getBoostableBosses(),
+  });
+  protected readonly creaturesResource = rxResource({
+    stream: () => this.boostableBossesService.getCreatures(),
+  });
+  protected readonly bossesData = resourceValueOr(this.bossesResource, null);
+  protected readonly creaturesData = resourceValueOr(this.creaturesResource, null);
   protected readonly isBossListCollapsed = signal(true);
   protected readonly isCreatureListCollapsed = signal(true);
-  protected readonly boostedBoss = computed<BoostableBossDto | null>(() =>
-    this.withResolvedBossImage(this.bossesData()?.boosted ?? null),
-  );
-  protected readonly boostedCreature = computed<TibiaCreatureDto | null>(() =>
-    this.withResolvedCreatureImage(this.creaturesData()?.boosted ?? null),
-  );
+  protected readonly boostedBoss = computed<BoostableBossDto | null>(() => {
+    const boosted = this.bossesData()?.boosted;
+    return boosted ? withResolvedBossImage(boosted) : null;
+  });
+  protected readonly boostedCreature = computed<TibiaCreatureDto | null>(() => {
+    const boosted = this.creaturesData()?.boosted;
+    return boosted ? withResolvedCreatureImage(boosted) : null;
+  });
   protected readonly availableBosses = computed(() =>
-    (this.bossesData()?.boostableBossList ?? []).map((boss) => this.withResolvedBossImage(boss)!),
+    (this.bossesData()?.boostableBossList ?? []).map(withResolvedBossImage),
   );
   protected readonly availableCreatures = computed(() =>
-    (this.creaturesData()?.creatureList ?? []).map((creature) =>
-      this.withResolvedCreatureImage(creature)!,
-    ),
+    (this.creaturesData()?.creatureList ?? []).map(withResolvedCreatureImage),
   );
 
   private readonly boostableBossesService = inject(BoostableBossesService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    this.loadBoostableBosses();
-    this.loadCreatures();
-  }
-
-  protected loadBoostableBosses(): void {
-    this.isLoadingBosses.set(true);
-    this.bossApiError.set(false);
-    this.boostableBossesService
-      .getBoostableBosses()
-      .pipe(
-        finalize(() => this.isLoadingBosses.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.bossesData.set(response),
-        error: () => this.bossApiError.set(true),
-      });
-  }
-
-  protected loadCreatures(): void {
-    this.isLoadingCreatures.set(true);
-    this.creatureApiError.set(false);
-    this.boostableBossesService
-      .getCreatures()
-      .pipe(
-        finalize(() => this.isLoadingCreatures.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.creaturesData.set(response),
-        error: () => this.creatureApiError.set(true),
-      });
-  }
 
   protected toggleBossList(): void {
     this.isBossListCollapsed.update((value) => !value);
@@ -94,21 +48,5 @@ export class BoostableBossesComponent {
 
   protected toggleCreatureList(): void {
     this.isCreatureListCollapsed.update((value) => !value);
-  }
-
-  private withResolvedBossImage(boss: BoostableBossDto | null): BoostableBossDto | null {
-    if (!boss) {
-      return null;
-    }
-
-    return { ...boss, imageUrl: resolveBossImageUrl(boss.name, boss.imageUrl) };
-  }
-
-  private withResolvedCreatureImage(creature: TibiaCreatureDto | null): TibiaCreatureDto | null {
-    if (!creature) {
-      return null;
-    }
-
-    return { ...creature, imageUrl: resolveCreatureImageUrl(creature.name, creature.imageUrl) };
   }
 }

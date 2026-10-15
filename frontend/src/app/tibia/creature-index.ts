@@ -3,13 +3,7 @@ import { LOOT_ITEMS, type LootItem } from '../loot/loot.data';
 import { HUNTING_PLACES, type HuntingPlace } from '../hunting-places/hunting-places.data';
 import { BOOSTED_BOSSES } from '../boostable-bosses/boosted-bosses.data';
 import { BOOSTED_CREATURES } from '../boostable-bosses/boosted-creatures.data';
-
-const RESISTANCE_KEYS = ['physical', 'fire', 'ice', 'energy', 'earth', 'holy', 'death'] as const;
-
-interface ResistanceEntry {
-  label: string;
-  value: number;
-}
+import { buildResistanceEntries, type ResistanceEntry } from './resistance';
 
 interface MergedCreature extends CreatureDetailDto {
   droppedItems: LootItem[];
@@ -135,27 +129,7 @@ export function findHuntingPlacesByCreatureSlug(slug: string): HuntingPlace[] {
 }
 
 export function creatureResistanceEntries(creature: CreatureDetailDto): ResistanceEntry[] {
-  if (!creature.resistances) {
-    return [];
-  }
-
-  return RESISTANCE_KEYS.map((key) => ({
-    label: key,
-    value: creature.resistances![key],
-  }));
-}
-
-export function resistanceClass(value: number): string {
-  if (value <= -100) {
-    return 'resist-immune';
-  }
-  if (value < 0) {
-    return 'resist-strong';
-  }
-  if (value > 0) {
-    return 'resist-weak';
-  }
-  return 'resist-neutral';
+  return creature.resistances ? buildResistanceEntries(creature.resistances) : [];
 }
 
 export function creatureRef(name: string): CreatureRef {

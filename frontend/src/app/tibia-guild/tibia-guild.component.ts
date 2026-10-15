@@ -1,18 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { TibiaGuildDto } from '@shared/api-contract';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { AppDatePipe, AppDateTimePipe } from '../core/date-time.pipe';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
 import { TibiaGuildService } from './tibia-guild.service';
 import { buildGuildLabels } from './tibia-guild.labels';
@@ -26,9 +16,11 @@ import { buildGuildLabels } from './tibia-guild.labels';
 })
 export class TibiaGuildComponent {
   readonly name = input.required<string>();
-  protected readonly guild = signal<TibiaGuildDto | null>(null);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly guildResource = rxResource({
+    params: () => this.name(),
+    stream: ({ params: name }) => this.tibiaGuildService.getGuild(name),
+  });
+  protected readonly guild = resourceValueOr(this.guildResource, null);
   protected readonly isMembersCollapsed = signal(true);
   protected readonly isInvitesCollapsed = signal(true);
 
@@ -40,28 +32,6 @@ export class TibiaGuildComponent {
 
   private readonly tibiaGuildService = inject(TibiaGuildService);
   private readonly localization = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    effect(() => this.loadGuild());
-  }
-
-  protected loadGuild(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaGuildService
-      .getGuild(this.name())
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.guild.set(response),
-        error: () => this.apiError.set(true),
-      });
-  }
-
   protected toggleMembers(): void {
     this.isMembersCollapsed.update((value) => !value);
   }

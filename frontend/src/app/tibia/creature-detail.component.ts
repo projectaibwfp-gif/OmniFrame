@@ -5,13 +5,14 @@ import { buildCreatureDetailLabels } from './creature-detail.labels';
 import {
   creatureResistanceEntries,
   findCreatureBySlug,
-  resistanceClass,
   type MergedCreature,
 } from './creature-index';
+import { AppNumberPipe } from '../core/number-format.pipe';
+import { resistanceClass } from './resistance';
 
 @Component({
   selector: 'app-creature-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, AppNumberPipe],
   templateUrl: './creature-detail.component.html',
   styleUrl: './creature-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,8 +32,4 @@ export class CreatureDetailComponent {
   protected readonly resistanceClass = resistanceClass;
 
   private readonly localization = inject(LocalizationService);
-
-  protected formatMarketValue(value: number): string {
-    return new Intl.NumberFormat('en-US').format(value);
-  }
 }

@@ -2,8 +2,8 @@ import 'zone.js';
 import '@angular/compiler';
 import '@angular/localize';
 import './styles.scss';
-import { APP_INITIALIZER } from '@angular/core';
-import { bootstrapApplication, Meta, Title } from '@angular/platform-browser';
+import { inject, provideAppInitializer } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
@@ -23,34 +23,14 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(
       withInterceptors([credentialsInterceptor, authInterceptor, httpErrorInterceptor]),
     ),
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory:
-        (themeService: ThemeService): (() => void) =>
-        () => {
-          themeService.getTheme();
-        },
-      deps: [ThemeService],
-    },
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory:
-        (seoService: SeoService): (() => void) =>
-        () => {
-          seoService.initialize();
-        },
-      deps: [SeoService, Title, Meta],
-    },
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory:
-        (authService: AuthService): (() => Promise<void>) =>
-        () =>
-          authService.restoreSession(),
-      deps: [AuthService],
-    },
+    // ThemeService applies the stored theme in its constructor, so it must be
+    // instantiated eagerly before the first render to avoid a theme flash.
+    provideAppInitializer(() => {
+      inject(ThemeService);
+    }),
+    provideAppInitializer(() => {
+      inject(SeoService).initialize();
+    }),
+    provideAppInitializer(() => inject(AuthService).restoreSession()),
   ],
 }).catch((error: unknown) => console.error(error));

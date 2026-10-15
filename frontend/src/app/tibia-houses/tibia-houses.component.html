@@ -49,7 +49,7 @@
             class="search-button"
             type="button"
             (click)="search()"
-            [disabled]="!canSearch() || isLoading()"
+            [disabled]="!canSearch() || housesResource.isLoading()"
           >
             {{ labels().searchAction }}
           </button>
@@ -57,9 +57,9 @@
       </div>
     </section>
 
-    @if (isLoading()) {
+    @if (housesResource.isLoading()) {
       <div class="houses-page__message">{{ labels().loading }}</div>
-    } @else if (apiError()) {
+    } @else if (housesResource.error()) {
       <div class="houses-page__message houses-page__message--error">
         {{ labels().error }}
         <button class="search-button" type="button" (click)="search()">{{ labels().retry }}</button>

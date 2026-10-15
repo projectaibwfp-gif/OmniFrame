@@ -1,9 +1,11 @@
-@if (isLoading()) {
+@if (worldResource.isLoading()) {
   <div class="world-detail-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (worldResource.error()) {
   <div class="world-detail-page__message world-detail-page__message--error">
     {{ labels().error }}
-    <button class="toggle-button" type="button" (click)="loadWorld()">{{ labels().retry }}</button>
+    <button class="toggle-button" type="button" (click)="worldResource.reload()">{{
+      labels().retry
+    }}</button>
   </div>
 } @else if (world(); as world) {
   <div class="world-detail-page">

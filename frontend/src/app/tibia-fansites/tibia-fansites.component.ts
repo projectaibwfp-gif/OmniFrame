@@ -1,14 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
-import type { TibiaFansiteDto, TibiaFansitesDto } from '@shared/api-contract';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import type { TibiaFansiteDto } from '@shared/api-contract';
+import { resourceValueOr } from '../core/resource-value';
 import { LocalizationService } from '../services/localization.service';
 import { TibiaFansitesService } from './tibia-fansites.service';
 import { buildFansitesLabels } from './tibia-fansites.labels';
@@ -25,9 +18,10 @@ interface FansiteSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TibiaFansitesComponent {
-  protected readonly data = signal<TibiaFansitesDto | null>(null);
-  protected readonly isLoading = signal(true);
-  protected readonly apiError = signal(false);
+  protected readonly fansitesResource = rxResource({
+    stream: () => this.tibiaFansitesService.getFansites(),
+  });
+  protected readonly data = resourceValueOr(this.fansitesResource, null);
 
   protected readonly labels = computed(() =>
     buildFansitesLabels(this.localization.currentLocale() === 'pl'),
@@ -39,25 +33,4 @@ export class TibiaFansitesComponent {
 
   private readonly tibiaFansitesService = inject(TibiaFansitesService);
   private readonly localization = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    this.loadFansites();
-  }
-
-  protected loadFansites(): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaFansitesService
-      .getFansites()
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => this.data.set(response),
-        error: () => this.apiError.set(true),
-      });
-  }
 }

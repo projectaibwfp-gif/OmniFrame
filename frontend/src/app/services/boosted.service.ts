@@ -3,8 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import type { BoostableBossDto, TibiaCreatureDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
 import { BoostableBossesService } from '../boostable-bosses/boostable-bosses.service';
-import { resolveBossImageUrl } from '../boostable-bosses/boosted-bosses.data';
-import { resolveCreatureImageUrl } from '../boostable-bosses/boosted-creatures.data';
+import { withResolvedBossImage } from '../boostable-bosses/boosted-bosses.data';
+import { withResolvedCreatureImage } from '../boostable-bosses/boosted-creatures.data';
 
 /**
  * Global cache of the currently boosted boss and creature from TibiaData.
@@ -43,28 +43,14 @@ export class BoostedService {
         firstValueFrom(this.boostableBossesService.getBoostableBosses()),
         firstValueFrom(this.boostableBossesService.getCreatures()),
       ]);
-      this.boostedBoss.set(this.withResolvedBossImage(bosses.boosted));
-      this.boostedCreature.set(this.withResolvedCreatureImage(creatures.boosted));
+      this.boostedBoss.set(bosses.boosted ? withResolvedBossImage(bosses.boosted) : null);
+      this.boostedCreature.set(
+        creatures.boosted ? withResolvedCreatureImage(creatures.boosted) : null,
+      );
     } catch (error) {
       console.warn('Could not load boosted data for topbar', error);
     } finally {
       this.isLoading.set(false);
     }
-  }
-
-  private withResolvedBossImage(boss: BoostableBossDto | null): BoostableBossDto | null {
-    if (!boss) {
-      return null;
-    }
-
-    return { ...boss, imageUrl: resolveBossImageUrl(boss.name, boss.imageUrl) };
-  }
-
-  private withResolvedCreatureImage(creature: TibiaCreatureDto | null): TibiaCreatureDto | null {
-    if (!creature) {
-      return null;
-    }
-
-    return { ...creature, imageUrl: resolveCreatureImageUrl(creature.name, creature.imageUrl) };
   }
 }

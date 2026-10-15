@@ -1,9 +1,11 @@
-@if (isLoading()) {
+@if (spellsResource.isLoading()) {
   <div class="spells-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (spellsResource.error()) {
   <div class="spells-page__message spells-page__message--error">
     {{ labels().error }}
-    <button class="type-chip" type="button" (click)="loadSpells()">{{ labels().retry }}</button>
+    <button class="type-chip" type="button" (click)="spellsResource.reload()">{{
+      labels().retry
+    }}</button>
   </div>
 } @else {
   <div class="spells-page">

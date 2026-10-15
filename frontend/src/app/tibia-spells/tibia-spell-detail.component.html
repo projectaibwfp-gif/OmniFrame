@@ -1,9 +1,11 @@
-@if (isLoading()) {
+@if (spellResource.isLoading()) {
   <div class="spell-detail-page__message">{{ labels().loading }}</div>
-} @else if (apiError()) {
+} @else if (spellResource.error()) {
   <div class="spell-detail-page__message spell-detail-page__message--error">
     {{ labels().error }}
-    <button class="tag-chip" type="button" (click)="loadSpell()">{{ labels().retry }}</button>
+    <button class="tag-chip" type="button" (click)="spellResource.reload()">{{
+      labels().retry
+    }}</button>
   </div>
 } @else if (spell(); as spell) {
   <div class="spell-detail-page">

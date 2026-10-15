@@ -1,14 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { AppDateTimePipe } from '../core/date-time.pipe';
-import { createRequestState } from '../core/request-state';
-import {
-  DashboardService,
-  type DashboardActivityPoint,
-  type DashboardData,
-} from './dashboard.service';
+import { POLISH_NUMBER_FORMAT_LOCALE, formatNumber } from '../core/number-format';
+import { resourceErrorMessage, resourceValueOr } from '../core/resource-value';
+import { DashboardService, type DashboardActivityPoint } from './dashboard.service';
 import { buildAreaPath, buildLinePath, buildYAxisTicks, toBarHeights } from './dashboard-chart';
 
 interface DashboardStatCard {
@@ -29,8 +26,11 @@ interface DashboardStatCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  protected readonly state = createRequestState<DashboardData>();
-  protected readonly dashboard = this.state.data;
+  protected readonly dashboardResource = rxResource({
+    stream: () => this.dashboardService.getDashboard(),
+  });
+  protected readonly dashboard = resourceValueOr(this.dashboardResource, null);
+  protected readonly errorMessage = resourceErrorMessage(this.dashboardResource);
   protected readonly currentUser = inject(AuthService).user;
   protected readonly todayLabel = this.formatTodayLabel();
   protected readonly activity = computed(() => this.dashboard()?.activity ?? []);
@@ -127,15 +127,6 @@ export class DashboardComponent {
   });
 
   private readonly dashboardService = inject(DashboardService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    this.loadDashboard();
-  }
-
-  protected loadDashboard(): void {
-    this.state.run(this.dashboardService.getDashboard().pipe(takeUntilDestroyed(this.destroyRef)));
-  }
 
   protected activitySummary(point: DashboardActivityPoint): string {
     return `${point.logins} logowan / ${point.signups} rejestracji`;
@@ -153,7 +144,7 @@ export class DashboardComponent {
   }
 
   private formatNumber(value: number): string {
-    return new Intl.NumberFormat('pl-PL').format(value);
+    return formatNumber(value, POLISH_NUMBER_FORMAT_LOCALE);
   }
 
   private formatDailyChange(current: number, previous: number, suffix: string): string {

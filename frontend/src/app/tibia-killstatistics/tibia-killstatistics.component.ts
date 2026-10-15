@@ -1,154 +1,88 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   computed,
   inject,
+  linkedSignal,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 import type { TibiaKillStatisticsEntryDto } from '@shared/api-contract';
+import { AppDateTimePipe } from '../core/date-time.pipe';
+import { AppNumberPipe } from '../core/number-format.pipe';
+import { resourceValueOr } from '../core/resource-value';
+import { readSelectValue } from '../core/select-value';
 import { MainCharacterService } from '../services/main-character.service';
-import { TibiaWorldsService } from '../tibia-worlds/tibia-worlds.service';
-import { buildWorldOptions } from '../tibia-worlds/world-options';
+import { WorldOptionsService } from '../tibia-worlds/world-options.service';
 import { TibiaKillStatisticsService } from './tibia-killstatistics.service';
 
 type BossFilter = 'all' | 'today' | 'week' | 'old';
+type EntryPredicate = (entry: TibiaKillStatisticsEntryDto) => boolean;
 
 const BOSS_MAX_WEEKLY_KILLS = 100;
+const NO_KILLS = 0;
+
+const isBossCandidate: EntryPredicate = (entry) =>
+  entry.lastWeekKilled > NO_KILLS && entry.lastWeekKilled <= BOSS_MAX_WEEKLY_KILLS;
+const wasKilledToday: EntryPredicate = (entry) => entry.lastDayKilled > NO_KILLS;
+
+const BOSS_FILTERS: Record<BossFilter, EntryPredicate> = {
+  all: () => true,
+  today: (entry) => isBossCandidate(entry) && wasKilledToday(entry),
+  week: (entry) => isBossCandidate(entry) && entry.lastDayKilled === NO_KILLS,
+  old: (entry) => entry.lastWeekKilled === NO_KILLS && entry.lastDayKilled === NO_KILLS,
+};
 
 @Component({
   selector: 'app-tibia-killstatistics',
+  imports: [AppDateTimePipe, AppNumberPipe],
   templateUrl: './tibia-killstatistics.component.html',
   styleUrl: './tibia-killstatistics.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TibiaKillStatisticsComponent {
-  protected readonly worlds = signal<string[]>([]);
-  protected readonly worldsError = signal(false);
-  protected readonly selectedWorld = signal<string | null>(null);
-  protected readonly statistics = signal<TibiaKillStatisticsEntryDto[]>([]);
-  protected readonly updatedAt = signal<string | null>(null);
-  protected readonly isLoading = signal(false);
-  protected readonly apiError = signal(false);
+  protected readonly worlds = computed(() => this.worldOptions.options());
+  protected readonly worldsError = computed(() => this.worldOptions.hasError());
+  protected readonly selectedWorld = linkedSignal(() => this.mainCharacterService.world());
+  protected readonly statisticsResource = rxResource({
+    params: () => this.selectedWorld() ?? undefined,
+    stream: ({ params: world }) => this.tibiaKillStatisticsService.getKillStatistics(world),
+  });
   protected readonly bossFilter = signal<BossFilter>('all');
 
+  protected readonly statisticsData = resourceValueOr(this.statisticsResource, null);
+  protected readonly statistics = computed(() => this.statisticsData()?.entries ?? []);
+  protected readonly updatedAt = computed(() => this.statisticsData()?.updatedAt ?? null);
   protected readonly hasStatistics = computed(() => this.statistics().length > 0);
   protected readonly selectedWorldLabel = computed(() => this.selectedWorld() ?? '');
 
-  protected readonly bossCandidates = computed(() =>
-    this.statistics().filter(
-      (entry) => entry.lastWeekKilled > 0 && entry.lastWeekKilled <= BOSS_MAX_WEEKLY_KILLS,
-    ),
-  );
-
   protected readonly bossesKilledToday = computed(() =>
-    this.bossCandidates()
-      .filter((entry) => entry.lastDayKilled > 0)
+    this.statistics()
+      .filter(BOSS_FILTERS.today)
       .sort((a, b) => b.lastDayKilled - a.lastDayKilled),
   );
 
-  protected readonly filteredStatistics = computed(() => {
-    const filter = this.bossFilter();
-    const all = this.statistics();
-    if (filter === 'all') {
-      return all;
-    }
-
-    const bosses = this.bossCandidates();
-    if (filter === 'today') {
-      return bosses.filter((entry) => entry.lastDayKilled > 0);
-    }
-    if (filter === 'week') {
-      return bosses.filter((entry) => entry.lastDayKilled === 0 && entry.lastWeekKilled > 0);
-    }
-    return this.statistics().filter(
-      (entry) => entry.lastWeekKilled === 0 && entry.lastDayKilled === 0,
-    );
-  });
+  protected readonly filteredStatistics = computed(() =>
+    this.statistics().filter(BOSS_FILTERS[this.bossFilter()]),
+  );
 
   private readonly tibiaKillStatisticsService = inject(TibiaKillStatisticsService);
-  private readonly tibiaWorldsService = inject(TibiaWorldsService);
+  private readonly worldOptions = inject(WorldOptionsService);
   private readonly mainCharacterService = inject(MainCharacterService);
-  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.loadWorlds();
+    this.worldOptions.retryIfFailed();
   }
 
   protected onWorldChange(event: Event): void {
-    const target = event.target;
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
-    }
-
-    this.setWorld(target.value);
+    this.selectedWorld.set(readSelectValue(event));
   }
 
   protected refresh(): void {
-    const world = this.selectedWorld();
-    if (!world) {
-      return;
-    }
-
-    this.loadStatistics(world);
-  }
-
-  protected formatTotal(value: number): string {
-    return value.toLocaleString('en-US');
+    this.statisticsResource.reload();
   }
 
   protected setBossFilter(filter: BossFilter): void {
     this.bossFilter.set(filter);
-  }
-
-  private loadWorlds(): void {
-    this.tibiaWorldsService
-      .getWorlds()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          const mainCharacterWorld = this.mainCharacterService.world();
-          this.worlds.set(buildWorldOptions(response.regularWorlds, mainCharacterWorld));
-          this.worldsError.set(false);
-
-          if (!this.selectedWorld() && mainCharacterWorld) {
-            this.loadStatistics(mainCharacterWorld);
-          }
-        },
-        error: () => this.worldsError.set(true),
-      });
-  }
-
-  private setWorld(world: string): void {
-    this.selectedWorld.set(world === '' ? null : world);
-    this.statistics.set([]);
-    this.updatedAt.set(null);
-
-    if (!world) {
-      return;
-    }
-
-    this.loadStatistics(world);
-  }
-
-  private loadStatistics(world: string): void {
-    this.isLoading.set(true);
-    this.apiError.set(false);
-
-    this.tibiaKillStatisticsService
-      .getKillStatistics(world)
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (response) => {
-          this.statistics.set(response.entries);
-          this.updatedAt.set(response.updatedAt);
-        },
-        error: () => this.apiError.set(true),
-      });
   }
 }
