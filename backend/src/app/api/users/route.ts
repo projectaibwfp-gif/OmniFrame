@@ -3,6 +3,7 @@ import type { ApiResponse, UserRole, UsersListResponseDto } from '@shared/api-co
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
+import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 import { listUsers } from '@/lib/users';
 import { DEFAULT_USER_ROLE, USER_ROLES } from '@/lib/validation';
@@ -47,7 +48,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json<UsersListResponseDto>({ data: rows, total: rows.length });
   } catch (error) {
     logError('users.list', ErrorCode.DB_QUERY_FAILED, { limit }, error);
-    return errorResponse('Could not list users', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not list users',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }
 
@@ -68,24 +73,36 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     payload = (await request.json()) as GoogleUserPayload;
   } catch (error) {
     logError('users.create', ErrorCode.REQUEST_INVALID_JSON, {}, error);
-    return errorResponse('Request body must be valid JSON', 400, ErrorCode.REQUEST_INVALID_JSON);
+    return errorResponse(
+      'Request body must be valid JSON',
+      HttpStatus.BAD_REQUEST,
+      ErrorCode.REQUEST_INVALID_JSON,
+    );
   }
 
   const { googleId, email, emailVerified, name, givenName, familyName, picture, locale } = payload;
   const role = payload.role ?? DEFAULT_USER_ROLE;
 
   if (!googleId?.trim()) {
-    return errorResponse('googleId is required', 400, ErrorCode.VALIDATION_FAILED);
+    return errorResponse(
+      'googleId is required',
+      HttpStatus.BAD_REQUEST,
+      ErrorCode.VALIDATION_FAILED,
+    );
   }
 
   if (!email?.trim() || !EMAIL_PATTERN.test(email)) {
-    return errorResponse('A valid email is required', 400, ErrorCode.VALIDATION_FAILED);
+    return errorResponse(
+      'A valid email is required',
+      HttpStatus.BAD_REQUEST,
+      ErrorCode.VALIDATION_FAILED,
+    );
   }
 
   if (!USER_ROLES.includes(role)) {
     return errorResponse(
       'role must be admin, user, or moderator',
-      400,
+      HttpStatus.BAD_REQUEST,
       ErrorCode.VALIDATION_FAILED,
     );
   }
@@ -103,9 +120,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       role,
     });
 
-    return NextResponse.json({ data: user }, { status: 200 });
+    return NextResponse.json({ data: user }, { status: HttpStatus.OK });
   } catch (error) {
     logError('users.create', ErrorCode.AUTH_USER_UPSERT_FAILED, { googleId }, error);
-    return errorResponse('Could not upsert user', 500, ErrorCode.AUTH_USER_UPSERT_FAILED);
+    return errorResponse(
+      'Could not upsert user',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.AUTH_USER_UPSERT_FAILED,
+    );
   }
 }

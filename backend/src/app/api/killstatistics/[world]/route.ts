@@ -1,12 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaKillStatisticsWorldDto } from '@shared/api-contract';
+import type { NextResponse, NextRequest } from 'next/server';
 import { WorldParamSchema } from '@shared/api-schemas';
-import { errorResponse } from '@/lib/api-response';
+import { authorizeTibiaRequest, respondWithTibiaData } from '@/lib/tibiadata-api';
 import { parseRouteParams } from '@/lib/request-validation';
-import { isAuthDenied, requireAuth } from '@/lib/auth';
-import { ErrorCode } from '@/lib/errors';
-import { logError } from '@/lib/logger';
-import { fetchKillStatistics, TibiaDataNotFoundError } from '@/lib/tibiadata';
+import { fetchKillStatistics } from '@/lib/tibiadata';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,30 +14,22 @@ export async function GET(
   request: NextRequest,
   props: { params: Promise<RouteParams> },
 ): Promise<NextResponse> {
-  const auth = await requireAuth(request);
-  if (isAuthDenied(auth)) {
-    return auth.response;
+  const denied = await authorizeTibiaRequest(request);
+  if (denied) {
+    return denied;
   }
 
-  const params = await props.params;
-  const validation = parseRouteParams(params, WorldParamSchema, {
+  const validation = parseRouteParams(await props.params, WorldParamSchema, {
     scope: 'killstatistics.get',
   });
   if (!validation.ok) {
     return validation.response;
   }
 
-  const world = validation.data.world;
-
-  try {
-    const data = await fetchKillStatistics(world);
-    return NextResponse.json<ApiResponse<TibiaKillStatisticsWorldDto>>({ data });
-  } catch (error) {
-    if (error instanceof TibiaDataNotFoundError) {
-      return errorResponse('Kill statistics not found', 404, ErrorCode.NOT_FOUND);
-    }
-
-    logError('killstatistics.get', ErrorCode.INTERNAL_ERROR, { world }, error);
-    return errorResponse('Could not load kill statistics', 502, ErrorCode.INTERNAL_ERROR);
-  }
+  const { world } = validation.data;
+  return respondWithTibiaData(() => fetchKillStatistics(world), {
+    scope: 'killstatistics.get',
+    resource: 'Kill statistics',
+    context: { world },
+  });
 }

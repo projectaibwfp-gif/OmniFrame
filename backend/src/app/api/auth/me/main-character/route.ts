@@ -9,13 +9,15 @@ import { errorResponse } from '@/lib/api-response';
 import { parseJsonBody } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
+import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 import {
   clearMainCharacterForUser,
   getCurrentUserProfile,
   setMainCharacterForUser,
 } from '@/lib/profile';
-import { fetchCharacter, TibiaDataNotFoundError } from '@/lib/tibiadata';
+import { fetchCharacter } from '@/lib/tibiadata';
+import { tibiaDataErrorResponse } from '@/lib/tibiadata-api';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,11 +40,12 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   try {
     character = await fetchCharacter(characterName);
   } catch (error) {
-    if (error instanceof TibiaDataNotFoundError) {
-      return errorResponse('Character not found', 404, ErrorCode.NOT_FOUND);
-    }
-    logError('auth.mainCharacter.fetch', ErrorCode.INTERNAL_ERROR, { name: characterName }, error);
-    return errorResponse('Could not verify character', 502, ErrorCode.INTERNAL_ERROR);
+    return tibiaDataErrorResponse(error, {
+      scope: 'auth.mainCharacter.fetch',
+      resource: 'Character',
+      context: { name: characterName },
+      messages: { loadFailed: 'Could not verify character' },
+    });
   }
 
   try {
@@ -56,13 +59,17 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
 
     const user = await getCurrentUserProfile(auth.session.sub);
     if (user === null) {
-      return errorResponse('Current user not found', 404, ErrorCode.NOT_FOUND);
+      return errorResponse('Current user not found', HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND);
     }
 
     return NextResponse.json<ApiResponse<AuthCurrentUserResponseDto>>({ data: { user } });
   } catch (error) {
     logError('auth.mainCharacter.save', ErrorCode.DB_QUERY_FAILED, { name: characterName }, error);
-    return errorResponse('Could not link main character', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not link main character',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }
 
@@ -77,12 +84,16 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
     const user = await getCurrentUserProfile(auth.session.sub);
     if (user === null) {
-      return errorResponse('Current user not found', 404, ErrorCode.NOT_FOUND);
+      return errorResponse('Current user not found', HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND);
     }
 
     return NextResponse.json<ApiResponse<AuthCurrentUserResponseDto>>({ data: { user } });
   } catch (error) {
     logError('auth.mainCharacter.clear', ErrorCode.DB_QUERY_FAILED, {}, error);
-    return errorResponse('Could not unlink main character', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not unlink main character',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }

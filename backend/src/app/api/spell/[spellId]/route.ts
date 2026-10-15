@@ -1,7 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaSpellDetailsDto } from '@shared/api-contract';
+import type { NextResponse, NextRequest } from 'next/server';
 import { SpellIdParamSchema } from '@shared/api-schemas';
-import { authorizeTibiaRequest, tibiaDataErrorResponse } from '@/lib/tibiadata-api';
+import { authorizeTibiaRequest, respondWithTibiaData } from '@/lib/tibiadata-api';
 import { parseRouteParams } from '@/lib/request-validation';
 import { fetchSpell } from '@/lib/tibiadata-extra';
 
@@ -27,12 +26,10 @@ export async function GET(
     return validation.response;
   }
 
-  try {
-    const data = await fetchSpell(validation.data.spellId);
-    return NextResponse.json<ApiResponse<TibiaSpellDetailsDto>>({ data });
-  } catch (error) {
-    return tibiaDataErrorResponse(error, 'spell.get', 'spell', {
-      spellId: validation.data.spellId,
-    });
-  }
+  const { spellId } = validation.data;
+  return respondWithTibiaData(() => fetchSpell(spellId), {
+    scope: 'spell.get',
+    resource: 'spell',
+    context: { spellId },
+  });
 }

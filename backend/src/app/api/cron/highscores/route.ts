@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { errorResponse } from '@/lib/api-response';
 import { ErrorCode } from '@/lib/errors';
-import { logInfo, logError } from '@/lib/logger';
+import { HIGHSCORE_VOCATIONS, type TibiaHighscoresVocation } from '@/lib/highscores-vocations';
+import { logError, logInfo } from '@/lib/logger';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
 
 const DEFAULT_CRON_WORLDS = 'Dia,Amera,Antica';
-const CRON_VOCATIONS = ['knights', 'paladins', 'druids', 'sorcerers', 'monks'] as const;
+const CRON_WORLDS_SEPARATOR = ',';
 
 export const dynamic = 'force-dynamic';
 // Next.js only accepts statically analysable literals for segment config exports,
@@ -19,14 +19,32 @@ interface CronStats extends Record<string, unknown> {
   duration: number;
 }
 
+function readCronWorlds(): string[] {
+  return (process.env.CRON_WORLDS ?? DEFAULT_CRON_WORLDS)
+    .split(CRON_WORLDS_SEPARATOR)
+    .map((world) => world.trim());
+}
+
+async function collectVocation(
+  world: string,
+  vocation: TibiaHighscoresVocation,
+  stats: CronStats,
+): Promise<void> {
+  try {
+    const count = await fetchHighscoresForWorldAndVocation(world, vocation);
+    stats.vocationsProcessed += 1;
+    stats.charactersCollected += count;
+    logInfo('cron.vocation', `Processed ${world}/${vocation}`, { count });
+  } catch (error) {
+    logError('cron.vocation', ErrorCode.INTERNAL_ERROR, { world, vocation }, error);
+  }
+}
+
 // TODO: Add authorization (e.g., shared secret or IP allowlist) before exposing
 // this endpoint beyond trusted callers. Current implementation is public.
 export async function POST(_request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
-
-  const worlds = (process.env.CRON_WORLDS ?? DEFAULT_CRON_WORLDS).split(',').map((w) => w.trim());
-  const vocations = CRON_VOCATIONS;
-
+  const worlds = readCronWorlds();
   const stats: CronStats = {
     worldsProcessed: 0,
     vocationsProcessed: 0,
@@ -34,40 +52,20 @@ export async function POST(_request: NextRequest): Promise<NextResponse> {
     duration: 0,
   };
 
-  try {
-    logInfo('cron.start', 'Starting cron highscores collection', {
-      worlds: worlds.length,
-      vocations: vocations.length,
-    });
+  logInfo('cron.start', 'Starting cron highscores collection', {
+    worlds: worlds.length,
+    vocations: HIGHSCORE_VOCATIONS.length,
+  });
 
-    for (const world of worlds) {
-      for (const vocation of vocations) {
-        try {
-          const count = await fetchHighscoresForWorldAndVocation(world, vocation);
-          stats.vocationsProcessed += 1;
-          stats.charactersCollected += count;
-          logInfo('cron.vocation', `Processed ${world}/${vocation}`, { count });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          logError(
-            'cron.vocation',
-            ErrorCode.INTERNAL_ERROR,
-            { world, vocation },
-            new Error(message),
-          );
-        }
-      }
-      stats.worldsProcessed += 1;
+  for (const world of worlds) {
+    for (const vocation of HIGHSCORE_VOCATIONS) {
+      await collectVocation(world, vocation, stats);
     }
-
-    stats.duration = Date.now() - startTime;
-    logInfo('cron.complete', 'Cron highscores collection completed', stats);
-
-    return NextResponse.json({ success: true, stats });
-  } catch (error) {
-    stats.duration = Date.now() - startTime;
-    const message = error instanceof Error ? error.message : String(error);
-    logError('cron.error', ErrorCode.INTERNAL_ERROR, stats, new Error(message));
-    return errorResponse(message, 500, ErrorCode.INTERNAL_ERROR);
+    stats.worldsProcessed += 1;
   }
+
+  stats.duration = Date.now() - startTime;
+  logInfo('cron.complete', 'Cron highscores collection completed', stats);
+
+  return NextResponse.json({ success: true, stats });
 }

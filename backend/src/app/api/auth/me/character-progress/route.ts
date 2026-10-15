@@ -6,15 +6,44 @@ import type {
   CharacterProgressUpdateResponseDto,
 } from '@shared/api-contract';
 import { CharacterProgressUpdateRequestSchema } from '@shared/api-schemas';
-import { errorResponse } from '@/lib/api-response';
+import { errorResponse, type RouteResult } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { listCharacterProgress, upsertCharacterProgress } from '@/lib/character-progress';
 import { ErrorCode } from '@/lib/errors';
+import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 import { parseJsonBody } from '@/lib/request-validation';
 import { getCurrentUserProfile } from '@/lib/profile';
 
 export const dynamic = 'force-dynamic';
+
+async function loadMainCharacterName(googleId: string): Promise<RouteResult<string>> {
+  try {
+    const user = await getCurrentUserProfile(googleId);
+    if (user?.mainCharacter?.name == null) {
+      return {
+        ok: false,
+        response: errorResponse(
+          'No main character linked',
+          HttpStatus.BAD_REQUEST,
+          ErrorCode.VALIDATION_FAILED,
+        ),
+      };
+    }
+
+    return { ok: true, data: user.mainCharacter.name };
+  } catch (error) {
+    logError('auth.characterProgress.loadUser', ErrorCode.DB_QUERY_FAILED, {}, error);
+    return {
+      ok: false,
+      response: errorResponse(
+        'Could not load current user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorCode.DB_QUERY_FAILED,
+      ),
+    };
+  }
+}
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const auth = await requireAuth(request);
@@ -28,7 +57,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json<ApiResponse<CharacterProgressListDto>>({ data });
   } catch (error) {
     logError('auth.characterProgress.list', ErrorCode.DB_QUERY_FAILED, {}, error);
-    return errorResponse('Could not load character progress', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not load character progress',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }
 
@@ -45,9 +78,9 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     return validation.response;
   }
 
-  const user = await getCurrentUserProfile(auth.session.sub);
-  if (user?.mainCharacter?.name == null) {
-    return errorResponse('No main character linked', 400, ErrorCode.VALIDATION_FAILED);
+  const mainCharacterName = await loadMainCharacterName(auth.session.sub);
+  if (!mainCharacterName.ok) {
+    return mainCharacterName.response;
   }
 
   const payload: CharacterProgressUpdateRequestDto = validation.data;
@@ -55,7 +88,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   try {
     const entry = await upsertCharacterProgress({
       googleId: auth.session.sub,
-      characterName: user.mainCharacter.name,
+      characterName: mainCharacterName.data,
       targetKind: payload.targetKind,
       targetName: payload.targetName,
       status: payload.status,
@@ -69,6 +102,10 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       { targetKind: payload.targetKind, targetName: payload.targetName },
       error,
     );
-    return errorResponse('Could not save character progress', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not save character progress',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }

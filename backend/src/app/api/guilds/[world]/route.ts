@@ -1,7 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaGuildsOverviewDto } from '@shared/api-contract';
+import type { NextResponse, NextRequest } from 'next/server';
 import { WorldParamSchema } from '@shared/api-schemas';
-import { authorizeTibiaRequest, tibiaDataErrorResponse } from '@/lib/tibiadata-api';
+import { authorizeTibiaRequest, respondWithTibiaData } from '@/lib/tibiadata-api';
 import { parseRouteParams } from '@/lib/request-validation';
 import { fetchGuilds } from '@/lib/tibiadata-extra';
 
@@ -27,12 +26,10 @@ export async function GET(
     return validation.response;
   }
 
-  try {
-    const data = await fetchGuilds(validation.data.world);
-    return NextResponse.json<ApiResponse<TibiaGuildsOverviewDto>>({ data });
-  } catch (error) {
-    return tibiaDataErrorResponse(error, 'guilds.get', 'guilds', {
-      world: validation.data.world,
-    });
-  }
+  const { world } = validation.data;
+  return respondWithTibiaData(() => fetchGuilds(world), {
+    scope: 'guilds.get',
+    resource: 'guilds',
+    context: { world },
+  });
 }

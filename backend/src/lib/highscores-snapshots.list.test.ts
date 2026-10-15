@@ -9,7 +9,11 @@ vi.mock('./db', () => ({
   getSql: dbMocks.getSql,
 }));
 
-import { listHighscoresSnapshots } from './highscores-snapshots';
+import {
+  CHARACTER_HIGHSCORES_HISTORY_LIMIT,
+  listCharacterHighscoresHistory,
+  listHighscoresSnapshots,
+} from './highscores-snapshots';
 
 describe('listHighscoresSnapshots', () => {
   beforeEach(() => {
@@ -54,5 +58,58 @@ describe('listHighscoresSnapshots', () => {
     expect(dataQuery).toContain('DISTINCT ON (normalized_name, world)');
     expect(dataQuery).toContain('paged_characters');
     expect(countQuery).toContain('SELECT DISTINCT normalized_name, world');
+  });
+
+  it('uses one query for both sort directions and binds the direction as a value', async () => {
+    dbMocks.sql
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ total: 0 }])
+      .mockResolvedValueOnce([]);
+
+    const result = await listHighscoresSnapshots(2, 10, 'Dia', 'asc');
+
+    const [strings, ...values] = dbMocks.sql.mock.calls[0] as [TemplateStringsArray, ...unknown[]];
+    expect(strings.join(' ')).toContain('THEN "latestLevel" END ASC');
+    expect(values).toEqual(['Dia', 'asc', 'asc', 10, 10, 'asc', 'asc']);
+    expect(result).toEqual({ data: [], total: 0, worlds: [] });
+  });
+});
+
+describe('listCharacterHighscoresHistory', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    dbMocks.getSql.mockReturnValue(dbMocks.sql);
+  });
+
+  it('returns limited history with canonical ISO timestamps', async () => {
+    dbMocks.sql.mockResolvedValueOnce([
+      {
+        id: 3,
+        characterName: 'Trollefar',
+        world: 'Antica',
+        vocation: 'Elite Knight',
+        level: 400,
+        rank: 12,
+        exactExperience: 1000,
+        checkedAt: '2026-08-17 12:00:00+00',
+      },
+    ]);
+
+    const history = await listCharacterHighscoresHistory('Trollefar');
+
+    expect(history).toEqual([
+      {
+        id: 3,
+        characterName: 'Trollefar',
+        world: 'Antica',
+        vocation: 'Elite Knight',
+        level: 400,
+        rank: 12,
+        exactExperience: 1000,
+        checkedAt: '2026-08-17T12:00:00.000Z',
+      },
+    ]);
+    const values = dbMocks.sql.mock.calls[0]?.slice(1);
+    expect(values).toEqual(['trollefar', CHARACTER_HIGHSCORES_HISTORY_LIMIT]);
   });
 });

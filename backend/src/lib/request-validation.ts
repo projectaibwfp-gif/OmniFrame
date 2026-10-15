@@ -1,12 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { formatIssues, type Schema, type SchemaIssue } from '@shared/validation';
-import { errorResponse } from './api-response';
+import { errorResponse, type RouteResult } from './api-response';
 import { ErrorCode } from './errors';
+import { HttpStatus } from './http-status';
 import { logError } from './logger';
 
-export type ValidationResult<T> = { ok: true; data: T } | { ok: false; response: NextResponse };
-
-const HTTP_BAD_REQUEST = 400;
+export type ValidationResult<T> = RouteResult<T>;
 
 interface ValidationOptions {
   scope: string;
@@ -20,7 +19,7 @@ function respondValidationFailure(
   logError(scope, ErrorCode.VALIDATION_FAILED, { source, issues });
   return errorResponse(
     `Request ${source} is invalid: ${formatIssues(issues)}`,
-    HTTP_BAD_REQUEST,
+    HttpStatus.BAD_REQUEST,
     ErrorCode.VALIDATION_FAILED,
   );
 }
@@ -39,7 +38,7 @@ export async function parseJsonBody<T>(
       ok: false,
       response: errorResponse(
         'Request body must be valid JSON',
-        HTTP_BAD_REQUEST,
+        HttpStatus.BAD_REQUEST,
         ErrorCode.REQUEST_INVALID_JSON,
       ),
     };

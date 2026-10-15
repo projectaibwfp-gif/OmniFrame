@@ -27,7 +27,7 @@ const TARGET_NAME_MAX_LENGTH = 255;
 const HIGHSCORES_MIN_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE_SIZE = 50;
-const HIGHSCORES_MAX_PAGE_SIZE = 200;
+export const HIGHSCORES_MAX_PAGE_SIZE = 200;
 
 export const AuthGoogleRequestSchema = objectSchema({
   credential: stringSchema(),

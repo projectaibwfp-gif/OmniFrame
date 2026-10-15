@@ -1,7 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaWorldDto } from '@shared/api-contract';
+import type { NextResponse, NextRequest } from 'next/server';
 import { TibiaNameParamSchema } from '@shared/api-schemas';
-import { authorizeTibiaRequest, tibiaDataErrorResponse } from '@/lib/tibiadata-api';
+import { authorizeTibiaRequest, respondWithTibiaData } from '@/lib/tibiadata-api';
 import { parseRouteParams } from '@/lib/request-validation';
 import { fetchWorld } from '@/lib/tibiadata-extra';
 
@@ -27,10 +26,10 @@ export async function GET(
     return validation.response;
   }
 
-  try {
-    const data = await fetchWorld(validation.data.name);
-    return NextResponse.json<ApiResponse<TibiaWorldDto>>({ data });
-  } catch (error) {
-    return tibiaDataErrorResponse(error, 'world.get', 'world', { name: validation.data.name });
-  }
+  const { name } = validation.data;
+  return respondWithTibiaData(() => fetchWorld(name), {
+    scope: 'world.get',
+    resource: 'world',
+    context: { name },
+  });
 }

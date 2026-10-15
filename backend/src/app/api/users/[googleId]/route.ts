@@ -5,6 +5,7 @@ import { errorResponse } from '@/lib/api-response';
 import { parseRouteParams } from '@/lib/request-validation';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
+import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 import { getUserByGoogleId } from '@/lib/users';
 
@@ -36,12 +37,16 @@ export async function GET(
   try {
     const user = await getUserByGoogleId(googleId);
     if (user === null) {
-      return errorResponse('User not found', 404, ErrorCode.NOT_FOUND);
+      return errorResponse('User not found', HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND);
     }
 
     return NextResponse.json<ApiResponse<UsersListItemDto>>({ data: user });
   } catch (error) {
     logError('users.getOne', ErrorCode.DB_QUERY_FAILED, { googleId }, error);
-    return errorResponse('Could not fetch user', 500, ErrorCode.DB_QUERY_FAILED);
+    return errorResponse(
+      'Could not fetch user',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.DB_QUERY_FAILED,
+    );
   }
 }

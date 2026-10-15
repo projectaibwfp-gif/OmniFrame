@@ -4,6 +4,7 @@ import { ReferralCaptureRequestSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
 import { parseJsonBody } from '@/lib/request-validation';
 import { getPendingReferral, setPendingReferral } from '@/lib/referral';
+import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         stored: existingReferral === null,
       },
     },
-    { status: 200 },
+    { status: HttpStatus.OK },
   );
 
   if (!existingReferral) {

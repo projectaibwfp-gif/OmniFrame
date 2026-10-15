@@ -1,7 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaHouseDto } from '@shared/api-contract';
+import type { NextResponse, NextRequest } from 'next/server';
 import { HouseIdParamSchema } from '@shared/api-schemas';
-import { authorizeTibiaRequest, tibiaDataErrorResponse } from '@/lib/tibiadata-api';
+import { authorizeTibiaRequest, respondWithTibiaData } from '@/lib/tibiadata-api';
 import { parseRouteParams } from '@/lib/request-validation';
 import { fetchHouse } from '@/lib/tibiadata-extra';
 
@@ -28,13 +27,10 @@ export async function GET(
     return validation.response;
   }
 
-  try {
-    const data = await fetchHouse(validation.data.world, validation.data.houseId);
-    return NextResponse.json<ApiResponse<TibiaHouseDto>>({ data });
-  } catch (error) {
-    return tibiaDataErrorResponse(error, 'house.get', 'house', {
-      world: validation.data.world,
-      houseId: validation.data.houseId,
-    });
-  }
+  const { world, houseId } = validation.data;
+  return respondWithTibiaData(() => fetchHouse(world, houseId), {
+    scope: 'house.get',
+    resource: 'house',
+    context: { world, houseId },
+  });
 }

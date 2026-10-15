@@ -55,6 +55,22 @@ describe('GET /api/killstatistics/:world', () => {
     expect(tibiadataMocks.fetchKillStatistics).toHaveBeenCalledWith('Dia');
   });
 
+  it('returns 404 when TibiaData reports missing kill statistics', async () => {
+    tibiadataMocks.fetchKillStatistics.mockRejectedValue(
+      new tibiadataMocks.TibiaDataNotFoundError('Kill statistics not found'),
+    );
+
+    const response = await GET(
+      createRequest('http://localhost/api/killstatistics/Atlantis'),
+      params('Atlantis'),
+    );
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({
+      error: { code: 'NOT_FOUND', message: 'Kill statistics not found' },
+    });
+  });
+
   it('returns 502 when upstream request fails', async () => {
     tibiadataMocks.fetchKillStatistics.mockRejectedValue(new Error('upstream down'));
 

@@ -111,6 +111,24 @@ describe('PUT /api/auth/me/character-progress', () => {
     });
   });
 
+  it('returns contract error when loading the current user fails', async () => {
+    profileMocks.getCurrentUserProfile.mockRejectedValue(new Error('db down'));
+
+    const response = await PUT(
+      createJsonRequest(URL, 'PUT', {
+        targetKind: 'boss',
+        targetName: 'Lloyd',
+        status: 'completed',
+      }),
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: { code: 'DB_QUERY_FAILED', message: 'Could not load current user' },
+    });
+    expect(progressMocks.upsertCharacterProgress).not.toHaveBeenCalled();
+  });
+
   it('saves status for current main character', async () => {
     profileMocks.getCurrentUserProfile.mockResolvedValue({
       mainCharacter: { name: 'Trollefar' },

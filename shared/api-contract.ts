@@ -2,6 +2,13 @@ export type ApiResponse<T> = {
   data: T;
 };
 
+export interface HealthStatusDto {
+  status: "ok";
+  service: string;
+  database: "connected";
+  timestamp: string;
+}
+
 // ---------------------------------------------------------------------------
 // Unified creature / monster model
 // Single source of truth for creature data across loot, hunting-places,
@@ -345,6 +352,11 @@ export interface HighscoresSnapshotsListDto {
   sortDir: "asc" | "desc";
   world: string | null;
   worlds: string[];
+}
+
+export interface CharacterHighscoresHistoryDto {
+  data: HighscoresSnapshotRecordDto[];
+  total: number;
 }
 
 export interface TibiaKillStatisticsEntryDto {

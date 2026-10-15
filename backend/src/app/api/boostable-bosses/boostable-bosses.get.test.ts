@@ -17,6 +17,7 @@ const tibiadataMocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/tibiadata', () => ({
   fetchBoostableBosses: tibiadataMocks.fetchBoostableBosses,
+  TibiaDataNotFoundError: class TibiaDataNotFoundError extends Error {},
 }));
 
 import { GET } from './route';

@@ -1,3 +1,4 @@
+import { HIGHSCORES_MAX_PAGE_SIZE } from '@shared/api-schemas';
 import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 export const openApiDocument = {
@@ -206,6 +207,18 @@ export const openApiDocument = {
         },
       },
     },
+    '/api/news': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns latest Tibia news from TibiaData (cached for 15 minutes).',
+        security: [{ sessionCookie: [] }],
+        responses: {
+          200: { description: 'News payload' },
+          401: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
     '/api/character/{name}': {
       get: {
         tags: ['TibiaData'],
@@ -221,6 +234,25 @@ export const openApiDocument = {
         responses: {
           200: { description: 'Character payload' },
           404: { description: 'Character not found' },
+        },
+      },
+    },
+    '/api/character/{name}/highscores-history': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns stored highscores snapshots of one character, newest first.',
+        parameters: [
+          {
+            name: 'name',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'Character highscores history payload' },
+          400: { $ref: '#/components/responses/ApiError' },
+          500: { $ref: '#/components/responses/ApiError' },
         },
       },
     },
@@ -251,6 +283,21 @@ export const openApiDocument = {
         summary: 'Unlinks the main character from the current user.',
         responses: {
           200: { description: 'Updated current user without main character' },
+        },
+      },
+    },
+    '/api/auth/me/main-character/refresh': {
+      put: {
+        tags: ['Auth'],
+        summary: 'Re-fetches the linked main character from TibiaData and stores fresh data.',
+        security: [{ sessionCookie: [] }],
+        responses: {
+          200: { description: 'Updated current user with refreshed main character' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          500: { $ref: '#/components/responses/ApiError' },
+          502: { $ref: '#/components/responses/ApiError' },
         },
       },
     },
@@ -296,7 +343,7 @@ export const openApiDocument = {
           {
             name: 'pageSize',
             in: 'query',
-            schema: { type: 'integer', minimum: 1, maximum: 200 },
+            schema: { type: 'integer', minimum: 1, maximum: HIGHSCORES_MAX_PAGE_SIZE },
           },
           { name: 'world', in: 'query', schema: { type: 'string' } },
           { name: 'sortDir', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'] } },

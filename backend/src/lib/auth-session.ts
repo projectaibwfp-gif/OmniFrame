@@ -5,6 +5,7 @@ import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { errorResponse } from './api-response';
 import { cookieSameSite, cookieSecure } from './cookie-config';
 import { ErrorCode } from './errors';
+import { HttpStatus } from './http-status';
 import { logInfo, logWarn } from './logger';
 
 export type UserRole = SharedUserRole;
@@ -241,7 +242,13 @@ export async function requireAuth(request: NextRequest): Promise<AuthCheckResult
   const token = request.cookies.get(ACCESS_COOKIE_NAME)?.value;
   if (!token) {
     logWarn('auth.requireAuth', ErrorCode.AUTH_REQUIRED, { reason: 'missing access token' });
-    return { response: errorResponse('Authentication required', 401, ErrorCode.AUTH_REQUIRED) };
+    return {
+      response: errorResponse(
+        'Authentication required',
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.AUTH_REQUIRED,
+      ),
+    };
   }
 
   try {
@@ -250,7 +257,11 @@ export async function requireAuth(request: NextRequest): Promise<AuthCheckResult
   } catch (error) {
     const message = error instanceof Error ? error.message : 'access token verification failed';
     logWarn('auth.requireAuth', ErrorCode.AUTH_REQUIRED, { reason: message }, error);
-    const response = errorResponse('Authentication required', 401, ErrorCode.AUTH_REQUIRED);
+    const response = errorResponse(
+      'Authentication required',
+      HttpStatus.UNAUTHORIZED,
+      ErrorCode.AUTH_REQUIRED,
+    );
     clearAccessCookie(response);
     return { response };
   }

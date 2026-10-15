@@ -1,24 +1,13 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, TibiaNewsListDto } from '@shared/api-contract';
-import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth } from '@/lib/auth';
-import { ErrorCode } from '@/lib/errors';
-import { logError } from '@/lib/logger';
+import type { NextResponse, NextRequest } from 'next/server';
+import { handleTibiaDataGet } from '@/lib/tibiadata-api';
 import { fetchNews } from '@/lib/tibiadata';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
-  const auth = await requireAuth(request);
-  if (isAuthDenied(auth)) {
-    return auth.response;
-  }
-
-  try {
-    const data = await fetchNews();
-    return NextResponse.json<ApiResponse<TibiaNewsListDto>>({ data });
-  } catch (error) {
-    logError('news.get', ErrorCode.INTERNAL_ERROR, {}, error);
-    return errorResponse('Could not load Tibia news', 502, ErrorCode.INTERNAL_ERROR);
-  }
+export function GET(request: NextRequest): Promise<NextResponse> {
+  return handleTibiaDataGet(request, fetchNews, {
+    scope: 'news.get',
+    resource: 'Tibia news',
+    messages: { loadFailed: 'Could not load Tibia news' },
+  });
 }

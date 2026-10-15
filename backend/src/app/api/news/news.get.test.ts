@@ -8,6 +8,7 @@ const authMocks = vi.hoisted(() => ({
 
 const tibiadataMocks = vi.hoisted(() => ({
   fetchNews: vi.fn(),
+  TibiaDataNotFoundError: class TibiaDataNotFoundError extends Error {},
 }));
 
 vi.mock('@/lib/auth', () => authMocks);

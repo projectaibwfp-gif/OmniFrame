@@ -11,13 +11,24 @@ import type {
   TibiaNewsListDto,
   TibiaKillStatisticsWorldDto,
 } from '@shared/api-contract';
+import { toIsoUtc } from './date-time';
 import { getLatestHighscoresSnapshot, saveHighscoresSnapshots } from './highscores-snapshots';
 import type { HighscoresSnapshot } from './highscores-snapshots';
+import type { TibiaHighscoresVocation } from './highscores-vocations';
+import { HttpStatus } from './http-status';
+import {
+  asRecord,
+  readFlag,
+  readNumber,
+  readRecords,
+  readString,
+  readStringArray,
+  type JsonRecord,
+} from './json-readers';
+import { fetchTibiaJson, requestTibiaData, TibiaDataNotFoundError } from './tibiadata-client';
+import { createTtlCache } from './ttl-cache';
 
-const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://dev.tibiadata.com/v4';
-
-export const TIBIA_DATA_API_BASE_URL =
-  process.env.TIBIA_DATA_API_BASE_URL?.trim() || DEFAULT_TIBIA_DATA_API_BASE_URL;
+export { TibiaDataNotFoundError } from './tibiadata-client';
 
 interface TibiaDataBoostableBoss {
   name?: unknown;
@@ -148,23 +159,14 @@ interface TibiaDataKillStatisticsResponse {
   };
 }
 
-type JsonRecord = Record<string, unknown>;
 const MAX_HIGHSCORE_PAGES = 50;
+const FIRST_HIGHSCORE_PAGE = 1;
 const RESTRICTION_MODE_ERROR_CODE = 9002;
 const MS_PER_MINUTE = 60_000;
-const HTTP_BAD_REQUEST = 400;
-const HTTP_NOT_FOUND = 404;
-const HTTP_OK = 200;
-
-export type TibiaHighscoresVocation =
-  'all' | 'knights' | 'paladins' | 'druids' | 'sorcerers' | 'monks';
-
-export class TibiaDataNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'TibiaDataNotFoundError';
-  }
-}
+const TIBIA_DATA_CACHE_TTL_MINUTES = 15;
+const TIBIA_DATA_CACHE_TTL_MS = TIBIA_DATA_CACHE_TTL_MINUTES * MS_PER_MINUTE;
+const SINGLE_ENTRY_CACHE_KEY = 'latest';
+const DEFAULT_RESTRICTION_MODE_MESSAGE = 'highscores restriction mode';
 
 class TibiaDataRestrictionModeError extends Error {
   constructor(message: string) {
@@ -210,10 +212,6 @@ function mapCreature(creature: TibiaDataCreature | undefined): TibiaCreatureDto 
   };
 }
 
-async function fetchFromTibiaData(path: string): Promise<Response> {
-  return fetch(`${TIBIA_DATA_API_BASE_URL}${path}`, { cache: 'no-store' });
-}
-
 function mapKillStatisticsEntry(
   entry: TibiaDataKillStatisticsEntry,
 ): TibiaKillStatisticsWorldDto['entries'][number] | null {
@@ -242,65 +240,25 @@ function mapKillStatisticsEntry(
   };
 }
 
-function asRecord(value: unknown): JsonRecord | null {
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    return value as JsonRecord;
-  }
-
-  return null;
-}
-
-function readString(value: unknown): string | null {
-  return typeof value === 'string' ? value : null;
-}
-
-function readNumber(value: unknown): number | null {
-  return typeof value === 'number' ? value : null;
-}
-
-function readBoolean(value: unknown): boolean | null {
-  return typeof value === 'boolean' ? value : null;
-}
-
-function readStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.filter((item): item is string => typeof item === 'string');
-}
-
 function mapAchievements(value: unknown): TibiaCharacterAchievementDto[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value
-    .map((item) => asRecord(item))
-    .filter((item): item is JsonRecord => item !== null)
+  return readRecords(value)
     .map((item) => ({
       name: readString(item['name']) ?? '',
       grade: readNumber(item['grade']),
-      secret: readBoolean(item['secret']) === true,
+      secret: readFlag(item['secret']),
     }))
     .filter((item) => item.name.length > 0);
 }
 
 function mapOtherCharacters(value: unknown): TibiaCharacterOtherCharacterDto[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value
-    .map((item) => asRecord(item))
-    .filter((item): item is JsonRecord => item !== null)
+  return readRecords(value)
     .map((item) => ({
       name: readString(item['name']) ?? '',
       world: readString(item['world']),
       status: readString(item['status']),
-      deleted: readBoolean(item['deleted']) === true,
-      main: readBoolean(item['main']) === true,
-      traded: readBoolean(item['traded']) === true,
+      deleted: readFlag(item['deleted']),
+      main: readFlag(item['main']),
+      traded: readFlag(item['traded']),
     }))
     .filter((item) => item.name.length > 0);
 }
@@ -346,6 +304,23 @@ function toHighscoresSnapshot(
   };
 }
 
+function toHighscoresSnapshots(
+  page: TibiaDataHighscoresPayload,
+  world: string,
+): HighscoresSnapshot[] {
+  return (page.highscore_list ?? [])
+    .map((entry) => toHighscoresSnapshot(entry, world))
+    .filter((snapshot): snapshot is HighscoresSnapshot => snapshot !== null);
+}
+
+function readTotalHighscorePages(firstPage: TibiaDataHighscoresPayload): number {
+  const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
+  return Math.min(
+    Math.max(totalPagesRaw ?? FIRST_HIGHSCORE_PAGE, FIRST_HIGHSCORE_PAGE),
+    MAX_HIGHSCORE_PAGES,
+  );
+}
+
 function mapCharacterVocationToHighscoresVocation(
   vocation: string | null,
 ): TibiaHighscoresVocation | null {
@@ -373,80 +348,60 @@ function mapCharacterVocationToHighscoresVocation(
   return null;
 }
 
-// In-memory cache for highscores pages (15 minutes TTL)
-const TIBIA_DATA_CACHE_TTL_MS = 15 * 60 * 1000;
-interface CacheEntry {
-  data: TibiaDataHighscoresPayload;
-  timestamp: number;
-}
-const highscoresPageCache = new Map<string, CacheEntry>();
+const highscoresPageCache = createTtlCache<TibiaDataHighscoresPayload>(TIBIA_DATA_CACHE_TTL_MS);
 
-function getCacheKey(world: string, page: number, vocation: TibiaHighscoresVocation): string {
+function getHighscoresCacheKey(
+  world: string,
+  page: number,
+  vocation: TibiaHighscoresVocation,
+): string {
   return `${world}:${vocation}:${page}`;
 }
 
-function getFromCache(cacheKey: string): TibiaDataHighscoresPayload | null {
-  const entry = highscoresPageCache.get(cacheKey);
-  if (!entry) {
-    return null;
+async function throwIfRestrictionMode(response: Response): Promise<void> {
+  if (response.status !== HttpStatus.BAD_REQUEST) {
+    return;
   }
 
-  const now = Date.now();
-  if (now - entry.timestamp > TIBIA_DATA_CACHE_TTL_MS) {
-    highscoresPageCache.delete(cacheKey);
-    return null;
+  const payload = (await response.json()) as TibiaDataHighscoresResponse;
+  const errorCode = readNumber(payload.information?.status?.error);
+  if (errorCode === RESTRICTION_MODE_ERROR_CODE) {
+    const message =
+      readString(payload.information?.status?.message) ?? DEFAULT_RESTRICTION_MODE_MESSAGE;
+    throw new TibiaDataRestrictionModeError(message);
   }
-
-  return entry.data;
 }
 
-function setInCache(cacheKey: string, data: TibiaDataHighscoresPayload): void {
-  highscoresPageCache.set(cacheKey, {
-    data,
-    timestamp: Date.now(),
-  });
-}
-
-async function fetchHighscoresPage(
+async function loadHighscoresPage(
   world: string,
   page: number,
   vocation: TibiaHighscoresVocation,
 ): Promise<TibiaDataHighscoresPayload> {
-  const cacheKey = getCacheKey(world, page, vocation);
-  const cached = getFromCache(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  const response = await fetch(
-    `${TIBIA_DATA_API_BASE_URL}/highscores/${encodeURIComponent(world)}/experience/${vocation}/${page}`,
-    {
-      cache: 'no-store',
-    },
+  const response = await requestTibiaData(
+    `/highscores/${encodeURIComponent(world)}/experience/${vocation}/${page}`,
   );
 
   if (!response.ok) {
-    if (response.status === HTTP_BAD_REQUEST) {
-      const payload = (await response.json()) as TibiaDataHighscoresResponse;
-      const errorCode = readNumber(payload.information?.status?.error);
-      const message =
-        readString(payload.information?.status?.message) ?? 'highscores restriction mode';
-      if (errorCode === RESTRICTION_MODE_ERROR_CODE) {
-        throw new TibiaDataRestrictionModeError(message);
-      }
-    }
-
+    await throwIfRestrictionMode(response);
     throw new Error(`TibiaData highscores request failed with status ${response.status}`);
   }
 
   const payload = (await response.json()) as TibiaDataHighscoresResponse;
-  const highscores = payload.highscores;
-  if (!highscores) {
+  if (!payload.highscores) {
     throw new Error('TibiaData highscores payload is missing highscores section');
   }
 
-  setInCache(cacheKey, highscores);
-  return highscores;
+  return payload.highscores;
+}
+
+function fetchHighscoresPage(
+  world: string,
+  page: number,
+  vocation: TibiaHighscoresVocation,
+): Promise<TibiaDataHighscoresPayload> {
+  return highscoresPageCache.getOrLoad(getHighscoresCacheKey(world, page, vocation), () =>
+    loadHighscoresPage(world, page, vocation),
+  );
 }
 
 async function findCharacterInHighscoresPages(
@@ -454,58 +409,31 @@ async function findCharacterInHighscoresPages(
   world: string,
   vocation: TibiaHighscoresVocation,
 ): Promise<TibiaCharacterExperienceDto & { lookupLog: string }> {
-  const allSnapshots: HighscoresSnapshot[] = [];
-
   const logs: string[] = [];
   logs.push(`Searching: ${characterName} on ${world} (${vocation})`);
 
-  const firstPage = await fetchHighscoresPage(world, 1, vocation);
+  const firstPage = await fetchHighscoresPage(world, FIRST_HIGHSCORE_PAGE, vocation);
   const highscoreAgeMinutes = readNumber(firstPage.highscore_age);
-
   logs.push(`Page 1: ${firstPage.highscore_list?.length ?? 0} entries`);
 
-  // Collect all characters from first page
-  if (firstPage.highscore_list) {
-    for (const entry of firstPage.highscore_list) {
-      const snapshot = toHighscoresSnapshot(entry, world);
-      if (snapshot) {
-        allSnapshots.push(snapshot);
-      }
-    }
-  }
+  const allSnapshots = toHighscoresSnapshots(firstPage, world);
+  let foundMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
+  let foundPage = foundMatch ? FIRST_HIGHSCORE_PAGE : null;
 
-  const firstMatch = findCharacterInHighscores(firstPage.highscore_list, characterName);
-  let foundMatch = firstMatch ?? null;
-  let foundPage = firstMatch ? 1 : null;
-
-  const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
-  const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
+  const totalPages = readTotalHighscorePages(firstPage);
   logs.push(`Total pages to scan: ${totalPages}`);
 
-  for (let page = 2; page <= totalPages; page += 1) {
+  for (let page = FIRST_HIGHSCORE_PAGE + 1; page <= totalPages; page += 1) {
     const currentPage = await fetchHighscoresPage(world, page, vocation);
     logs.push(`Page ${page}: ${currentPage.highscore_list?.length ?? 0} entries`);
-
-    // Collect all characters from current page
-    if (currentPage.highscore_list) {
-      for (const entry of currentPage.highscore_list) {
-        const snapshot = toHighscoresSnapshot(entry, world);
-        if (snapshot) {
-          allSnapshots.push(snapshot);
-        }
-      }
-    }
+    allSnapshots.push(...toHighscoresSnapshots(currentPage, world));
 
     if (foundMatch === null) {
-      const match = findCharacterInHighscores(currentPage.highscore_list, characterName);
-      if (match) {
-        foundMatch = match;
-        foundPage = page;
-      }
+      foundMatch = findCharacterInHighscores(currentPage.highscore_list, characterName);
+      foundPage = foundMatch ? page : null;
     }
   }
 
-  // Save all collected snapshots after scanning all pages
   await saveHighscoresSnapshots(allSnapshots);
 
   if (foundMatch) {
@@ -605,9 +533,9 @@ interface TibiaDataNewsResponse {
   news?: TibiaDataNewsItem[];
 }
 
-let boostableBossesCache: { data: BoostableBossesDto; timestamp: number } | null = null;
-let creaturesCache: { data: TibiaCreaturesDto; timestamp: number } | null = null;
-let newsCache: { data: TibiaNewsListDto; timestamp: number } | null = null;
+const boostableBossesCache = createTtlCache<BoostableBossesDto>(TIBIA_DATA_CACHE_TTL_MS);
+const creaturesCache = createTtlCache<TibiaCreaturesDto>(TIBIA_DATA_CACHE_TTL_MS);
+const newsCache = createTtlCache<TibiaNewsListDto>(TIBIA_DATA_CACHE_TTL_MS);
 
 function mapNewsItem(item: TibiaDataNewsItem): TibiaNewsDto | null {
   const id = readNumber(item.id);
@@ -633,81 +561,55 @@ function mapNewsItem(item: TibiaDataNewsItem): TibiaNewsDto | null {
   };
 }
 
-export async function fetchNews(): Promise<TibiaNewsListDto> {
-  const now = Date.now();
-  if (newsCache && now - newsCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
-    return newsCache.data;
-  }
-
-  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/news/latest`, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`TibiaData news request failed with status ${response.status}`);
-  }
-
-  const payload = (await response.json()) as TibiaDataNewsResponse;
+async function loadNews(): Promise<TibiaNewsListDto> {
+  const payload = await fetchTibiaJson<TibiaDataNewsResponse>('/news/latest');
   const news = (payload.news ?? [])
     .map((item) => mapNewsItem(item))
     .filter((item): item is TibiaNewsDto => item !== null);
 
-  const data: TibiaNewsListDto = {
+  return {
     news,
-    cachedAt: new Date().toISOString(),
+    cachedAt: toIsoUtc(new Date()),
   };
-  newsCache = { data, timestamp: now };
-  return data;
 }
 
-export async function fetchBoostableBosses(): Promise<BoostableBossesDto> {
-  const now = Date.now();
-  if (boostableBossesCache && now - boostableBossesCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
-    return boostableBossesCache.data;
-  }
-
-  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/boostablebosses`, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`TibiaData request failed with status ${response.status}`);
-  }
-
-  const payload = (await response.json()) as TibiaDataBoostableBossesResponse;
-  const data = {
+async function loadBoostableBosses(): Promise<BoostableBossesDto> {
+  const payload = await fetchTibiaJson<TibiaDataBoostableBossesResponse>('/boostablebosses');
+  return {
     boosted: mapBoss(payload.boostable_bosses?.boosted),
     boostableBossList: (payload.boostable_bosses?.boostable_boss_list ?? [])
       .map((boss) => mapBoss(boss))
       .filter((boss): boss is BoostableBossDto => boss !== null),
   };
-  boostableBossesCache = { data, timestamp: now };
-  return data;
 }
 
-export async function fetchCreatures(): Promise<TibiaCreaturesDto> {
-  const now = Date.now();
-  if (creaturesCache && now - creaturesCache.timestamp <= TIBIA_DATA_CACHE_TTL_MS) {
-    return creaturesCache.data;
-  }
-
-  const response = await fetch(`${TIBIA_DATA_API_BASE_URL}/creatures`, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`TibiaData request failed with status ${response.status}`);
-  }
-
-  const payload = (await response.json()) as TibiaDataCreaturesResponse;
-  const data = {
+async function loadCreatures(): Promise<TibiaCreaturesDto> {
+  const payload = await fetchTibiaJson<TibiaDataCreaturesResponse>('/creatures');
+  return {
     boosted: mapCreature(payload.creatures?.boosted),
     creatureList: (payload.creatures?.creature_list ?? [])
       .map((creature) => mapCreature(creature))
       .filter((creature): creature is TibiaCreatureDto => creature !== null),
   };
-  creaturesCache = { data, timestamp: now };
-  return data;
+}
+
+export function fetchNews(): Promise<TibiaNewsListDto> {
+  return newsCache.getOrLoad(SINGLE_ENTRY_CACHE_KEY, loadNews);
+}
+
+export function fetchBoostableBosses(): Promise<BoostableBossesDto> {
+  return boostableBossesCache.getOrLoad(SINGLE_ENTRY_CACHE_KEY, loadBoostableBosses);
+}
+
+export function fetchCreatures(): Promise<TibiaCreaturesDto> {
+  return creaturesCache.getOrLoad(SINGLE_ENTRY_CACHE_KEY, loadCreatures);
 }
 
 export async function fetchKillStatistics(world: string): Promise<TibiaKillStatisticsWorldDto> {
-  const response = await fetchFromTibiaData(`/killstatistics/${encodeURIComponent(world)}`);
-  const payload = (await response.json()) as TibiaDataKillStatisticsResponse;
-
-  if (response.status === HTTP_NOT_FOUND) {
-    throw new TibiaDataNotFoundError('Kill statistics not found');
-  }
+  const payload = await fetchTibiaJson<TibiaDataKillStatisticsResponse>(
+    `/killstatistics/${encodeURIComponent(world)}`,
+    'Kill statistics not found',
+  );
 
   const container = payload.killstatistics;
   if (!container) {
@@ -723,73 +625,65 @@ export async function fetchKillStatistics(world: string): Promise<TibiaKillStati
   };
 }
 
+async function fetchCharacterExperience(
+  characterName: string,
+  worldName: string,
+  characterVocation: string | null,
+): Promise<TibiaCharacterExperienceDto> {
+  try {
+    return await fetchCharacterExperienceFromHighscores(
+      characterName,
+      worldName,
+      characterVocation,
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'unknown highscores error';
+    return {
+      status: 'unavailable',
+      exactExperience: null,
+      rank: null,
+      vocation: null,
+      world: worldName,
+      highscoreAgeMinutes: null,
+      lookupLog: `Highscores lookup failed: ${errorMessage}`,
+    };
+  }
+}
+
 export async function fetchCharacter(name: string): Promise<TibiaCharacterDto> {
   const normalizedName = name.trim();
-  const response = await fetch(
-    `${TIBIA_DATA_API_BASE_URL}/character/${encodeURIComponent(normalizedName)}`,
-    {
-      cache: 'no-store',
-    },
+  const notFoundMessage = `Character "${normalizedName}" not found`;
+  const payload = await fetchTibiaJson<TibiaDataCharacterResponse>(
+    `/character/${encodeURIComponent(normalizedName)}`,
+    notFoundMessage,
   );
 
-  if (response.status === HTTP_NOT_FOUND) {
-    throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
-  }
-
-  if (!response.ok) {
-    throw new Error(`TibiaData request failed with status ${response.status}`);
-  }
-
-  const payload = (await response.json()) as TibiaDataCharacterResponse;
-  const payloadStatusCode = payload.information?.status?.http_code;
-  if (payloadStatusCode === HTTP_NOT_FOUND) {
-    throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
+  if (payload.information?.status?.http_code === HttpStatus.NOT_FOUND) {
+    throw new TibiaDataNotFoundError(notFoundMessage);
   }
 
   const characterRoot = asRecord(payload.character);
   const characterInfo = asRecord(characterRoot?.['character']);
-  if (!characterInfo) {
-    throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
+  const characterName = characterInfo ? readString(characterInfo['name']) : null;
+  if (!characterInfo || !characterName) {
+    throw new TibiaDataNotFoundError(notFoundMessage);
   }
 
-  const characterName = readString(characterInfo['name']);
-  if (!characterName) {
-    throw new TibiaDataNotFoundError(`Character "${normalizedName}" not found`);
-  }
-
-  const guild = asRecord(characterInfo['guild']);
-  const accountInformation = asRecord(characterRoot?.['account_information']);
   const worldName = readString(characterInfo['world']);
-  const characterVocation = readString(characterInfo['vocation']);
-  let experience: TibiaCharacterExperienceDto | null = null;
-
-  if (worldName) {
-    try {
-      experience = await fetchCharacterExperienceFromHighscores(
+  const experience = worldName
+    ? await fetchCharacterExperience(
         characterName,
         worldName,
-        characterVocation,
-      );
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'unknown highscores error';
-      experience = {
-        status: 'unavailable',
-        exactExperience: null,
-        rank: null,
-        vocation: null,
-        world: worldName,
-        highscoreAgeMinutes: null,
-        lookupLog: `Highscores lookup failed: ${errorMessage}`,
-      };
-    }
-  }
+        readString(characterInfo['vocation']),
+      )
+    : null;
 
   return mapCharacterDto({
     characterName,
     characterInfo,
     characterRoot,
-    guild,
-    accountInformation,
+    guild: asRecord(characterInfo['guild']),
+    accountInformation: asRecord(characterRoot?.['account_information']),
     experience,
   });
 }
@@ -834,44 +728,22 @@ function mapCharacterDto(input: {
 }
 
 /**
- * Fetch highscores for a specific world and vocation
- * Used by cron to populate database with all characters
- * Returns count of characters collected
+ * Scans every highscores page of one world/vocation and stores the entries as
+ * snapshots. Used by the cron job; returns the number of characters collected.
  */
 export async function fetchHighscoresForWorldAndVocation(
   world: string,
   vocation: TibiaHighscoresVocation,
 ): Promise<number> {
-  const allSnapshots: HighscoresSnapshot[] = [];
+  const firstPage = await fetchHighscoresPage(world, FIRST_HIGHSCORE_PAGE, vocation);
+  const allSnapshots = toHighscoresSnapshots(firstPage, world);
+  const totalPages = readTotalHighscorePages(firstPage);
 
-  const firstPage = await fetchHighscoresPage(world, 1, vocation);
-  const totalPagesRaw = readNumber(firstPage.highscore_page?.total_pages);
-  const totalPages = Math.min(Math.max(totalPagesRaw ?? 1, 1), MAX_HIGHSCORE_PAGES);
-
-  // Collect from first page
-  if (firstPage.highscore_list) {
-    for (const entry of firstPage.highscore_list) {
-      const snapshot = toHighscoresSnapshot(entry, world);
-      if (snapshot) {
-        allSnapshots.push(snapshot);
-      }
-    }
-  }
-
-  // Collect from remaining pages
-  for (let page = 2; page <= totalPages; page += 1) {
+  for (let page = FIRST_HIGHSCORE_PAGE + 1; page <= totalPages; page += 1) {
     const currentPage = await fetchHighscoresPage(world, page, vocation);
-    if (currentPage.highscore_list) {
-      for (const entry of currentPage.highscore_list) {
-        const snapshot = toHighscoresSnapshot(entry, world);
-        if (snapshot) {
-          allSnapshots.push(snapshot);
-        }
-      }
-    }
+    allSnapshots.push(...toHighscoresSnapshots(currentPage, world));
   }
 
-  // Save all collected snapshots
   await saveHighscoresSnapshots(allSnapshots);
   return allSnapshots.length;
 }
