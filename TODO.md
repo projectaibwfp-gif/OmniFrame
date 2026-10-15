@@ -5,7 +5,7 @@
 - [ ] Dodać `requireAdmin()` i ograniczyć `/api/users` oraz `/api/dashboard`.
 - [ ] Zabezpieczyć `POST /api/cron/highscores` przez `CRON_AUTH_TOKEN`.
 - [ ] Usunąć domyślne sekrety JWT; brak sekretu w produkcji ma blokować start.
-- [ ] Naprawić OAuth upsert, aby logowanie nie resetowało `role`.
+- [x] Naprawić OAuth upsert, aby logowanie nie resetowało `role`.
 - [ ] Dodać ochronę CSRF dla logout i pozostałych mutacji.
 
 ## P1 — stabilność danych i API

@@ -4,6 +4,7 @@ import type { NextRequest, NextResponse } from 'next/server';
 import { getSql } from './db';
 import { isAuthDenied, requireAuth, type UserRole } from './auth-session';
 import { mapUserRow, type UserRow } from './user-row';
+import { DEFAULT_USER_ROLE } from './validation';
 
 const REFERRAL_CODE_HASH_ALGORITHM = 'md5';
 
@@ -35,6 +36,10 @@ function generateReferralCode(googleId: string): string {
   return createHash(REFERRAL_CODE_HASH_ALGORITHM).update(googleId).digest('hex');
 }
 
+/**
+ * Logging in never passes a role, so an existing user's role is only changed
+ * when the caller sets it explicitly (admin user management).
+ */
 export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResult> {
   const referralCode = generateReferralCode(input.google_id);
   const sql = getSql();
@@ -58,7 +63,7 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
        ${input.google_id},
        ${input.email},
        ${input.email_verified ?? false},
-       ${input.role ?? 'user'},
+       ${input.role ?? DEFAULT_USER_ROLE},
        ${input.name ?? null},
        ${input.given_name ?? null},
        ${input.family_name ?? null},
@@ -86,7 +91,7 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      UPDATE users
      SET email          = ${input.email},
          email_verified = ${input.email_verified ?? false},
-         role           = ${input.role ?? 'user'},
+         role           = COALESCE(${input.role ?? null}, role),
          name           = ${input.name ?? null},
          given_name     = ${input.given_name ?? null},
          family_name    = ${input.family_name ?? null},
