@@ -1,4 +1,32 @@
 releases:
+  - date: "2026-10-15T07:52:45.491Z"
+    commit: "f92f5b844be14fb2df225c6193e031247b44ab55"
+    frontend:
+      version: "0.35.1"
+      tag: "frontend-v0.35.1"
+      changed: true
+      commits:
+      - hash: "f92f5b84"
+        author: "Bartłomiej Wolski"
+        date: "2026-10-15T09:39:40+02:00"
+        message: "refactor(frontend): rxResource data loading and shared helpers"
+      - hash: "7cf81c91"
+        author: "Bartłomiej Wolski"
+        date: "2026-10-15T09:20:45+02:00"
+        message: "chore: update frontend and backend dependencies"
+    backend:
+      version: "0.19.1"
+      tag: "backend-v0.19.1"
+      changed: true
+      commits:
+      - hash: "6d7b52a3"
+        author: "Bartłomiej Wolski"
+        date: "2026-10-15T09:35:29+02:00"
+        message: "refactor(backend): unify TibiaData layer and fix error handling"
+      - hash: "7cf81c91"
+        author: "Bartłomiej Wolski"
+        date: "2026-10-15T09:20:45+02:00"
+        message: "chore: update frontend and backend dependencies"
   - date: "2026-09-24T13:44:26.051Z"
     commit: "7844122641e7fc39684c01869ac6c8e49da077bd"
     frontend:
