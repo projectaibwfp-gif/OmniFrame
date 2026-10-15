@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-10-15T08:04:40.891Z"
+    commit: "d71d2b002e49da49f26e86680038ee08ecbb6213"
+    frontend:
+      version: "0.35.1"
+      tag: "frontend-v0.35.1"
+      changed: false
+      commits: []
+    backend:
+      version: "0.19.2"
+      tag: "backend-v0.19.2"
+      changed: true
+      commits:
+      - hash: "d71d2b00"
+        author: "Bartłomiej Wolski"
+        date: "2026-10-15T10:01:45+02:00"
+        message: "fix(backend): keep user role on Google login upsert"
   - date: "2026-10-15T07:52:45.491Z"
     commit: "f92f5b844be14fb2df225c6193e031247b44ab55"
     frontend:
