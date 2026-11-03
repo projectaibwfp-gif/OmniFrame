@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-11-03T10:34:57.319Z"
+    commit: "9be954d5b8dd77aa24f587265d77bcb590eae675"
+    frontend:
+      version: "0.36.0"
+      tag: "frontend-v0.36.0"
+      changed: true
+      commits:
+      - hash: "9be954d5"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-03T11:32:10+01:00"
+        message: "feat(profile): add update profile functionality and related service"
+    backend:
+      version: "0.20.0"
+      tag: "backend-v0.20.0"
+      changed: true
+      commits:
+      - hash: "9be954d5"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-03T11:32:10+01:00"
+        message: "feat(profile): add update profile functionality and related service"
   - date: "2026-10-15T08:04:40.891Z"
     commit: "d71d2b002e49da49f26e86680038ee08ecbb6213"
     frontend:
