@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, computed, effect, inject, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import type {
   ApiResponse,
@@ -9,11 +9,13 @@ import type {
   UserMainCharacterDto,
 } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
-import { mapAuthUser } from '../auth/auth-user.mapper';
 import { buildApiUrl } from '../config/api.config';
 import { formatMainCharacterBadge, shortVocation } from '../core/vocation';
 
 type LinkResponse = ApiResponse<AuthCurrentUserResponseDto>;
+
+const MAIN_CHARACTER_ENDPOINT = '/auth/me/main-character';
+const MAIN_CHARACTER_REFRESH_ENDPOINT = '/auth/me/main-character/refresh';
 
 /**
  * Owner of the "main character" feature: HTTP calls against
@@ -48,6 +50,16 @@ export class MainCharacterService {
 
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private freshCharacterName: string | null = null;
+
+  constructor() {
+    // Keyed on the name, not the character object: a refresh writes a new
+    // object back to `AuthService.user`, so tracking the object loops forever.
+    effect(() => {
+      const name = this.name();
+      untracked(() => void this.refreshOncePerCharacter(name));
+    });
+  }
 
   isCurrentMain(candidateName: string | null | undefined): boolean {
     const current = this.name();
@@ -65,16 +77,17 @@ export class MainCharacterService {
 
     const payload: LinkMainCharacterRequestDto = { name: trimmedName };
     const response = await firstValueFrom(
-      this.http.put<LinkResponse>(buildApiUrl('/auth/me/main-character'), payload),
+      this.http.put<LinkResponse>(buildApiUrl(MAIN_CHARACTER_ENDPOINT), payload),
     );
-    this.authService.user.set(mapAuthUser(response.data.user));
+    this.freshCharacterName = response.data.user.mainCharacter?.name ?? null;
+    this.authService.setUserFromApi(response.data.user);
   }
 
   async unlink(): Promise<void> {
     const response = await firstValueFrom(
-      this.http.delete<LinkResponse>(buildApiUrl('/auth/me/main-character')),
+      this.http.delete<LinkResponse>(buildApiUrl(MAIN_CHARACTER_ENDPOINT)),
     );
-    this.authService.user.set(mapAuthUser(response.data.user));
+    this.authService.setUserFromApi(response.data.user);
   }
 
   refreshCurrentUserMainCharacter(character: TibiaCharacterDto): void {
@@ -94,17 +107,18 @@ export class MainCharacterService {
     });
   }
 
-  async refreshMainCharacterFromTibia(): Promise<void> {
-    const mainCharacterName = this.name();
-    if (!mainCharacterName) {
+  private async refreshOncePerCharacter(name: string | null): Promise<void> {
+    if (!name || name === this.freshCharacterName) {
       return;
     }
 
+    this.freshCharacterName = name;
     try {
       const response = await firstValueFrom(
-        this.http.put<LinkResponse>(buildApiUrl('/auth/me/main-character/refresh'), {}),
+        this.http.put<LinkResponse>(buildApiUrl(MAIN_CHARACTER_REFRESH_ENDPOINT), {}),
       );
-      this.authService.user.set(mapAuthUser(response.data.user));
+      this.freshCharacterName = response.data.user.mainCharacter?.name ?? null;
+      this.authService.setUserFromApi(response.data.user);
     } catch (error) {
       console.warn('Failed to refresh main character from TibiaData', error);
     }

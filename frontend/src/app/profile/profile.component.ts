@@ -1,27 +1,19 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
 import { AuthService } from '../auth/auth.service';
-import { mapAuthUser } from '../auth/auth-user.mapper';
-import { buildApiUrl } from '../config/api.config';
 import { AppDatePipe } from '../core/date-time.pipe';
+import { extractApiErrorMessage } from '../core/http-error';
 import { MainCharacterService } from '../services/main-character.service';
 import { EMPTY_PROFILE_FORM, type ProfileEditForm, validateProfileForm } from './profile-form';
 import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 import { getHuntingRecommendations } from './hunting-recommendations';
+import { ProfileService } from './profile.service';
 
 const INITIALS_MAX_CHARS = 2;
 const INITIALS_FALLBACK = 'U';
+const PROFILE_SAVE_ERROR = 'Nie udało się zapisać zmian. Spróbuj ponownie.';
+const MAIN_CHARACTER_NAME_REQUIRED = 'Podaj nazwę postaci.';
 const MAIN_CHARACTER_LINK_ERROR =
   'Nie udało się powiązać postaci. Sprawdź nazwę i spróbuj ponownie.';
 const MAIN_CHARACTER_UNLINK_ERROR = 'Nie udało się odpiąć postaci. Spróbuj ponownie.';
@@ -79,10 +71,8 @@ export class ProfileComponent {
     return `${origin}/login?ref=${user.referralCode}`;
   });
 
-  private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
+  private readonly profileService = inject(ProfileService);
   private readonly mainCharacterService = inject(MainCharacterService);
-  private readonly destroyRef = inject(DestroyRef);
 
   protected toggleEditMode(): void {
     if (!this.editMode()) {
@@ -100,36 +90,22 @@ export class ProfileComponent {
     this.editMode.update((value) => !value);
   }
 
-  protected saveProfile(): void {
+  protected async saveProfile(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
 
     this.isSaving.set(true);
     this.saveError.set(null);
-    const form = this.editForm();
 
-    this.http
-      .patch<ApiResponse<AuthCurrentUserResponseDto>>(buildApiUrl('/auth/me'), {
-        phone: form.phone || null,
-        birthDate: form.birthDate || null,
-        description: form.description || null,
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          this.authService.user.set(mapAuthUser(response.data.user));
-          this.editMode.set(false);
-          this.isSaving.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to update profile:', error);
-          this.saveError.set(
-            error?.error?.message || 'Nie udało się zapisać zmian. Spróbuj ponownie.',
-          );
-          this.isSaving.set(false);
-        },
-      });
+    try {
+      await this.profileService.updateProfile(this.editForm());
+      this.editMode.set(false);
+    } catch (error) {
+      this.saveError.set(extractApiErrorMessage(error, PROFILE_SAVE_ERROR));
+    } finally {
+      this.isSaving.set(false);
+    }
   }
 
   protected cancelEdit(): void {
@@ -138,51 +114,37 @@ export class ProfileComponent {
     this.saveError.set(null);
   }
 
-  protected linkMainCharacter(): void {
+  protected async linkMainCharacter(): Promise<void> {
     const name = this.mainCharacterName().trim();
     if (!name) {
-      this.mainCharacterError.set('Podaj nazwę postaci.');
+      this.mainCharacterError.set(MAIN_CHARACTER_NAME_REQUIRED);
       return;
     }
 
     this.isMainCharacterSaving.set(true);
     this.mainCharacterError.set(null);
 
-    this.mainCharacterService
-      .link(name)
-      .then(() => {
-        this.mainCharacterName.set('');
-      })
-      .catch((error: unknown) => {
-        console.error('Failed to link main character:', error);
-        const message =
-          typeof error === 'object' && error !== null && 'error' in error
-            ? (error as { error?: { message?: string } }).error?.message
-            : undefined;
-        this.mainCharacterError.set(message || MAIN_CHARACTER_LINK_ERROR);
-      })
-      .finally(() => {
-        this.isMainCharacterSaving.set(false);
-      });
+    try {
+      await this.mainCharacterService.link(name);
+      this.mainCharacterName.set('');
+    } catch (error) {
+      this.mainCharacterError.set(extractApiErrorMessage(error, MAIN_CHARACTER_LINK_ERROR));
+    } finally {
+      this.isMainCharacterSaving.set(false);
+    }
   }
 
-  protected unlinkMainCharacter(): void {
+  protected async unlinkMainCharacter(): Promise<void> {
     this.isMainCharacterSaving.set(true);
     this.mainCharacterError.set(null);
 
-    this.mainCharacterService
-      .unlink()
-      .catch((error: unknown) => {
-        console.error('Failed to unlink main character:', error);
-        const message =
-          typeof error === 'object' && error !== null && 'error' in error
-            ? (error as { error?: { message?: string } }).error?.message
-            : undefined;
-        this.mainCharacterError.set(message || MAIN_CHARACTER_UNLINK_ERROR);
-      })
-      .finally(() => {
-        this.isMainCharacterSaving.set(false);
-      });
+    try {
+      await this.mainCharacterService.unlink();
+    } catch (error) {
+      this.mainCharacterError.set(extractApiErrorMessage(error, MAIN_CHARACTER_UNLINK_ERROR));
+    } finally {
+      this.isMainCharacterSaving.set(false);
+    }
   }
 
   protected async copyReferralLink(): Promise<void> {

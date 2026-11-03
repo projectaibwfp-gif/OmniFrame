@@ -79,7 +79,6 @@
                 <tr>
                   <th>{{ labels().houseColumn }}</th>
                   <th>{{ labels().sizeColumn }}</th>
-                  <th>{{ labels().bedsColumn }}</th>
                   <th>{{ labels().rentColumn }}</th>
                   <th>{{ labels().statusColumn }}</th>
                 </tr>
@@ -91,7 +90,6 @@
                       ><strong>{{ house.name }}</strong></td
                     >
                     <td>{{ house.size ?? '-' }}</td>
-                    <td>{{ house.beds ?? '-' }}</td>
                     <td>{{ house.rent ?? '-' }}</td>
                     <td>
                       @switch (houseStatus(house)) {

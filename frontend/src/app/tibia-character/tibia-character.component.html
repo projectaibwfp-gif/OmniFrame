@@ -373,11 +373,11 @@
                         @let prevExp = highscoresHistory()[idx + 1].exactExperience;
                         @if (entry.exactExperience > prevExp) {
                           <span class="badge badge-gain"
-                            >+{{ entry.exactExperience - prevExp | number }}</span
+                            >+{{ entry.exactExperience - prevExp | appNumber }}</span
                           >
                         } @else if (entry.exactExperience < prevExp) {
                           <span class="badge badge-loss">{{
-                            entry.exactExperience - prevExp | number
+                            entry.exactExperience - prevExp | appNumber
                           }}</span>
                         } @else {
                           <span class="badge badge-neutral">—</span>
@@ -386,7 +386,7 @@
                     </td>
                     <td class="text-center">{{ entry.level }}</td>
                     <td class="text-center">{{ entry.rank }}</td>
-                    <td class="text-mono text-right">{{ entry.exactExperience | number }}</td>
+                    <td class="text-mono text-right">{{ entry.exactExperience | appNumber }}</td>
                     <td>{{ entry.world }}</td>
                   </tr>
                 }

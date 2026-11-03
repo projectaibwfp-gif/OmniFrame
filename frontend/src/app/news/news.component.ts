@@ -1,16 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../components/pagination/pagination.component';
 import { AppDatePipe, AppDateTimePipe } from '../core/date-time.pipe';
 import { createPagedList } from '../core/paged-list';
+import { resourceValueOr } from '../core/resource-value';
 import { createSort } from '../core/sort';
 import { LocalizationService } from '../services/localization.service';
 import { NewsService } from './news.service';
@@ -48,10 +42,12 @@ export class NewsComponent {
     buildNewsLabels(this.localizationService.currentLocale() === 'pl'),
   );
 
-  protected readonly newsList = signal<TibiaNewsDto[]>([]);
-  protected readonly cachedAt = signal<string | null>(null);
-  protected readonly loading = signal(false);
-  protected readonly error = signal<string | null>(null);
+  protected readonly newsList = computed(() => this.newsResponse()?.news ?? []);
+  protected readonly cachedAt = computed(() => this.newsResponse()?.cachedAt ?? null);
+  protected readonly loading = computed(() => this.newsResource.isLoading());
+  protected readonly error = computed(() =>
+    this.newsResource.error() ? this.labels().error : null,
+  );
 
   protected readonly search = signal('');
   protected readonly selectedCategory = signal<string>('');
@@ -94,29 +90,13 @@ export class NewsComponent {
 
   private readonly newsService = inject(NewsService);
   private readonly localizationService = inject(LocalizationService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    this.loadNews();
-  }
+  private readonly newsResource = rxResource({
+    stream: () => this.newsService.getNews(),
+  });
+  private readonly newsResponse = resourceValueOr(this.newsResource, null);
 
   protected loadNews(): void {
-    this.loading.set(true);
-    this.error.set(null);
-    this.newsService
-      .getNews()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response) => {
-          this.newsList.set(response.news);
-          this.cachedAt.set(response.cachedAt);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.error.set(this.labels().error);
-          this.loading.set(false);
-        },
-      });
+    this.newsResource.reload();
   }
 
   protected setSearch(value: string): void {

@@ -5,6 +5,7 @@ import type {
   ApiResponse,
   AuthCurrentUserResponseDto,
   AuthGoogleResponseDto,
+  AuthGoogleUserDto,
   AuthStateDto,
   ReferralCaptureResponseDto,
 } from '@shared/api-contract';
@@ -78,7 +79,7 @@ export class AuthService {
       const response = await firstValueFrom(
         this.http.get<CurrentUserResponse>(buildApiUrl('/auth/me')),
       );
-      this.user.set(mapAuthUser(response.data.user));
+      this.setUserFromApi(response.data.user);
       this.loginError.set(null);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status !== 401) {
@@ -91,6 +92,10 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.user() !== null;
+  }
+
+  setUserFromApi(user: AuthGoogleUserDto): void {
+    this.user.set(mapAuthUser(user));
   }
 
   async renderGoogleButton(container: HTMLElement): Promise<void> {
@@ -249,7 +254,7 @@ export class AuthService {
           state: this.loginState,
         }),
       );
-      this.user.set(mapAuthUser(result.data.user));
+      this.setUserFromApi(result.data.user);
       this.loginError.set(null);
       this.loginState = '';
     } catch (error) {
@@ -270,7 +275,7 @@ export class AuthService {
           context: withSkippedAuthInterceptor(),
         }),
       );
-      this.user.set(mapAuthUser(response.data.user));
+      this.setUserFromApi(response.data.user);
       return true;
     } catch {
       this.user.set(null);

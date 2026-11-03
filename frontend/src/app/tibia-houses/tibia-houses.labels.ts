@@ -12,7 +12,6 @@ export interface HousesLabels {
   guildhallsTitle: string;
   houseColumn: string;
   sizeColumn: string;
-  bedsColumn: string;
   rentColumn: string;
   statusColumn: string;
   rented: string;
@@ -45,7 +44,6 @@ export function buildHousesLabels(isPl: boolean): HousesLabels {
     guildhallsTitle: isPl ? 'Guildhalle' : 'Guildhalls',
     houseColumn: isPl ? 'Nazwa' : 'Name',
     sizeColumn: isPl ? 'Rozmiar' : 'Size',
-    bedsColumn: isPl ? 'Łóżka' : 'Beds',
     rentColumn: isPl ? 'Czynsz' : 'Rent',
     statusColumn: isPl ? 'Status' : 'Status',
     rented: isPl ? 'Wynajęty' : 'Rented',

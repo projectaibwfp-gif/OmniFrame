@@ -134,6 +134,12 @@ export interface LinkMainCharacterRequestDto {
   name: string;
 }
 
+export interface UpdateProfileRequestDto {
+  phone: string | null;
+  birthDate: string | null;
+  description: string | null;
+}
+
 export interface ReferralCaptureRequestDto {
   referralCode: string;
 }

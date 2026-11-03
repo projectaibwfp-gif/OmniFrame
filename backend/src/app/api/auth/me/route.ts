@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
+import type {
+  ApiResponse,
+  AuthCurrentUserResponseDto,
+  UpdateProfileRequestDto,
+} from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
@@ -8,11 +12,7 @@ import { logError } from '@/lib/logger';
 import { getCurrentUserProfile, updateCurrentUserProfile } from '@/lib/profile';
 import { DESCRIPTION_MAX_LENGTH, MIN_USER_AGE_YEARS, PHONE_MIN_DIGITS } from '@/lib/validation';
 
-interface UpdateProfilePayload {
-  phone?: string | null;
-  birthDate?: string | null;
-  description?: string | null;
-}
+type UpdateProfilePayload = Partial<UpdateProfileRequestDto>;
 
 export const dynamic = 'force-dynamic';
 
