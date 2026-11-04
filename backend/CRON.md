@@ -9,15 +9,34 @@ Automatyczne pobieranie i zapisywanie danych postaci z Tibia highscores.
 ```
 # Lista światów do skanowania (opcjonalne, domyślnie: Dia,Amera,Antica)
 CRON_WORLDS=Dia,Amera,Antica
+# Token wymagany w nagłówku Authorization: Bearer <token> (bez niego każde wywołanie dostaje 401)
+CRON_AUTH_TOKEN=change-me-cron-token
+# Retencja historii w dniach (opcjonalne)
+HIGHSCORES_SNAPSHOT_RETENTION_DAYS=365
+CHARACTER_LOOKUP_RETENTION_DAYS=90
 ```
 
 ## Użycie
 
-### POST Request
+### Lista światów
 
 ```bash
-curl -X POST https://yourdomain/api/cron/highscores
+curl -H "Authorization: Bearer $CRON_AUTH_TOKEN" https://yourdomain/api/cron/highscores
 ```
+
+```json
+{ "data": { "worlds": ["Dia", "Amera", "Antica"] } }
+```
+
+### Zbieranie jednego świata
+
+```bash
+curl -X POST -H "Authorization: Bearer $CRON_AUTH_TOKEN" \
+  "https://yourdomain/api/cron/highscores?world=Dia"
+```
+
+Bez parametru `world` endpoint przetwarza wszystkie światy z `CRON_WORLDS`
+w jednym wywołaniu. Świat spoza `CRON_WORLDS` daje `400`.
 
 ### Odpowiedź (success)
 
@@ -25,8 +44,8 @@ curl -X POST https://yourdomain/api/cron/highscores
 {
   "success": true,
   "stats": {
-    "worldsProcessed": 3,
-    "vocationsProcessed": 12,
+    "worldsProcessed": 1,
+    "vocationsProcessed": 5,
     "charactersCollected": 5000,
     "duration": 45000
   }
@@ -35,114 +54,53 @@ curl -X POST https://yourdomain/api/cron/highscores
 
 ## Harmonogram
 
-**Harmonogram: co 4 godziny (GitHub Actions)**
+**Co 4 godziny (GitHub Actions)**, plik `.github/workflows/cron-highscores.yml`.
+Workflow pobiera listę światów z `GET /api/cron/highscores`, a potem wywołuje
+`POST /api/cron/highscores?world=<świat>` osobno dla każdego świata, więc każdy
+świat ma własny limit `maxDuration` (5 minut). Błąd jednego świata nie przerywa
+pozostałych, ale oznacza run jako nieudany. Workflow można też uruchomić ręcznie
+(`workflow_dispatch`).
 
-System zbiera dane co 4 godziny = 6 snapshotu dziennie. Każdy nowy EXP = nowy snapshot w bazie.
+Sekrety do ustawienia w GitHub (Settings → Secrets and variables → Actions):
 
-### GitHub Actions (recommended)
-
-Plik `.github/workflows/cron-highscores.yml` już istnieje w repo:
-
-```yaml
-name: Cron - Highscores Collection
-
-on:
-  schedule:
-    - cron: '0 */4 * * *' # Co 4 godziny
-
-jobs:
-  cron:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger highscores collection
-        env:
-          BACKEND_URL: ${{ secrets.BACKEND_URL }}
-        run: |
-          if [ -z "$BACKEND_URL" ]; then
-            echo "Error: BACKEND_URL secret is not set"
-            exit 1
-          fi
-          # -f: fail on non-2xx (endpoint has maxDuration=300s, see backend/CRON.md)
-          curl -sS -f --max-time 310 --retry 2 --retry-delay 10 \
-            -X POST "${BACKEND_URL}/api/cron/highscores"
-```
-
-Secret do ustawienia w GitHub:
-
-- `BACKEND_URL` - np. `https://yourdomain.com`
-
-### Vercel Cron (na Vercel)
-
-Plik `backend/src/app/api/cron/highscores/route.ts` już istnieje.
-
-W `vercel.json` dodaj:
-
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/highscores",
-      "schedule": "0 */12 * * *"
-    }
-  ]
-}
-```
-
-### Linux crontab / Docker / inne
-
-```bash
-# /etc/cron.d/tibia-highscores
-0 */12 * * * curl -s -X POST https://yourdomain/api/cron/highscores >> /var/log/cron-tibia.log 2>&1
-```
+- `BACKEND_URL` - np. `https://apiomniframe.vercel.app`,
+- `CRON_AUTH_TOKEN` - ta sama wartość co `CRON_AUTH_TOKEN` w Vercelu.
 
 ## Dane w bazie
 
-Cron zapisuje wszystkie znalezione postacie do tabel:
-
-- **`character_highscores_snapshots`** - snapshot każdej postaci z rankingiem i EXP
+- **`character_highscores_snapshots`** - historia: nowy wiersz tylko wtedy, gdy
+  EXP postaci zmienił się od ostatniego zapisu.
   - Kolumny: `id`, `character_name`, `normalized_name`, `world`, `vocation`, `level`, `rank`, `exact_experience`, `checked_at`
-  - Index: `(normalized_name, world, checked_at DESC)` - szybkie zapytania po nazwie
+- **`character_highscores_latest`** - ostatni wpis per postać i świat
+  (klucz `(normalized_name, world)`). Służy do deduplikacji przy zapisie oraz do
+  paginacji `GET /api/highscores-snapshots`.
 
-- **`character_highscores_last_save`** - tracking bucketing'u
-  - Kolumny: `id`, `normalized_name`, `world`, `last_save_bucket`
-  - Unique: `(normalized_name, world)` - każda postać zapisze się co najwyżej raz na 15 minut
+Zapis jednej vocation to jedno zapytanie SQL (`unnest` całej paczki), które
+dopisuje zmienione snapshoty i aktualizuje `character_highscores_latest`.
 
-### 15-minute Bucketing
+### Retencja
 
-Timestamp zaokrąglany do nearest 15-minutowego przedziału:
+Po każdym wywołaniu `POST` cron usuwa:
 
-- 10:00 - 10:14:59 → bucket `10:00`
-- 10:15 - 10:29:59 → bucket `10:15`
-- 10:30 - 10:44:59 → bucket `10:30`
-- 10:45 - 10:59:59 → bucket `10:45`
-- 11:00 - itd.
+- snapshoty starsze niż `HIGHSCORES_SNAPSHOT_RETENTION_DAYS` (poza ostatnim
+  snapshotem postaci, wskazywanym przez `character_highscores_latest`),
+- wpisy `character_lookups` starsze niż `CHARACTER_LOOKUP_RETENTION_DAYS`.
 
 ## Monitoring
 
-### Logi
-
-Sprawdzaj logi backendu (scope: `cron`):
-
-```json
-{
-  "level": "info",
-  "scope": "cron.start",
-  "message": "Starting cron highscores collection"
-}
-```
-
-### Query do bazy - ostatnie dane
+Logi backendu mają scope `cron.*` (`cron.start`, `cron.vocation`, `cron.prune`,
+`cron.complete`, `cron.auth`).
 
 ```sql
--- Ile postaci zostało zapisane w ostatnich 15 minutach
+-- Ile snapshotów zapisano w ostatnich 4 godzinach
 SELECT COUNT(*) FROM character_highscores_snapshots
-WHERE checked_at > NOW() - INTERVAL '15 minutes';
+WHERE checked_at > (NOW() AT TIME ZONE 'UTC') - INTERVAL '4 hours';
 
--- Top 10 postaci po EXP na Dia
-SELECT character_name, vocation, rank, exact_experience, checked_at
-FROM character_highscores_snapshots
+-- Top 10 postaci po levelu na Dia
+SELECT character_name, vocation, rank, level, exact_experience, checked_at
+FROM character_highscores_latest
 WHERE world = 'Dia'
-ORDER BY exact_experience DESC
+ORDER BY level DESC
 LIMIT 10;
 
 -- Historia jednej postaci
@@ -154,29 +112,35 @@ ORDER BY checked_at DESC;
 ## Testowanie lokalnie
 
 ```bash
-# Uruchom backend
+# Uruchom backend (CRON_AUTH_TOKEN ustawiony w backend/.env)
 cd backend
 npm run dev
 
-# W innym terminalu, testuj cron
-curl -X POST http://localhost:3000/api/cron/highscores
+# W innym terminalu
+curl -X POST -H "Authorization: Bearer $CRON_AUTH_TOKEN" \
+  "http://localhost:3000/api/cron/highscores?world=Dia"
 ```
 
 ## Troubleshooting
 
+### `401` z crona
+
+`CRON_AUTH_TOKEN` nie jest ustawiony w backendzie albo sekret w GitHub ma inną
+wartość niż zmienna w Vercelu.
+
 ### Timeout
 
-- Endpoint ma limit 5 minut
-- Jeśli trwa dłużej, zmniejsz liczbę światów w `CRON_WORLDS`
+- Każdy świat ma osobny limit 5 minut.
+- Jeśli pojedynczy świat nie mieści się w limicie, sprawdź czas odpowiedzi
+  TibiaData w logach `cron.vocation`.
 
 ### Dane nie są zapisywane
 
-- Sprawdź czy migracje uruchomiły się: `character_highscores_snapshots` i `character_highscores_last_save` powinny istnieć
-- Sprawdzaj logi: `scope: "cron.error"`
+- Sprawdź, czy migracje się wykonały: tabele `character_highscores_snapshots`
+  i `character_highscores_latest` powinny istnieć.
+- Sprawdzaj logi: `scope: "highscores.saveSnapshots"` i `scope: "cron.vocation"`.
 
 ### GitHub Actions run failuje w kilka sekund
 
-To zawsze ten sam guard w workflow: `BACKEND_URL` secret nie jest ustawiony w
-repo (Settings → Secrets and variables → Actions → `BACKEND_URL`). Prawdziwe
-wywołanie `curl` trwa tyle, ile trwa cron (do 5 minut) - jeśli run pada w kilka
-sekund, request nigdy nie wyszedł.
+Guard w workflow: brakuje sekretu `BACKEND_URL` albo `CRON_AUTH_TOKEN`. Prawdziwe
+wywołanie trwa tyle, ile zbieranie świata (do 5 minut).

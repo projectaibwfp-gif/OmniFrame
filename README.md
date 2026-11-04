@@ -142,7 +142,7 @@ Endpointy:
 
 - `GET /api/health` - sprawdza API i połączenie z bazą,
 - `GET /api/openapi` - zwraca specyfikację OpenAPI (JSON),
-- `GET /api/dashboard` - metryki dashboardu: konta Google, logowania dziś, rejestracje, polecenia, top referrerzy,
+- `GET /api/dashboard` - metryki dashboardu: konta Google, logowania dziś, rejestracje, polecenia, top referrerzy (tylko admin),
 - `GET /api/auth/state` - tworzy i zapisuje stan logowania Google,
 - `POST /api/auth/google` - loguje przez Google, ustawia cookie sesji i refresh,
 - `GET /api/auth/me` - zwraca aktualną sesję użytkownika,
@@ -150,14 +150,15 @@ Endpointy:
 - `DELETE /api/auth/me/main-character` - odpina główną postać od konta,
 - `PUT /api/auth/me/main-character/refresh` - ponownie pobiera podpiętą główną postać z TibiaData i zapisuje świeże dane,
 - `POST /api/auth/refresh` - odnawia sesję z refresh cookie,
-- `POST /api/auth/logout` - czyści cookie sesji,
+- `POST /api/auth/logout` - unieważnia refresh tokeny użytkownika na wszystkich urządzeniach i czyści cookie sesji,
 - `GET /api/boostable-bosses` - zwraca aktualnie boostowanego bossa TibiaData i pełną listę dostępnych bossów,
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
 - `GET /api/character/:name/highscores-history` - zwraca zapisane snapshoty highscores postaci (najnowsze pierwsze, maks. 500) wraz z liczbą wpisów,
 - `GET /api/killstatistics/:world` - zwraca statystyki zabójstw TibiaData (`/v4/killstatistics/{world}`) dla podanego świata,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca unikalne postacie (po jednej na `(postać, świat)`) z paginacją, sortowaniem po `level` i filtrem po świecie; starsze snapshoty są dostępne w szczegółach wpisu,
-- `POST /api/cron/highscores` - pobiera i zapisuje do bazy wszystkich graczy z highscores wszystkich skonfigurowanych światów i vocation; uruchamiany co 12 godzin,
+- `GET /api/cron/highscores` - zwraca światy z `CRON_WORLDS` (wymaga `Authorization: Bearer <CRON_AUTH_TOKEN>`),
+- `POST /api/cron/highscores?world=Dia` - pobiera i zapisuje do bazy graczy z highscores jednego świata (albo, bez `world`, wszystkich skonfigurowanych) dla każdej vocation i czyści historię starszą niż retencja; wymaga tokenu crona, GitHub Actions wywołuje go co 4 godziny osobno dla każdego świata,
 - `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
 - `GET /api/fansites` - zwraca promowane i wspierane fansite'y (TibiaData `v4/fansites`),
 - `GET /api/guild/:name` - zwraca szczegóły gildii (TibiaData `v4/guild/{name}`),
@@ -169,9 +170,9 @@ Endpointy:
 - `GET /api/world/:name` - zwraca szczegóły świata wraz z graczami online (TibiaData `v4/world/{name}`),
 - `GET /api/worlds` - zwraca wszystkie światy regularne i turniejowe (TibiaData `v4/worlds`),
 - `POST /api/referrals/capture` - odkłada pierwszy referral do cookie i nie nadpisuje go,
-- `GET /api/users` - lista użytkowników,
-- `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID,
-- `POST /api/users` - ręczny upsert użytkownika Google.
+- `GET /api/users` - lista użytkowników (tylko admin),
+- `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID (tylko admin),
+- `POST /api/users` - ręczny upsert użytkownika Google, w tym zmiana roli (tylko admin).
 
 Swagger UI backendu jest dostępne pod `http://localhost:3000/swagger`.
 
@@ -192,6 +193,12 @@ Dla endpointów TibiaData punktem odniesienia jest lokalna specyfikacja
    do `users.referred_by_code` oraz do tabeli `user_referral_attributions`.
 5. Każdy użytkownik ma własny, stały `users.referral_code` (hash md5 oparty o
    `google_id`) i własny link polecający pokazywany w profilu.
+6. Zweryfikowane konta Google z `ADMIN_EMAILS` dostają przy logowaniu rolę
+   `admin`. Dashboard, lista użytkowników i `POST /api/users` są dostępne tylko
+   dla admina.
+7. Refresh token niesie `users.session_version`. Logout podbija tę wersję, więc
+   unieważnia refresh tokeny na wszystkich urządzeniach; access token wygasa
+   najpóźniej po 15 minutach.
 
 ### 3. Uruchom frontend
 
@@ -216,13 +223,18 @@ kategoriami i orientacyjnym market value dla itemów. Dane są obecnie statyczne
 przygotowane pod przyszłe podpięcie API.
 
 W trybie dev Vite proxy przekazuje `/api/*` do
-`https://apiomniframe.vercel.app`, a na Vercel działa rewrite `/api/*` -> backend.
-Dzięki temu frontend nie woła cross-origin bezpośrednio i nie wpada w CORS.
+`https://apiomniframe.vercel.app`. W produkcji frontend woła backend
+cross-origin (`https://apiomniframe.vercel.app/api`) z `withCredentials`, a cookie
+sesji mają `SameSite=None; Secure` (szczegóły i powód braku rewrite'u w
+`frontend/README.md`). Mutacje z obcego `Origin` backend odrzuca (`403`,
+ochrona CSRF w `backend/src/middleware.ts`).
 
 ## Routing frontendu
 
 Routing używa lazy-loaded standalone components, chronionych `authGuard`
-(wymaga sesji, poza `/login`). Pełna lista ścieżek jest w `frontend/README.md`
+(wymaga sesji, poza `/login`). Dashboard (`/`) i `/users` chroni dodatkowo
+`adminGuard`: użytkownik bez roli `admin` trafia na `/news`, a linki do tych
+stron są ukryte w menu. Pełna lista ścieżek jest w `frontend/README.md`
 (sekcja „Routing"). Dashboard pobiera dane z `GET /api/dashboard`, lista
 użytkowników z `GET /api/users`, a komponent profilu pracuje na danych sesji
 zwracanych przez `GET /api/auth/me`.
@@ -330,10 +342,14 @@ Zasady dodatkowe:
 Repo jest wdrażane jako dwa projekty Vercel:
 
 - **frontend**: Root Directory `frontend`, framework Vite; `frontend/vercel.json`
-  ustawia build, output `dist`, rewrite `/api/*` na backend oraz nagłówki
+  ustawia build, output `dist`, rewrite SPA na `index.html` oraz nagłówki
   bezpieczeństwa (CSP, `X-Frame-Options` itd.),
-- **backend**: Root Directory `backend`, framework Next.js; zmienna
-  środowiskowa `DATABASE_URL` (Production + Preview).
+- **backend**: Root Directory `backend`, framework Next.js; zmienne
+  środowiskowe `DATABASE_URL`, `SESSION_JWT_SECRET`, `SESSION_REFRESH_SECRET`
+  (bez sekretów produkcyjny serwer nie wystartuje), `CRON_AUTH_TOKEN`
+  i opcjonalnie `ADMIN_EMAILS` (Production + Preview).
+- **GitHub Actions**: sekrety `BACKEND_URL` i `CRON_AUTH_TOKEN` (ta sama wartość
+  co w Vercelu) dla `.github/workflows/cron-highscores.yml`.
 
 Migracje nie uruchamiają się podczas builda Vercel. Przed wdrożeniem zmian
 schematu uruchom `npm run db:migrate` lokalnie przeciwko bazie produkcyjnej.
@@ -342,7 +358,9 @@ schematu uruchom `npm run db:migrate` lokalnie przeciwko bazie produkcyjnej.
 
 Repo używa GitHub Actions do automatycznego budowania i wersjonowania zmian.
 Workflow znajduje się w `.github/workflows/release.yml` i uruchamia się po
-każdym pushu bezpośrednio do `main`.
+każdym pushu bezpośrednio do `main`. Release startuje dopiero po zielonym
+`.github/workflows/ci.yml` (`format:check`, `lint`, `build`, `test` dla obu
+aplikacji); ten sam workflow CI uruchamia się dla każdego pull requesta.
 
 ### Użycie
 

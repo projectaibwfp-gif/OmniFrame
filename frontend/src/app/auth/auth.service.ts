@@ -12,8 +12,10 @@ import type {
 import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { buildApiUrl } from '../config/api.config';
 import { withSkippedAuthInterceptor } from './auth-http-context';
-import { type AuthUser } from './auth-session';
+import { type AuthRole, type AuthUser } from './auth-session';
 import { mapAuthUser } from './auth-user.mapper';
+
+const ADMIN_ROLE: AuthRole = 'admin';
 
 type GoogleCredentialResponse = {
   credential?: string;
@@ -92,6 +94,10 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.user() !== null;
+  }
+
+  isAdmin(): boolean {
+    return this.user()?.role === ADMIN_ROLE;
   }
 
   setUserFromApi(user: AuthGoogleUserDto): void {

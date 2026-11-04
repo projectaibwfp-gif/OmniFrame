@@ -3,10 +3,11 @@ import type { NextRequest, NextResponse } from 'next/server';
 import type { UserRole as SharedUserRole } from '@shared/api-contract';
 import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
 import { errorResponse } from './api-response';
-import { cookieSameSite, cookieSecure } from './cookie-config';
+import { cookieSameSite, cookieSecure, isProd } from './cookie-config';
 import { ErrorCode } from './errors';
 import { HttpStatus } from './http-status';
 import { logInfo, logWarn } from './logger';
+import { incrementSessionVersion, readSessionVersion } from './session-version';
 
 export type UserRole = SharedUserRole;
 
@@ -23,6 +24,8 @@ export interface GoogleTokenPayload {
 
 export interface SessionTokenPayload extends GoogleTokenPayload {
   token_use: 'access' | 'refresh';
+  /** Must match `users.session_version`; bumping the column revokes refresh tokens. */
+  session_version: number;
 }
 
 export type AuthCheckResult = { session: SessionTokenPayload } | { response: NextResponse };
@@ -53,14 +56,28 @@ function getGoogleClientId(): string {
   );
 }
 
+function readSecret(variableName: string, developmentFallback: string): Uint8Array {
+  const secret = process.env[variableName]?.trim();
+  if (secret) {
+    return new TextEncoder().encode(secret);
+  }
+  if (isProd) {
+    throw new Error(`${variableName} must be set in production`);
+  }
+  return new TextEncoder().encode(developmentFallback);
+}
+
 function getSessionSecret(): Uint8Array {
-  const secret = process.env.SESSION_JWT_SECRET?.trim() || DEFAULT_SESSION_SECRET;
-  return new TextEncoder().encode(secret);
+  return readSecret('SESSION_JWT_SECRET', DEFAULT_SESSION_SECRET);
 }
 
 function getRefreshSecret(): Uint8Array {
-  const secret = process.env.SESSION_REFRESH_SECRET?.trim() || DEFAULT_REFRESH_SECRET;
-  return new TextEncoder().encode(secret);
+  return readSecret('SESSION_REFRESH_SECRET', DEFAULT_REFRESH_SECRET);
+}
+
+export function assertSessionSecretsConfigured(): void {
+  getSessionSecret();
+  getRefreshSecret();
 }
 
 function writeCookie(
@@ -105,6 +122,7 @@ function clearOAuthStateCookie(response: NextResponse): void {
 export function toSessionPayload(
   payload: GoogleTokenPayload,
   tokenUse: 'access' | 'refresh',
+  sessionVersion: number,
 ): SessionTokenPayload {
   return {
     sub: payload.sub,
@@ -116,6 +134,7 @@ export function toSessionPayload(
     picture: payload.picture,
     locale: payload.locale,
     token_use: tokenUse,
+    session_version: sessionVersion,
   };
 }
 
@@ -149,7 +168,8 @@ export async function verifySessionToken(
   if (
     typeof payload.sub !== 'string' ||
     typeof payload.email !== 'string' ||
-    payload.token_use !== tokenUse
+    payload.token_use !== tokenUse ||
+    typeof payload.session_version !== 'number'
   ) {
     throw new Error('Invalid session token payload');
   }
@@ -164,6 +184,7 @@ export async function verifySessionToken(
     picture: typeof payload.picture === 'string' ? payload.picture : undefined,
     locale: typeof payload.locale === 'string' ? payload.locale : undefined,
     token_use: tokenUse,
+    session_version: payload.session_version,
   };
 }
 
@@ -200,12 +221,44 @@ export async function refreshSessionCookie(
   }
 
   const session = await verifySessionToken(refreshToken, 'refresh');
-  const nextAccessToken = await signSessionToken(toSessionPayload(session, 'access'));
-  const nextRefreshToken = await signSessionToken(toSessionPayload(session, 'refresh'));
-  setAccessCookie(response, nextAccessToken);
-  setRefreshCookie(response, nextRefreshToken);
+  const currentVersion = await readSessionVersion(session.sub);
+  if (currentVersion === null || currentVersion !== session.session_version) {
+    throw new Error('Refresh token has been revoked');
+  }
+
+  await setSessionCookies(response, session, currentVersion);
   logInfo('auth.refresh', 'session refreshed', { sub: session.sub });
   return session;
+}
+
+export async function setSessionCookies(
+  response: NextResponse,
+  payload: GoogleTokenPayload,
+  sessionVersion: number,
+): Promise<void> {
+  const accessToken = await signSessionToken(toSessionPayload(payload, 'access', sessionVersion));
+  const refreshToken = await signSessionToken(toSessionPayload(payload, 'refresh', sessionVersion));
+  setAccessCookie(response, accessToken);
+  setRefreshCookie(response, refreshToken);
+}
+
+/**
+ * Revokes every refresh token of the user behind the request (all devices).
+ * Access tokens stay valid until they expire (ACCESS_TOKEN_TTL_SECONDS).
+ */
+export async function revokeSessionsFromRequest(request: NextRequest): Promise<void> {
+  const refreshToken = request.cookies.get(REFRESH_COOKIE_NAME)?.value;
+  if (!refreshToken) {
+    return;
+  }
+
+  try {
+    const session = await verifySessionToken(refreshToken, 'refresh');
+    await incrementSessionVersion(session.sub);
+    logInfo('auth.logout', 'sessions revoked', { sub: session.sub });
+  } catch (error) {
+    logWarn('auth.logout', ErrorCode.AUTH_REFRESH_FAILED, { reason: 'revoke skipped' }, error);
+  }
 }
 
 export function clearSessionCookie(response: NextResponse): void {

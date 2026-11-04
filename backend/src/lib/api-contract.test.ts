@@ -30,9 +30,11 @@ describe('API error contract', () => {
   });
 
   it('documents user collection and user detail as separate endpoints', () => {
-    expect(openApiDocument.paths['/api/users'].get.summary).toBe('Returns paginated user list.');
+    expect(openApiDocument.paths['/api/users'].get.summary).toBe(
+      'Returns paginated user list (admin only).',
+    );
     expect(openApiDocument.paths['/api/users/{googleId}'].get.summary).toBe(
-      'Returns one user by Google ID.',
+      'Returns one user by Google ID (admin only).',
     );
   });
 

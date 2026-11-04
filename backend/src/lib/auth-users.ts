@@ -1,12 +1,24 @@
 import { createHash } from 'node:crypto';
 import type { AuthCurrentUserDto } from '@shared/api-contract';
-import type { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { errorResponse } from './api-response';
 import { getSql } from './db';
-import { isAuthDenied, requireAuth, type UserRole } from './auth-session';
+import {
+  isAuthDenied,
+  requireAuth,
+  type AuthCheckResult,
+  type GoogleTokenPayload,
+  type UserRole,
+} from './auth-session';
+import { ErrorCode } from './errors';
+import { HttpStatus } from './http-status';
+import { logError, logWarn } from './logger';
 import { mapUserRow, type UserRow } from './user-row';
 import { DEFAULT_USER_ROLE } from './validation';
 
 const REFERRAL_CODE_HASH_ALGORITHM = 'md5';
+const ADMIN_ROLE: UserRole = 'admin';
+const ADMIN_EMAILS_SEPARATOR = ',';
 
 export type AuthenticatedUser = AuthCurrentUserDto;
 
@@ -24,11 +36,13 @@ export interface UpsertUserInput {
 }
 
 interface UpsertUserRow extends UserRow {
+  session_version: number;
   was_created: boolean;
 }
 
 export interface UpsertUserResult {
   user: AuthenticatedUser;
+  sessionVersion: number;
   wasCreated: boolean;
 }
 
@@ -77,7 +91,7 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      RETURNING id, google_id, email, email_verified, role, name,
                given_name, family_name, picture, locale, phone, birth_date, description,
                referral_code, referred_by_code,
-               last_login_at, created_at, updated_at,
+               last_login_at, created_at, updated_at, session_version,
                true AS was_created
     ),
     recorded_referral AS (
@@ -105,19 +119,19 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
      RETURNING id, google_id, email, email_verified, role, name,
                given_name, family_name, picture, locale, phone, birth_date, description,
                referral_code, referred_by_code,
-               last_login_at, created_at, updated_at,
+               last_login_at, created_at, updated_at, session_version,
                false AS was_created
     )
     SELECT id, google_id, email, email_verified, role, name,
           given_name, family_name, picture, locale, phone, birth_date, description,
           referral_code, referred_by_code,
-          last_login_at, created_at, updated_at, was_created
+          last_login_at, created_at, updated_at, session_version, was_created
     FROM inserted
     UNION ALL
     SELECT id, google_id, email, email_verified, role, name,
           given_name, family_name, picture, locale, phone, birth_date, description,
           referral_code, referred_by_code,
-          last_login_at, created_at, updated_at, was_created
+          last_login_at, created_at, updated_at, session_version, was_created
     FROM updated
   `) as UpsertUserRow[];
 
@@ -125,23 +139,14 @@ export async function upsertUser(input: UpsertUserInput): Promise<UpsertUserResu
 
   return {
     user: mapUserRow(row),
+    sessionVersion: row.session_version,
     wasCreated: row.was_created,
   };
 }
 
 export async function upsertGoogleUser(
-  payload: {
-    sub: string;
-    email: string;
-    email_verified?: boolean;
-    name?: string;
-    given_name?: string;
-    family_name?: string;
-    picture?: string;
-    locale?: string;
-  },
+  payload: GoogleTokenPayload,
   referredByCode?: string | null,
-  role?: UserRole,
 ): Promise<UpsertUserResult> {
   return upsertUser({
     google_id: payload.sub,
@@ -153,54 +158,67 @@ export async function upsertGoogleUser(
     picture: payload.picture,
     locale: payload.locale,
     referred_by_code: referredByCode,
-    role,
+    role: isBootstrapAdmin(payload) ? ADMIN_ROLE : undefined,
   });
 }
 
-export async function loadCurrentUser(
-  request: NextRequest,
-): Promise<AuthenticatedUser | NextResponse> {
-  const auth = await requireAuth(request);
-  if (isAuthDenied(auth)) {
-    return auth.response;
-  }
+function readAdminEmails(): string[] {
+  return (process.env.ADMIN_EMAILS ?? '')
+    .split(ADMIN_EMAILS_SEPARATOR)
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
 
+/**
+ * ADMIN_EMAILS only promotes. Demoting such an account requires removing it
+ * from the variable first, otherwise the next login restores the admin role.
+ */
+function isBootstrapAdmin(payload: GoogleTokenPayload): boolean {
+  return payload.email_verified === true && readAdminEmails().includes(payload.email.toLowerCase());
+}
+
+async function readUserRole(googleId: string): Promise<UserRole | null> {
   const sql = getSql();
   const rows = (await sql`
-    SELECT id, google_id, email, email_verified, role, name,
-           given_name, family_name, picture, locale, phone, birth_date, description,
-           referral_code, referred_by_code,
-           main_character_name, main_character_world, main_character_vocation,
-           main_character_level, main_character_linked_at,
-           last_login_at, created_at, updated_at
+    SELECT role
     FROM users
-    WHERE google_id = ${auth.session.sub}
+    WHERE google_id = ${googleId}
     LIMIT 1
-  `) as UserRow[];
+  `) as Array<{ role: UserRole }>;
 
-  if (rows.length > 0) {
-    return mapUserRow(rows[0]);
+  return rows[0]?.role ?? null;
+}
+
+export async function requireAdmin(request: NextRequest): Promise<AuthCheckResult> {
+  const auth = await requireAuth(request);
+  if (isAuthDenied(auth)) {
+    return auth;
   }
 
-  return {
-    id: 0,
-    googleId: auth.session.sub,
-    email: auth.session.email,
-    emailVerified: auth.session.email_verified === true,
-    role: 'user',
-    name: auth.session.name ?? null,
-    givenName: auth.session.given_name ?? null,
-    familyName: auth.session.family_name ?? null,
-    picture: auth.session.picture ?? null,
-    locale: auth.session.locale ?? null,
-    phone: null,
-    birthDate: null,
-    description: null,
-    referralCode: generateReferralCode(auth.session.sub),
-    referredByCode: null,
-    mainCharacter: null,
-    registeredAt: '',
-    lastLoginAt: '',
-    updatedAt: '',
-  };
+  let role: UserRole | null;
+  try {
+    role = await readUserRole(auth.session.sub);
+  } catch (error) {
+    logError('auth.requireAdmin', ErrorCode.DB_QUERY_FAILED, { sub: auth.session.sub }, error);
+    return {
+      response: errorResponse(
+        'Could not verify user role',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorCode.DB_QUERY_FAILED,
+      ),
+    };
+  }
+
+  if (role !== ADMIN_ROLE) {
+    logWarn('auth.requireAdmin', ErrorCode.AUTH_FORBIDDEN, { sub: auth.session.sub, role });
+    return {
+      response: errorResponse(
+        'Admin role required',
+        HttpStatus.FORBIDDEN,
+        ErrorCode.AUTH_FORBIDDEN,
+      ),
+    };
+  }
+
+  return auth;
 }

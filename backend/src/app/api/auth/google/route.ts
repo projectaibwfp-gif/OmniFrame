@@ -45,14 +45,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     googleToken = await verifyGoogleToken(credential);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Could not verify Google token';
     logError('auth.google', ErrorCode.AUTH_GOOGLE_TOKEN_INVALID, {}, error);
-    return errorResponse(message, HttpStatus.UNAUTHORIZED, ErrorCode.AUTH_GOOGLE_TOKEN_INVALID);
+    return errorResponse(
+      'Could not verify Google token',
+      HttpStatus.UNAUTHORIZED,
+      ErrorCode.AUTH_GOOGLE_TOKEN_INVALID,
+    );
   }
 
   try {
     const pendingReferral = getPendingReferral(request);
-    const { user: databaseUser } = await upsertGoogleUser(
+    const { user: databaseUser, sessionVersion } = await upsertGoogleUser(
       googleToken,
       pendingReferral?.code ?? null,
     );
@@ -76,21 +79,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { status: HttpStatus.OK },
     );
 
-    await issueSessionCookie(response, credential);
+    await issueSessionCookie(response, googleToken, sessionVersion);
     clearLoginState(response);
     clearPendingReferral(response);
 
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Could not complete Google login';
-    logError(
-      'auth.google',
-      ErrorCode.AUTH_USER_UPSERT_FAILED,
-      { sub: googleToken.sub, email: googleToken.email },
-      error,
-    );
+    logError('auth.google', ErrorCode.AUTH_USER_UPSERT_FAILED, { sub: googleToken.sub }, error);
     return errorResponse(
-      message,
+      'Could not complete Google login',
       HttpStatus.INTERNAL_SERVER_ERROR,
       ErrorCode.AUTH_USER_UPSERT_FAILED,
     );

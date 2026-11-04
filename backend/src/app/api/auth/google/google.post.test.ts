@@ -84,6 +84,7 @@ describe('POST /api/auth/google', () => {
         referralCode: 'abc123',
         referredByCode: 'ref-1',
       },
+      sessionVersion: 3,
     });
     referralMocks.getPendingReferral.mockReturnValue({ code: 'ref-1' });
 
@@ -99,7 +100,11 @@ describe('POST /api/auth/google', () => {
       { sub: 'google-1', email: 'anna@example.com' },
       'ref-1',
     );
-    expect(authMocks.issueSessionCookie).toHaveBeenCalledWith(response, 'google-token');
+    expect(authMocks.issueSessionCookie).toHaveBeenCalledWith(
+      response,
+      { sub: 'google-1', email: 'anna@example.com' },
+      3,
+    );
     expect(authMocks.clearLoginState).toHaveBeenCalledWith(response);
     expect(referralMocks.clearPendingReferral).toHaveBeenCalledWith(response);
     await expect(response.json()).resolves.toMatchObject({
@@ -110,6 +115,26 @@ describe('POST /api/auth/google', () => {
           referralCode: 'abc123',
           referredByCode: 'ref-1',
         },
+      },
+    });
+  });
+
+  it('does not expose database errors when login fails', async () => {
+    authMocks.verifyGoogleToken.mockResolvedValue({ sub: 'google-1', email: 'anna@example.com' });
+    authMocks.upsertGoogleUser.mockRejectedValue(new Error('relation "users" does not exist'));
+
+    const response = await POST(
+      createJsonRequest('http://localhost/api/auth/google', 'POST', {
+        credential: 'google-token',
+        state: 'ok-state',
+      }),
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'AUTH_USER_UPSERT_FAILED',
+        message: 'Could not complete Google login',
       },
     });
   });
@@ -128,7 +153,7 @@ describe('POST /api/auth/google', () => {
     await expect(response.json()).resolves.toEqual({
       error: {
         code: 'AUTH_GOOGLE_TOKEN_INVALID',
-        message: 'bad token',
+        message: 'Could not verify Google token',
       },
     });
   });

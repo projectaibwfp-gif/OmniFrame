@@ -45,13 +45,26 @@ export interface HighscoresSnapshotsListResult {
   worlds: string[];
 }
 
+function dedupeByCharacter(snapshots: HighscoresSnapshot[]): HighscoresSnapshot[] {
+  const byCharacter = new Map<string, HighscoresSnapshot>();
+  for (const snapshot of snapshots) {
+    const key = `${snapshot.characterName.toLowerCase()}|${snapshot.world}`;
+    if (!byCharacter.has(key)) {
+      byCharacter.set(key, snapshot);
+    }
+  }
+  return [...byCharacter.values()];
+}
+
 /**
- * Persists highscores entries. An entry is stored only when it is the first one
- * for that character on that world or when its exact experience differs from the
- * latest stored snapshot - unchanged entries are skipped to avoid duplicates.
+ * Persists highscores entries in one statement. An entry is stored only when it
+ * is the first one for that character on that world or when its exact experience
+ * differs from `character_highscores_latest`; unchanged entries are skipped.
+ * The same statement moves `character_highscores_latest` to the new snapshot.
  */
 export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): Promise<void> {
-  if (!snapshots.length) {
+  const entries = dedupeByCharacter(snapshots);
+  if (!entries.length) {
     return;
   }
 
@@ -59,35 +72,52 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
 
   try {
     const sql = getSql();
-
-    for (const snapshot of snapshots) {
-      const lastSnapshot = (await sql`
-        SELECT exact_experience
-        FROM character_highscores_snapshots
-        WHERE normalized_name = ${snapshot.characterName.toLowerCase()} AND world = ${snapshot.world}
-        ORDER BY checked_at DESC
-        LIMIT 1
-      `) as Array<{ exact_experience: number }>;
-
-      const hasExpChanged =
-        !lastSnapshot.length || lastSnapshot[0].exact_experience !== snapshot.exactExperience;
-
-      if (!hasExpChanged) {
-        continue;
-      }
-
-      await sql`
-        INSERT INTO character_highscores_snapshots 
+    await sql`
+      WITH input AS (
+        SELECT *
+        FROM unnest(
+          ${entries.map((entry) => entry.characterName)}::text[],
+          ${entries.map((entry) => entry.characterName.toLowerCase())}::text[],
+          ${entries.map((entry) => entry.world)}::text[],
+          ${entries.map((entry) => entry.vocation)}::text[],
+          ${entries.map((entry) => entry.level)}::int[],
+          ${entries.map((entry) => entry.rank)}::int[],
+          ${entries.map((entry) => entry.exactExperience)}::bigint[]
+        ) AS entry(character_name, normalized_name, world, vocation, level, rank, exact_experience)
+      ),
+      changed AS (
+        SELECT input.*
+        FROM input
+        LEFT JOIN character_highscores_latest AS latest
+          ON latest.normalized_name = input.normalized_name
+         AND latest.world = input.world
+        WHERE latest.exact_experience IS DISTINCT FROM input.exact_experience
+      ),
+      inserted AS (
+        INSERT INTO character_highscores_snapshots
         (character_name, normalized_name, world, vocation, level, rank, exact_experience, checked_at)
-        VALUES (${snapshot.characterName}, ${snapshot.characterName.toLowerCase()}, ${snapshot.world}, 
-                ${snapshot.vocation}, ${snapshot.level}, ${snapshot.rank}, ${snapshot.exactExperience}, ${now})
-      `;
-    }
+        SELECT character_name, normalized_name, world, vocation, level, rank, exact_experience, ${now}
+        FROM changed
+        RETURNING id, character_name, normalized_name, world, vocation, level, rank, exact_experience
+      )
+      INSERT INTO character_highscores_latest
+      (normalized_name, world, character_name, vocation, level, rank, exact_experience, snapshot_id, checked_at)
+      SELECT normalized_name, world, character_name, vocation, level, rank, exact_experience, id, ${now}
+      FROM inserted
+      ON CONFLICT (normalized_name, world) DO UPDATE
+      SET character_name = EXCLUDED.character_name,
+          vocation = EXCLUDED.vocation,
+          level = EXCLUDED.level,
+          rank = EXCLUDED.rank,
+          exact_experience = EXCLUDED.exact_experience,
+          snapshot_id = EXCLUDED.snapshot_id,
+          checked_at = EXCLUDED.checked_at
+    `;
   } catch (error) {
     logError(
       'highscores.saveSnapshots',
       ErrorCode.DB_QUERY_FAILED,
-      { reason: 'Error saving snapshots' },
+      { reason: 'Error saving snapshots', count: entries.length },
       error,
     );
     throw error;
@@ -154,8 +184,9 @@ export async function listCharacterHighscoresHistory(
 }
 
 /**
- * Pages characters (one row per character and world) ordered by their latest
- * level, and returns every stored snapshot of the characters on that page.
+ * Pages characters (one row of `character_highscores_latest` per character and
+ * world) ordered by their latest level, and returns every stored snapshot of the
+ * characters on that page.
  * `sortDir` is bound as a value and switches between the two CASE sort keys,
  * because SQL fragments cannot be interpolated into the Neon tagged template.
  */
@@ -169,28 +200,18 @@ export async function listHighscoresSnapshots(
   const offset = (page - 1) * pageSize;
 
   const rows = (await sql`
-    WITH latest_per_character AS (
-      SELECT DISTINCT ON (normalized_name, world)
-             id AS "latestId",
-             normalized_name,
-             world,
-             level AS "latestLevel",
-             checked_at AS "latestCheckedAt"
-      FROM character_highscores_snapshots
-      WHERE world = COALESCE(${world}, world)
-      ORDER BY normalized_name, world, checked_at DESC, id DESC
-    ),
-    paged_characters AS (
+    WITH paged_characters AS (
       SELECT normalized_name,
              world,
-             "latestId",
-             "latestLevel",
-             "latestCheckedAt"
-      FROM latest_per_character
-      ORDER BY CASE WHEN ${sortDir} = 'asc' THEN "latestLevel" END ASC,
-               CASE WHEN ${sortDir} = 'desc' THEN "latestLevel" END DESC,
-               "latestCheckedAt" DESC,
-               "latestId" DESC
+             snapshot_id AS "latestId",
+             level AS "latestLevel",
+             checked_at AS "latestCheckedAt"
+      FROM character_highscores_latest
+      WHERE ${world}::text IS NULL OR world = ${world}
+      ORDER BY CASE WHEN ${sortDir} = 'asc' THEN level END ASC,
+               CASE WHEN ${sortDir} = 'desc' THEN level END DESC,
+               checked_at DESC,
+               snapshot_id DESC
       LIMIT ${pageSize}
       OFFSET ${offset}
     )
@@ -216,16 +237,13 @@ export async function listHighscoresSnapshots(
 
   const countRows = (await sql`
     SELECT COUNT(*)::text AS total
-    FROM (
-      SELECT DISTINCT normalized_name, world
-      FROM character_highscores_snapshots
-      WHERE world = COALESCE(${world}, world)
-    ) AS unique_characters
+    FROM character_highscores_latest
+    WHERE ${world}::text IS NULL OR world = ${world}
   `) as Array<{ total: string | number }>;
 
   const worldRows = (await sql`
     SELECT DISTINCT world
-    FROM character_highscores_snapshots
+    FROM character_highscores_latest
     ORDER BY world ASC
   `) as Array<{ world: string }>;
 

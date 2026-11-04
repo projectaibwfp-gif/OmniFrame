@@ -3,7 +3,7 @@ import { createDeniedResponse, createRequest } from '@/test/http';
 
 const authMocks = vi.hoisted(() => ({
   isAuthDenied: vi.fn(),
-  requireAuth: vi.fn(),
+  requireAdmin: vi.fn(),
 }));
 
 const dbMocks = vi.hoisted(() => ({
@@ -13,7 +13,7 @@ const dbMocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/auth', () => ({
   isAuthDenied: authMocks.isAuthDenied,
-  requireAuth: authMocks.requireAuth,
+  requireAdmin: authMocks.requireAdmin,
 }));
 
 vi.mock('@/lib/db', () => ({
@@ -25,13 +25,13 @@ import { GET } from './route';
 describe('GET /api/dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
+    authMocks.requireAdmin.mockResolvedValue({ session: { sub: 'google-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
     dbMocks.getSql.mockReturnValue(dbMocks.sql);
   });
 
   it('denies unauthenticated access', async () => {
-    authMocks.requireAuth.mockResolvedValue({ response: createDeniedResponse() });
+    authMocks.requireAdmin.mockResolvedValue({ response: createDeniedResponse() });
 
     const response = await GET(createRequest('http://localhost/api/dashboard'));
 

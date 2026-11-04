@@ -9,6 +9,7 @@ import { ThemeSwitcherComponent } from './components/theme-switcher.component';
 import { APP_DISPLAY_NAME } from '@shared/runtime-config';
 
 const INITIALS_MAX_CHARS = 2;
+const ADMIN_ONLY_NAV_PATHS: ReadonlySet<string> = new Set(['/', '/users']);
 
 interface NavTranslations {
   dashboard: string;
@@ -100,7 +101,8 @@ export class AppComponent {
 
   protected readonly navItems = computed(() => {
     const translations = NAV_TRANSLATIONS[this.currentLocale()];
-    return [
+    const isAdmin = this.authService.isAdmin();
+    const items = [
       { path: '/', label: translations.dashboard, icon: '▦', exact: true },
       { path: '/users', label: translations.users, icon: '👤', exact: false },
       { path: '/profile', label: translations.profile, icon: '◉', exact: false },
@@ -119,6 +121,7 @@ export class AppComponent {
       { path: '/houses', label: translations.houses, icon: '🏠', exact: false },
       { path: '/fansites', label: translations.fansites, icon: '💬', exact: false },
     ] as const;
+    return items.filter((item) => isAdmin || !ADMIN_ONLY_NAV_PATHS.has(item.path));
   });
 
   protected readonly initials = computed(() => {

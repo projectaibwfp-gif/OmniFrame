@@ -3,19 +3,30 @@ name: Cron - Highscores Collection
 on:
   schedule:
     - cron: "0 */4 * * *" # Co 4 godziny
+  workflow_dispatch:
 
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger highscores collection
+      - name: Trigger highscores collection per world
         env:
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          CRON_AUTH_TOKEN: ${{ secrets.CRON_AUTH_TOKEN }}
         run: |
-          if [ -z "$BACKEND_URL" ]; then
-            echo "Error: BACKEND_URL secret is not set"
+          if [ -z "$BACKEND_URL" ] || [ -z "$CRON_AUTH_TOKEN" ]; then
+            echo "Error: BACKEND_URL and CRON_AUTH_TOKEN secrets must be set"
             exit 1
           fi
-          # -f: fail on non-2xx (endpoint has maxDuration=300s, see backend/CRON.md)
-          curl -sS -f --max-time 310 --retry 2 --retry-delay 10 \
-            -X POST "${BACKEND_URL}/api/cron/highscores"
+          auth_header="Authorization: Bearer ${CRON_AUTH_TOKEN}"
+          worlds=$(curl -sS -f --max-time 30 -H "$auth_header" \
+            "${BACKEND_URL}/api/cron/highscores" | jq -r '.data.worlds[]')
+          failed=0
+          # One world per request keeps each run inside maxDuration=300s (see backend/CRON.md).
+          for world in $worlds; do
+            encoded_world=$(jq -rn --arg value "$world" '$value | @uri')
+            echo "Collecting ${world}"
+            curl -sS -f --max-time 310 --retry 2 --retry-delay 10 -H "$auth_header" \
+              -X POST "${BACKEND_URL}/api/cron/highscores?world=${encoded_world}" || failed=1
+          done
+          exit $failed

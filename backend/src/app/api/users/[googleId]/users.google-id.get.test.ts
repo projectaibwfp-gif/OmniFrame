@@ -3,7 +3,7 @@ import { createDeniedResponse, createRequest } from '@/test/http';
 
 const authMocks = vi.hoisted(() => ({
   isAuthDenied: vi.fn(),
-  requireAuth: vi.fn(),
+  requireAdmin: vi.fn(),
 }));
 
 const userMocks = vi.hoisted(() => ({
@@ -20,12 +20,12 @@ const params = (googleId: string) => ({ params: Promise.resolve({ googleId }) })
 describe('GET /api/users/:googleId', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    authMocks.requireAuth.mockResolvedValue({ session: { sub: 'admin-1' } });
+    authMocks.requireAdmin.mockResolvedValue({ session: { sub: 'admin-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
   });
 
   it('denies unauthenticated access', async () => {
-    authMocks.requireAuth.mockResolvedValue({ response: createDeniedResponse() });
+    authMocks.requireAdmin.mockResolvedValue({ response: createDeniedResponse() });
 
     const response = await GET(
       createRequest('http://localhost/api/users/google-1'),

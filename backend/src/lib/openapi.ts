@@ -25,6 +25,11 @@ export const openApiDocument = {
         in: 'cookie',
         name: 'omniframe.session',
       },
+      cronToken: {
+        type: 'http',
+        scheme: 'bearer',
+        description: 'CRON_AUTH_TOKEN',
+      },
     },
     schemas: {
       ErrorResponse: {
@@ -76,35 +81,43 @@ export const openApiDocument = {
     '/api/dashboard': {
       get: {
         tags: ['Dashboard'],
-        summary: 'Returns dashboard metrics and recent activity.',
+        summary: 'Returns dashboard metrics and recent activity (admin only).',
+        security: [{ sessionCookie: [] }],
         responses: {
           200: { description: 'Dashboard payload' },
+          401: { $ref: '#/components/responses/ApiError' },
+          403: { $ref: '#/components/responses/ApiError' },
         },
       },
     },
     '/api/users': {
       get: {
         tags: ['Users'],
-        summary: 'Returns paginated user list.',
+        summary: 'Returns paginated user list (admin only).',
+        security: [{ sessionCookie: [] }],
         responses: {
           200: { description: 'Users payload' },
           401: { $ref: '#/components/responses/ApiError' },
+          403: { $ref: '#/components/responses/ApiError' },
         },
       },
       post: {
         tags: ['Users'],
-        summary: 'Manual Google user upsert.',
+        summary: 'Manual Google user upsert, including role changes (admin only).',
+        security: [{ sessionCookie: [] }],
         responses: {
           200: { description: 'User upserted' },
           400: { $ref: '#/components/responses/ApiError' },
           401: { $ref: '#/components/responses/ApiError' },
+          403: { $ref: '#/components/responses/ApiError' },
         },
       },
     },
     '/api/users/{googleId}': {
       get: {
         tags: ['Users'],
-        summary: 'Returns one user by Google ID.',
+        summary: 'Returns one user by Google ID (admin only).',
+        security: [{ sessionCookie: [] }],
         parameters: [
           {
             name: 'googleId',
@@ -117,6 +130,7 @@ export const openApiDocument = {
           200: { description: 'User payload' },
           400: { $ref: '#/components/responses/ApiError' },
           401: { $ref: '#/components/responses/ApiError' },
+          403: { $ref: '#/components/responses/ApiError' },
           404: { $ref: '#/components/responses/ApiError' },
         },
       },
@@ -157,6 +171,7 @@ export const openApiDocument = {
         security: [{ sessionCookie: [] }],
         responses: {
           200: { description: 'Profile updated' },
+          400: { $ref: '#/components/responses/ApiError' },
           401: { description: 'Unauthorized' },
         },
       },
@@ -167,14 +182,14 @@ export const openApiDocument = {
         summary: 'Refreshes session cookies from refresh token.',
         responses: {
           200: { description: 'Session refreshed' },
-          401: { description: 'Refresh failed' },
+          401: { description: 'Refresh failed or refresh token revoked' },
         },
       },
     },
     '/api/auth/logout': {
       post: {
         tags: ['Auth'],
-        summary: 'Clears auth cookies and logs user out.',
+        summary: 'Revokes refresh tokens of the user on all devices and clears auth cookies.',
         responses: {
           200: { description: 'Session cleared' },
         },
@@ -546,11 +561,32 @@ export const openApiDocument = {
       },
     },
     '/api/cron/highscores': {
+      get: {
+        tags: ['Cron'],
+        summary: 'Lists worlds configured in CRON_WORLDS.',
+        security: [{ cronToken: [] }],
+        responses: {
+          200: { description: 'Configured worlds' },
+          401: { $ref: '#/components/responses/ApiError' },
+        },
+      },
       post: {
         tags: ['Cron'],
-        summary: 'Runs highscores ingestion for configured worlds.',
+        summary: 'Runs highscores ingestion for one world or all configured worlds.',
+        security: [{ cronToken: [] }],
+        parameters: [
+          {
+            name: 'world',
+            in: 'query',
+            required: false,
+            schema: { type: 'string' },
+            description: 'World from CRON_WORLDS; omitted means every configured world.',
+          },
+        ],
         responses: {
           200: { description: 'Cron ingestion completed' },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
         },
       },
     },

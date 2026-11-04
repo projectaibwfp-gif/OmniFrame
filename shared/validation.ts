@@ -10,7 +10,8 @@ export interface SchemaIssue {
   message: string;
 }
 
-export type SchemaResult<T> = { ok: true; data: T } | { ok: false; issues: SchemaIssue[] };
+export type SchemaResult<T> =
+  { ok: true; data: T } | { ok: false; issues: SchemaIssue[] };
 
 export interface Schema<T> {
   parse(value: unknown, path?: string): SchemaResult<T>;
@@ -38,7 +39,13 @@ export interface StringOptions {
 }
 
 export function stringSchema(options: StringOptions = {}): Schema<string> {
-  const { minLength, maxLength, pattern, trim = true, allowEmpty = false } = options;
+  const {
+    minLength,
+    maxLength,
+    pattern,
+    trim = true,
+    allowEmpty = false,
+  } = options;
   return {
     parse(value, path = "") {
       if (typeof value !== "string") {
@@ -49,10 +56,16 @@ export function stringSchema(options: StringOptions = {}): Schema<string> {
         return { ok: false, issues: [issue(path, "must not be empty")] };
       }
       if (typeof minLength === "number" && normalized.length < minLength) {
-        return { ok: false, issues: [issue(path, `must be at least ${minLength} characters`)] };
+        return {
+          ok: false,
+          issues: [issue(path, `must be at least ${minLength} characters`)],
+        };
       }
       if (typeof maxLength === "number" && normalized.length > maxLength) {
-        return { ok: false, issues: [issue(path, `must be at most ${maxLength} characters`)] };
+        return {
+          ok: false,
+          issues: [issue(path, `must be at most ${maxLength} characters`)],
+        };
       }
       if (pattern && !pattern.test(normalized)) {
         return { ok: false, issues: [issue(path, "has invalid format")] };
@@ -67,7 +80,9 @@ export interface IntFromStringOptions {
   max?: number;
 }
 
-export function intFromStringSchema(options: IntFromStringOptions = {}): Schema<number> {
+export function intFromStringSchema(
+  options: IntFromStringOptions = {},
+): Schema<number> {
   const { min, max } = options;
   return {
     parse(value, path = "") {
@@ -93,13 +108,27 @@ export function intFromStringSchema(options: IntFromStringOptions = {}): Schema<
 export function enumSchema<T extends string>(values: readonly T[]): Schema<T> {
   return {
     parse(value, path = "") {
-      if (typeof value !== "string" || !(values as readonly string[]).includes(value)) {
+      if (
+        typeof value !== "string" ||
+        !(values as readonly string[]).includes(value)
+      ) {
         return {
           ok: false,
           issues: [issue(path, `must be one of: ${values.join(", ")}`)],
         };
       }
       return { ok: true, data: value as T };
+    },
+  };
+}
+
+export function booleanSchema(): Schema<boolean> {
+  return {
+    parse(value, path = "") {
+      if (typeof value !== "boolean") {
+        return { ok: false, issues: [issue(path, "must be a boolean")] };
+      }
+      return { ok: true, data: value };
     },
   };
 }
@@ -140,7 +169,9 @@ export type InferObject<S extends ObjectShape> = {
   [K in keyof S]: Infer<S[K]>;
 };
 
-export function objectSchema<S extends ObjectShape>(shape: S): Schema<InferObject<S>> {
+export function objectSchema<S extends ObjectShape>(
+  shape: S,
+): Schema<InferObject<S>> {
   const entries = Object.entries(shape);
   return {
     parse(value, path = "") {

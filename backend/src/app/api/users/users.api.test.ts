@@ -3,7 +3,7 @@ import { createDeniedResponse, createJsonRequest, createRequest } from '@/test/h
 
 const authMocks = vi.hoisted(() => ({
   isAuthDenied: vi.fn(),
-  requireAuth: vi.fn(),
+  requireAdmin: vi.fn(),
   upsertUser: vi.fn(),
 }));
 
@@ -14,7 +14,7 @@ const dbMocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/auth', () => ({
   isAuthDenied: authMocks.isAuthDenied,
-  requireAuth: authMocks.requireAuth,
+  requireAdmin: authMocks.requireAdmin,
   upsertUser: authMocks.upsertUser,
 }));
 
@@ -27,17 +27,47 @@ import { GET, POST } from './route';
 describe('Users API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    authMocks.requireAuth.mockResolvedValue({ session: { sub: 'google-1' } });
+    authMocks.requireAdmin.mockResolvedValue({ session: { sub: 'google-1' } });
     authMocks.isAuthDenied.mockImplementation((auth) => 'response' in auth);
     dbMocks.getSql.mockReturnValue(dbMocks.sql);
   });
 
   it('denies unauthenticated GET /api/users', async () => {
-    authMocks.requireAuth.mockResolvedValue({ response: createDeniedResponse() });
+    authMocks.requireAdmin.mockResolvedValue({ response: createDeniedResponse() });
 
     const response = await GET(createRequest('http://localhost/api/users'));
 
     expect(response.status).toBe(401);
+  });
+
+  it('denies non-admin POST /api/users', async () => {
+    authMocks.requireAdmin.mockResolvedValue({
+      response: createDeniedResponse(403, 'Admin role required'),
+    });
+
+    const response = await POST(
+      createJsonRequest('http://localhost/api/users', 'POST', {
+        googleId: 'google-1',
+        email: 'anna@example.com',
+        role: 'admin',
+      }),
+    );
+
+    expect(response.status).toBe(403);
+    expect(authMocks.upsertUser).not.toHaveBeenCalled();
+  });
+
+  it('rejects a role outside the allowed list in POST /api/users', async () => {
+    const response = await POST(
+      createJsonRequest('http://localhost/api/users', 'POST', {
+        googleId: 'google-1',
+        email: 'anna@example.com',
+        role: 'owner',
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(authMocks.upsertUser).not.toHaveBeenCalled();
   });
 
   it('validates email in POST /api/users', async () => {
@@ -52,7 +82,7 @@ describe('Users API', () => {
     await expect(response.json()).resolves.toEqual({
       error: {
         code: 'VALIDATION_FAILED',
-        message: 'A valid email is required',
+        message: 'Request body is invalid: email: has invalid format',
       },
     });
   });

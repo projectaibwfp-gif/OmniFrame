@@ -69,4 +69,19 @@ describe('PATCH /api/auth/me', () => {
     expect(response.status).toBe(400);
     expect(profileMocks.updateCurrentUserProfile).not.toHaveBeenCalled();
   });
+
+  it('rejects a phone that is not a string', async () => {
+    const response = await PATCH(
+      createRequest('http://localhost/api/auth/me', {
+        method: 'PATCH',
+        body: JSON.stringify({ phone: 123456789 }),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      error: { code: 'VALIDATION_FAILED' },
+    });
+    expect(profileMocks.updateCurrentUserProfile).not.toHaveBeenCalled();
+  });
 });

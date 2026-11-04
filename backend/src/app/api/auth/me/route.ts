@@ -1,18 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type {
-  ApiResponse,
-  AuthCurrentUserResponseDto,
-  UpdateProfileRequestDto,
-} from '@shared/api-contract';
+import type { ApiResponse, AuthCurrentUserResponseDto } from '@shared/api-contract';
+import { UpdateProfileRequestSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
 import { isAuthDenied, requireAuth } from '@/lib/auth';
+import { parseJsonBody } from '@/lib/request-validation';
 import { ErrorCode } from '@/lib/errors';
 import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 import { getCurrentUserProfile, updateCurrentUserProfile } from '@/lib/profile';
 import { DESCRIPTION_MAX_LENGTH, MIN_USER_AGE_YEARS, PHONE_MIN_DIGITS } from '@/lib/validation';
-
-type UpdateProfilePayload = Partial<UpdateProfileRequestDto>;
 
 export const dynamic = 'force-dynamic';
 
@@ -45,22 +41,16 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     return auth.response;
   }
 
-  let payload: UpdateProfilePayload;
-
-  try {
-    payload = (await request.json()) as UpdateProfilePayload;
-  } catch (error) {
-    logError('auth.profile.update', ErrorCode.REQUEST_INVALID_JSON, {}, error);
-    return errorResponse(
-      'Request body must be valid JSON',
-      HttpStatus.BAD_REQUEST,
-      ErrorCode.REQUEST_INVALID_JSON,
-    );
+  const validation = await parseJsonBody(request, UpdateProfileRequestSchema, {
+    scope: 'auth.profile.update',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
 
-  const phone = payload.phone?.trim() || null;
-  const birthDate = payload.birthDate || null;
-  const description = payload.description?.trim() || null;
+  const phone = validation.data.phone ?? null;
+  const birthDate = validation.data.birthDate ?? null;
+  const description = validation.data.description ?? null;
 
   if (phone !== null && phone.replace(/\D/g, '').length < PHONE_MIN_DIGITS) {
     return errorResponse(
@@ -124,7 +114,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ data: { user } });
   } catch (error) {
-    logError('auth.profile.update', ErrorCode.DB_QUERY_FAILED, { phone }, error);
+    logError('auth.profile.update', ErrorCode.DB_QUERY_FAILED, { sub: auth.session.sub }, error);
     return errorResponse(
       'Could not update profile',
       HttpStatus.INTERNAL_SERVER_ERROR,

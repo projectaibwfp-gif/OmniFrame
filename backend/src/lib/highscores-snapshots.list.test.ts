@@ -13,6 +13,7 @@ import {
   CHARACTER_HIGHSCORES_HISTORY_LIMIT,
   listCharacterHighscoresHistory,
   listHighscoresSnapshots,
+  saveHighscoresSnapshots,
 } from './highscores-snapshots';
 
 describe('listHighscoresSnapshots', () => {
@@ -55,9 +56,10 @@ describe('listHighscoresSnapshots', () => {
 
     const dataQuery = (dbMocks.sql.mock.calls[0]?.[0] as TemplateStringsArray).join(' ');
     const countQuery = (dbMocks.sql.mock.calls[1]?.[0] as TemplateStringsArray).join(' ');
-    expect(dataQuery).toContain('DISTINCT ON (normalized_name, world)');
+    expect(dataQuery).toContain('FROM character_highscores_latest');
+    expect(dataQuery).not.toContain('DISTINCT ON');
     expect(dataQuery).toContain('paged_characters');
-    expect(countQuery).toContain('SELECT DISTINCT normalized_name, world');
+    expect(countQuery).toContain('FROM character_highscores_latest');
   });
 
   it('uses one query for both sort directions and binds the direction as a value', async () => {
@@ -69,8 +71,8 @@ describe('listHighscoresSnapshots', () => {
     const result = await listHighscoresSnapshots(2, 10, 'Dia', 'asc');
 
     const [strings, ...values] = dbMocks.sql.mock.calls[0] as [TemplateStringsArray, ...unknown[]];
-    expect(strings.join(' ')).toContain('THEN "latestLevel" END ASC');
-    expect(values).toEqual(['Dia', 'asc', 'asc', 10, 10, 'asc', 'asc']);
+    expect(strings.join(' ')).toContain('THEN level END ASC');
+    expect(values).toEqual(['Dia', 'Dia', 'asc', 'asc', 10, 10, 'asc', 'asc']);
     expect(result).toEqual({ data: [], total: 0, worlds: [] });
   });
 });
@@ -111,5 +113,54 @@ describe('listCharacterHighscoresHistory', () => {
     ]);
     const values = dbMocks.sql.mock.calls[0]?.slice(1);
     expect(values).toEqual(['trollefar', CHARACTER_HIGHSCORES_HISTORY_LIMIT]);
+  });
+});
+
+describe('saveHighscoresSnapshots', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    dbMocks.getSql.mockReturnValue(dbMocks.sql);
+    dbMocks.sql.mockResolvedValue([]);
+  });
+
+  it('saves the whole batch in one statement with one entry per character', async () => {
+    await saveHighscoresSnapshots([
+      {
+        characterName: 'Knight',
+        world: 'Dia',
+        vocation: 'Elite Knight',
+        level: 100,
+        rank: 1,
+        exactExperience: 1000,
+      },
+      {
+        characterName: 'knight',
+        world: 'Dia',
+        vocation: 'Elite Knight',
+        level: 100,
+        rank: 1,
+        exactExperience: 1000,
+      },
+      {
+        characterName: 'Druid',
+        world: 'Dia',
+        vocation: 'Elder Druid',
+        level: 90,
+        rank: 2,
+        exactExperience: 900,
+      },
+    ]);
+
+    expect(dbMocks.sql).toHaveBeenCalledTimes(1);
+    const [strings, ...values] = dbMocks.sql.mock.calls[0] as [TemplateStringsArray, ...unknown[]];
+    expect(strings.join(' ')).toContain('unnest(');
+    expect(strings.join(' ')).toContain('ON CONFLICT (normalized_name, world) DO UPDATE');
+    expect(values[1]).toEqual(['knight', 'druid']);
+  });
+
+  it('skips the database for an empty batch', async () => {
+    await saveHighscoresSnapshots([]);
+
+    expect(dbMocks.sql).not.toHaveBeenCalled();
   });
 });

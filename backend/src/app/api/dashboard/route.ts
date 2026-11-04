@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import type { ApiResponse, DashboardDto } from '@shared/api-contract';
 import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth } from '@/lib/auth';
+import { isAuthDenied, requireAdmin } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
@@ -10,7 +10,7 @@ import { getDashboardMetrics } from '@/lib/dashboard';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const auth = await requireAuth(request);
+  const auth = await requireAdmin(request);
   if (isAuthDenied(auth)) {
     return auth.response;
   }

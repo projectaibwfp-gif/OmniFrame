@@ -21,8 +21,21 @@ Wymagana zmienna:
 
 - `DATABASE_URL` - connection string do Postgresa (`sslmode=require`).
 
+Wymagane w produkcji (bez nich serwer nie wystartuje):
+
+- `SESSION_JWT_SECRET`, `SESSION_REFRESH_SECRET` - sekrety podpisu tokenów sesji
+  (lokalnie, poza produkcją, jest fallback deweloperski).
+
 Opcjonalne zmienne:
 
+- `CRON_AUTH_TOKEN` - token, który musi przyjść jako `Authorization: Bearer <token>`
+  do `/api/cron/highscores`. Bez niego cron odrzuca każde wywołanie (`401`).
+- `ADMIN_EMAILS` - lista emaili rozdzielona przecinkami; zweryfikowane konto Google
+  z tej listy dostaje rolę `admin` przy każdym logowaniu. Lista tylko nadaje rolę:
+  żeby odebrać admina, usuń email z listy, a potem zmień rolę przez `POST /api/users`.
+- `HIGHSCORES_SNAPSHOT_RETENTION_DAYS` (domyślnie `365`) i
+  `CHARACTER_LOOKUP_RETENTION_DAYS` (domyślnie `90`) - retencja historii czyszczonej
+  przy każdym uruchomieniu crona. Ostatni snapshot postaci nie jest usuwany.
 - `CHARACTER_SNAPSHOT_TTL_MINUTES` - TTL cache'u profilu postaci pobieranego z bazy (domyślnie `15`). Jeśli w tabeli `character_lookups` mamy snapshot młodszy niż TTL, endpoint `GET /api/character/:name` zwraca go bez odpytywania TibiaData. Ustaw `0`, aby zawsze pobierać dane na żywo.
 
 ## Uruchomienie lokalne
@@ -41,8 +54,13 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 
 - `GET /api/health` - status API + połączenie z bazą,
 - `GET /api/openapi` - specyfikacja OpenAPI (JSON),
-- `GET /api/users` - lista użytkowników,
-- `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID,
+- `GET /api/dashboard` - metryki dashboardu (tylko admin),
+- `GET /api/users` - lista użytkowników (tylko admin),
+- `GET /api/users/:googleId` - pojedynczy użytkownik po Google ID (tylko admin),
+- `POST /api/users` - ręczny upsert użytkownika, w tym zmiana roli (tylko admin),
+- `POST /api/auth/logout` - wylogowanie; unieważnia refresh tokeny użytkownika na wszystkich urządzeniach,
+- `GET /api/cron/highscores` - lista światów z `CRON_WORLDS` (token crona),
+- `POST /api/cron/highscores?world=Dia` - zbiera highscores jednego świata albo, bez `world`, wszystkich (token crona),
 - `GET /api/auth/me/character-progress` - statusy bossów i potworów dla głównej postaci,
 - `PUT /api/auth/me/character-progress` - zapis statusu dla bossa lub potwora głównej postaci,
 - `PUT /api/auth/me/main-character/refresh` - odświeżenie podpiętej głównej postaci z TibiaData,

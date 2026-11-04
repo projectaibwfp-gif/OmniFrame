@@ -1,37 +1,25 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import type { ApiResponse, UserRole, UsersListResponseDto } from '@shared/api-contract';
+import type { UsersListResponseDto } from '@shared/api-contract';
+import { UpsertUserRequestSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
-import { isAuthDenied, requireAuth, upsertUser } from '@/lib/auth';
+import { isAuthDenied, requireAdmin, upsertUser } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
+import { parseJsonBody } from '@/lib/request-validation';
 import { listUsers } from '@/lib/users';
-import { DEFAULT_USER_ROLE, USER_ROLES } from '@/lib/validation';
 
 const DEFAULT_USERS_LIMIT = 50;
 const MAX_USERS_LIMIT = 200;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const dynamic = 'force-dynamic';
-
-type GoogleUserPayload = {
-  googleId: string;
-  email: string;
-  emailVerified?: boolean;
-  name?: string;
-  givenName?: string;
-  familyName?: string;
-  picture?: string;
-  locale?: string;
-  role?: UserRole;
-};
 
 /**
  * GET /api/users
  * Returns paginated list of all users, ordered by registration date (newest first).
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const auth = await requireAuth(request);
+  const auth = await requireAdmin(request);
   if (isAuthDenied(auth)) {
     return auth.response;
   }
@@ -58,54 +46,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 /**
  * POST /api/users
- * Upserts a user from Google OAuth data.
- * Matches on google_id — creates on first login, updates last_login_at on subsequent logins.
+ * Admin-only upsert of a user from Google OAuth data.
+ * Matches on google_id — creates on first call, otherwise updates the stored profile.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const auth = await requireAuth(request);
+  const auth = await requireAdmin(request);
   if (isAuthDenied(auth)) {
     return auth.response;
   }
 
-  let payload: GoogleUserPayload;
-
-  try {
-    payload = (await request.json()) as GoogleUserPayload;
-  } catch (error) {
-    logError('users.create', ErrorCode.REQUEST_INVALID_JSON, {}, error);
-    return errorResponse(
-      'Request body must be valid JSON',
-      HttpStatus.BAD_REQUEST,
-      ErrorCode.REQUEST_INVALID_JSON,
-    );
+  const validation = await parseJsonBody(request, UpsertUserRequestSchema, {
+    scope: 'users.create',
+  });
+  if (!validation.ok) {
+    return validation.response;
   }
 
-  const { googleId, email, emailVerified, name, givenName, familyName, picture, locale } = payload;
-  const role = payload.role ?? DEFAULT_USER_ROLE;
-
-  if (!googleId?.trim()) {
-    return errorResponse(
-      'googleId is required',
-      HttpStatus.BAD_REQUEST,
-      ErrorCode.VALIDATION_FAILED,
-    );
-  }
-
-  if (!email?.trim() || !EMAIL_PATTERN.test(email)) {
-    return errorResponse(
-      'A valid email is required',
-      HttpStatus.BAD_REQUEST,
-      ErrorCode.VALIDATION_FAILED,
-    );
-  }
-
-  if (!USER_ROLES.includes(role)) {
-    return errorResponse(
-      'role must be admin, user, or moderator',
-      HttpStatus.BAD_REQUEST,
-      ErrorCode.VALIDATION_FAILED,
-    );
-  }
+  const { googleId, email, emailVerified, name, givenName, familyName, picture, locale, role } =
+    validation.data;
 
   try {
     const { user } = await upsertUser({

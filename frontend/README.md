@@ -56,6 +56,10 @@ przesyła je przy wywołaniach cross-origin z credentialed request.
 > przekazuje wiarygodnie `Set-Cookie` z external rewrite, co łamie logowanie
 > (błąd `Invalid login state`).
 
+Ponieważ cookie są wysyłane cross-site, backend odrzuca mutacje (`POST`, `PUT`,
+`PATCH`, `DELETE`) z nagłówkiem `Origin` spoza listy zaufanych originów
+(`403 CSRF_ORIGIN_NOT_ALLOWED`, `backend/src/middleware.ts`).
+
 ## Format daty i godziny
 
 Backend zwraca każdy timestamp w jednym formacie - ISO 8601 w UTC
@@ -85,11 +89,13 @@ kalendarzową i nie przesuwa ich strefą.
 ## Routing
 
 Wszystkie ścieżki poza `/login` wymagają zalogowania (`authGuard`, przekierowuje
-na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`).
+na `/login` gdy brak sesji). `/login` wymaga braku sesji (`guestGuard`). `/` i
+`/users` wymagają roli `admin` (`adminGuard`, przekierowuje na `/news`); linki do
+nich są ukryte w menu dla pozostałych użytkowników.
 
 - `/login` - logowanie przez Google Identity Services,
-- `/` - dashboard z metrykami, wykresem i tabelą użytkowników,
-- `/users` - lista użytkowników z oznaczeniem kont z polecenia,
+- `/` - dashboard z metrykami, wykresem i tabelą użytkowników (tylko admin),
+- `/users` - lista użytkowników z oznaczeniem kont z polecenia (tylko admin),
 - `/profile` - dane bieżącego użytkownika i link polecający,
 - `/about` - opis warstw aplikacji,
 - `/news` - aktualności z TibiaData, filtry, sortowanie, stronicowanie,

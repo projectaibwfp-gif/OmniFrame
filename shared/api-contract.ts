@@ -348,6 +348,10 @@ export interface HighscoresSnapshotRecordDto {
   checkedAt: string;
 }
 
+export interface CronHighscoresWorldsDto {
+  worlds: string[];
+}
+
 export interface HighscoresSnapshotsListDto {
   data: HighscoresSnapshotRecordDto[];
   total: number;

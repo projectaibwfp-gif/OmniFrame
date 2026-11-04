@@ -13,6 +13,7 @@ export {
   isLoginStateValid,
   refreshSessionCookie,
   requireAuth,
+  revokeSessionsFromRequest,
   signSessionToken,
   storeLoginState,
   toSessionPayload,
@@ -22,4 +23,4 @@ export {
 
 export { issueSessionCookie } from './auth-google';
 export { createLoginState } from './auth-google';
-export { loadCurrentUser, upsertGoogleUser, upsertUser } from './auth-users';
+export { requireAdmin, upsertGoogleUser, upsertUser } from './auth-users';

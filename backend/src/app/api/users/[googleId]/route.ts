@@ -3,7 +3,7 @@ import type { ApiResponse, UsersListItemDto } from '@shared/api-contract';
 import { GoogleIdParamSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
 import { parseRouteParams } from '@/lib/request-validation';
-import { isAuthDenied, requireAuth } from '@/lib/auth';
+import { isAuthDenied, requireAdmin } from '@/lib/auth';
 import { ErrorCode } from '@/lib/errors';
 import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
@@ -19,7 +19,7 @@ export async function GET(
   request: NextRequest,
   props: { params: Promise<RouteParams> },
 ): Promise<NextResponse> {
-  const auth = await requireAuth(request);
+  const auth = await requireAdmin(request);
   if (isAuthDenied(auth)) {
     return auth.response;
   }

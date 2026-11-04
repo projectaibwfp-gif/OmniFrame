@@ -33,6 +33,7 @@ const existingAdminRow = {
   last_login_at: '2026-10-15 08:00:00+00',
   created_at: '2026-01-01 08:00:00+00',
   updated_at: '2026-10-15 08:00:00+00',
+  session_version: 0,
   was_created: false,
 };
 
@@ -46,6 +47,7 @@ function roleUpdateValue(): unknown {
 describe('upsertUser role handling', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
     dbMocks.getSql.mockReturnValue(dbMocks.sql);
     dbMocks.sql.mockResolvedValue([existingAdminRow]);
   });
@@ -61,5 +63,21 @@ describe('upsertUser role handling', () => {
     await upsertUser({ google_id: GOOGLE_ID, email: 'admin@example.com', role: 'moderator' });
 
     expect(roleUpdateValue()).toBe('moderator');
+  });
+
+  it('promotes a verified Google account listed in ADMIN_EMAILS', async () => {
+    vi.stubEnv('ADMIN_EMAILS', 'other@example.com, Admin@Example.com');
+
+    await upsertGoogleUser({ sub: GOOGLE_ID, email: 'admin@example.com', email_verified: true });
+
+    expect(roleUpdateValue()).toBe('admin');
+  });
+
+  it('does not promote an unverified Google account listed in ADMIN_EMAILS', async () => {
+    vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+
+    await upsertGoogleUser({ sub: GOOGLE_ID, email: 'admin@example.com', email_verified: false });
+
+    expect(roleUpdateValue()).toBeNull();
   });
 });

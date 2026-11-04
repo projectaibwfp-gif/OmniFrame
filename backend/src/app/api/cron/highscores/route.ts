@@ -1,7 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import type { ApiResponse, CronHighscoresWorldsDto } from '@shared/api-contract';
+import { CronHighscoresQuerySchema } from '@shared/api-schemas';
+import { errorResponse } from '@/lib/api-response';
+import { denyUnauthorizedCronRequest } from '@/lib/cron-auth';
+import { pruneExpiredHistory } from '@/lib/data-retention';
 import { ErrorCode } from '@/lib/errors';
 import { HIGHSCORE_VOCATIONS, type TibiaHighscoresVocation } from '@/lib/highscores-vocations';
+import { HttpStatus } from '@/lib/http-status';
 import { logError, logInfo } from '@/lib/logger';
+import { parseSearchParams } from '@/lib/request-validation';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
 
 const DEFAULT_CRON_WORLDS = 'Dia,Amera,Antica';
@@ -22,7 +29,8 @@ interface CronStats extends Record<string, unknown> {
 function readCronWorlds(): string[] {
   return (process.env.CRON_WORLDS ?? DEFAULT_CRON_WORLDS)
     .split(CRON_WORLDS_SEPARATOR)
-    .map((world) => world.trim());
+    .map((world) => world.trim())
+    .filter(Boolean);
 }
 
 async function collectVocation(
@@ -40,11 +48,53 @@ async function collectVocation(
   }
 }
 
-// TODO: Add authorization (e.g., shared secret or IP allowlist) before exposing
-// this endpoint beyond trusted callers. Current implementation is public.
-export async function POST(_request: NextRequest): Promise<NextResponse> {
+async function pruneHistory(): Promise<void> {
+  try {
+    logInfo('cron.prune', 'Pruned expired history', await pruneExpiredHistory());
+  } catch (error) {
+    logError('cron.prune', ErrorCode.DB_QUERY_FAILED, {}, error);
+  }
+}
+
+/** Lists the configured worlds so callers can run POST once per world. */
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const denied = denyUnauthorizedCronRequest(request);
+  if (denied) {
+    return denied;
+  }
+
+  return NextResponse.json<ApiResponse<CronHighscoresWorldsDto>>({
+    data: { worlds: readCronWorlds() },
+  });
+}
+
+/**
+ * Collects highscores for one world (`?world=`) or for every configured world.
+ * A single world per call keeps each run well inside `maxDuration`.
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const denied = denyUnauthorizedCronRequest(request);
+  if (denied) {
+    return denied;
+  }
+
+  const query = parseSearchParams(request, CronHighscoresQuerySchema, { scope: 'cron.highscores' });
+  if (!query.ok) {
+    return query.response;
+  }
+
+  const configuredWorlds = readCronWorlds();
+  const requestedWorld = query.data.world;
+  if (requestedWorld && !configuredWorlds.includes(requestedWorld)) {
+    return errorResponse(
+      `World ${requestedWorld} is not configured in CRON_WORLDS`,
+      HttpStatus.BAD_REQUEST,
+      ErrorCode.VALIDATION_FAILED,
+    );
+  }
+
+  const worlds = requestedWorld ? [requestedWorld] : configuredWorlds;
   const startTime = Date.now();
-  const worlds = readCronWorlds();
   const stats: CronStats = {
     worldsProcessed: 0,
     vocationsProcessed: 0,
@@ -63,6 +113,8 @@ export async function POST(_request: NextRequest): Promise<NextResponse> {
     }
     stats.worldsProcessed += 1;
   }
+
+  await pruneHistory();
 
   stats.duration = Date.now() - startTime;
   logInfo('cron.complete', 'Cron highscores collection completed', stats);

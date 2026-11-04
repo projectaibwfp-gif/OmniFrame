@@ -5,9 +5,11 @@
  */
 
 import {
+  booleanSchema,
   enumSchema,
   intFromStringSchema,
   objectSchema,
+  optional,
   stringSchema,
   withDefault,
   type Infer,
@@ -24,6 +26,13 @@ const SPELL_ID_MAX_LENGTH = 100;
 const HOUSE_ID_MIN = 1;
 const GOOGLE_ID_MAX_LENGTH = 64;
 const TARGET_NAME_MAX_LENGTH = 255;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_MAX_LENGTH = 320;
+const PROFILE_TEXT_MAX_LENGTH = 255;
+const PICTURE_URL_MAX_LENGTH = 2048;
+const PHONE_MAX_LENGTH = 20;
+const LOCALE_MAX_LENGTH = 35;
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const HIGHSCORES_MIN_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE_SIZE = 50;
@@ -49,6 +58,24 @@ export const CharacterProgressUpdateRequestSchema = objectSchema({
   targetKind: enumSchema(["boss", "creature"] as const),
   targetName: stringSchema({ maxLength: TARGET_NAME_MAX_LENGTH }),
   status: enumSchema(["first-time", "completed"] as const),
+});
+
+export const UpdateProfileRequestSchema = objectSchema({
+  phone: optional(stringSchema({ maxLength: PHONE_MAX_LENGTH })),
+  birthDate: optional(stringSchema({ pattern: ISO_DATE_PATTERN })),
+  description: optional(stringSchema()),
+});
+
+export const UpsertUserRequestSchema = objectSchema({
+  googleId: stringSchema({ maxLength: GOOGLE_ID_MAX_LENGTH }),
+  email: stringSchema({ pattern: EMAIL_PATTERN, maxLength: EMAIL_MAX_LENGTH }),
+  emailVerified: optional(booleanSchema()),
+  name: optional(stringSchema({ maxLength: PROFILE_TEXT_MAX_LENGTH })),
+  givenName: optional(stringSchema({ maxLength: PROFILE_TEXT_MAX_LENGTH })),
+  familyName: optional(stringSchema({ maxLength: PROFILE_TEXT_MAX_LENGTH })),
+  picture: optional(stringSchema({ maxLength: PICTURE_URL_MAX_LENGTH })),
+  locale: optional(stringSchema({ maxLength: LOCALE_MAX_LENGTH })),
+  role: optional(enumSchema(["admin", "user", "moderator"] as const)),
 });
 
 export const CharacterNameParamSchema = objectSchema({
@@ -98,6 +125,10 @@ export const HighscoresSnapshotsQuerySchema = objectSchema({
   sortDir: withDefault(enumSchema(["asc", "desc"] as const), "desc"),
 });
 
+export const CronHighscoresQuerySchema = objectSchema({
+  world: optional(stringSchema({ maxLength: WORLD_MAX_LENGTH })),
+});
+
 export type AuthGoogleRequestInput = Infer<typeof AuthGoogleRequestSchema>;
 export type ReferralCaptureRequestInput = Infer<
   typeof ReferralCaptureRequestSchema
@@ -108,6 +139,10 @@ export type LinkMainCharacterRequestInput = Infer<
 export type CharacterProgressUpdateRequestInput = Infer<
   typeof CharacterProgressUpdateRequestSchema
 >;
+export type UpdateProfileRequestInput = Infer<
+  typeof UpdateProfileRequestSchema
+>;
+export type UpsertUserRequestInput = Infer<typeof UpsertUserRequestSchema>;
 export type CharacterNameParamInput = Infer<typeof CharacterNameParamSchema>;
 export type WorldParamInput = Infer<typeof WorldParamSchema>;
 export type TibiaNameParamInput = Infer<typeof TibiaNameParamSchema>;
