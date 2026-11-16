@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-11-16T13:49:59.435Z"
+    commit: "4d09f8d689ce24e1209e4aa398b8d0cdfa690f9a"
+    frontend:
+      version: "0.38.0"
+      tag: "frontend-v0.38.0"
+      changed: true
+      commits:
+      - hash: "4d09f8d6"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-16T14:47:08+01:00"
+        message: "feat: background character lookups, compact history and resilient infrastructure"
+    backend:
+      version: "0.22.0"
+      tag: "backend-v0.22.0"
+      changed: true
+      commits:
+      - hash: "4d09f8d6"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-16T14:47:08+01:00"
+        message: "feat: background character lookups, compact history and resilient infrastructure"
   - date: "2026-11-16T13:21:29.434Z"
     commit: "2589c905fa7d7ef035a6a0dcfd31ebe3b34f965d"
     frontend:
