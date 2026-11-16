@@ -1,4 +1,20 @@
 releases:
+  - date: "2026-11-16T13:53:52.944Z"
+    commit: "26d3f74b42e76e72df60271a1c13a0d4b0547136"
+    frontend:
+      version: "0.38.0"
+      tag: "frontend-v0.38.0"
+      changed: false
+      commits: []
+    backend:
+      version: "0.22.1"
+      tag: "backend-v0.22.1"
+      changed: true
+      commits:
+      - hash: "26d3f74b"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-16T14:51:08+01:00"
+        message: "fix(db): free storage before compacting history so migrations fit the Neon limit"
   - date: "2026-11-16T13:49:59.435Z"
     commit: "4d09f8d689ce24e1209e4aa398b8d0cdfa690f9a"
     frontend:
