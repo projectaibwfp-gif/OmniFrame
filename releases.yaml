@@ -1,4 +1,24 @@
 releases:
+  - date: "2026-11-16T13:21:29.434Z"
+    commit: "2589c905fa7d7ef035a6a0dcfd31ebe3b34f965d"
+    frontend:
+      version: "0.37.1"
+      tag: "frontend-v0.37.1"
+      changed: true
+      commits:
+      - hash: "2589c905"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-16T14:12:21+01:00"
+        message: "fix: harden highscores storage and maintenance tooling"
+    backend:
+      version: "0.21.2"
+      tag: "backend-v0.21.2"
+      changed: true
+      commits:
+      - hash: "2589c905"
+        author: "Bartłomiej Wolski"
+        date: "2026-11-16T14:12:21+01:00"
+        message: "fix: harden highscores storage and maintenance tooling"
   - date: "2026-11-16T13:02:11.944Z"
     commit: "f5313ebd1ecf2d9fb0de893772f6f96681fa3804"
     frontend:
