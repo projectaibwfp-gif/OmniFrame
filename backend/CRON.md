@@ -54,7 +54,7 @@ w jednym wywołaniu. Świat spoza `CRON_WORLDS` daje `400`.
 
 ## Harmonogram
 
-**Co 4 godziny (GitHub Actions)**, plik `.github/workflows/cron-highscores.yml`.
+**Raz dziennie o 13:00 UTC, czyli 14:00 CET / 15:00 CEST (GitHub Actions)**, plik `.github/workflows/cron-highscores.yml`.
 Workflow pobiera listę światów z `GET /api/cron/highscores`, a potem wywołuje
 `POST /api/cron/highscores?world=<świat>` osobno dla każdego świata, więc każdy
 świat ma własny limit `maxDuration` (5 minut). Błąd jednego świata nie przerywa
@@ -97,9 +97,9 @@ Logi backendu mają scope `cron.*` (`cron.start`, `cron.vocation`, `cron.prune`,
 `cron.complete`, `cron.auth`).
 
 ```sql
--- Ile snapshotów zapisano w ostatnich 4 godzinach
+-- Ile snapshotów zapisano w ostatniej dobie
 SELECT COUNT(*) FROM character_highscores_snapshots
-WHERE checked_at > (NOW() AT TIME ZONE 'UTC') - INTERVAL '4 hours';
+WHERE checked_at > (NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours';
 
 -- Top 10 postaci po levelu na Dia
 SELECT character_name, vocation, rank, level, exact_experience, checked_at

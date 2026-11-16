@@ -158,7 +158,7 @@ Endpointy:
 - `GET /api/killstatistics/:world` - zwraca statystyki zabójstw TibiaData (`/v4/killstatistics/{world}`) dla podanego świata,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca unikalne postacie (po jednej na `(postać, świat)`) z paginacją, sortowaniem po `level` i filtrem po świecie; starsze snapshoty są dostępne w szczegółach wpisu,
 - `GET /api/cron/highscores` - zwraca światy z `CRON_WORLDS` (wymaga `Authorization: Bearer <CRON_AUTH_TOKEN>`),
-- `POST /api/cron/highscores?world=Dia` - pobiera i zapisuje do bazy graczy z highscores jednego świata (albo, bez `world`, wszystkich skonfigurowanych) dla każdej vocation i czyści historię starszą niż retencja; wymaga tokenu crona, GitHub Actions wywołuje go co 4 godziny osobno dla każdego świata,
+- `POST /api/cron/highscores?world=Dia` - pobiera i zapisuje do bazy graczy z highscores jednego świata (albo, bez `world`, wszystkich skonfigurowanych) dla każdej vocation i czyści historię starszą niż retencja; wymaga tokenu crona, GitHub Actions wywołuje go raz dziennie (13:00 UTC) osobno dla każdego świata,
 - `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
 - `GET /api/fansites` - zwraca promowane i wspierane fansite'y (TibiaData `v4/fansites`),
 - `GET /api/guild/:name` - zwraca szczegóły gildii (TibiaData `v4/guild/{name}`),
