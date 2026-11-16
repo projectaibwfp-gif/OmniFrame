@@ -40,7 +40,7 @@ describe('GET /api/highscores-snapshots', () => {
     snapshotsMocks.listHighscoresSnapshots.mockResolvedValue({
       data: [
         {
-          id: 1,
+          id: '00000000-0000-4000-8000-000000000001',
           characterName: 'Selibess',
           world: 'Dia',
           vocation: 'Elite Knight',
@@ -64,7 +64,7 @@ describe('GET /api/highscores-snapshots', () => {
     await expect(response.json()).resolves.toEqual({
       data: [
         {
-          id: 1,
+          id: '00000000-0000-4000-8000-000000000001',
           characterName: 'Selibess',
           world: 'Dia',
           vocation: 'Elite Knight',

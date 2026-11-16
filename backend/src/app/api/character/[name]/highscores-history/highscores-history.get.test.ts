@@ -19,7 +19,7 @@ describe('GET /api/character/:name/highscores-history', () => {
 
   it('returns snapshot history with total count', async () => {
     const snapshot = {
-      id: 7,
+      id: '00000000-0000-4000-8000-000000000007',
       characterName: 'Trollefar',
       world: 'Antica',
       vocation: 'Elite Knight',

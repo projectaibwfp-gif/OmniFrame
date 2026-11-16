@@ -7,19 +7,19 @@ vi.mock('../core/date-time', () => ({
 }));
 
 function createRecord(
-  id: number,
+  sequence: number,
   characterName: string,
   world: string,
   checkedAt: string,
 ): HighscoresSnapshotRecordDto {
   return {
-    id,
+    id: `snapshot-${sequence}`,
     characterName,
     world,
     vocation: 'Elite Knight',
     level: 100,
-    rank: id,
-    exactExperience: id * 1000,
+    rank: sequence,
+    exactExperience: sequence * 1000,
     checkedAt,
   };
 }
@@ -35,14 +35,14 @@ describe('groupSnapshotRecords', () => {
     const groups = groupSnapshotRecords(records);
 
     expect(groups).toHaveLength(2);
-    expect(groups[0].latest.id).toBe(1);
-    expect(groups[0].older.map((record) => record.id)).toEqual([2]);
+    expect(groups[0].latest.id).toBe('snapshot-1');
+    expect(groups[0].older.map((record) => record.id)).toEqual(['snapshot-2']);
   });
 
   it('keeps same-named characters from different worlds separate', () => {
     const records = [
       createRecord(1, 'Knight', 'Dia', '2026-09-10T12:00:00.000Z'),
-      createRecord(2, 'Knight', 'Amera', '2026-09-10T11:00:00.000Z'),
+      createRecord(2, 'Knight', 'Antica', '2026-09-10T11:00:00.000Z'),
     ];
 
     expect(groupSnapshotRecords(records)).toHaveLength(2);

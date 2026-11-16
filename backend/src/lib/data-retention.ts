@@ -32,7 +32,7 @@ export async function pruneExpiredHistory(): Promise<PruneResult> {
   const snapshotRows = (await sql`
     WITH deleted AS (
       DELETE FROM character_highscores_snapshots AS snapshots
-      WHERE snapshots.checked_at < (now() AT TIME ZONE 'UTC') - make_interval(days => ${snapshotDays})
+      WHERE snapshots.checked_at < now() - make_interval(days => ${snapshotDays})
         AND NOT EXISTS (
           SELECT 1
           FROM character_highscores_latest AS latest

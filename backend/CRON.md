@@ -7,8 +7,8 @@ Automatyczne pobieranie i zapisywanie danych postaci z Tibia highscores.
 ### Zmienne środowiskowe (`.env`)
 
 ```
-# Lista światów do skanowania (opcjonalne, domyślnie: Dia,Amera,Antica)
-CRON_WORLDS=Dia,Amera,Antica
+# Lista światów do skanowania (opcjonalne, domyślnie: Dia,Antica)
+CRON_WORLDS=Dia,Antica
 # Token wymagany w nagłówku Authorization: Bearer <token> (bez niego każde wywołanie dostaje 401)
 CRON_AUTH_TOKEN=change-me-cron-token
 # Retencja historii w dniach (opcjonalne)
@@ -25,7 +25,7 @@ curl -H "Authorization: Bearer $CRON_AUTH_TOKEN" https://yourdomain/api/cron/hig
 ```
 
 ```json
-{ "data": { "worlds": ["Dia", "Amera", "Antica"] } }
+{ "data": { "worlds": ["Dia", "Antica"] } }
 ```
 
 ### Zbieranie jednego świata
@@ -80,6 +80,10 @@ skonfigurowany.
   (klucz `(normalized_name, world)`). Służy do deduplikacji przy zapisie oraz do
   paginacji `GET /api/highscores-snapshots`.
 
+Unikalny indeks `(normalized_name, world, exact_experience)` chroni przed
+duplikatami przy równoległych runach; workflow ma też `concurrency`, więc
+run ręczny i z harmonogramu nie idą jednocześnie.
+
 Zapis jednej vocation to jedno zapytanie SQL (`unnest` całej paczki), które
 dopisuje zmienione snapshoty i aktualizuje `character_highscores_latest`.
 
@@ -99,7 +103,7 @@ Logi backendu mają scope `cron.*` (`cron.start`, `cron.vocation`, `cron.prune`,
 ```sql
 -- Ile snapshotów zapisano w ostatniej dobie
 SELECT COUNT(*) FROM character_highscores_snapshots
-WHERE checked_at > (NOW() AT TIME ZONE 'UTC') - INTERVAL '24 hours';
+WHERE checked_at > now() - INTERVAL '24 hours';
 
 -- Top 10 postaci po levelu na Dia
 SELECT character_name, vocation, rank, level, exact_experience, checked_at

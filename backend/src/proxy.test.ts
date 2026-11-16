@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createRequest } from '@/test/http';
-import { middleware } from './middleware';
+import { proxy } from './proxy';
 
 const API_URL = 'http://localhost/api/auth/logout';
 
@@ -11,9 +11,9 @@ function requestFrom(origin: string | null, method = 'POST') {
   });
 }
 
-describe('middleware CSRF origin check', () => {
+describe('proxy CSRF origin check', () => {
   it('rejects a mutation from a foreign origin', async () => {
-    const response = middleware(requestFrom('https://evil.example'));
+    const response = proxy(requestFrom('https://evil.example'));
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
@@ -22,25 +22,25 @@ describe('middleware CSRF origin check', () => {
   });
 
   it('accepts a mutation from the frontend origin', () => {
-    const response = middleware(requestFrom('http://localhost:4200'));
+    const response = proxy(requestFrom('http://localhost:4200'));
 
     expect(response.status).toBe(200);
   });
 
   it('accepts a mutation from the backend origin (Swagger UI)', () => {
-    const response = middleware(requestFrom('http://localhost'));
+    const response = proxy(requestFrom('http://localhost'));
 
     expect(response.status).toBe(200);
   });
 
   it('accepts a mutation without Origin from a non-browser client', () => {
-    const response = middleware(requestFrom(null));
+    const response = proxy(requestFrom(null));
 
     expect(response.status).toBe(200);
   });
 
   it('does not check safe methods', () => {
-    const response = middleware(requestFrom('https://evil.example', 'GET'));
+    const response = proxy(requestFrom('https://evil.example', 'GET'));
 
     expect(response.status).toBe(200);
   });

@@ -114,10 +114,9 @@ selektują surową kolumnę: `created_at AS "createdAt"`.
     zaokrąglane do 10:00, 10:15, 10:30, 10:45...). Każda postać zapisywana jest
     maksymalnie raz na bucket.
 30. `POST /api/cron/highscores` iteruje po światach (env `CRON_WORLDS`, domyślnie
-    `Dia,Amera,Antica`) i wszystkich 4 vocation, pobiera wszystkie strony
+    `Dia,Antica`) i wszystkich 4 vocation, pobiera wszystkie strony
     highscores i zapisuje do bazy. Zwraca statystyki (worlds/vocations processed,
-    characters collected, duration). Uruchamiany co 12 godzin przez GitHub Actions
-    lub Vercel Cron. Konfiguracja i testowanie: `backend/CRON.md`.
+    characters collected, duration). Uruchamiany raz dziennie przez GitHub Actions. Konfiguracja i testowanie: `backend/CRON.md`.
 31. `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc`
     zwraca snapshoty z paginacją, sortowaniem po `level` i filtrem po świecie.
 

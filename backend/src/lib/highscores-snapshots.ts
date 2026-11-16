@@ -27,7 +27,7 @@ interface LatestHighscoresSnapshotRow extends Omit<LatestHighscoresSnapshot, 'ch
 export const CHARACTER_HIGHSCORES_HISTORY_LIMIT = 500;
 
 interface HighscoresSnapshotRow {
-  id: number;
+  id: string;
   characterName: string;
   world: string;
   vocation: string;
@@ -60,7 +60,10 @@ function dedupeByCharacter(snapshots: HighscoresSnapshot[]): HighscoresSnapshot[
  * Persists highscores entries in one statement. An entry is stored only when it
  * is the first one for that character on that world or when its exact experience
  * differs from `character_highscores_latest`; unchanged entries are skipped.
- * The same statement moves `character_highscores_latest` to the new snapshot.
+ * The unique `(normalized_name, world, exact_experience)` index makes concurrent
+ * runs idempotent: an experience value seen before refreshes that snapshot
+ * instead of duplicating it. The same statement moves
+ * `character_highscores_latest` to the stored snapshot.
  */
 export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): Promise<void> {
   const entries = dedupeByCharacter(snapshots);
@@ -98,6 +101,12 @@ export async function saveHighscoresSnapshots(snapshots: HighscoresSnapshot[]): 
         (character_name, normalized_name, world, vocation, level, rank, exact_experience, checked_at)
         SELECT character_name, normalized_name, world, vocation, level, rank, exact_experience, ${now}
         FROM changed
+        ON CONFLICT (normalized_name, world, exact_experience) DO UPDATE
+        SET character_name = EXCLUDED.character_name,
+            vocation = EXCLUDED.vocation,
+            level = EXCLUDED.level,
+            rank = EXCLUDED.rank,
+            checked_at = EXCLUDED.checked_at
         RETURNING id, character_name, normalized_name, world, vocation, level, rank, exact_experience
       )
       INSERT INTO character_highscores_latest

@@ -227,7 +227,7 @@ W trybie dev Vite proxy przekazuje `/api/*` do
 cross-origin (`https://apiomniframe.vercel.app/api`) z `withCredentials`, a cookie
 sesji mają `SameSite=None; Secure` (szczegóły i powód braku rewrite'u w
 `frontend/README.md`). Mutacje z obcego `Origin` backend odrzuca (`403`,
-ochrona CSRF w `backend/src/middleware.ts`).
+ochrona CSRF w `backend/src/proxy.ts`).
 
 ## Routing frontendu
 

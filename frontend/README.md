@@ -46,7 +46,7 @@ Frontend wywołuje backend cross-origin pod adresem z `VITE_API_BASE_URL`.
 - w **produkcji** (build): domyślnie `https://apiomniframe.vercel.app/api` —
   aplikacja wywołuje backend bezpośrednio z `withCredentials`, a backend zwraca
   nagłówki CORS (`Access-Control-Allow-Origin`, `Access-Control-Allow-Credentials`)
-  z `middleware.ts`. Zmienną `VITE_API_BASE_URL` ustawiaj tylko, gdy backend jest
+  z `proxy.ts`. Zmienną `VITE_API_BASE_URL` ustawiaj tylko, gdy backend jest
   gdzie indziej.
 
 Cookie sesji są `HttpOnly`, `SameSite=None; Secure` w produkcji, więc przeglądarka
@@ -58,7 +58,7 @@ przesyła je przy wywołaniach cross-origin z credentialed request.
 
 Ponieważ cookie są wysyłane cross-site, backend odrzuca mutacje (`POST`, `PUT`,
 `PATCH`, `DELETE`) z nagłówkiem `Origin` spoza listy zaufanych originów
-(`403 CSRF_ORIGIN_NOT_ALLOWED`, `backend/src/middleware.ts`).
+(`403 CSRF_ORIGIN_NOT_ALLOWED`, `backend/src/proxy.ts`).
 
 ## Format daty i godziny
 

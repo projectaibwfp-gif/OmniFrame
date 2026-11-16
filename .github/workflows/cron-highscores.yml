@@ -22,6 +22,10 @@ permissions:
 jobs:
   cron:
     runs-on: ubuntu-latest
+    # Scheduled and manual collections queue instead of writing the same world in parallel.
+    concurrency:
+      group: cron-highscores-${{ inputs.check-only && 'check' || 'collect' }}
+      cancel-in-progress: false
     env:
       BACKEND_URL: ${{ secrets.BACKEND_URL }}
       CRON_AUTH_TOKEN: ${{ secrets.CRON_AUTH_TOKEN }}

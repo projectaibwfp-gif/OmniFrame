@@ -11,7 +11,7 @@ import { logError, logInfo } from '@/lib/logger';
 import { parseSearchParams } from '@/lib/request-validation';
 import { fetchHighscoresForWorldAndVocation } from '@/lib/tibiadata';
 
-const DEFAULT_CRON_WORLDS = 'Dia,Amera,Antica';
+const DEFAULT_CRON_WORLDS = 'Dia,Antica';
 const CRON_WORLDS_SEPARATOR = ',';
 
 export const dynamic = 'force-dynamic';

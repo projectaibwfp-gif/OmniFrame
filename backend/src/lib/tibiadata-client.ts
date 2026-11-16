@@ -1,7 +1,7 @@
 import { HttpStatus } from './http-status';
 import { asRecord, type JsonRecord } from './json-readers';
 
-const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://dev.tibiadata.com/v4';
+const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://api.tibiadata.com/v4';
 const DEFAULT_NOT_FOUND_MESSAGE = 'TibiaData resource not found';
 
 export const TIBIA_DATA_API_BASE_URL =

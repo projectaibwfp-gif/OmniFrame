@@ -26,7 +26,7 @@ describe('listHighscoresSnapshots', () => {
     dbMocks.sql
       .mockResolvedValueOnce([
         {
-          id: 1,
+          id: '00000000-0000-4000-8000-000000000001',
           characterName: 'Knight',
           world: 'Dia',
           vocation: 'Elite Knight',
@@ -36,7 +36,7 @@ describe('listHighscoresSnapshots', () => {
           checkedAt: '2026-09-10T12:00:00.000Z',
         },
         {
-          id: 2,
+          id: '00000000-0000-4000-8000-000000000002',
           characterName: 'Knight',
           world: 'Dia',
           vocation: 'Elite Knight',
@@ -86,7 +86,7 @@ describe('listCharacterHighscoresHistory', () => {
   it('returns limited history with canonical ISO timestamps', async () => {
     dbMocks.sql.mockResolvedValueOnce([
       {
-        id: 3,
+        id: '00000000-0000-4000-8000-000000000003',
         characterName: 'Trollefar',
         world: 'Antica',
         vocation: 'Elite Knight',
@@ -101,7 +101,7 @@ describe('listCharacterHighscoresHistory', () => {
 
     expect(history).toEqual([
       {
-        id: 3,
+        id: '00000000-0000-4000-8000-000000000003',
         characterName: 'Trollefar',
         world: 'Antica',
         vocation: 'Elite Knight',

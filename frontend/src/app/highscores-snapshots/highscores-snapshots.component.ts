@@ -55,7 +55,7 @@ export class HighscoresSnapshotsComponent {
     () => this.snapshots()?.totalPages ?? DEFAULT_TOTAL_PAGES,
   );
   protected readonly total = computed(() => this.snapshots()?.total ?? EMPTY_TOTAL);
-  protected readonly expandedCharacterId = signal<number | null>(null);
+  protected readonly expandedCharacterId = signal<string | null>(null);
   protected readonly groupedRecords = computed(() =>
     groupSnapshotRecords(this.snapshots()?.data ?? []),
   );
@@ -98,13 +98,13 @@ export class HighscoresSnapshotsComponent {
     this.snapshotsResource.reload();
   }
 
-  protected toggleCharacterDetails(characterId: number): void {
+  protected toggleCharacterDetails(characterId: string): void {
     this.expandedCharacterId.update((currentValue) =>
       currentValue === characterId ? null : characterId,
     );
   }
 
-  protected isCharacterDetailsExpanded(characterId: number): boolean {
+  protected isCharacterDetailsExpanded(characterId: string): boolean {
     return this.expandedCharacterId() === characterId;
   }
 

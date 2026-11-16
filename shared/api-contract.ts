@@ -338,7 +338,7 @@ export interface TibiaCharacterLookupDto {
 }
 
 export interface HighscoresSnapshotRecordDto {
-  id: number;
+  id: string;
   characterName: string;
   world: string;
   vocation: string;

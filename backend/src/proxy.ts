@@ -47,7 +47,7 @@ function applyCorsHeaders(response: NextResponse, requestOrigin: string | null):
   return response;
 }
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
   const requestOrigin = request.headers.get('origin');
 
   if (request.method === PREFLIGHT_METHOD) {
