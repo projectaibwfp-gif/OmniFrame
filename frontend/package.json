@@ -35,7 +35,7 @@
     "@angular/compiler-cli": "22.2.4",
     "@eslint/js": "^9.39.5",
     "angular-eslint": "^22.6.0",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.10",
