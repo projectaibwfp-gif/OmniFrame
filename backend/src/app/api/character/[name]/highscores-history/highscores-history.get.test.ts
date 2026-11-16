@@ -3,6 +3,7 @@ import { createRequest } from '@/test/http';
 
 const snapshotMocks = vi.hoisted(() => ({
   listCharacterHighscoresHistory: vi.fn(),
+  listCharacterMonthlyExperience: vi.fn(),
 }));
 
 vi.mock('@/lib/highscores-snapshots', () => snapshotMocks);
@@ -15,9 +16,10 @@ const URL = 'http://localhost/api/character/Trollefar/highscores-history';
 describe('GET /api/character/:name/highscores-history', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    snapshotMocks.listCharacterMonthlyExperience.mockResolvedValue([]);
   });
 
-  it('returns snapshot history with total count', async () => {
+  it('returns detailed snapshots, total count and monthly experience', async () => {
     const snapshot = {
       id: '00000000-0000-4000-8000-000000000007',
       characterName: 'Trollefar',
@@ -28,12 +30,16 @@ describe('GET /api/character/:name/highscores-history', () => {
       exactExperience: 1_050_000_000,
       checkedAt: '2026-10-15T08:00:00.000Z',
     };
+    const monthly = { world: 'Antica', month: '2026-09', exactExperience: 980_000_000 };
     snapshotMocks.listCharacterHighscoresHistory.mockResolvedValue([snapshot]);
+    snapshotMocks.listCharacterMonthlyExperience.mockResolvedValue([monthly]);
 
     const response = await GET(createRequest(URL), params('Trollefar'));
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ data: { data: [snapshot], total: 1 } });
+    await expect(response.json()).resolves.toEqual({
+      data: { data: [snapshot], total: 1, monthly: [monthly] },
+    });
     expect(snapshotMocks.listCharacterHighscoresHistory).toHaveBeenCalledWith('Trollefar');
   });
 

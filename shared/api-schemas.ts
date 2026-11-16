@@ -33,6 +33,8 @@ const PICTURE_URL_MAX_LENGTH = 2048;
 const PHONE_MAX_LENGTH = 20;
 const LOCALE_MAX_LENGTH = 35;
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HIGHSCORES_MIN_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE = 1;
 const HIGHSCORES_DEFAULT_PAGE_SIZE = 50;
@@ -80,6 +82,14 @@ export const UpsertUserRequestSchema = objectSchema({
 
 export const CharacterNameParamSchema = objectSchema({
   name: stringSchema({ maxLength: CHARACTER_NAME_MAX_LENGTH }),
+});
+
+export const CharacterLookupRequestSchema = objectSchema({
+  name: stringSchema({ maxLength: CHARACTER_NAME_MAX_LENGTH }),
+});
+
+export const CharacterLookupJobIdParamSchema = objectSchema({
+  jobId: stringSchema({ pattern: UUID_PATTERN }),
 });
 
 export const WorldParamSchema = objectSchema({
@@ -144,6 +154,12 @@ export type UpdateProfileRequestInput = Infer<
 >;
 export type UpsertUserRequestInput = Infer<typeof UpsertUserRequestSchema>;
 export type CharacterNameParamInput = Infer<typeof CharacterNameParamSchema>;
+export type CharacterLookupRequestInput = Infer<
+  typeof CharacterLookupRequestSchema
+>;
+export type CharacterLookupJobIdParamInput = Infer<
+  typeof CharacterLookupJobIdParamSchema
+>;
 export type WorldParamInput = Infer<typeof WorldParamSchema>;
 export type TibiaNameParamInput = Infer<typeof TibiaNameParamSchema>;
 export type TownParamInput = Infer<typeof TownParamSchema>;

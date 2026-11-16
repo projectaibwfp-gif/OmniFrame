@@ -1,4 +1,8 @@
-import type { HighscoresSnapshotRecordDto, HighscoresSnapshotsListDto } from '@shared/api-contract';
+import type {
+  HighscoresMonthlyExperienceDto,
+  HighscoresSnapshotRecordDto,
+  HighscoresSnapshotsListDto,
+} from '@shared/api-contract';
 import { getSql } from './db';
 import { toIsoUtc, type SqlTimestamp } from './date-time';
 import { ErrorCode } from './errors';
@@ -25,6 +29,14 @@ interface LatestHighscoresSnapshotRow extends Omit<LatestHighscoresSnapshot, 'ch
 }
 
 export const CHARACTER_HIGHSCORES_HISTORY_LIMIT = 500;
+// `month` is a DATE (first day of the month) selected as text: `YYYY-MM-DD`.
+const MONTH_TEXT_LENGTH = 'YYYY-MM'.length;
+
+interface MonthlyExperienceRow {
+  world: string;
+  month: string;
+  exactExperience: number;
+}
 
 interface HighscoresSnapshotRow {
   id: string;
@@ -190,6 +202,27 @@ export async function listCharacterHighscoresHistory(
   `) as HighscoresSnapshotRow[];
 
   return rows.map(mapSnapshotRow);
+}
+
+/** Monthly experience values of a character, newest month first. */
+export async function listCharacterMonthlyExperience(
+  characterName: string,
+): Promise<HighscoresMonthlyExperienceDto[]> {
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT world,
+           month::text AS month,
+           exact_experience AS "exactExperience"
+    FROM character_highscores_monthly
+    WHERE normalized_name = ${characterName.toLowerCase()}
+    ORDER BY month DESC, world ASC
+  `) as MonthlyExperienceRow[];
+
+  return rows.map((row) => ({
+    world: row.world,
+    month: row.month.slice(0, MONTH_TEXT_LENGTH),
+    exactExperience: Number(row.exactExperience),
+  }));
 }
 
 /**

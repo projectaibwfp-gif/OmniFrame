@@ -111,7 +111,9 @@ npm run db:migrate
 
 Runner `scripts/migrate.ts` tworzy tabelę `_migrations` i aplikuje po kolei
 wszystkie nowe pliki `backend/migration/*.sql` (posortowane po nazwie).
-Powtórne uruchomienie pomija już zaaplikowane migracje.
+Powtórne uruchomienie pomija już zaaplikowane migracje. Każdy plik idzie w jednej
+transakcji pod advisory lockiem, więc dwa równoległe runnery nie zaaplikują
+tej samej migracji dwa razy.
 
 Zasady pisania migracji:
 
@@ -119,7 +121,9 @@ Zasady pisania migracji:
 - statementy kończą się średnikiem na końcu linii (plik jest dzielony
   na pojedyncze statementy, bo driver HTTP Neona wykonuje je pojedynczo)
 - bez ciał funkcji PL/pgSQL `$$ ... $$` (zawierają średniki w środku)
-- pisz idempotentnie (`IF NOT EXISTS`, guardy) - brak transakcji na cały plik
+- plik wykonuje się w jednej transakcji; polecenia, których nie da się w niej
+  uruchomić (`VACUUM`, `CREATE INDEX CONCURRENTLY`), wymagają pierwszej linii
+  `-- migrate:no-transaction` i idempotentnych statementów
 
 ### 2. Uruchom backend
 
@@ -155,10 +159,13 @@ Endpointy:
 - `GET /api/creatures` - zwraca aktualnie boostowanego potwora TibiaData i pełną listę creature,
 - `GET /api/character/:name` - zwraca dane postaci TibiaData (`/v4/character/{name}`), próbę dokładnego EXP z highscores oraz historię sprawdzeń; każdy odczyt zapisuje rekord w bazie (`character_lookups`) razem z pełnym snapshotem danych postaci,
 - `GET /api/character/:name/highscores-history` - zwraca zapisane snapshoty highscores postaci (najnowsze pierwsze, maks. 500) wraz z liczbą wpisów,
+- `POST /api/character-lookups` - kolejkuje sprawdzenie postaci w tle (`{ name }` -> `202 { data: { jobId, status } }`); aktywne zadanie dla tej samej nazwy jest zwracane zamiast tworzenia nowego, przy pełnej kolejce zwraca `429` (`CHARACTER_LOOKUP_QUEUE_FULL`), a samo sprawdzenie startuje po odpowiedzi (`after()`),
+- `GET /api/character-lookups/:jobId` - zwraca status zadania sprawdzenia postaci (`pending`/`processing`/`completed`/`failed`), wynik (`TibiaCharacterLookupDto`) po zakończeniu, ostatni błąd i znaczniki czasu,
 - `GET /api/killstatistics/:world` - zwraca statystyki zabójstw TibiaData (`/v4/killstatistics/{world}`) dla podanego świata,
 - `GET /api/highscores-snapshots?page=1&pageSize=50&world=Dia&sortDir=desc` - zwraca unikalne postacie (po jednej na `(postać, świat)`) z paginacją, sortowaniem po `level` i filtrem po świecie; starsze snapshoty są dostępne w szczegółach wpisu,
 - `GET /api/cron/highscores` - zwraca światy z `CRON_WORLDS` (wymaga `Authorization: Bearer <CRON_AUTH_TOKEN>`),
 - `POST /api/cron/highscores?world=Dia` - pobiera i zapisuje do bazy graczy z highscores jednego świata (albo, bez `world`, wszystkich skonfigurowanych) dla każdej vocation i czyści historię starszą niż retencja; wymaga tokenu crona, GitHub Actions wywołuje go raz dziennie (13:00 UTC) osobno dla każdego świata,
+- `POST /api/cron/character-lookups` - przetwarza paczkę oczekujących i zawieszonych zadań sprawdzenia postaci i zwraca statystyki; wymaga tokenu crona, GitHub Actions wywołuje go co 15 minut,
 - `GET /api/news` - zwraca najnowsze newsy z oficjalnej strony Tibia (TibiaData `v4/news/latest`) z 15-minutowym cache w pamięci,
 - `GET /api/fansites` - zwraca promowane i wspierane fansite'y (TibiaData `v4/fansites`),
 - `GET /api/guild/:name` - zwraca szczegóły gildii (TibiaData `v4/guild/{name}`),
@@ -351,8 +358,11 @@ Repo jest wdrażane jako dwa projekty Vercel:
 - **GitHub Actions**: sekrety `BACKEND_URL` i `CRON_AUTH_TOKEN` (ta sama wartość
   co w Vercelu) dla `.github/workflows/cron-highscores.yml`.
 
-Migracje nie uruchamiają się podczas builda Vercel. Przed wdrożeniem zmian
-schematu uruchom `npm run db:migrate` lokalnie przeciwko bazie produkcyjnej.
+Build backendu w Vercelu (`backend/vercel.json`) uruchamia
+`npm run db:migrate && npm run build`. Migracje wykonują się tylko przy buildzie
+produkcyjnym (`VERCEL_ENV=production`); buildy preview je pomijają, bo
+korzystają z tej samej bazy. Nieudana migracja przerywa build, więc zostaje
+poprzedni deploy.
 
 ## Automatyczne release
 
@@ -363,6 +373,11 @@ każdym pushu bezpośrednio do `main`. Release startuje dopiero po zielonym
 aplikacji) i zielonym jobie `cron-check` (`cron-highscores.yml` w trybie
 `check-only`: sekrety crona i autoryzacja `GET /api/cron/highscores`); ten sam
 workflow CI uruchamia się dla każdego pull requesta.
+
+`.github/workflows/health-check.yml` sprawdza `GET /api/health` backendu
+(łącznie z połączeniem z bazą) i dostępność frontendu po każdym udanym deployu
+produkcyjnym Vercela (`deployment_status`) oraz co godzinę. Czerwony run
+oznacza, że produkcja nie działa.
 
 ### Użycie
 

@@ -16,6 +16,20 @@ if (fs.existsSync(envPath)) {
   }
 }
 
+const PRODUCTION_ENVIRONMENT = 'production';
+// Arbitrary application-wide key; every migration runner takes the same lock.
+const MIGRATION_LOCK_KEY = 2_026_111_601;
+const UNIQUE_VIOLATION_CODE = '23505';
+const MIGRATIONS_PRIMARY_KEY = '_migrations_pkey';
+const NO_TRANSACTION_MARKER = '-- migrate:no-transaction';
+
+// Preview deployments share the production DATABASE_URL, so only production builds migrate.
+const vercelEnvironment = process.env.VERCEL_ENV;
+if (vercelEnvironment && vercelEnvironment !== PRODUCTION_ENVIRONMENT) {
+  process.stdout.write(`skipping migrations for VERCEL_ENV=${vercelEnvironment}\n`);
+  process.exit(0);
+}
+
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   console.error('DATABASE_URL is not set (missing backend/.env?)');
@@ -35,6 +49,65 @@ function splitStatements(content: string): string[] {
     .filter((chunk) =>
       chunk.split('\n').some((line) => line.trim() !== '' && !line.trim().startsWith('--')),
     );
+}
+
+function isConcurrentlyAppliedError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const { code, constraint } = error as { code?: unknown; constraint?: unknown };
+  return code === UNIQUE_VIOLATION_CODE && constraint === MIGRATIONS_PRIMARY_KEY;
+}
+
+async function recordMigration(file: string): Promise<boolean> {
+  try {
+    await sql`INSERT INTO _migrations (name) VALUES (${file})`;
+    return true;
+  } catch (error) {
+    if (isConcurrentlyAppliedError(error)) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Commands such as VACUUM cannot run inside a transaction, so files marked with
+ * NO_TRANSACTION_MARKER run statement by statement and must be idempotent.
+ */
+async function applyMigrationWithoutTransaction(file: string, content: string): Promise<boolean> {
+  for (const statement of splitStatements(content)) {
+    await sql.query(statement);
+  }
+  return recordMigration(file);
+}
+
+/**
+ * Runs one migration file in a single transaction guarded by an advisory lock.
+ * The `_migrations` row is inserted right after taking the lock, so a runner that
+ * lost the race fails on the primary key and rolls back without touching the schema.
+ */
+async function applyMigrationInTransaction(file: string, content: string): Promise<boolean> {
+  try {
+    await sql.transaction([
+      sql`SELECT pg_advisory_xact_lock(${MIGRATION_LOCK_KEY})`,
+      sql`INSERT INTO _migrations (name) VALUES (${file})`,
+      ...splitStatements(content).map((statement) => sql.query(statement)),
+    ]);
+    return true;
+  } catch (error) {
+    if (isConcurrentlyAppliedError(error)) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+function applyMigration(file: string): Promise<boolean> {
+  const content = fs.readFileSync(path.join(migrationDir, file), 'utf8');
+  return content.trimStart().startsWith(NO_TRANSACTION_MARKER)
+    ? applyMigrationWithoutTransaction(file, content)
+    : applyMigrationInTransaction(file, content);
 }
 
 async function main(): Promise<void> {
@@ -58,13 +131,12 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const content = fs.readFileSync(path.join(migrationDir, file), 'utf8');
-    for (const statement of splitStatements(content)) {
-      await sql.query(statement);
+    if (await applyMigration(file)) {
+      process.stdout.write(`applied: ${file}\n`);
+      appliedCount++;
+    } else {
+      process.stdout.write(`skipped: ${file} (applied by a concurrent runner)\n`);
     }
-    await sql`INSERT INTO _migrations (name) VALUES (${file})`;
-    process.stdout.write(`applied: ${file}\n`);
-    appliedCount++;
   }
 
   process.stdout.write(

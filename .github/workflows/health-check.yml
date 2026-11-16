@@ -1,0 +1,46 @@
+name: Health check
+
+on:
+  schedule:
+    - cron: "17 * * * *" # Co godzinę
+  workflow_dispatch:
+  # Vercel reports every finished deployment as a GitHub deployment status.
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       contains(github.event.deployment.environment, 'Production'))
+    runs-on: ubuntu-latest
+    env:
+      BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      FRONTEND_URL: https://omniframe.vercel.app
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check backend health
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "::error::Missing GitHub Actions secret BACKEND_URL"
+            exit 1
+          fi
+          # Retries cover a deployment that is still warming up right after the alias switch.
+          if ! curl -sS -f --max-time 20 --retry 5 --retry-delay 15 --retry-all-errors \
+            "${BACKEND_URL}/api/health"; then
+            echo "::error::Backend ${BACKEND_URL}/api/health is not healthy"
+            exit 1
+          fi
+
+      - name: Check frontend availability
+        run: |
+          if ! curl -sS -f -o /dev/null --max-time 20 --retry 5 --retry-delay 15 --retry-all-errors \
+            "$FRONTEND_URL"; then
+            echo "::error::Frontend ${FRONTEND_URL} is not reachable"
+            exit 1
+          fi

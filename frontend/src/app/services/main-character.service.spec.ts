@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpStatusCode, provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -10,9 +10,11 @@ import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-
 import type { AuthCurrentUserDto } from '@shared/api-contract';
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthService } from '../auth/auth.service';
+import { ApiError } from '../core/api/api-error';
 import { MainCharacterService } from './main-character.service';
 
-const REFRESH_PATH = '/auth/me/main-character/refresh';
+const MAIN_CHARACTER_PATH = '/auth/me/main-character';
+const REFRESH_PATH = `${MAIN_CHARACTER_PATH}/refresh`;
 const CHARACTER_NAME = 'Bubble';
 
 function buildUser(characterName: string | null, level = 100): AuthCurrentUserDto {
@@ -48,6 +50,7 @@ function flushPromises(): Promise<void> {
 describe('MainCharacterService', () => {
   let authService: AuthService;
   let httpTesting: HttpTestingController;
+  let mainCharacterService: MainCharacterService;
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
@@ -59,7 +62,7 @@ describe('MainCharacterService', () => {
     });
     authService = TestBed.inject(AuthService);
     httpTesting = TestBed.inject(HttpTestingController);
-    TestBed.inject(MainCharacterService);
+    mainCharacterService = TestBed.inject(MainCharacterService);
   });
 
   afterEach(() => {
@@ -102,5 +105,36 @@ describe('MainCharacterService', () => {
 
     expectRefresh().flush({ data: { user: buildUser('Other Knight') } });
     await flushPromises();
+  });
+
+  it('links the character and stores the unwrapped user', async () => {
+    const linking = mainCharacterService.link(` ${CHARACTER_NAME} `);
+
+    const request = httpTesting.expectOne((req) => req.url.endsWith(MAIN_CHARACTER_PATH));
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual({ name: CHARACTER_NAME });
+    request.flush({ data: { user: buildUser(CHARACTER_NAME) } });
+    await linking;
+    TestBed.tick();
+
+    expectNoRefresh();
+    expect(authService.user()?.mainCharacter?.name).toBe(CHARACTER_NAME);
+  });
+
+  it('rejects a failed link with the backend ApiError', async () => {
+    const linking = mainCharacterService.link(CHARACTER_NAME);
+
+    httpTesting
+      .expectOne((req) => req.url.endsWith(MAIN_CHARACTER_PATH))
+      .flush(
+        { error: { code: 'CHARACTER_NOT_FOUND', message: 'Character not found' } },
+        { status: HttpStatusCode.NotFound, statusText: 'Not Found' },
+      );
+
+    await expect(linking).rejects.toBeInstanceOf(ApiError);
+    await expect(linking).rejects.toMatchObject({
+      code: 'CHARACTER_NOT_FOUND',
+      status: HttpStatusCode.NotFound,
+    });
   });
 });

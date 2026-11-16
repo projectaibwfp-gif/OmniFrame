@@ -33,9 +33,14 @@ Opcjonalne zmienne:
 - `ADMIN_EMAILS` - lista emaili rozdzielona przecinkami; zweryfikowane konto Google
   z tej listy dostaje rolę `admin` przy każdym logowaniu. Lista tylko nadaje rolę:
   żeby odebrać admina, usuń email z listy, a potem zmień rolę przez `POST /api/users`.
-- `HIGHSCORES_SNAPSHOT_RETENTION_DAYS` (domyślnie `365`) i
-  `CHARACTER_LOOKUP_RETENTION_DAYS` (domyślnie `90`) - retencja historii czyszczonej
-  przy każdym uruchomieniu crona. Ostatni snapshot postaci nie jest usuwany.
+- `HIGHSCORES_SNAPSHOT_RETENTION_DAYS` (domyślnie `30`) i
+  `CHARACTER_LOOKUP_RETENTION_DAYS` (domyślnie `30`) - retencja historii czyszczonej
+  przy każdym uruchomieniu crona. Starsze snapshoty highscores zostają jako jedna
+  wartość EXP na miesiąc (`character_highscores_monthly`). Ostatni snapshot i
+  ostatnie wyszukiwanie postaci (z pełnym JSON-em, fallback przy awarii TibiaData)
+  nie są usuwane; starsze wyszukiwania trzymają tylko podsumowanie bez JSON-a.
+  Ten sam krok usuwa zakończone joby wyszukiwania postaci (`completed`/`failed`)
+  starsze niż doba.
 - `CHARACTER_SNAPSHOT_TTL_MINUTES` - TTL cache'u profilu postaci pobieranego z bazy (domyślnie `15`). Jeśli w tabeli `character_lookups` mamy snapshot młodszy niż TTL, endpoint `GET /api/character/:name` zwraca go bez odpytywania TibiaData. Ustaw `0`, aby zawsze pobierać dane na żywo.
 
 ## Uruchomienie lokalne
@@ -61,10 +66,13 @@ Swagger UI jest dostępny pod `http://localhost:3000/swagger`, a specyfikacja Op
 - `POST /api/auth/logout` - wylogowanie; unieważnia refresh tokeny użytkownika na wszystkich urządzeniach,
 - `GET /api/cron/highscores` - lista światów z `CRON_WORLDS` (token crona),
 - `POST /api/cron/highscores?world=Dia` - zbiera highscores jednego świata albo, bez `world`, wszystkich (token crona),
+- `POST /api/cron/character-lookups` - przetwarza paczkę oczekujących i zawieszonych zadań sprawdzenia postaci (token crona),
 - `GET /api/auth/me/character-progress` - statusy bossów i potworów dla głównej postaci,
 - `PUT /api/auth/me/character-progress` - zapis statusu dla bossa lub potwora głównej postaci,
 - `PUT /api/auth/me/main-character/refresh` - odświeżenie podpiętej głównej postaci z TibiaData,
 - `GET /api/character/:name/highscores-history` - historia snapshotów highscores postaci (maks. 500, najnowsze pierwsze),
+- `POST /api/character-lookups` - kolejkuje sprawdzenie postaci w tle (`202`, aktywne zadanie dla tej samej nazwy jest zwracane ponownie, `429` przy pełnej kolejce),
+- `GET /api/character-lookups/:jobId` - status, wynik i błąd zadania sprawdzenia postaci,
 - `GET /api/news` - najnowsze newsy Tibii (TibiaData `v4/news/latest`, cache 15 min),
 - `GET /api/fansites` - promowane i wspierane fansite'y (TibiaData `v4/fansites`),
 - `GET /api/guild/:name` - szczegóły gildii (TibiaData `v4/guild/{name}`),

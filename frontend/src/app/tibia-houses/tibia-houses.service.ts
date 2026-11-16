@@ -1,21 +1,17 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { TibiaHouseDto, TibiaHousesOverviewDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 @Injectable({ providedIn: 'root' })
 export class TibiaHousesService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getHouses(world: string, town: string): Observable<TibiaHousesOverviewDto> {
-    return getApiData(
-      this.http,
-      `/houses/${encodeURIComponent(world)}/${encodeURIComponent(town)}`,
-    );
+    return this.apiClient.get(`/houses/${encodeURIComponent(world)}/${encodeURIComponent(town)}`);
   }
 
   getHouse(world: string, houseId: number): Observable<TibiaHouseDto> {
-    return getApiData(this.http, `/house/${encodeURIComponent(world)}/${houseId}`);
+    return this.apiClient.get(`/house/${encodeURIComponent(world)}/${houseId}`);
   }
 }

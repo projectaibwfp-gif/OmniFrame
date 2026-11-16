@@ -1,20 +1,19 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { UsersListItemDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 export type User = UsersListItemDto;
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getUsers(): Observable<User[]> {
-    return getApiData(this.http, '/users');
+    return this.apiClient.get('/users');
   }
 
   getUserByGoogleId(googleId: string): Observable<User> {
-    return getApiData(this.http, `/users/${encodeURIComponent(googleId)}`);
+    return this.apiClient.get(`/users/${encodeURIComponent(googleId)}`);
   }
 }

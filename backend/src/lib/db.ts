@@ -1,6 +1,10 @@
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { neon, neonConfig, type NeonQueryFunction } from '@neondatabase/serverless';
 import { ErrorCode } from './errors';
 import { logError, logWarn } from './logger';
+import { createRetryingFetch } from './retry';
+
+const NEON_RETRY_ATTEMPTS = 3;
+const NEON_RETRY_BASE_DELAY_MS = 200;
 
 let client: NeonQueryFunction<false, false> | undefined;
 
@@ -13,6 +17,12 @@ export function getSql(): NeonQueryFunction<false, false> {
       throw new Error('DATABASE_URL environment variable is not set');
     }
 
+    // Neon's HTTP driver answers SQL errors with 4xx, so only network failures
+    // and gateway statuses (cold compute, proxy hiccups) are retried.
+    neonConfig.fetchFunction = createRetryingFetch((input, init) => fetch(input, init), {
+      attempts: NEON_RETRY_ATTEMPTS,
+      baseDelayMs: NEON_RETRY_BASE_DELAY_MS,
+    });
     client = neon(connectionString);
   }
 

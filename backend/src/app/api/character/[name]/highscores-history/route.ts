@@ -4,7 +4,10 @@ import { CharacterNameParamSchema } from '@shared/api-schemas';
 import { errorResponse } from '@/lib/api-response';
 import { parseRouteParams } from '@/lib/request-validation';
 import { ErrorCode } from '@/lib/errors';
-import { listCharacterHighscoresHistory } from '@/lib/highscores-snapshots';
+import {
+  listCharacterHighscoresHistory,
+  listCharacterMonthlyExperience,
+} from '@/lib/highscores-snapshots';
 import { HttpStatus } from '@/lib/http-status';
 import { logError } from '@/lib/logger';
 
@@ -28,9 +31,12 @@ export async function GET(
   const characterName = validation.data.name;
 
   try {
-    const snapshots = await listCharacterHighscoresHistory(characterName);
+    const [snapshots, monthly] = await Promise.all([
+      listCharacterHighscoresHistory(characterName),
+      listCharacterMonthlyExperience(characterName),
+    ]);
     return NextResponse.json<ApiResponse<CharacterHighscoresHistoryDto>>({
-      data: { data: snapshots, total: snapshots.length },
+      data: { data: snapshots, total: snapshots.length, monthly },
     });
   } catch (error) {
     logError('character.highscores-history', ErrorCode.DB_QUERY_FAILED, { characterName }, error);

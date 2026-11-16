@@ -56,6 +56,34 @@ przesyła je przy wywołaniach cross-origin z credentialed request.
 > przekazuje wiarygodnie `Set-Cookie` z external rewrite, co łamie logowanie
 > (błąd `Invalid login state`).
 
+### ApiClient i błędy API
+
+Serwisy wołają backend przez `ApiClient` (`src/app/core/api/api-client.ts`),
+nie przez `HttpClient` bezpośrednio:
+
+- `get` / `post` / `put` / `patch` / `delete` przyjmują ścieżkę względną
+  (`'/users'`) i budują URL z `API_BASE_URL`,
+- domyślnie rozpakowują kopertę `ApiResponse<T>` (`{ data }`); dla endpointów
+  bez koperty (np. `/highscores-snapshots`) przekaż `{ unwrapData: false }`,
+- opcje `params` i `context` (np. `withSkippedAuthInterceptor()`) trafiają do
+  `HttpClient` bez zmian,
+- `HttpErrorResponse` jest mapowany na `ApiError` (`code`, `message`, `status`)
+  z `src/app/core/api/api-error.ts` na podstawie `ApiErrorResponseDto`; gdy body
+  ma inny kształt, `code` to `UNKNOWN_ERROR` (lub `NETWORK_ERROR` przy braku
+  połączenia), a `message` to bezpieczny komunikat zastępczy. Strażnik typu:
+  `isApiErrorResponseDto()`.
+
+Wyszukiwanie postaci (`/character`) działa jako zadanie w tle:
+`TibiaCharacterService` wysyła `POST /api/character-lookups`, a potem odpytuje
+`GET /api/character-lookups/:jobId` co `CHARACTER_LOOKUP_POLL_INTERVAL_MS`, najwyżej
+przez `CHARACTER_LOOKUP_MAX_WAIT_MS`. Status `failed`, przekroczenie czasu i `429`
+trafiają do widoku jako `ApiError`.
+
+Interceptory (`credentials`, `auth` z odświeżaniem sesji i globalny
+`httpErrorInterceptor`) nadal widzą surowy `HttpErrorResponse`. Komunikat dla
+UI bierz z `extractApiErrorMessage()` / `resourceErrorMessage()`, a status
+sprawdzaj przez `isHttpErrorStatus()` - obsługują oba typy błędów.
+
 Ponieważ cookie są wysyłane cross-site, backend odrzuca mutacje (`POST`, `PUT`,
 `PATCH`, `DELETE`) z nagłówkiem `Origin` spoza listy zaufanych originów
 (`403 CSRF_ORIGIN_NOT_ALLOWED`, `backend/src/proxy.ts`).

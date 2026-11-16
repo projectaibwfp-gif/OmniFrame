@@ -1,14 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { TibiaKillStatisticsWorldDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 @Injectable({ providedIn: 'root' })
 export class TibiaKillStatisticsService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getKillStatistics(world: string): Observable<TibiaKillStatisticsWorldDto> {
-    return getApiData(this.http, `/killstatistics/${encodeURIComponent(world)}`);
+    return this.apiClient.get(`/killstatistics/${encodeURIComponent(world)}`);
   }
 }

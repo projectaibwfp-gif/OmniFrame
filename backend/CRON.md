@@ -12,8 +12,8 @@ CRON_WORLDS=Dia,Antica
 # Token wymagany w nagłówku Authorization: Bearer <token> (bez niego każde wywołanie dostaje 401)
 CRON_AUTH_TOKEN=change-me-cron-token
 # Retencja historii w dniach (opcjonalne)
-HIGHSCORES_SNAPSHOT_RETENTION_DAYS=365
-CHARACTER_LOOKUP_RETENTION_DAYS=90
+HIGHSCORES_SNAPSHOT_RETENTION_DAYS=30
+CHARACTER_LOOKUP_RETENTION_DAYS=30
 ```
 
 ## Użycie
@@ -79,6 +79,11 @@ skonfigurowany.
 - **`character_highscores_latest`** - ostatni wpis per postać i świat
   (klucz `(normalized_name, world)`). Służy do deduplikacji przy zapisie oraz do
   paginacji `GET /api/highscores-snapshots`.
+- **`character_highscores_monthly`** - jedna wartość EXP per postać, świat i
+  miesiąc (UTC). Każdy run crona przenosi tu snapshoty starsze niż
+  `HIGHSCORES_SNAPSHOT_RETENTION_DAYS` (domyślnie 30 dni) - zostaje najnowsza
+  wartość z miesiąca - i usuwa je z historii szczegółowej. Snapshot wskazywany
+  przez `character_highscores_latest` zostaje zawsze.
 
 Unikalny indeks `(normalized_name, world, exact_experience)` chroni przed
 duplikatami przy równoległych runach; workflow ma też `concurrency`, więc
@@ -155,3 +160,65 @@ Krok `Verify cron secrets`: brakuje sekretu `BACKEND_URL` albo `CRON_AUTH_TOKEN`
 (nazwa brakującego sekretu jest w logu). Krok `Fetch configured worlds` z `401`:
 sekret w GitHub ma inną wartość niż `CRON_AUTH_TOKEN` w Vercelu. Prawdziwe
 wywołanie trwa tyle, ile zbieranie świata (do 5 minut).
+
+## Cron Character Lookups
+
+`POST /api/character-lookups` zapisuje zadanie w tabeli `character_lookup_jobs`
+(migracja `025_character_lookup_jobs.sql`) i uruchamia je po odpowiedzi przez
+`after()`. Cron dobiera zadania, których to wywołanie nie dokończyło.
+
+### Wywołanie
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $CRON_AUTH_TOKEN" \
+  http://localhost:3000/api/cron/character-lookups
+```
+
+Odpowiedź:
+
+```json
+{
+  "data": {
+    "expired": 0,
+    "claimed": 3,
+    "completed": 2,
+    "retried": 1,
+    "failed": 0,
+    "duration": 8200
+  }
+}
+```
+
+### Zasady przetwarzania
+
+Stałe są w `src/lib/character-lookup-jobs.ts` i `src/lib/character-lookup-worker.ts`.
+
+- Zadania są przejmowane jednym `UPDATE ... WHERE id IN (SELECT ... FOR UPDATE
+SKIP LOCKED LIMIT n)`, który zwiększa `attempts`, więc równoległe wywołania
+  nie dostaną tego samego zadania.
+- Jedno sprawdzenie ma limit `CHARACTER_LOOKUP_TIMEOUT_MS` (45 s); paczka liczy
+  `CHARACTER_LOOKUP_BATCH_SIZE` (5) zadań przetwarzanych po kolei, co mieści się
+  w `maxDuration` (5 minut).
+- Błąd wraca zadanie do `pending`, aż do `CHARACTER_LOOKUP_MAX_ATTEMPTS` (3)
+  prób, potem zadanie ma status `failed`. Nieistniejąca postać kończy się
+  `failed` od razu.
+- Zadanie w `processing` dłużej niż `CHARACTER_LOOKUP_STUCK_AFTER_SECONDS`
+  (5 minut) jest przejmowane ponownie; jeśli wykorzystało już ostatnią próbę,
+  dostaje `failed` (licznik `expired`).
+- Aktywne zadanie (`pending`/`processing`) dla danej nazwy jest najwyżej jedno
+  (częściowy indeks unikalny). Przy `CHARACTER_LOOKUP_MAX_ACTIVE_JOBS` (200)
+  aktywnych zadaniach nowe zgłoszenia dostają `429`.
+
+### Harmonogram
+
+Co 15 minut, plik `.github/workflows/cron-character-lookups.yml` (te same
+sekrety `BACKEND_URL` i `CRON_AUTH_TOKEN` co cron highscores). Workflow można
+uruchomić ręcznie (`workflow_dispatch`); kolejne runy czekają w kolejce zamiast
+działać równolegle.
+
+### Monitoring
+
+Logi: `scope: "characterLookupJob.batch"` (statystyki paczki),
+`"characterLookupJob.retry"`, `"characterLookupJob.failed"` i
+`"cron.characterLookups"`.

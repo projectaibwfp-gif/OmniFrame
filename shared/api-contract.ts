@@ -337,6 +337,45 @@ export interface TibiaCharacterLookupDto {
   history: TibiaCharacterHistoryEntryDto[];
 }
 
+export type CharacterLookupJobStatus =
+  "pending" | "processing" | "completed" | "failed";
+
+export interface CharacterLookupRequestDto {
+  name: string;
+}
+
+export interface CharacterLookupJobAcceptedDto {
+  jobId: string;
+  status: CharacterLookupJobStatus;
+}
+
+export type CharacterLookupJobErrorCode =
+  | "CHARACTER_NOT_FOUND"
+  | "CHARACTER_LOOKUP_TIMEOUT"
+  | "CHARACTER_LOOKUP_FAILED"
+  | "CHARACTER_LOOKUP_STUCK";
+
+export interface CharacterLookupJobDto {
+  jobId: string;
+  status: CharacterLookupJobStatus;
+  result?: TibiaCharacterLookupDto;
+  errorCode?: CharacterLookupJobErrorCode;
+  error?: string;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+}
+
+export interface CronCharacterLookupsStatsDto {
+  expired: number;
+  claimed: number;
+  completed: number;
+  cached: number;
+  retried: number;
+  failed: number;
+  duration: number;
+}
+
 export interface HighscoresSnapshotRecordDto {
   id: string;
   characterName: string;
@@ -364,9 +403,18 @@ export interface HighscoresSnapshotsListDto {
   worlds: string[];
 }
 
+/** Experience at the end of a calendar month (UTC), kept after detailed snapshots expire. */
+export interface HighscoresMonthlyExperienceDto {
+  world: string;
+  /** `YYYY-MM` */
+  month: string;
+  exactExperience: number;
+}
+
 export interface CharacterHighscoresHistoryDto {
   data: HighscoresSnapshotRecordDto[];
   total: number;
+  monthly: HighscoresMonthlyExperienceDto[];
 }
 
 export interface TibiaKillStatisticsEntryDto {

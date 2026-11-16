@@ -351,48 +351,73 @@
         ></span>
       </button>
       @if (isHighscoresHistoryExpanded()) {
-        @if (highscoresHistory().length > 0) {
-          <div class="history-table-wrapper app-table-wrap">
-            <table class="history-table app-table">
-              <thead>
-                <tr>
-                  <th>Kiedy</th>
-                  <th>Zmiana EXP</th>
-                  <th>Lvl</th>
-                  <th>Ranking prof</th>
-                  <th>Doświadczenie</th>
-                  <th>Świat</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (entry of highscoresHistory(); track entry.id; let idx = $index) {
+        @if (hasHighscoresHistory()) {
+          @if (highscoresHistory().length > 0) {
+            <div class="history-table-wrapper app-table-wrap">
+              <table class="history-table app-table">
+                <thead>
                   <tr>
-                    <td class="text-mono">{{ entry.checkedAt | appDateTime }}</td>
-                    <td class="text-mono text-right">
-                      @if (idx < highscoresHistory().length - 1) {
-                        @let prevExp = highscoresHistory()[idx + 1].exactExperience;
-                        @if (entry.exactExperience > prevExp) {
-                          <span class="badge badge-gain"
-                            >+{{ entry.exactExperience - prevExp | appNumber }}</span
-                          >
-                        } @else if (entry.exactExperience < prevExp) {
-                          <span class="badge badge-loss">{{
-                            entry.exactExperience - prevExp | appNumber
-                          }}</span>
-                        } @else {
-                          <span class="badge badge-neutral">—</span>
-                        }
-                      }
-                    </td>
-                    <td class="text-center">{{ entry.level }}</td>
-                    <td class="text-center">{{ entry.rank }}</td>
-                    <td class="text-mono text-right">{{ entry.exactExperience | appNumber }}</td>
-                    <td>{{ entry.world }}</td>
+                    <th>Kiedy</th>
+                    <th>Zmiana EXP</th>
+                    <th>Lvl</th>
+                    <th>Ranking prof</th>
+                    <th>Doświadczenie</th>
+                    <th>Świat</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  @for (entry of highscoresHistory(); track entry.id; let idx = $index) {
+                    <tr>
+                      <td class="text-mono">{{ entry.checkedAt | appDateTime }}</td>
+                      <td class="text-mono text-right">
+                        @if (idx < highscoresHistory().length - 1) {
+                          @let prevExp = highscoresHistory()[idx + 1].exactExperience;
+                          @if (entry.exactExperience > prevExp) {
+                            <span class="badge badge-gain"
+                              >+{{ entry.exactExperience - prevExp | appNumber }}</span
+                            >
+                          } @else if (entry.exactExperience < prevExp) {
+                            <span class="badge badge-loss">{{
+                              entry.exactExperience - prevExp | appNumber
+                            }}</span>
+                          } @else {
+                            <span class="badge badge-neutral">—</span>
+                          }
+                        }
+                      </td>
+                      <td class="text-center">{{ entry.level }}</td>
+                      <td class="text-center">{{ entry.rank }}</td>
+                      <td class="text-mono text-right">{{ entry.exactExperience | appNumber }}</td>
+                      <td>{{ entry.world }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+          @if (highscoresMonthly().length > 0) {
+            <p class="eyebrow">Starsze miesiące</p>
+            <div class="history-table-wrapper app-table-wrap">
+              <table class="history-table app-table">
+                <thead>
+                  <tr>
+                    <th>Miesiąc</th>
+                    <th>Doświadczenie</th>
+                    <th>Świat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entry of highscoresMonthly(); track entry.month + entry.world) {
+                    <tr>
+                      <td class="text-mono">{{ entry.month }}</td>
+                      <td class="text-mono text-right">{{ entry.exactExperience | appNumber }}</td>
+                      <td>{{ entry.world }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
         } @else {
           <p class="empty-data">Brak highscores snapshots dla tej postaci.</p>
         }

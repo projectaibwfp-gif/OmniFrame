@@ -114,8 +114,9 @@ projektu).
     34a. Dane z API ładuj przez `rxResource({ params, stream })` - anuluje poprzedni
     request przy zmianie parametrów. Wartość czytaj przez `resourceValueOr()`, a
     komunikat błędu przez `resourceErrorMessage()` z `core/resource-value.ts`
-    (`Resource.value()` rzuca w stanie błędu). Serwisy rozpakowują `{ data }`
-    przez `getApiData()` z `config/api-data.ts` - bez lokalnych typów `XResponse`.
+    (`Resource.value()` rzuca w stanie błędu). Serwisy wołają backend przez
+    `ApiClient` z `core/api/api-client.ts` (rozpakowuje `{ data }`, mapuje błędy
+    na `ApiError`) - bez `HttpClient` i lokalnych typów `XResponse`.
     34b. Liczby formatuj pipe'em `| appNumber` albo `formatNumber()` z
     `core/number-format.ts`, nie `toLocaleString()` / własnym `Intl.NumberFormat`.
 

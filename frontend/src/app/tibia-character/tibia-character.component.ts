@@ -9,17 +9,16 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { HttpStatusCode } from '@angular/common/http';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { TibiaCharacterDto, TibiaCharacterExperienceDto } from '@shared/api-contract';
 import { AppDateTimePipe } from '../core/date-time.pipe';
-import { extractApiErrorMessage, isHttpErrorStatus } from '../core/http-error';
+import { extractApiErrorMessage } from '../core/http-error';
 import { AppNumberPipe } from '../core/number-format.pipe';
 import { resourceValueOr } from '../core/resource-value';
 import { MainCharacterService } from '../services/main-character.service';
-import { TibiaCharacterService } from './tibia-character.service';
+import { isCharacterNotFoundError, TibiaCharacterService } from './tibia-character.service';
 
 const MAX_RECENT_CHARACTER_NAMES = 12;
 const CHARACTER_NAME_REQUIRED = 'Podaj nazwę postaci.';
@@ -67,6 +66,12 @@ export class TibiaCharacterComponent {
 
   protected readonly isHighscoresHistoryExpanded = signal(false);
   protected readonly highscoresHistory = computed(() => this.highscoresHistoryPage()?.data ?? []);
+  protected readonly highscoresMonthly = computed(
+    () => this.highscoresHistoryPage()?.monthly ?? [],
+  );
+  protected readonly hasHighscoresHistory = computed(
+    () => this.highscoresHistory().length > 0 || this.highscoresMonthly().length > 0,
+  );
 
   private readonly tibiaCharacterService = inject(TibiaCharacterService);
   private readonly mainCharacterService = inject(MainCharacterService);
@@ -193,7 +198,7 @@ export class TibiaCharacterComponent {
       return null;
     }
 
-    return isHttpErrorStatus(error, HttpStatusCode.NotFound)
+    return isCharacterNotFoundError(error)
       ? `Nie znaleziono postaci "${this.requestedName()}".`
       : CHARACTER_LOOKUP_ERROR;
   }

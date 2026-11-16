@@ -1,39 +1,72 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import type { ApiErrorResponseDto } from '@shared/api-contract';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import {
+  ApiError,
+  isApiErrorResponseDto,
+  NETWORK_API_ERROR_CODE,
+  UNKNOWN_API_ERROR_CODE,
+} from './api/api-error';
 
 export const DEFAULT_HTTP_ERROR_MESSAGE = 'Nie udało się pobrać danych z API.';
 export const NETWORK_ERROR_MESSAGE = 'Brak połączenia z serwerem. Sprawdź sieć i spróbuj ponownie.';
 export const UNAUTHORIZED_ERROR_MESSAGE = 'Sesja wygasła. Zaloguj się ponownie.';
 
+const NETWORK_ERROR_STATUS = 0;
+
 export function isHttpErrorStatus(error: unknown, status: number): boolean {
-  return error instanceof HttpErrorResponse && error.status === status;
+  return (
+    (error instanceof ApiError || error instanceof HttpErrorResponse) && error.status === status
+  );
 }
 
 export function extractApiErrorMessage(
   error: unknown,
   fallback: string = DEFAULT_HTTP_ERROR_MESSAGE,
 ): string {
-  if (!(error instanceof HttpErrorResponse)) {
+  if (error instanceof ApiError && !error.httpError) {
+    return error.message;
+  }
+
+  const httpError = error instanceof ApiError ? error.httpError : error;
+
+  if (!(httpError instanceof HttpErrorResponse)) {
     return fallback;
   }
 
-  if (error.status === 0) {
+  if (httpError.status === NETWORK_ERROR_STATUS) {
     return NETWORK_ERROR_MESSAGE;
   }
 
-  if (error.status === 401) {
+  if (httpError.status === HttpStatusCode.Unauthorized) {
     return UNAUTHORIZED_ERROR_MESSAGE;
   }
 
-  return readErrorBodyMessage(error.error) ?? fallback;
+  return readErrorBodyMessage(httpError.error) ?? fallback;
+}
+
+export function toApiError(httpError: HttpErrorResponse): ApiError {
+  const body: unknown = httpError.error;
+
+  if (isApiErrorResponseDto(body)) {
+    return new ApiError(body.error.code, body.error.message, httpError);
+  }
+
+  return new ApiError(
+    resolveFallbackErrorCode(httpError.status),
+    extractApiErrorMessage(httpError),
+    httpError,
+  );
+}
+
+function resolveFallbackErrorCode(status: number): string {
+  return status === NETWORK_ERROR_STATUS ? NETWORK_API_ERROR_CODE : UNKNOWN_API_ERROR_CODE;
 }
 
 function readErrorBodyMessage(value: unknown): string | null {
-  const body = value as ApiErrorResponseDto | { message?: string } | string | null;
-
-  if (isApiErrorResponse(body)) {
-    return body.error.message;
+  if (isApiErrorResponseDto(value)) {
+    return value.error.message;
   }
+
+  const body = value as { message?: string } | string | null;
 
   if (body && typeof body === 'object' && typeof body.message === 'string') {
     return body.message;
@@ -44,14 +77,4 @@ function readErrorBodyMessage(value: unknown): string | null {
   }
 
   return null;
-}
-
-function isApiErrorResponse(value: unknown): value is ApiErrorResponseDto {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    'error' in value &&
-    !!(value as { error: unknown }).error &&
-    typeof (value as ApiErrorResponseDto).error.message === 'string'
-  );
 }

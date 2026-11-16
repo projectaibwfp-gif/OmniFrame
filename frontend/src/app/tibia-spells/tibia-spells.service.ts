@@ -1,18 +1,17 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { TibiaSpellDetailsDto, TibiaSpellsOverviewDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 @Injectable({ providedIn: 'root' })
 export class TibiaSpellsService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getSpells(): Observable<TibiaSpellsOverviewDto> {
-    return getApiData(this.http, '/spells');
+    return this.apiClient.get('/spells');
   }
 
   getSpell(spellId: string): Observable<TibiaSpellDetailsDto> {
-    return getApiData(this.http, `/spell/${encodeURIComponent(spellId)}`);
+    return this.apiClient.get(`/spell/${encodeURIComponent(spellId)}`);
   }
 }

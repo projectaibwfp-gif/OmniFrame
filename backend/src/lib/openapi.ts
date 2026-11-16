@@ -1,5 +1,7 @@
 import { HIGHSCORES_MAX_PAGE_SIZE } from '@shared/api-schemas';
 import { APP_DISPLAY_NAME } from '@shared/runtime-config';
+import { CHARACTER_LOOKUP_JOB_STATUSES } from './validation';
+import { CharacterLookupJobErrorCode } from './character-lookup-jobs';
 
 export const openApiDocument = {
   openapi: '3.0.3',
@@ -252,10 +254,113 @@ export const openApiDocument = {
         },
       },
     },
+    '/api/character-lookups': {
+      post: {
+        tags: ['TibiaData'],
+        summary:
+          'Queues a background character lookup or returns the active job for the same name.',
+        security: [{ sessionCookie: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['name'],
+                properties: { name: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          202: {
+            description: 'Lookup job accepted',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['data'],
+                  properties: {
+                    data: {
+                      type: 'object',
+                      required: ['jobId', 'status'],
+                      properties: {
+                        jobId: { type: 'string', format: 'uuid' },
+                        status: { type: 'string', enum: CHARACTER_LOOKUP_JOB_STATUSES },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          429: { $ref: '#/components/responses/ApiError' },
+          500: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/character-lookups/{jobId}': {
+      get: {
+        tags: ['TibiaData'],
+        summary: 'Returns the status of a character lookup job and its result once completed.',
+        security: [{ sessionCookie: [] }],
+        parameters: [
+          {
+            name: 'jobId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Lookup job payload',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['data'],
+                  properties: {
+                    data: {
+                      type: 'object',
+                      required: ['jobId', 'status', 'createdAt', 'startedAt', 'finishedAt'],
+                      properties: {
+                        jobId: { type: 'string', format: 'uuid' },
+                        status: { type: 'string', enum: CHARACTER_LOOKUP_JOB_STATUSES },
+                        result: {
+                          type: 'object',
+                          description: 'Character lookup payload, present when completed.',
+                        },
+                        errorCode: {
+                          type: 'string',
+                          enum: Object.values(CharacterLookupJobErrorCode),
+                          description: 'Machine-readable failure reason.',
+                        },
+                        error: { type: 'string', description: 'Readable failure reason.' },
+                        createdAt: { type: 'string', format: 'date-time' },
+                        startedAt: { type: 'string', format: 'date-time', nullable: true },
+                        finishedAt: { type: 'string', format: 'date-time', nullable: true },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { $ref: '#/components/responses/ApiError' },
+          401: { $ref: '#/components/responses/ApiError' },
+          404: { $ref: '#/components/responses/ApiError' },
+          500: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
     '/api/character/{name}/highscores-history': {
       get: {
         tags: ['TibiaData'],
-        summary: 'Returns stored highscores snapshots of one character, newest first.',
+        summary:
+          'Returns highscores snapshots of one character from the retention window (newest first) and one experience value per older month.',
         parameters: [
           {
             name: 'name',
@@ -265,7 +370,7 @@ export const openApiDocument = {
           },
         ],
         responses: {
-          200: { description: 'Character highscores history payload' },
+          200: { description: 'Character highscores history payload (data, total, monthly)' },
           400: { $ref: '#/components/responses/ApiError' },
           500: { $ref: '#/components/responses/ApiError' },
         },
@@ -587,6 +692,21 @@ export const openApiDocument = {
           200: { description: 'Cron ingestion completed' },
           400: { $ref: '#/components/responses/ApiError' },
           401: { $ref: '#/components/responses/ApiError' },
+        },
+      },
+    },
+    '/api/cron/character-lookups': {
+      post: {
+        tags: ['Cron'],
+        summary:
+          'Processes a batch of pending and stuck character lookup jobs and returns their stats.',
+        security: [{ cronToken: [] }],
+        responses: {
+          200: {
+            description: 'Batch processed (expired, claimed, completed, cached, retried, failed)',
+          },
+          401: { $ref: '#/components/responses/ApiError' },
+          500: { $ref: '#/components/responses/ApiError' },
         },
       },
     },

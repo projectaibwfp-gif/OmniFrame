@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { DashboardDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 export type DashboardOverview = DashboardDto['overview'];
 export type DashboardActivityPoint = DashboardDto['activity'][number];
@@ -12,9 +11,9 @@ export type DashboardData = DashboardDto;
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getDashboard(): Observable<DashboardData> {
-    return getApiData(this.http, '/dashboard');
+    return this.apiClient.get('/dashboard');
   }
 }

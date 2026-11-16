@@ -1,0 +1,48 @@
+name: Cron - Character Lookups
+
+on:
+  schedule:
+    - cron: "*/15 * * * *" # Co 15 minut dobiera zadania, których nie dokończył after()
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    # Runs queue instead of overlapping; SKIP LOCKED would make overlap safe but wasteful.
+    concurrency:
+      group: cron-character-lookups
+      cancel-in-progress: false
+    env:
+      BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      CRON_AUTH_TOKEN: ${{ secrets.CRON_AUTH_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Verify cron secrets
+        run: |
+          missing=""
+          [ -n "$BACKEND_URL" ] || missing="$missing BACKEND_URL"
+          [ -n "$CRON_AUTH_TOKEN" ] || missing="$missing CRON_AUTH_TOKEN"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing GitHub Actions secrets:${missing} (see backend/CRON.md)"
+            exit 1
+          fi
+
+      - name: Process character lookup jobs
+        run: |
+          # --max-time stays above the route's maxDuration=300s (see backend/CRON.md).
+          response=$(curl -sS --max-time 310 -w '\n%{http_code}' \
+            -H "Authorization: Bearer ${CRON_AUTH_TOKEN}" \
+            -X POST "${BACKEND_URL}/api/cron/character-lookups")
+          status=$(tail -n 1 <<< "$response")
+          body=$(sed '$d' <<< "$response")
+          if [ "$status" != "200" ]; then
+            echo "::error::POST /api/cron/character-lookups returned ${status}: ${body}"
+            echo "::error::401 means CRON_AUTH_TOKEN differs between GitHub and Vercel (see backend/CRON.md)"
+            exit 1
+          fi
+          echo "Stats: $(jq -c '.data' <<< "$body")"

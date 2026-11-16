@@ -85,9 +85,12 @@ selektują surową kolumnę: `created_at AS "createdAt"`.
 19. Statementy kończą się średnikiem na końcu linii - plik jest dzielony na
     pojedyncze statementy, bo driver HTTP Neona wykonuje je pojedynczo.
 20. Bez ciał funkcji PL/pgSQL `$$ ... $$` (zawierają średniki w środku).
-21. Pisz idempotentnie (`IF NOT EXISTS`, guardy) - nie ma transakcji na cały plik.
-22. Migracje nie uruchamiają się na buildzie Vercel. Przed wdrożeniem zmiany
-    schematu odpal `npm run db:migrate` lokalnie przeciwko właściwej bazie.
+21. Plik wykonuje się w jednej transakcji pod advisory lockiem. Polecenia, których
+    nie da się uruchomić w transakcji (`VACUUM`, `CREATE INDEX CONCURRENTLY`),
+    wymagają pierwszej linii `-- migrate:no-transaction` i muszą być idempotentne.
+22. Migracje uruchamia produkcyjny build Vercel (`backend/vercel.json`) przed
+    `next build`; buildy preview je pomijają (`VERCEL_ENV`). Nowy kod nie może
+    działać bez migracji z tego samego commita - build ją wykona pierwszy.
 
 ## TibiaData i cache
 
@@ -109,10 +112,9 @@ selektują surową kolumnę: `created_at AS "createdAt"`.
 
 ## Highscores snapshots i cron
 
-29. Wszystkie postacie z highscores lądują w tabeli
-    `character_highscores_snapshots` z bucketowaniem 15-minutowym (timestampy
-    zaokrąglane do 10:00, 10:15, 10:30, 10:45...). Każda postać zapisywana jest
-    maksymalnie raz na bucket.
+29. Postacie z highscores lądują w `character_highscores_snapshots` tylko przy
+    zmianie EXP (unikalny indeks na postać, świat i EXP). Po 30 dniach cron
+    zwija je do `character_highscores_monthly` (jedna wartość EXP na miesiąc).
 30. `POST /api/cron/highscores` iteruje po światach (env `CRON_WORLDS`, domyślnie
     `Dia,Antica`) i wszystkich 4 vocation, pobiera wszystkie strony
     highscores i zapisuje do bazy. Zwraca statystyki (worlds/vocations processed,

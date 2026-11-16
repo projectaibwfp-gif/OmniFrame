@@ -20,7 +20,7 @@ interface CharacterSnapshotRow {
   characterSnapshot: TibiaCharacterDto | null;
 }
 
-function normalizeCharacterName(name: string): string {
+export function normalizeCharacterName(name: string): string {
   return name.trim().toLowerCase();
 }
 
@@ -38,6 +38,11 @@ function mapCharacterLookupRow(row: CharacterLookupRow): TibiaCharacterHistoryEn
   };
 }
 
+/**
+ * Records a lookup and keeps the full payload only on this newest row: older
+ * lookups of the character drop their JSON and debug log, so storage stays flat
+ * while the latest payload remains the fallback when TibiaData is down.
+ */
 export async function saveCharacterLookup(
   character: TibiaCharacterDto,
   requestedName: string,
@@ -45,32 +50,42 @@ export async function saveCharacterLookup(
 ): Promise<void> {
   const sql = getSql();
   const characterSnapshot = JSON.stringify(character);
+  const normalizedName = normalizeCharacterName(requestedName);
   await sql`
-    INSERT INTO character_lookups (
-      requested_name,
-      normalized_name,
-      world,
-      vocation,
-      level,
-      experience_status,
-      exact_experience,
-      experience_rank,
-      requested_by_sub,
-      lookup_log,
-      character_snapshot
-    ) VALUES (
-      ${character.name},
-      ${normalizeCharacterName(requestedName)},
-      ${character.world},
-      ${character.vocation},
-      ${character.level},
-      ${character.experience?.status ?? null},
-      ${character.experience?.exactExperience ?? null},
-      ${character.experience?.rank ?? null},
-      ${requestedBySub},
-      ${character.experience?.lookupLog ?? null},
-      CAST(${characterSnapshot} AS jsonb)
+    WITH inserted AS (
+      INSERT INTO character_lookups (
+        requested_name,
+        normalized_name,
+        world,
+        vocation,
+        level,
+        experience_status,
+        exact_experience,
+        experience_rank,
+        requested_by_sub,
+        lookup_log,
+        character_snapshot
+      ) VALUES (
+        ${character.name},
+        ${normalizedName},
+        ${character.world},
+        ${character.vocation},
+        ${character.level},
+        ${character.experience?.status ?? null},
+        ${character.experience?.exactExperience ?? null},
+        ${character.experience?.rank ?? null},
+        ${requestedBySub},
+        ${character.experience?.lookupLog ?? null},
+        CAST(${characterSnapshot} AS jsonb)
+      )
+      RETURNING id
     )
+    UPDATE character_lookups
+    SET character_snapshot = NULL,
+        lookup_log = NULL
+    WHERE normalized_name = ${normalizedName}
+      AND id NOT IN (SELECT id FROM inserted)
+      AND (character_snapshot IS NOT NULL OR lookup_log IS NOT NULL)
   `;
 }
 

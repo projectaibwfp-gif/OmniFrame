@@ -30,8 +30,9 @@ describe('POST /api/cron/highscores', () => {
     vi.stubEnv('CRON_WORLDS', 'Dia');
     vi.stubEnv('CRON_AUTH_TOKEN', CRON_TOKEN);
     retentionMocks.pruneExpiredHistory.mockResolvedValue({
-      snapshotsDeleted: 0,
+      snapshotsRolledUp: 0,
       lookupsDeleted: 0,
+      lookupJobsDeleted: 0,
     });
   });
 

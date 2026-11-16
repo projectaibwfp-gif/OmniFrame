@@ -1,14 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { TibiaFansitesDto } from '@shared/api-contract';
-import { getApiData } from '../config/api-data';
+import { ApiClient } from '../core/api/api-client';
 
 @Injectable({ providedIn: 'root' })
 export class TibiaFansitesService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getFansites(): Observable<TibiaFansitesDto> {
-    return getApiData(this.http, '/fansites');
+    return this.apiClient.get('/fansites');
   }
 }

@@ -1,8 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { HighscoresSnapshotsListDto } from '@shared/api-contract';
-import { buildApiUrl } from '../config/api.config';
+import { ApiClient } from '../core/api/api-client';
+
+const HIGHSCORES_SNAPSHOTS_PATH = '/highscores-snapshots';
 
 interface HighscoresSnapshotsQuery {
   page: number;
@@ -13,7 +15,7 @@ interface HighscoresSnapshotsQuery {
 
 @Injectable({ providedIn: 'root' })
 export class HighscoresSnapshotsService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getSnapshots(query: HighscoresSnapshotsQuery): Observable<HighscoresSnapshotsListDto> {
     let params = new HttpParams()
@@ -25,8 +27,6 @@ export class HighscoresSnapshotsService {
       params = params.set('world', query.world);
     }
 
-    return this.http.get<HighscoresSnapshotsListDto>(buildApiUrl('/highscores-snapshots'), {
-      params,
-    });
+    return this.apiClient.get(HIGHSCORES_SNAPSHOTS_PATH, { params, unwrapData: false });
   }
 }

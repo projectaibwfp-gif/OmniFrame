@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, type Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
 import type {
-  ApiResponse,
   BoostableBossesDto,
   CharacterProgressListDto,
   CharacterProgressStatus,
@@ -11,25 +9,24 @@ import type {
   CharacterProgressUpdateResponseDto,
   TibiaCreaturesDto,
 } from '@shared/api-contract';
-import { getApiData, unwrapApiData } from '../config/api-data';
-import { buildApiUrl } from '../config/api.config';
+import { ApiClient } from '../core/api/api-client';
 
 const CHARACTER_PROGRESS_PATH = '/auth/me/character-progress';
 
 @Injectable({ providedIn: 'root' })
 export class BoostableBossesService {
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
 
   getBoostableBosses(): Observable<BoostableBossesDto> {
-    return getApiData(this.http, '/boostable-bosses');
+    return this.apiClient.get('/boostable-bosses');
   }
 
   getCreatures(): Observable<TibiaCreaturesDto> {
-    return getApiData(this.http, '/creatures');
+    return this.apiClient.get('/creatures');
   }
 
   getCharacterProgress(): Observable<CharacterProgressListDto> {
-    return getApiData(this.http, CHARACTER_PROGRESS_PATH);
+    return this.apiClient.get(CHARACTER_PROGRESS_PATH);
   }
 
   updateCharacterProgress(
@@ -43,11 +40,6 @@ export class BoostableBossesService {
       status,
     };
 
-    return this.http
-      .put<ApiResponse<CharacterProgressUpdateResponseDto>>(
-        buildApiUrl(CHARACTER_PROGRESS_PATH),
-        payload,
-      )
-      .pipe(map(unwrapApiData));
+    return this.apiClient.put(CHARACTER_PROGRESS_PATH, payload);
   }
 }

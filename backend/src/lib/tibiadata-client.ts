@@ -1,5 +1,6 @@
 import { HttpStatus } from './http-status';
 import { asRecord, type JsonRecord } from './json-readers';
+import { createRetryingFetch } from './retry';
 
 const DEFAULT_TIBIA_DATA_API_BASE_URL = 'https://api.tibiadata.com/v4';
 const DEFAULT_NOT_FOUND_MESSAGE = 'TibiaData resource not found';
@@ -8,6 +9,8 @@ export const TIBIA_DATA_API_BASE_URL =
   process.env.TIBIA_DATA_API_BASE_URL?.trim() || DEFAULT_TIBIA_DATA_API_BASE_URL;
 
 export const TIBIA_DATA_TIMEOUT_MS = 10_000;
+const TIBIA_DATA_RETRY_ATTEMPTS = 3;
+const TIBIA_DATA_RETRY_BASE_DELAY_MS = 500;
 
 export class TibiaDataNotFoundError extends Error {
   constructor(message: string) {
@@ -16,11 +19,15 @@ export class TibiaDataNotFoundError extends Error {
   }
 }
 
+// Global fetch is resolved per call so test stubs installed after import still apply.
+const fetchTibiaDataWithRetry = createRetryingFetch(
+  (input, init) => fetch(input, init),
+  { attempts: TIBIA_DATA_RETRY_ATTEMPTS, baseDelayMs: TIBIA_DATA_RETRY_BASE_DELAY_MS },
+  () => ({ cache: 'no-store', signal: AbortSignal.timeout(TIBIA_DATA_TIMEOUT_MS) }),
+);
+
 export function requestTibiaData(path: string): Promise<Response> {
-  return fetch(`${TIBIA_DATA_API_BASE_URL}${path}`, {
-    cache: 'no-store',
-    signal: AbortSignal.timeout(TIBIA_DATA_TIMEOUT_MS),
-  });
+  return fetchTibiaDataWithRetry(`${TIBIA_DATA_API_BASE_URL}${path}`);
 }
 
 /**

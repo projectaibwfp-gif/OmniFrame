@@ -39,9 +39,9 @@ describe('API error contract', () => {
   });
 
   it('documents character highscores history with its shared DTO shape', () => {
-    const history: CharacterHighscoresHistoryDto = { data: [], total: 0 };
+    const history: CharacterHighscoresHistoryDto = { data: [], total: 0, monthly: [] };
 
-    expect(Object.keys(history)).toEqual(['data', 'total']);
+    expect(Object.keys(history)).toEqual(['data', 'total', 'monthly']);
     expect(
       openApiDocument.paths['/api/character/{name}/highscores-history'].get.responses,
     ).toHaveProperty('200');

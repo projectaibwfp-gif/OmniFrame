@@ -1,8 +1,7 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpStatusCode } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import type {
-  ApiResponse,
   AuthCurrentUserResponseDto,
   AuthGoogleResponseDto,
   AuthGoogleUserDto,
@@ -10,21 +9,23 @@ import type {
   ReferralCaptureResponseDto,
 } from '@shared/api-contract';
 import { DEFAULT_GOOGLE_CLIENT_ID } from '@shared/runtime-config';
-import { buildApiUrl } from '../config/api.config';
+import { ApiClient } from '../core/api/api-client';
+import { ApiError } from '../core/api/api-error';
 import { withSkippedAuthInterceptor } from './auth-http-context';
 import { type AuthRole, type AuthUser } from './auth-session';
 import { mapAuthUser } from './auth-user.mapper';
 
 const ADMIN_ROLE: AuthRole = 'admin';
+const CURRENT_USER_PATH = '/auth/me';
+const LOGIN_STATE_PATH = '/auth/state';
+const GOOGLE_LOGIN_PATH = '/auth/google';
+const REFRESH_SESSION_PATH = '/auth/refresh';
+const LOGOUT_PATH = '/auth/logout';
+const REFERRAL_CAPTURE_PATH = '/referrals/capture';
 
 type GoogleCredentialResponse = {
   credential?: string;
 };
-
-type AuthResponse = ApiResponse<AuthGoogleResponseDto>;
-type CurrentUserResponse = ApiResponse<AuthCurrentUserResponseDto>;
-type AuthStateResponse = ApiResponse<AuthStateDto>;
-type CaptureReferralResponse = ApiResponse<ReferralCaptureResponseDto>;
 
 declare global {
   interface Window {
@@ -69,7 +70,7 @@ export class AuthService {
   readonly user = signal<AuthUser | null>(null);
   readonly loginError = signal<string | null>(null);
 
-  private readonly http = inject(HttpClient);
+  private readonly apiClient = inject(ApiClient);
   private initializePromise: Promise<void> | null = null;
   private refreshPromise: Promise<boolean> | null = null;
   private initialized = false;
@@ -79,12 +80,12 @@ export class AuthService {
   async restoreSession(): Promise<void> {
     try {
       const response = await firstValueFrom(
-        this.http.get<CurrentUserResponse>(buildApiUrl('/auth/me')),
+        this.apiClient.get<AuthCurrentUserResponseDto>(CURRENT_USER_PATH),
       );
-      this.setUserFromApi(response.data.user);
+      this.setUserFromApi(response.user);
       this.loginError.set(null);
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status !== 401) {
+      if (error instanceof ApiError && error.status !== HttpStatusCode.Unauthorized) {
         console.warn('Could not restore auth session', error);
       }
 
@@ -134,8 +135,8 @@ export class AuthService {
 
   async captureReferral(referralCode: string): Promise<void> {
     await firstValueFrom(
-      this.http.post<CaptureReferralResponse>(
-        buildApiUrl('/referrals/capture'),
+      this.apiClient.post<ReferralCaptureResponseDto>(
+        REFERRAL_CAPTURE_PATH,
         {
           referralCode,
         },
@@ -148,7 +149,7 @@ export class AuthService {
 
   logout(): void {
     this.user.set(null);
-    void firstValueFrom(this.http.post(buildApiUrl('/auth/logout'), {})).catch(() => undefined);
+    void firstValueFrom(this.apiClient.post(LOGOUT_PATH, {})).catch(() => undefined);
   }
 
   handleSessionExpired(): void {
@@ -203,11 +204,11 @@ export class AuthService {
 
   private async fetchLoginState(): Promise<string> {
     const response = await firstValueFrom(
-      this.http.get<AuthStateResponse>(buildApiUrl('/auth/state'), {
+      this.apiClient.get<AuthStateDto>(LOGIN_STATE_PATH, {
         context: withSkippedAuthInterceptor(),
       }),
     );
-    return response.data.state;
+    return response.state;
   }
 
   private loadGoogleScript(): Promise<void> {
@@ -255,12 +256,12 @@ export class AuthService {
 
     try {
       const result = await firstValueFrom(
-        this.http.post<AuthResponse>(buildApiUrl('/auth/google'), {
+        this.apiClient.post<AuthGoogleResponseDto>(GOOGLE_LOGIN_PATH, {
           credential: response.credential,
           state: this.loginState,
         }),
       );
-      this.setUserFromApi(result.data.user);
+      this.setUserFromApi(result.user);
       this.loginError.set(null);
       this.loginState = '';
     } catch (error) {
@@ -274,14 +275,14 @@ export class AuthService {
   private async refreshSessionInternal(): Promise<boolean> {
     try {
       await firstValueFrom(
-        this.http.post(buildApiUrl('/auth/refresh'), {}, { context: withSkippedAuthInterceptor() }),
+        this.apiClient.post(REFRESH_SESSION_PATH, {}, { context: withSkippedAuthInterceptor() }),
       );
       const response = await firstValueFrom(
-        this.http.get<AuthResponse>(buildApiUrl('/auth/me'), {
+        this.apiClient.get<AuthCurrentUserResponseDto>(CURRENT_USER_PATH, {
           context: withSkippedAuthInterceptor(),
         }),
       );
-      this.setUserFromApi(response.data.user);
+      this.setUserFromApi(response.user);
       return true;
     } catch {
       this.user.set(null);
