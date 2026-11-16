@@ -66,6 +66,11 @@ Sekrety do ustawienia w GitHub (Settings → Secrets and variables → Actions):
 - `BACKEND_URL` - np. `https://apiomniframe.vercel.app`,
 - `CRON_AUTH_TOKEN` - ta sama wartość co `CRON_AUTH_TOKEN` w Vercelu.
 
+Workflow `Build and release` wywołuje ten sam workflow w trybie `check-only`
+(job `cron-check`): sprawdza sekrety i `GET /api/cron/highscores`, bez
+zbierania danych. Release nie startuje, dopóki cron nie jest poprawnie
+skonfigurowany.
+
 ## Dane w bazie
 
 - **`character_highscores_snapshots`** - historia: nowy wiersz tylko wtedy, gdy
@@ -142,5 +147,7 @@ wartość niż zmienna w Vercelu.
 
 ### GitHub Actions run failuje w kilka sekund
 
-Guard w workflow: brakuje sekretu `BACKEND_URL` albo `CRON_AUTH_TOKEN`. Prawdziwe
+Krok `Verify cron secrets`: brakuje sekretu `BACKEND_URL` albo `CRON_AUTH_TOKEN`
+(nazwa brakującego sekretu jest w logu). Krok `Fetch configured worlds` z `401`:
+sekret w GitHub ma inną wartość niż `CRON_AUTH_TOKEN` w Vercelu. Prawdziwe
 wywołanie trwa tyle, ile zbieranie świata (do 5 minut).

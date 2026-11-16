@@ -360,7 +360,9 @@ Repo używa GitHub Actions do automatycznego budowania i wersjonowania zmian.
 Workflow znajduje się w `.github/workflows/release.yml` i uruchamia się po
 każdym pushu bezpośrednio do `main`. Release startuje dopiero po zielonym
 `.github/workflows/ci.yml` (`format:check`, `lint`, `build`, `test` dla obu
-aplikacji); ten sam workflow CI uruchamia się dla każdego pull requesta.
+aplikacji) i zielonym jobie `cron-check` (`cron-highscores.yml` w trybie
+`check-only`: sekrety crona i autoryzacja `GET /api/cron/highscores`); ten sam
+workflow CI uruchamia się dla każdego pull requesta.
 
 ### Użycie
 

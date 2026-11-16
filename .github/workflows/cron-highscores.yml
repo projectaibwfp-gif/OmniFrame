@@ -4,29 +4,75 @@ on:
   schedule:
     - cron: "0 */4 * * *" # Co 4 godziny
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      check-only:
+        description: Verify secrets and cron authorization without collecting highscores
+        type: boolean
+        default: false
+    secrets:
+      BACKEND_URL:
+        required: false
+      CRON_AUTH_TOKEN:
+        required: false
+
+permissions:
+  contents: read
 
 jobs:
   cron:
     runs-on: ubuntu-latest
+    env:
+      BACKEND_URL: ${{ secrets.BACKEND_URL }}
+      CRON_AUTH_TOKEN: ${{ secrets.CRON_AUTH_TOKEN }}
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Trigger highscores collection per world
-        env:
-          BACKEND_URL: ${{ secrets.BACKEND_URL }}
-          CRON_AUTH_TOKEN: ${{ secrets.CRON_AUTH_TOKEN }}
+      - name: Verify cron secrets
         run: |
-          if [ -z "$BACKEND_URL" ] || [ -z "$CRON_AUTH_TOKEN" ]; then
-            echo "Error: BACKEND_URL and CRON_AUTH_TOKEN secrets must be set"
+          missing=""
+          [ -n "$BACKEND_URL" ] || missing="$missing BACKEND_URL"
+          [ -n "$CRON_AUTH_TOKEN" ] || missing="$missing CRON_AUTH_TOKEN"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing GitHub Actions secrets:${missing} (see backend/CRON.md)"
             exit 1
           fi
-          auth_header="Authorization: Bearer ${CRON_AUTH_TOKEN}"
-          worlds=$(curl -sS -f --max-time 30 -H "$auth_header" \
-            "${BACKEND_URL}/api/cron/highscores" | jq -r '.data.worlds[]')
+
+      - name: Fetch configured worlds
+        id: worlds
+        run: |
+          response=$(curl -sS --max-time 30 -w '\n%{http_code}' \
+            -H "Authorization: Bearer ${CRON_AUTH_TOKEN}" \
+            "${BACKEND_URL}/api/cron/highscores")
+          status=$(tail -n 1 <<< "$response")
+          body=$(sed '$d' <<< "$response")
+          if [ "$status" != "200" ]; then
+            echo "::error::GET /api/cron/highscores returned ${status}: ${body}"
+            echo "::error::401 means CRON_AUTH_TOKEN differs between GitHub and Vercel (see backend/CRON.md)"
+            exit 1
+          fi
+          worlds=$(jq -r '.data.worlds | join(",")' <<< "$body")
+          if [ -z "$worlds" ]; then
+            echo "::error::Backend returned no worlds; check CRON_WORLDS in Vercel"
+            exit 1
+          fi
+          echo "Configured worlds: ${worlds}"
+          echo "list=${worlds}" >> "$GITHUB_OUTPUT"
+
+      - name: Collect highscores per world
+        if: ${{ !inputs.check-only }}
+        env:
+          WORLDS: ${{ steps.worlds.outputs.list }}
+        run: |
           failed=0
           # One world per request keeps each run inside maxDuration=300s (see backend/CRON.md).
-          for world in $worlds; do
+          IFS=',' read -ra world_list <<< "$WORLDS"
+          for world in "${world_list[@]}"; do
             encoded_world=$(jq -rn --arg value "$world" '$value | @uri')
             echo "Collecting ${world}"
-            curl -sS -f --max-time 310 --retry 2 --retry-delay 10 -H "$auth_header" \
+            curl -sS -f --max-time 310 --retry 2 --retry-delay 10 \
+              -H "Authorization: Bearer ${CRON_AUTH_TOKEN}" \
               -X POST "${BACKEND_URL}/api/cron/highscores?world=${encoded_world}" || failed=1
           done
           exit $failed
